@@ -1,0 +1,199 @@
+"use client";
+
+import React from "react";
+import { XCircle, Loader2, Tag, Shield } from "lucide-react";
+import { Member, PERMISSION_SCOPES } from "../../shared";
+
+interface EditAccessModalProps {
+    member: Member | null;
+    onChange: (member: Member) => void;
+    onClose: () => void;
+    onSave: () => void;
+    isSubmitting: boolean;
+}
+
+export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChange, onClose, onSave, isSubmitting }) => {
+    if (!member) return null;
+
+    const addTag = (tag: string) => {
+        if (tag && !member.tags.includes(tag)) {
+            onChange({
+                ...member,
+                tags: [...member.tags, tag]
+            });
+        }
+    };
+
+    const removeTag = (tag: string) => {
+        onChange({
+            ...member,
+            tags: member.tags.filter(t => t !== tag)
+        });
+    };
+
+    const bulkSetPermissions = (level: string) => {
+        const next: Record<string, string> = { ...member.permissions };
+        PERMISSION_SCOPES.forEach(scope => {
+            if (level === 'NONE') delete next[scope.key];
+            else next[scope.key] = level;
+        });
+        onChange({ ...member, permissions: next });
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-[#09090b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-white/10" onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02] flex-shrink-0">
+                    <div>
+                        <h3 className="text-xl font-bold text-white">Access Settings</h3>
+                        <p className="text-zinc-500 text-xs mt-1 font-mono">{member.email}</p>
+                    </div>
+                    <button onClick={onClose} className="text-zinc-500 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+                        <XCircle className="w-5 h-5" />
+                    </button>
+                </div>
+                
+                <div className="p-6 overflow-y-auto flex-1">
+                    {/* TAGS SECTION */}
+                    <div className="mb-8 p-4 rounded-xl border border-white/5 bg-white/[0.01]">
+                        <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider mb-3 block">Designation Tags</label>
+                        <div className="flex flex-wrap gap-2 mb-4 min-h-[32px]">
+                                {(member.tags || []).map(tag => (
+                                    <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-800 text-zinc-200 border border-white/10">
+                                    {tag}
+                                    <button onClick={() => removeTag(tag)} className="ml-1.5 text-zinc-500 hover:text-white transition-colors"><XCircle className="w-3 h-3" /></button>
+                                    </span>
+                                ))}
+                                {(!member.tags || member.tags.length === 0) && <span className="text-zinc-600 text-xs italic py-1">No tags assigned</span>}
+                        </div>
+                        <div className="relative group">
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2"><Tag className="w-4 h-4 text-zinc-600 group-focus-within:text-zinc-400 transition-colors" /></div>
+                            <input 
+                                type="text" 
+                                placeholder="Add tag..." 
+                                className="w-full bg-black/40 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-zinc-700"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        addTag(e.currentTarget.value.trim());
+                                        e.currentTarget.value = "";
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* PERMISSIONS SECTION */}
+                    <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider mb-3 block">Protocols & Permissions</label>
+                    
+                    {/* Master Switch */}
+                    <div className="bg-purple-900/10 border border-purple-500/20 rounded-xl p-5 flex items-center justify-between group hover:border-purple-500/40 transition-colors mb-6">
+                        <div>
+                            <div className="font-bold text-purple-400 flex items-center gap-2">
+                                <Shield className="w-4 h-4" /> Superadmin
+                            </div>
+                            <p className="text-[10px] text-zinc-400 mt-1 max-w-[200px] leading-snug">Grants full unrestricted access.</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input 
+                                type="checkbox" 
+                                className="sr-only peer"
+                                checked={(member.permissions || {})['*'] === 'FULL_ACCESS'}
+                                onChange={(e) => {
+                                    const newPerms = { ...(member.permissions || {}) };
+                                    if (e.target.checked) {
+                                        newPerms['*'] = 'FULL_ACCESS';
+                                    } else {
+                                        delete newPerms['*'];
+                                        newPerms['default'] = 'READ';
+                                    }
+                                    onChange({ ...member, permissions: newPerms });
+                                }}
+                            />
+                            <div className="w-12 h-6 bg-zinc-900 border border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-zinc-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-900/50 peer-checked:border-purple-500/50 peer-checked:after:bg-purple-400"></div>
+                        </label>
+                    </div>
+
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between mt-4 mb-2">
+                            <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Modular Access</label>
+                            <div className="flex gap-2">
+                                <button onClick={() => bulkSetPermissions('READ')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">All Read</button>
+                                <button onClick={() => bulkSetPermissions('WRITE')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">All Write</button>
+                                <button onClick={() => bulkSetPermissions('NONE')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">Reset</button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {PERMISSION_SCOPES.map(scope => {
+                                const isFull = (member.permissions || {})['*'] === 'FULL_ACCESS';
+                                const Icon = scope.icon;
+                                
+                                return (
+                                    <div key={scope.key} className={`flex items-center justify-between p-3 rounded-lg border border-white/5 bg-white/[0.01] ${isFull ? 'opacity-30 pointer-events-none grayscale' : 'hover:bg-white/5 transition-colors'}`}>
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="p-1.5 rounded-md bg-zinc-900 border border-white/5">
+                                                <Icon className="w-4 h-4 text-zinc-500" />
+                                            </div>
+                                            <div>
+                                                <div className="font-medium text-xs text-zinc-200">{scope.label}</div>
+                                                <div className="text-[9px] text-zinc-600">{scope.description}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex bg-black/40 rounded border border-white/5 p-[1px]">
+                                            <button 
+                                                onClick={() => {
+                                                    const np = { ...(member.permissions || {}) };
+                                                    delete np[scope.key]; // Default/None
+                                                    onChange({ ...member, permissions: np });
+                                                }}
+                                                className={`px-2 py-1 text-[9px] rounded ${!(member.permissions || {})[scope.key] ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-400'}`}
+                                            >
+                                                None
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    const np = { ...(member.permissions || {}) };
+                                                    np[scope.key] = 'READ';
+                                                    onChange({ ...member, permissions: np });
+                                                }}
+                                                className={`px-2 py-1 text-[9px] rounded ${ (member.permissions || {})[scope.key] === 'READ' ? 'bg-blue-900/50 text-blue-200 border-blue-500/20 shadow-sm' : 'text-zinc-500 hover:text-zinc-400'}`}
+                                            >
+                                                View
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    const np = { ...(member.permissions || {}) };
+                                                    np[scope.key] = 'WRITE';
+                                                    onChange({ ...member, permissions: np });
+                                                }}
+                                                className={`px-2 py-1 text-[9px] rounded ${ (member.permissions || {})[scope.key] === 'WRITE' ? 'bg-emerald-900/50 text-emerald-200 border-emerald-500/20 shadow-sm' : 'text-zinc-500 hover:text-zinc-400'}`}
+                                            >
+                                                Edit
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-6 border-t border-white/10 bg-white/[0.02] flex justify-end gap-3 flex-shrink-0">
+                    <button 
+                        onClick={onClose}
+                        className="px-5 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={onSave}
+                        disabled={isSubmitting}
+                        className="px-6 py-2.5 rounded-xl text-sm font-bold bg-white text-black hover:bg-zinc-200 transition-colors shadow-lg shadow-white/10 flex items-center gap-2"
+                    >
+                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};

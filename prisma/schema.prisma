@@ -1,0 +1,385 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String?
+  image        String?
+  permissions  Json?     @default("{\"default\": \"READ\"}")
+  tags         String[]  @default([])
+  status       String    // applied, approved, active, paused
+  customFields Json?     @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+
+  // Relations
+  lockedPlaybooks    Playbook[] @relation("LockedBy")
+  createdPlaybooks   Playbook[] @relation("CreatedBy")
+  assignedOperations Operation[]
+  createdMedia       MediaItem[]
+  experiments        Experiment[]
+  comments           ExperimentComment[]
+  mediaComments      Comment[]
+  logs               Log[]
+
+  auditLogs          AuditLog[]
+  events             Event[]
+  programs           Program[]
+  contentResources   ContentResource[]
+  createdProjects    Project[]
+  createdPartners    Partner[]
+
+  @@index([status])
+}
+
+model CommunityMember {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  tags      String[] @default([]) // e.g. "Founder", "Investor"
+  status    String   @default("active")
+  customFields Json?     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  deletedAt DateTime?
+
+  @@index([status])
+}
+
+model Playbook {
+  id             String    @id @default(uuid())
+  title          String
+  body           Json
+  markdownExport String?
+  status         String?   // draft, pending, approved, published
+  visibility     PlaybookVisibility @default(CORE)
+  coverImage     String?
+  description    String?
+  tags           String[]
+  version        Int       @default(1)
+  createdAt      DateTime  @default(now())
+  deletedAt      DateTime?
+
+  // Relations
+  lockedBy       Member?   @relation("LockedBy", fields: [lockedById], references: [id])
+  lockedById     String?
+  lockedAt       DateTime?
+  updatedAt      DateTime  @default(now()) @updatedAt
+  createdBy      Member?   @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById    String?
+
+  @@index([status])
+  @@index([visibility])
+}
+
+enum PlaybookVisibility {
+  CORE
+  MEMBERS
+  PUBLIC
+}
+
+
+
+model Operation {
+  id              String    @id @default(uuid())
+  title           String?
+  type            String?   // task, meeting
+  status          String?
+  dueDate         DateTime?
+  relatedType     String?
+  relatedId       String?
+  timeEstimate    Int?
+  timeLogged      Int?
+  calendarEventId String?
+  links           String[]
+  createdAt       DateTime  @default(now())
+  deletedAt       DateTime?
+
+  assignee        Member?   @relation(fields: [assigneeId], references: [id])
+  assigneeId      String?
+
+  @@index([status])
+  @@index([type])
+  @@index([assigneeId])
+}
+
+model MediaItem {
+  id          String    @id @default(uuid())
+  title       String?
+  description String?
+  platform    String[]
+  links       String[]
+  status      String?   // draft, needs_edit, pending_approval, approved, posted
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+
+  createdBy   Member?   @relation(fields: [createdById], references: [id])
+  createdById String?
+  posts       MediaPost[]
+  comments    Comment[]
+  auditLogs   AuditLog[]
+
+  @@index([status])
+}
+
+model MediaPost {
+  id        String    @id @default(uuid())
+  postUrl   String?
+  postedAt  DateTime?
+  deletedAt DateTime?
+
+  media     MediaItem @relation(fields: [mediaId], references: [id])
+  mediaId   String
+}
+
+model Comment {
+  id        String    @id @default(uuid())
+  content   String
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+  
+  media     MediaItem @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  mediaId   String
+
+  author    Member    @relation(fields: [authorId], references: [id])
+  authorId  String
+
+  @@index([mediaId])
+}
+
+enum Visibility {
+  CORE
+  MEMBER
+  PUBLIC
+}
+
+model Guide {
+  id         String   @id @default(uuid())
+  type       String?  // event, program, content
+  title      String?
+  coverImage String?
+  body       Json?
+  audience   String[] @default([])
+  formSchema Json?
+  visibility Visibility @default(CORE)
+  createdAt  DateTime @default(now())
+  deletedAt  DateTime?
+
+  applications Application[]
+
+  @@index([type])
+  @@index([visibility])
+}
+
+model Application {
+  id             String   @id @default(uuid())
+  applicantEmail String?
+  data           Json?
+  status         String?
+  submittedAt    DateTime @default(now())
+  deletedAt      DateTime?
+
+  guide          Guide    @relation(fields: [guideId], references: [id])
+  guideId        String
+
+  @@index([status])
+  @@index([guideId])
+}
+
+model Experiment {
+  id          String   @id @default(uuid())
+  title       String?
+  description String?
+  stage       String?  // proposed, discussion, accepted, declined
+  upvotes     Int      @default(0)
+  createdAt   DateTime @default(now())
+  deletedAt   DateTime?
+
+  createdBy   Member?  @relation(fields: [createdById], references: [id])
+  createdById String?
+  comments    ExperimentComment[]
+
+  @@index([stage])
+}
+
+model ExperimentComment {
+  id           String   @id @default(uuid())
+  body         String?
+  parentId     String?
+  createdAt    DateTime @default(now())
+  deletedAt    DateTime?
+
+  experiment   Experiment @relation(fields: [experimentId], references: [id])
+  experimentId String
+  author       Member?    @relation(fields: [authorId], references: [id])
+  authorId     String?
+
+  @@index([experimentId])
+}
+
+model Log {
+  id        String   @id @default(uuid())
+  action    String?
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  deletedAt DateTime?
+
+  actor     Member?  @relation(fields: [actorId], references: [id])
+  actorId   String?
+
+  @@index([action])
+  @@index([entity])
+  @@index([actorId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String   // CREATE, UPDATE, DELETE, LOGIN, ETC
+  resource   String   // Playbook, Member, System
+  resourceId String?
+  metadata   Json?    // Diff, details, etc
+  createdAt  DateTime @default(now())
+  deletedAt  DateTime?
+  
+  actor      Member?  @relation(fields: [actorId], references: [id])
+  actorId    String?
+
+  mediaItem  MediaItem? @relation(fields: [mediaItemId], references: [id])
+  mediaItemId String?
+
+  @@index([resource, resourceId])
+  @@index([actorId])
+  @@index([action])
+}
+
+model Event {
+  id           String    @id @default(uuid())
+  title        String
+  date         DateTime?
+  location     String?
+  status       String    @default("planned") // planned, active, completed, cancelled
+  customFields Json?     @default("{}")
+  description  String?
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+  
+  createdBy    Member?   @relation(fields: [createdById], references: [id])
+  createdById  String?
+
+  @@index([status])
+  @@index([date])
+}
+
+model Program {
+  id           String    @id @default(uuid())
+  title        String
+  lead         String?
+  status       String    @default("active")
+  customFields Json?     @default("{}")
+  description  String?
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+  
+  createdBy    Member?   @relation(fields: [createdById], references: [id])
+  createdById  String?
+
+  @@index([status])
+}
+
+model ContentResource {
+  id           String    @id @default(uuid())
+  title        String
+  type         String?   // e.g. "Blog", "Video", "Whitepaper"
+  status       String    @default("draft")
+  customFields Json?     @default("{}")
+  content      String?
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+  
+  createdBy    Member?   @relation(fields: [createdById], references: [id])
+  createdById  String?
+
+  @@index([type])
+  @@index([status])
+}
+
+model Project {
+  id           String    @id @default(uuid())
+  name         String
+  status       String    @default("active")
+  visibility   Visibility @default(CORE)
+  // Social/Info
+  logo         String?   // SVG/Image URL
+  website      String?
+  twitter      String?
+  telegram     String?
+  
+  customFields Json?     @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+  
+  createdBy    Member?   @relation(fields: [createdById], references: [id])
+  createdById  String?
+
+  @@index([status])
+  @@index([visibility])
+}
+
+model Partner {
+  id           String    @id @default(uuid())
+  name         String
+  type         String?   // e.g. "Sponsor", "Community", "Vendor"
+  status       String    @default("active")
+  visibility   Visibility @default(CORE)
+  // Social/Info
+  logo         String?
+  website      String?
+  twitter      String?
+  telegram     String?
+
+  customFields Json?     @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+  
+  createdBy    Member?   @relation(fields: [createdById], references: [id])
+  createdById  String?
+
+  @@index([type])
+  @@index([status])
+  @@index([visibility])
+}
+
+model TableConfig {
+  id        String   @id @default(uuid())
+  tableName String   @unique // "members", "projects", "partners"
+  columns   Json     // Array of { id, label, type, width, visible }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model SystemSettings {
+  id        String   @id @default("settings") // Singleton
+  key       String   @unique
+  value     String
+  updatedAt DateTime @default(now()) @updatedAt
+  deletedAt DateTime?
+}

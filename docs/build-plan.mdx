@@ -1,0 +1,349 @@
+---
+title: System Build Plan
+description: Step-by-step implementation plan
+---
+
+## Phase 0 – Foundation (Do First)
+- Auth (email-based)
+- Role system: member | core | superadmin
+- Global audit log
+- Soft delete + trash
+- Single workspace enforcement
+
+---
+
+## Phase 1 – Members & Roles
+**Goal:** Identity & access control
+
+### Deliverables
+- Member directory
+- Role assignment (superadmin only)
+- Member lifecycle:
+  Applied → Approved → Active → Paused → Removed
+
+### Exit Criteria
+- Only superadmin can promote to core
+- All actions logged
+
+---
+
+## Phase 2 – Playbooks
+**Goal:** Controlled documentation system
+
+### Deliverables
+- Rich-text editor
+- Markdown export
+- Versioning
+- Approval workflow
+- Tag-based visibility (public / member / core)
+
+### Exit Criteria
+- Single editor lock enforced
+- Version rollback works
+- Publish requires superadmin approval
+
+---
+
+## Phase 3 – Operations
+**Goal:** Execution layer
+
+### Deliverables
+- Tasks (Linear-like)
+- Calendar integration (Google)
+- Time tracking
+- Event / Program / Project linkage
+
+### Exit Criteria
+- Status schema editable only by superadmin
+- Calendar sync working
+
+---
+
+## Phase 4 – Media
+**Goal:** Content pipeline governance
+
+### Deliverables
+- Media queue
+- Multi-post support
+- Approval flow
+- Audit trail
+
+---
+
+## Phase 5 – Events & Programs
+**Goal:** Structured external interaction
+
+### Deliverables
+- Guide documents
+- Custom form builder
+- Submission limits
+- Participant management
+- Operations auto-linking
+
+---
+
+## Phase 6 – Content
+**Goal:** Community input with moderation
+
+### Deliverables
+- Content submissions
+- Commenting
+- Approval queue
+
+---
+
+## Phase 7 – Experiments
+**Goal:** Controlled innovation
+
+### Deliverables
+- Proposal system
+- Threaded discussion
+- Upvote voting
+- Archival
+
+---
+
+## Phase 8 – Partners & Media Kit
+**Goal:** External relations
+
+---
+
+## Phase 9 – Logs & Exports
+**Goal:** Safety & compliance
+
+---
+
+## Final Rule
+Nothing ships without:
+- Audit logging
+- Soft delete
+- Permission check
+
+2️⃣ POSTGRES SCHEMA (NEON-READY)
+🔐 Members
+create table members (
+  id uuid primary key default gen_random_uuid(),
+  email text unique not null,
+  role text check (role in ('member','core','superadmin')) not null,
+  status text check (status in ('applied','approved','active','paused','removed')) not null,
+  custom_fields jsonb default '{}',
+  created_at timestamptz default now(),
+  deleted_at timestamptz
+);
+
+📘 Playbooks
+create table playbooks (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  body jsonb not null,
+  markdown_export text,
+  status text check (status in ('draft','pending','approved','published')),
+  tags text[],
+  version integer default 1,
+  locked_by uuid references members(id),
+  created_by uuid references members(id),
+  created_at timestamptz default now(),
+  deleted_at timestamptz
+);
+
+create table playbook_versions (
+  id uuid primary key default gen_random_uuid(),
+  playbook_id uuid references playbooks(id),
+  version integer,
+  body jsonb,
+  created_at timestamptz default now()
+);
+
+🛠 Operations
+create table operations (
+  id uuid primary key default gen_random_uuid(),
+  title text,
+  type text check (type in ('task','meeting')),
+  status text,
+  due_date timestamptz,
+  assignee uuid references members(id),
+  related_type text,
+  related_id uuid,
+  time_estimate interval,
+  time_logged interval,
+  calendar_event_id text,
+  links text[],
+  created_at timestamptz default now()
+);
+
+🎥 Media
+create table media_items (
+  id uuid primary key default gen_random_uuid(),
+  title text,
+  description text,
+  platform text,
+  status text check (
+    status in ('draft','needs_edit','pending_approval','approved','posted')
+  ),
+  created_by uuid references members(id),
+  created_at timestamptz default now()
+);
+
+create table media_posts (
+  id uuid primary key default gen_random_uuid(),
+  media_id uuid references media_items(id),
+  post_url text,
+  posted_at timestamptz
+);
+
+🎟 Events / Programs (Shared Pattern)
+create table guides (
+  id uuid primary key default gen_random_uuid(),
+  type text check (type in ('event','program','content')),
+  title text,
+  body jsonb,
+  form_schema jsonb,
+  created_at timestamptz default now()
+);
+
+create table applications (
+  id uuid primary key default gen_random_uuid(),
+  guide_id uuid references guides(id),
+  applicant_email text,
+  data jsonb,
+  status text,
+  submitted_at timestamptz default now()
+);
+
+🧪 Experiments
+create table experiments (
+  id uuid primary key default gen_random_uuid(),
+  title text,
+  description text,
+  stage text check (
+    stage in ('proposed','discussion','accepted','declined')
+  ),
+  created_by uuid references members(id),
+  upvotes integer default 0,
+  created_at timestamptz default now()
+);
+
+create table experiment_comments (
+  id uuid primary key default gen_random_uuid(),
+  experiment_id uuid references experiments(id),
+  author uuid references members(id),
+  body text,
+  parent_id uuid,
+  created_at timestamptz default now()
+);
+
+🧾 Logs
+create table logs (
+  id uuid primary key default gen_random_uuid(),
+  actor uuid references members(id),
+  action text,
+  entity text,
+  entity_id uuid,
+  metadata jsonb,
+  created_at timestamptz default now()
+);
+
+3️⃣ API CONTRACTS (NEXT.JS STYLE)
+Playbooks
+POST   /api/playbooks
+PATCH  /api/playbooks/:id
+POST   /api/playbooks/:id/submit
+POST   /api/playbooks/:id/approve   // superadmin only
+GET    /api/playbooks/:id/versions
+
+Operations
+POST   /api/operations
+PATCH  /api/operations/:id
+POST   /api/operations/:id/log-time
+
+Media
+POST   /api/media
+PATCH  /api/media/:id/status
+POST   /api/media/:id/posts
+
+Events / Programs
+POST   /api/guides
+POST   /api/guides/:id/apply
+GET    /api/guides/:id/applications
+PATCH  /api/applications/:id/status
+
+Experiments
+POST   /api/experiments
+POST   /api/experiments/:id/upvote
+POST   /api/experiments/:id/comment
+PATCH  /api/experiments/:id/decision
+
+4️⃣ FORM SCHEMA FORMAT (CRITICAL)
+
+This is your custom form engine.
+
+{
+  "title": "Event Application",
+  "limits": {
+    "public": 2,
+    "member": 20,
+    "core": null
+  },
+  "fields": [
+    {
+      "id": "name",
+      "type": "text",
+      "label": "Full Name",
+      "required": true
+    },
+    {
+      "id": "email",
+      "type": "email",
+      "required": true
+    },
+    {
+      "id": "location",
+      "type": "location",
+      "required": true
+    },
+    {
+      "id": "budget",
+      "type": "number",
+      "label": "Budget Breakdown",
+      "required": true
+    },
+    {
+      "id": "event_url",
+      "type": "url",
+      "required": true
+    }
+  ]
+}
+
+Supported Field Types (v1)
+
+text
+
+email
+
+number
+
+url
+
+dropdown
+
+textarea
+
+location
+
+🧠 Final Advice (Important)
+
+Do NOT build UI for everything upfront
+
+Build:
+
+Members
+
+Logs
+
+Playbooks
+first — everything depends on these
+
+Keep superadmin approval explicit, never implicit
+
+Treat logs as immutable

@@ -1,0 +1,353 @@
+"use client";
+
+import { signOut, useSession } from "next-auth/react";
+import React, { useState } from "react";
+import { 
+    BookOpen, Calendar, Layers, FileText, Briefcase, 
+    Handshake, Users, Settings, Plus, Search,
+     Beaker, History, Film, Megaphone, Zap as ZapIcon,
+    LogOut, User as UserIcon, Lock, LayoutDashboard
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+// Types
+interface ResourceItem {
+    title: string;
+    key: string; // Permission Key
+    icon: React.ReactNode;
+    items: string[];
+    link: string;
+    description?: string;
+    image?: string;
+}
+
+// Quick Link Button Component
+function QuickLinkButton({ label, onClick }: { label: string, onClick?: () => void }) {
+    return (
+        <button onClick={onClick} className="w-full text-left px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-sm text-zinc-300 hover:text-white transition-all flex items-center justify-between group">
+            {label}
+            <Plus className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </button>
+    )
+}
+
+// World Clock Component
+function WorldClock() {
+    const [time, setTime] = useState(new Date());
+
+    React.useEffect(() => {
+        const timer = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const zones = [
+        { label: 'NY', zone: 'America/New_York' },
+        { label: 'LDN', zone: 'Europe/London' },
+        { label: 'IST', zone: 'Asia/Kolkata' },
+        { label: 'TYO', zone: 'Asia/Tokyo' },
+    ];
+
+    return (
+        <div className="flex items-center gap-3">
+            {zones.map((z) => (
+                <div key={z.label} className="text-center">
+                    <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-0.5 max-md:hidden">{z.label}</div>
+                    <div className="text-xs font-mono text-zinc-300 bg-white/5 border border-white/5 px-2 py-1 rounded">
+                        {time.toLocaleTimeString('en-US', { 
+                            timeZone: z.zone, 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            hour12: false 
+                        })}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+export default function CorePage() {
+    const { data: session } = useSession();
+
+    const router = useRouter();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userPermissions = (session?.user as any)?.permissions || {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
+
+    const checkAccess = (key: string) => {
+        if (isSuperAdmin) return true;
+        const perm = userPermissions[key] || userPermissions['*'];
+        return perm === 'READ' || perm === 'WRITE' || perm === 'FULL_ACCESS'; 
+    };
+
+    const resources: ResourceItem[] = [
+        // Row 1: Guides & Playbooks
+        { 
+            title: "Playbooks", 
+            key: "playbooks",
+            link: "/core/playbooks",
+            icon: <BookOpen />,
+            description: "Manage standard operating procedures and governance documentation.",
+            image: "/images/dashboard/planning.png",
+            items: []
+        },
+        { 
+            title: "Event Guide", 
+            key: "events", 
+            link: "/core/events", 
+            icon: <Calendar />, 
+            description: "Coordinate meetups, conferences, and community gatherings.",
+            image: "/images/dashboard/planning.png",
+            items: [] 
+        },
+        { 
+            title: "Programs Guides", 
+            key: "programs", 
+            link: "/core/programs", 
+            icon: <Layers />, 
+            description: "Oversee recurring initiatives, mentorships, and long-term series.",
+            image: "/images/dashboard/planning.png",
+            items: [] 
+        },
+        { 
+            title: "Content Guide", 
+            key: "content", 
+            link: "/core/content", 
+            icon: <FileText />, 
+            description: "Organize content strategy, resources, and publishing workflows.",
+            image: "/images/dashboard/community.png",
+            items: [] 
+        },
+        
+        // Row 2: Ops & Media
+        { 
+            title: "Operations", 
+            key: "operations", 
+            link: "/core/operations", 
+            icon: <Settings />, 
+            description: "Track internal tasks, logistics, and operational workflows.",
+            image: "/images/dashboard/data.png",
+            items: [] 
+        },
+        { 
+            title: "Experiment", 
+            key: "experiments", 
+            link: "/core/experiments", 
+            icon: <Beaker />, 
+            description: "Propose and track new ideas, pilots, and governance proposals.",
+            image: "/images/dashboard/data.png",
+            items: [] 
+        },
+         { 
+            title: "Media", 
+            key: "media", 
+            link: "/core/media", 
+            icon: <Film />, 
+            description: "Manage media assets, posts, and digital distribution.",
+            image: "/images/dashboard/community.png",
+            items: [] 
+        },
+        { 
+            title: "Members Details", 
+            key: "members", 
+            link: "/core/members", 
+            icon: <Users />, 
+            description: "Manage community members, roles, and access permissions.",
+            image: "/images/dashboard/community.png",
+            items: [] 
+        },
+
+        // Row 3: Projects & System
+        { 
+            title: "Projects", 
+            key: "projects", 
+            link: "/core/projects", 
+            icon: <Briefcase />, 
+            description: "Manage active projects, deliverables, and milestones.",
+            image: "/images/dashboard/data.png",
+            items: [] 
+        },
+        { 
+            title: "Partners", 
+            key: "partners", 
+            link: "/core/partners", 
+            icon: <Handshake />, 
+            description: "Track sponsors, vendors, and strategic alliances.",
+            image: "/images/dashboard/community.png",
+            items: [] 
+        },
+        { 
+            title: "Mediakit", 
+            key: "mediakit", 
+            link: "/core/mediakit", 
+            icon: <Megaphone />, 
+            description: "Access brand assets, press kits, and promotional materials.",
+            image: "/images/dashboard/community.png",
+            items: [] 
+        },
+        { 
+            title: "Logs", 
+            key: "logs", 
+            link: "/core/logs", 
+            icon: <History />, 
+            description: "Audit system activities, user actions, and change logs.",
+            image: "/images/dashboard/data.png",
+            items: [] 
+        },
+    ];
+
+    return (
+    <div className="min-h-screen pt-24 px-6 md:px-12 container mx-auto text-white pb-20">
+        
+        {/* Header */}
+        <header className="mb-12 border-b border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                 <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                    <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">System Online</span>
+                 </div>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500">
+                    Core Terminal
+                </h1>
+                <p className="text-zinc-500 font-medium text-sm mt-2 max-w-lg leading-relaxed">
+                    Welcome back, <span className="text-white">{session?.user?.name?.split(' ')[0] || 'User'}</span>. Access your mission control for operations, content, and community management.
+                </p>
+            </div>
+            
+            <div className="flex items-center gap-6">
+                 <div className="hidden md:block">
+                     <WorldClock />
+                 </div>
+                <div className="flex items-center gap-3 pl-6 border-l border-white/5">
+                    {session?.user?.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full ring-2 ring-white/10" />
+                    ) : (
+                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center ring-2 ring-white/10">
+                             <UserIcon className="w-5 h-5 text-zinc-400" />
+                        </div>
+                    )}
+                    <button 
+                        onClick={() => signOut({ callbackUrl: '/public' })}
+                        className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 hover:border-red-500/30 transition-all flex items-center justify-center text-red-400 hover:text-red-300"
+                        title="Logout"
+                    >
+                        <LogOut className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        {/* Quick Actions Row */}
+        <div className="mb-12">
+             <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                 <ZapIcon className="w-4 h-4" /> Quick Actions
+             </h2>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-indigo-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => {}}>
+                     <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400 group-hover:text-indigo-300 transition-colors">
+                        <Calendar className="w-5 h-5" />
+                     </div>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">New Event</span>
+                 </button>
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-emerald-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
+                     <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 group-hover:text-emerald-300 transition-colors">
+                        <Users className="w-5 h-5" />
+                     </div>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Add Member</span>
+                 </button>
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => {}}>
+                     <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400 group-hover:text-purple-300 transition-colors">
+                        <FileText className="w-5 h-5" />
+                     </div>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">New Guide</span>
+                 </button>
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-orange-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => {}}>
+                     <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400 group-hover:text-orange-300 transition-colors">
+                        <LayoutDashboard className="w-5 h-5" />
+                     </div>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Manage Widgets</span>
+                 </button>
+             </div>
+        </div>
+        
+        {/* Resources Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {resources.map((resource, idx) => {
+                const isLocked = !checkAccess(resource.key);
+                return (
+                    <ResourceCard 
+                        key={idx} 
+                        resource={resource}
+                        isLocked={isLocked}
+                    />
+                );
+            })}
+        </div>
+
+    </div>
+  );
+}
+
+function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked: boolean }) {
+    return (
+        <Link 
+            href={isLocked ? '#' : resource.link}
+            className={`block h-full relative group ${isLocked ? 'cursor-not-allowed' : ''}`}
+            onClick={(e) => isLocked && e.preventDefault()}
+        >
+            <div className={`
+                h-full bg-zinc-900 border border-white/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300
+                ${isLocked ? 'opacity-50 grayscale hover:opacity-60' : 'hover:border-zinc-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1'}
+            `}>
+                {/* Sleek Image Header */}
+                <div className="h-32 relative w-full overflow-hidden border-b border-white/5">
+                    {resource.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img 
+                            src={resource.image} 
+                            alt={resource.title}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                            <Layers className="w-8 h-8 text-zinc-700" />
+                        </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-60" />
+                </div>
+
+                <div className="p-4 flex flex-col flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-1.5 bg-white/5 rounded-md border border-white/5 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/20 transition-colors">
+                            {React.cloneElement(resource.icon as React.ReactElement<{ className?: string }>, { className: "w-4 h-4 text-zinc-300 group-hover:text-indigo-300" })}
+                        </div>
+                        <h3 className="text-base font-bold text-white group-hover:text-indigo-400 transition-colors">
+                            {resource.title}
+                        </h3>
+                    </div>
+                    <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
+                        {resource.description || "Access and manage resources."}
+                    </p>
+                </div>
+            </div>
+
+            {/* Locked Overlay */}
+            {isLocked && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-[2px] rounded-2xl border border-white/5">
+                    <div className="flex flex-col items-center gap-3 animate-in zoom-in duration-300">
+                        <div className="p-4 rounded-full bg-black/50 border border-white/10 shadow-2xl">
+                            <Lock className="w-6 h-6 text-zinc-400" />
+                        </div>
+                        <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest bg-black/80 px-3 py-1 rounded border border-white/5">
+                            Access Denied
+                        </span>
+                    </div>
+                </div>
+            )}
+        </Link>
+    )
+}
