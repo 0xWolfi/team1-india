@@ -10,6 +10,7 @@ datasource db {
 model Member {
   id           String    @id @default(uuid())
   email        String    @unique
+  xHandle      String?   
   name         String?
   image        String?
   permissions  Json?     @default("{\"default\": \"READ\"}")
@@ -36,15 +37,18 @@ model Member {
   contentResources   ContentResource[]
   createdProjects    Project[]
   createdPartners    Partner[]
+  guides             Guide[]
 
   @@index([status])
+  @@index([xHandle])
 }
 
 model CommunityMember {
   id        String   @id @default(uuid())
   email     String   @unique
+  xHandle   String?
   name      String?
-  tags      String[] @default([]) // e.g. "Founder", "Investor"
+  tags      String?  @default("member") // e.g. "Founder", "Investor"
   status    String   @default("active")
   customFields Json?     @default("{}")
   createdAt DateTime @default(now())
@@ -52,6 +56,7 @@ model CommunityMember {
   deletedAt DateTime?
 
   @@index([status])
+  @@index([xHandle])
 }
 
 model Playbook {
@@ -60,7 +65,7 @@ model Playbook {
   body           Json
   markdownExport String?
   status         String?   // draft, pending, approved, published
-  visibility     PlaybookVisibility @default(CORE)
+  visibility     Visibility @default(CORE)
   coverImage     String?
   description    String?
   tags           String[]
@@ -80,11 +85,7 @@ model Playbook {
   @@index([visibility])
 }
 
-enum PlaybookVisibility {
-  CORE
-  MEMBERS
-  PUBLIC
-}
+
 
 
 
@@ -171,7 +172,11 @@ model Guide {
   formSchema Json?
   visibility Visibility @default(CORE)
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
   deletedAt  DateTime?
+
+  createdBy    Member?   @relation(fields: [createdById], references: [id])
+  createdById  String?
 
   applications Application[]
 
@@ -187,11 +192,15 @@ model Application {
   submittedAt    DateTime @default(now())
   deletedAt      DateTime?
 
-  guide          Guide    @relation(fields: [guideId], references: [id])
-  guideId        String
+  guide          Guide?   @relation(fields: [guideId], references: [id])
+  guideId        String?
+
+  program        Program? @relation(fields: [programId], references: [id])
+  programId      String?
 
   @@index([status])
   @@index([guideId])
+  @@index([programId])
 }
 
 model Experiment {
@@ -270,6 +279,7 @@ model Event {
   status       String    @default("planned") // planned, active, completed, cancelled
   customFields Json?     @default("{}")
   description  String?
+  visibility   Visibility @default(CORE)
   
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
@@ -280,6 +290,7 @@ model Event {
 
   @@index([status])
   @@index([date])
+  @@index([visibility])
 }
 
 model Program {
@@ -289,6 +300,7 @@ model Program {
   status       String    @default("active")
   customFields Json?     @default("{}")
   description  String?
+  visibility   Visibility @default(CORE)
   
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
@@ -296,8 +308,10 @@ model Program {
   
   createdBy    Member?   @relation(fields: [createdById], references: [id])
   createdById  String?
+  applications Application[]
 
   @@index([status])
+  @@index([visibility])
 }
 
 model ContentResource {
@@ -382,4 +396,50 @@ model SystemSettings {
   value     String
   updatedAt DateTime @default(now()) @updatedAt
   deletedAt DateTime?
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  title     String
+  link      String?
+  audience  String   @default("ALL") // PUBLIC, MEMBER, ALL
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+  deletedAt DateTime?
+}
+
+model Poll {
+  id        String   @id @default(uuid())
+  question  String
+  options   Json     // Array of {id, text, votes}
+  status    String   @default("ACTIVE") // ACTIVE, CLOSED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model MeetingNote {
+  id        String   @id @default(uuid())
+  content   String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model ActionItem {
+  id        String   @id @default(uuid())
+  text      String
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model AttendanceRecord {
+  id               String   @id @default(uuid())
+  date             DateTime @default(now())
+  presentMemberIds String[] // IDs of members present
+  note             String?
+  createdAt        DateTime @default(now())
+  deletedAt        DateTime?
 }

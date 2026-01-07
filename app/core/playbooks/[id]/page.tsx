@@ -17,7 +17,7 @@ interface PlaybookDetail {
     body: any; // JSON string or object from Prisma
     updatedAt: string;
     lockedBy?: { id: string; email: string } | null;
-    visibility: 'CORE' | 'MEMBERS' | 'PUBLIC';
+    visibility: 'CORE' | 'MEMBER' | 'PUBLIC';
     coverImage?: string;
     description?: string;
     version: number;
@@ -293,11 +293,11 @@ export default function PlaybookPage() {
                         <button
                             onClick={() => {
                                 if (!isEditing && !hasWriteAccess) return;
-                                const order: ('CORE' | 'MEMBERS' | 'PUBLIC')[] = ['CORE', 'MEMBERS', 'PUBLIC'];
+                                const order: ('CORE' | 'MEMBER' | 'PUBLIC')[] = ['CORE', 'MEMBER', 'PUBLIC'];
                                 const currentIndex = order.indexOf(playbook.visibility);
                                 const newVis = order[(currentIndex + 1) % 3];
                                 
-                                if ((newVis === 'MEMBERS' || newVis === 'PUBLIC') && !playbook.coverImage) {
+                                if ((newVis === 'MEMBER' || newVis === 'PUBLIC') && !playbook.coverImage) {
                                     alert("A cover image is required before making a playbook visible to Members or Public.");
                                     return;
                                 }
@@ -326,9 +326,9 @@ export default function PlaybookPage() {
                             } ${((!hasWriteAccess || isLockedByOther) && !isEditing) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                         >
                             {playbook.visibility === 'PUBLIC' && <Globe className="w-3.5 h-3.5" />}
-                            {playbook.visibility === 'MEMBERS' && <Shield className="w-3.5 h-3.5" />}
+                            {playbook.visibility === 'MEMBER' && <Shield className="w-3.5 h-3.5" />}
                             {playbook.visibility === 'CORE' && <Cpu className="w-3.5 h-3.5" />}
-                            <span>{playbook.visibility === 'CORE' ? 'Core' : playbook.visibility === 'MEMBERS' ? 'Members' : 'Public'}</span>
+                            <span>{playbook.visibility === 'CORE' ? 'Core' : playbook.visibility === 'MEMBER' ? 'Members' : 'Public'}</span>
                         </button>
                      ) : null}
 

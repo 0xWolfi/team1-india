@@ -1,5 +1,5 @@
 import { 
-    FileText, Briefcase, Image as ImageIcon, Calendar, BookOpen, Layers, UserCheck, FolderKanban, Handshake, FlaskConical, Newspaper, FileTerminal
+    FileText, Briefcase, Image as ImageIcon, Calendar, BookOpen, Layers, UserCheck, FolderKanban, Handshake, FlaskConical, Newspaper, FileTerminal, ClipboardList
 } from "lucide-react";
 
 export interface Member {
@@ -25,4 +25,5 @@ export const PERMISSION_SCOPES = [
     { key: 'experiments', label: 'Experiments', icon: FlaskConical, description: 'R&D and testing' },
     { key: 'mediakit', label: 'Mediakit', icon: Newspaper, description: 'Public press kits' },
     { key: 'logs', label: 'Logs', icon: FileTerminal, description: 'System audit logs' },
+    { key: 'applications', label: 'Applications', icon: ClipboardList, description: 'Member applications' },
 ];

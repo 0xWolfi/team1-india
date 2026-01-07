@@ -5,51 +5,51 @@ import { Plus, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { GuideList } from '@/components/guides/GuideList';
+import { ProgramList } from '@/components/core/ProgramList';
 
 export default function ProgramsPage() {
-    const [guides, setGuides] = useState([]);
-    const [isGuidesLoading, setIsGuidesLoading] = useState(true);
+    const [programs, setPrograms] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const fetchGuides = async () => {
-        setIsGuidesLoading(true);
+    const fetchPrograms = async () => {
+        setIsLoading(true);
         try {
-            const res = await fetch('/api/guides?type=PROGRAM');
+            const res = await fetch('/api/programs');
             if (res.ok) {
                 const data = await res.json();
-                setGuides(data);
+                setPrograms(data);
             }
         } catch (error) {
-            console.error("Failed to fetch guides", error);
+            console.error("Failed to fetch programs", error);
         } finally {
-            setIsGuidesLoading(false);
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchGuides();
+        fetchPrograms();
     }, []);
 
     return (
         <CoreWrapper>
             <CorePageHeader
-                title="Program Guides"
-                description="Manage long-running initiatives, mentorship circles, and recurring series."
+                title="Programs"
+                description="Manage long-running initiatives, visibility, and applications."
                 icon={<Layers className="w-5 h-5 text-zinc-200" />}
             >
                 <div className="flex items-center gap-2">
-                    <Link href="/core/programs/guides/new">
+                    <Link href="/core/programs/new">
                         <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors">
-                            <Plus className="w-4 h-4" /> Create Guide
+                            <Plus className="w-4 h-4" /> Create Program
                         </button>
                     </Link>
                 </div>
             </CorePageHeader>
 
-            <GuideList 
-                guides={guides} 
-                basePath="/core/programs/guides" 
-                isLoading={isGuidesLoading} 
+            <ProgramList 
+                programs={programs} 
+                basePath="/core/programs" 
+                isLoading={isLoading} 
             />
         </CoreWrapper>
     );

@@ -497,10 +497,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                                         const isCustom = col.id.startsWith('custom_');
                                         let val = isCustom ? row.customFields?.[col.id] : row[col.id];
                                         
-                                        // Handle arrays for select inputs (like tags)
-                                        if (Array.isArray(val) && col.type === 'select') {
-                                            val = val[0];
-                                        }
+
                                         
                                         return (
                                             <td key={`${row.id}_${col.id}`} className="p-0 border-r border-white/5 relative focus-within:ring-1 focus-within:ring-indigo-500 z-0">

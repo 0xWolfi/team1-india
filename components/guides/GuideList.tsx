@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, BookOpen } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { ResourceCard } from '../public/ResourceCard';
 
 interface Guide {
     id: string;
@@ -9,7 +11,11 @@ interface Guide {
         description: string;
     };
     type: string;
-    audience?: string[];
+    visibility: string;
+    coverImage?: string;
+    createdAt?: string;
+    updatedAt?: string;
+    createdBy?: { email: string };
 }
 
 interface GuideListProps {
@@ -36,44 +42,17 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {guides.map(guide => (
-                <div key={guide.id} className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl p-6 hover:bg-zinc-900/80 transition-all hover:-translate-y-1 hover:border-white/10 flex flex-col h-full">
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent rounded-2xl pointer-events-none" />
-                    
-                    <div className="relative z-10 flex-1">
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-white group-hover:bg-white/10 transition-colors">
-                                <BookOpen className="w-5 h-5" />
-                            </div>
-                            {/* Audience Tags */}
-                            <div className="flex gap-1 flex-wrap justify-end max-w-[50%]">
-                                {(guide.audience || []).slice(0, 2).map((tag: string) => (
-                                    <span key={tag} className="px-2 py-0.5 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                                        {tag}
-                                    </span>
-                                ))}
-                                {(guide.audience || []).length > 2 && (
-                                    <span className="px-2 py-0.5 bg-zinc-800 border border-white/10 text-zinc-400 rounded-full text-[10px] font-bold">
-                                        +{(guide.audience || []).length - 2}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                        
-                        <h3 className="text-lg font-bold text-white mb-2 group-hover:text-white transition-colors">{guide.title}</h3>
-                        <p className="text-sm text-zinc-500 line-clamp-3 mb-6">
-                            {guide.body?.description || "No description provided."}
-                        </p>
-                    </div>
-
-                    <div className="relative z-10 pt-4 border-t border-white/5 mt-auto">
-                        <Link 
-                            href={`${basePath}/${guide.id}`}
-                            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors"
-                        >
-                            View Guide <ArrowRight className="w-4 h-4" />
-                        </Link>
-                    </div>
-                </div>
+                <ResourceCard 
+                    key={guide.id} 
+                    title={guide.title}
+                    coverImage={guide.coverImage}
+                    href={`${basePath}/${guide.id}`}
+                    description={guide.body?.description}
+                    author={guide.createdBy?.email ? guide.createdBy.email.split('@')[0] : undefined}
+                    date={(guide.updatedAt || guide.createdAt) ? `${formatDistanceToNow(new Date((guide.updatedAt || guide.createdAt)!))} ago` : undefined}
+                    buttonText="Read"
+                    visibility={guide.visibility as any}
+                />
             ))}
         </div>
     );

@@ -32,13 +32,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     // Basic validation (can use Zod again if shared, tailored here for update)
     // Update whatever is passed.
-    const { title, audience, body: guideBody, formSchema } = body;
+    const { title, audience, body: guideBody, formSchema, visibility } = body;
 
     const updatedGuide = await prisma.guide.update({
       where: { id },
       data: {
         title,
         audience: audience,
+        visibility: visibility,
         body: guideBody as any,
         formSchema: formSchema as any,
         updatedAt: new Date()

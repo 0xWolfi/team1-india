@@ -5,6 +5,7 @@ export const EventSchema = z.object({
   date: z.string().optional().or(z.literal("")),
   location: z.string().optional().or(z.literal("")),
   description: z.string().optional().or(z.literal("")),
+  visibility: z.enum(["CORE", "MEMBER", "PUBLIC"]).optional().default("CORE"),
   customFields: z.record(z.string(), z.any()).optional().default({}),
 });
 
@@ -12,6 +13,7 @@ export const ProgramSchema = z.object({
   title: z.string().min(1, "Title is required"),
   lead: z.string().optional().or(z.literal("")),
   description: z.string().optional().or(z.literal("")),
+  visibility: z.enum(["CORE", "MEMBER", "PUBLIC"]).optional().default("CORE"),
   customFields: z.record(z.string(), z.any()).optional().default({}),
 });
 
@@ -37,6 +39,7 @@ export const CommentSchema = z.object({
 export const PlaybookSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional().or(z.literal("")),
+  visibility: z.enum(["CORE", "MEMBER", "PUBLIC"]).optional().default("CORE"),
   coverImage: z.string().optional().nullable(),
 });
 

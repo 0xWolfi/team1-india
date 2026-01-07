@@ -36,9 +36,7 @@ export async function PATCH(
         
         // Data Handling
         let data = { ...body };
-        if (data.tags && typeof data.tags === 'string') {
-            data.tags = data.tags.split(',').map((t: string) => t.trim()).filter(Boolean);
-        }
+        // Removed: special handling for tags array conversion (now scalar)
 
         const updated = await (delegate as any).update({
             where: { id },
@@ -69,10 +67,9 @@ export async function DELETE(
     if (!delegate) return new NextResponse('Invalid table', { status: 400 });
 
     try {
-        // Soft delete
-        const deleted = await (delegate as any).update({
-            where: { id },
-            data: { deletedAt: new Date() }
+        // Hard delete
+        const deleted = await (delegate as any).delete({
+            where: { id }
         });
 
         return NextResponse.json(deleted);

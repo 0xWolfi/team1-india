@@ -76,7 +76,7 @@ export const authOptions: NextAuthOptions = {
                 token.id = communityMember.id as string;
                 token.role = 'MEMBER';
                 token.permissions = {}; 
-                token.tags = communityMember.tags || [];
+                token.tags = communityMember.tags ? [communityMember.tags] : [];
                 return token;
             }
 

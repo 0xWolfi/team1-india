@@ -35,6 +35,7 @@ export async function GET(
         // Fetch data
         // Casting delegate as 'any' to avoid TS union issues with findMany
         const data = await (delegate as any).findMany({
+            where: { deletedAt: null },
             orderBy: { createdAt: 'desc' }
         });
 

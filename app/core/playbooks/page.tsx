@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { FileText, Plus, Lock, Search, RefreshCw, MoreHorizontal, Trash2, Edit, Globe, Cpu, Clock, LayoutGrid, List, ArrowLeft, BookOpen } from "lucide-react";
+import { FileText, Plus, Lock, Search, RefreshCw, MoreHorizontal, Trash2, Edit, Globe, Cpu, Clock, LayoutGrid, List, ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
@@ -16,7 +16,7 @@ interface Playbook {
     updatedAt: string;
     lockedBy?: { email: string };
     createdBy?: { email: string };
-    visibility: 'CORE' | 'MEMBERS' | 'PUBLIC';
+    visibility: 'CORE' | 'MEMBER' | 'PUBLIC';
     coverImage?: string;
     description?: string;
 }
@@ -30,7 +30,7 @@ export default function PlaybooksPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-    const [visibilityFilter, setVisibilityFilter] = useState<'ALL' | 'CORE' | 'MEMBERS' | 'PUBLIC'>('ALL');
+    const [visibilityFilter, setVisibilityFilter] = useState<'ALL' | 'CORE' | 'MEMBER' | 'PUBLIC'>('ALL');
     const [showFilterMenu, setShowFilterMenu] = useState(false);
 
     // Close menu when clicking outside
@@ -169,7 +169,7 @@ export default function PlaybooksPage() {
                          <span className="flex items-center gap-2">
                              {visibilityFilter === 'ALL' && <LayoutGrid className="w-3.5 h-3.5" />}
                              {visibilityFilter === 'CORE' && <Cpu className="w-3.5 h-3.5" />}
-                             {visibilityFilter === 'MEMBERS' && <Cpu className="w-3.5 h-3.5" />}
+                             {visibilityFilter === 'MEMBER' && <Cpu className="w-3.5 h-3.5" />}
                              {visibilityFilter === 'PUBLIC' && <Globe className="w-3.5 h-3.5" />}
                              {visibilityFilter === 'ALL' ? 'All Views' : 
                               visibilityFilter.charAt(0) + visibilityFilter.slice(1).toLowerCase()}
@@ -182,7 +182,7 @@ export default function PlaybooksPage() {
                              {[
                                  { id: 'ALL', label: 'All Views', icon: LayoutGrid },
                                  { id: 'CORE', label: 'Core Only', icon: Cpu },
-                                 { id: 'MEMBERS', label: 'Members', icon: Cpu },
+                                 { id: 'MEMBER', label: 'Members', icon: Cpu },
                                  { id: 'PUBLIC', label: 'Public', icon: Globe }
                              ].map((opt) => (
                                  <button
@@ -297,7 +297,7 @@ export default function PlaybooksPage() {
                                                      'bg-black/60 border-white/10 text-zinc-400'
                                                  }`}>
                                                      {doc.visibility === 'PUBLIC' && <Globe className="w-3 h-3" />}
-                                                     {doc.visibility === 'MEMBERS' && <Cpu className="w-3 h-3" />}
+                                                     {doc.visibility === 'MEMBER' && <Cpu className="w-3 h-3" />}
                                                      {doc.visibility === 'CORE' && <Cpu className="w-3 h-3" />}
                                                      <span>{doc.visibility}</span>
                                                  </div>
@@ -306,46 +306,69 @@ export default function PlaybooksPage() {
                                      )}
 
                                      {/* Text Content */}
-                                     <div className={`flex-1 flex flex-col ${viewMode === 'grid' ? 'p-7' : 'min-w-0'}`}>
-                                         <div className="flex items-center justify-between mb-2">
-                                            <h3 className={`font-bold text-white group-hover:text-purple-100 transition-all duration-300 truncate ${viewMode === 'list' ? 'text-xl' : 'text-2xl tracking-tight mb-3'}`}>
-                                                {doc.title}
-                                            </h3>
-                                            
-                                            {/* List View Badges (Move here from top) */}
-                                            {viewMode === 'list' && (
-                                                 <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-                                                     {doc.lockedBy && (
-                                                         <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-500">
-                                                             <Lock className="w-3 h-3" />
+                                     <div className={`flex-1 flex flex-col ${viewMode === 'grid' ? 'bg-zinc-900/50' : 'min-w-0'}`}>
+                                         {viewMode === 'grid' ? (
+                                             <>
+                                                <div className="p-4 flex items-start justify-between gap-4 mb-2">
+                                                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-zinc-200 transition-colors">
+                                                        {doc.title}
+                                                    </h3>
+                                                    <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white group-hover:bg-zinc-700 transition-all flex items-center gap-2">
+                                                        Open <ArrowRight className="w-3 h-3" />
+                                                    </div>
+                                                </div>
+
+                                                <div className="px-4 mb-3 flex-1">
+                                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed">
+                                                        {doc.description || "No description provided."}
+                                                    </p>
+                                                </div>
+                                                
+                                                <div className="px-4 pb-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-zinc-500 font-medium mt-auto">
+                                                     <span className="truncate max-w-[150px]">by <span className="text-zinc-400 capitalize">{doc.createdBy?.email.split('@')[0]}</span></span>
+                                                     <span className="flex items-center gap-1.5">
+                                                         {formatDistanceToNow(new Date(doc.updatedAt))} ago
+                                                     </span>
+                                                </div>
+                                             </>
+                                         ) : (
+                                             <>
+                                                 <div className="flex items-center justify-between mb-2">
+                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-purple-100 transition-all duration-300">
+                                                        {doc.title}
+                                                    </h3>
+                                                    
+                                                    <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                                                         {doc.lockedBy && (
+                                                             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-500">
+                                                                 <Lock className="w-3 h-3" />
+                                                             </div>
+                                                         )}
+                                                         <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
+                                                             doc.visibility === 'PUBLIC' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+                                                             doc.visibility === 'CORE' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' :
+                                                             'bg-zinc-800/50 border-white/5 text-zinc-500'
+                                                         }`}>
+                                                             {doc.visibility}
                                                          </div>
-                                                     )}
-                                                     <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
-                                                         doc.visibility === 'PUBLIC' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                                                         doc.visibility === 'CORE' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' :
-                                                         'bg-zinc-800/50 border-white/5 text-zinc-500'
-                                                     }`}>
-                                                         {doc.visibility}
                                                      </div>
                                                  </div>
-                                            )}
-                                         </div>
-                                         
-                                         <div className="flex-1">
-                                             <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4">
-                                                 {doc.description || "No description provided."}
-                                             </p>
-                                         </div>
-
-                                         <div className={`flex items-center ${viewMode === 'list' ? 'gap-4' : 'justify-between mt-auto pt-4 border-t border-white/5'}`}>
-                                             <div className="flex items-center gap-3 text-xs text-zinc-500 font-medium">
-                                                 <span className="truncate max-w-[150px] text-zinc-400">By {doc.createdBy?.email.split('@')[0]}</span>
-                                                 <span>•</span>
-                                                  <span className="flex items-center gap-1.5">
-                                                     {formatDistanceToNow(new Date(doc.updatedAt))} ago
-                                                 </span>
-                                             </div>
-                                         </div>
+                                                 
+                                                 <div className="flex-1">
+                                                     <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4">
+                                                         {doc.description || "No description provided."}
+                                                     </p>
+                                                 </div>
+        
+                                                 <div className="flex items-center gap-4 text-xs text-zinc-500 font-medium">
+                                                     <span className="truncate max-w-[150px] text-zinc-400">By {doc.createdBy?.email.split('@')[0]}</span>
+                                                     <span>•</span>
+                                                      <span className="flex items-center gap-1.5">
+                                                         {formatDistanceToNow(new Date(doc.updatedAt))} ago
+                                                     </span>
+                                                 </div>
+                                             </>
+                                         )}
                                      </div>
 
                                     {/* List View: Image Right */}

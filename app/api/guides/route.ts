@@ -9,6 +9,7 @@ const CreateGuideSchema = z.object({
   type: z.enum(["EVENT", "PROGRAM", "CONTENT"]),
   title: z.string().min(1, "Title is required"),
   coverImage: z.string().optional(),
+  visibility: z.enum(["CORE", "MEMBER", "PUBLIC"]).optional().default("CORE"),
   audience: z.array(z.string()).optional(),
   body: z.object({
     description: z.string().optional(),
@@ -30,15 +31,16 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type");
+    const visibility = searchParams.get("visibility");
 
-    const where = type ? { type: type.toUpperCase() } : {};
+    const where: any = { deletedAt: null };
+    if (type) where.type = type.toUpperCase();
+    if (visibility) where.visibility = visibility.toUpperCase();
 
     const guides = await prisma.guide.findMany({
-      where: {
-        ...where,
-        deletedAt: null
-      } as any,
-      orderBy: { createdAt: "desc" }
+      where,
+      orderBy: { createdAt: "desc" },
+      include: { createdBy: true }
     });
 
     return NextResponse.json(guides);
@@ -64,16 +66,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid Request", details: result.error.format() }, { status: 400 });
     }
 
-    const { type, title, video, coverImage, body: guideBody, formSchema, audience } = result.data as any;
+    const member = await prisma.member.findUnique({
+        where: { email: session.user.email }
+    });
+
+    const { type, title, video, coverImage, body: guideBody, formSchema, audience, visibility } = result.data as any;
 
     const guide = await prisma.guide.create({
       data: {
         type,
         title,
         coverImage,
+        visibility,
         audience: audience || [],
         body: guideBody as any, // Prisma Json type workaround
-        formSchema: formSchema as any
+        formSchema: formSchema as any,
+        createdById: member?.id
       } as any
     });
 

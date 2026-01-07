@@ -17,7 +17,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
     const [title, setTitle] = useState(initialData?.title || '');
     const [description, setDescription] = useState(initialData?.body?.description || '');
     const [coverImage, setCoverImage] = useState(initialData?.coverImage || '');
-    const [audience, setAudience] = useState<string[]>(initialData?.audience || []);
+    const [visibility, setVisibility] = useState<'CORE' | 'MEMBER' | 'PUBLIC'>(initialData?.visibility || 'CORE');
     
     // Dynamic Sections
     const [kpis, setKpis] = useState<{ label: string; value: string }[]>(initialData?.body?.kpis || []);
@@ -55,7 +55,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
             type,
             title,
             coverImage,
-            audience,
+            visibility,
             body,
             formSchema
         });
@@ -86,13 +86,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
         }
     };
 
-    const toggleAudience = (tag: string) => {
-        if (audience.includes(tag)) {
-            setAudience(audience.filter(t => t !== tag));
-        } else {
-            setAudience([...audience, tag]);
-        }
-    };
+
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 pb-20">
@@ -167,14 +161,14 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                     </div>
                 </div>
                 <div>
-                     <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Audience / Tags</label>
+                     <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Visibility</label>
                      <div className="flex gap-2">
-                         {['CORE', 'MEMBER', 'PUBLIC', 'PARTNER'].map(tag => (
+                         {['CORE', 'MEMBER', 'PUBLIC'].map(tag => (
                              <button
                                 key={tag}
-                                onClick={() => toggleAudience(tag)}
+                                onClick={() => setVisibility(tag as any)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors ${
-                                    audience.includes(tag) 
+                                    visibility === tag 
                                         ? 'bg-indigo-500 text-white border-indigo-500' 
                                         : 'bg-zinc-900 text-zinc-400 border-white/10 hover:bg-zinc-800'
                                 }`}
@@ -183,6 +177,11 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                              </button>
                          ))}
                      </div>
+                     <p className="text-[10px] text-zinc-500 mt-2 ml-1">
+                        {visibility === 'CORE' && "Visible only to core team members."}
+                        {visibility === 'MEMBER' && "Visible to all registered members."}
+                        {visibility === 'PUBLIC' && "Publicly accessible to everyone."}
+                     </p>
                 </div>
             </section>
 

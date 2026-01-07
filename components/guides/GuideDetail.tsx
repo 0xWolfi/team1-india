@@ -99,6 +99,24 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
         }
     };
 
+    const handleStatusUpdate = async (appId: string, newStatus: string) => {
+        try {
+            const res = await fetch(`/api/applications/${appId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (res.ok) {
+                setApplications(prev => prev.map(app => 
+                    app.id === appId ? { ...app, status: newStatus } : app
+                ));
+            }
+        } catch (error) {
+            console.error("Failed to update status", error);
+        }
+    };
+
     if (submitted) {
         return (
             <div className="max-w-2xl mx-auto text-center py-20">
@@ -132,6 +150,13 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                             <span className="px-3 py-1 bg-white/10 rounded-full text-xs font-bold uppercase tracking-wider text-white">
                                 {guide.type} Guide
                             </span>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
+                                (guide as any).visibility === 'PUBLIC' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+                                (guide as any).visibility === 'MEMBER' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' :
+                                'bg-zinc-800 border-zinc-700 text-zinc-400'
+                            }`}>
+                                {(guide as any).visibility || 'CORE'}
+                            </span>
                             {/* Tags/Audience */}
                              {(guide as any).audience?.map((tag: string) => (
                                 <span key={tag} className="px-3 py-1 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -147,7 +172,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                         <img 
                             src={guide.coverImage} 
                             alt={guide.title} 
-                            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                            className="w-full h-full object-cover transition-all duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-60" />
                     </div>
@@ -197,49 +222,57 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                         <table className="w-full text-left text-sm text-zinc-400">
                             <thead className="bg-white/5 font-bold text-white uppercase text-[10px] tracking-wider border-b border-white/5">
                                 <tr>
-                                    <th className="px-6 py-4">Applicant</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4">Submitted</th>
-                                    <th className="px-6 py-4">Details</th>
+                                    {/* Dynamic Columns from Form Schema */}
+                                    {formFields.map(field => (
+                                        <th key={field.key || field.id} className="px-6 py-4 whitespace-nowrap">
+                                            {field.label}
+                                        </th>
+                                    ))}
+                                    <th className="px-6 py-4 whitespace-nowrap">Submitted</th>
+                                    <th className="px-6 py-4 whitespace-nowrap">Status</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
                                 {applications.map((app) => (
                                     <tr key={app.id} className="group hover:bg-white/[0.02] transition-colors">
-                                        <td className="px-6 py-4 text-white font-medium group-hover:text-white transition-colors">
-                                            {app.applicantEmail}
+                                        {/* Dynamic Data Cells */}
+                                        {formFields.map(field => (
+                                            <td key={field.key || field.id} className="px-6 py-4 text-white">
+                                                <span className="line-clamp-2" title={(app.data?.[field.key] || app.data?.[field.label] || '').toString()}>
+                                                    {(app.data?.[field.key] || app.data?.[field.label] || '-').toString()}
+                                                </span>
+                                            </td>
+                                        ))}
+                                        
+                                        <td className="px-6 py-4 font-mono text-xs whitespace-nowrap">
+                                            {new Date(app.submittedAt).toLocaleDateString()}
                                         </td>
+                                        
                                         <td className="px-6 py-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                                app.status === 'APPROVED' ? 'bg-white text-black border border-white' :
-                                                app.status === 'REJECTED' ? 'bg-zinc-900 text-zinc-500 border border-zinc-800 line-through' :
-                                                'bg-zinc-800 text-zinc-300 border border-zinc-700'
-                                            }`}>
-                                                {app.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 font-mono text-xs">{new Date(app.submittedAt).toLocaleDateString()}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="max-w-md overflow-hidden text-xs bg-black/20 rounded p-2 border border-white/5 font-mono text-zinc-500">
-                                                {Object.entries(app.data || {}).map(([key, val]) => (
-                                                    <div key={key} className="flex gap-2">
-                                                        <span className="text-zinc-600 shrink-0">{key}:</span>
-                                                        <span className="text-zinc-300 truncate">{(val as any).toString()}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <select
+                                                value={app.status}
+                                                onChange={(e) => handleStatusUpdate(app.id, e.target.value)}
+                                                className={`pl-2 pr-1 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-transparent border cursor-pointer focus:outline-none focus:ring-1 focus:ring-white/20 ${
+                                                    app.status === 'APPROVED' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' :
+                                                    app.status === 'REJECTED' ? 'text-red-400 border-red-500/30 bg-red-500/10' :
+                                                    'text-amber-400 border-amber-500/30 bg-amber-500/10'
+                                                }`}
+                                            >
+                                                <option value="PENDING" className="bg-zinc-900 text-amber-400">Pending</option>
+                                                <option value="APPROVED" className="bg-zinc-900 text-emerald-400">Approved</option>
+                                                <option value="REJECTED" className="bg-zinc-900 text-red-400">Rejected</option>
+                                            </select>
                                         </td>
                                     </tr>
                                 ))}
                                 {applications.length === 0 && (
                                     <tr>
-                                        <td colSpan={4} className="px-6 py-20 text-center">
+                                        <td colSpan={formFields.length + 2} className="px-6 py-20 text-center">
                                             <div className="flex flex-col items-center justify-center">
                                                  <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
                                                     <FileText className="w-5 h-5 text-zinc-600" />
                                                  </div>
                                                  <p className="text-zinc-500 text-sm font-medium">No applications received yet.</p>
-                                                 <p className="text-zinc-600 text-xs mt-1">Applications submitted by users will appear here.</p>
                                             </div>
                                         </td>
                                     </tr>

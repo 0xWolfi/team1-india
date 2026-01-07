@@ -40,7 +40,7 @@ export async function POST(request: Request) {
                 ],
                 createdById: session.user.id,
                 status: 'draft',
-                visibility: 'CORE', 
+                visibility: validatedData.visibility || 'CORE', 
                 coverImage: validatedData.coverImage || null,
                 description: validatedData.description || "",
                 tags: []

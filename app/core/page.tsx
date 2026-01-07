@@ -6,7 +6,7 @@ import {
     BookOpen, Calendar, Layers, FileText, Briefcase, 
     Handshake, Users, Settings, Plus, Search,
      Beaker, History, Film, Megaphone, Zap as ZapIcon,
-    LogOut, User as UserIcon, Lock, LayoutDashboard
+    LogOut, User as UserIcon, Lock, LayoutDashboard, BarChart3, ClipboardList
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,21 +22,12 @@ interface ResourceItem {
     image?: string;
 }
 
-// Quick Link Button Component
-function QuickLinkButton({ label, onClick }: { label: string, onClick?: () => void }) {
-    return (
-        <button onClick={onClick} className="w-full text-left px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-sm text-zinc-300 hover:text-white transition-all flex items-center justify-between group">
-            {label}
-            <Plus className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </button>
-    )
-}
-
 // World Clock Component
 function WorldClock() {
-    const [time, setTime] = useState(new Date());
+    const [time, setTime] = useState<Date | null>(null);
 
     React.useEffect(() => {
+        setTime(new Date());
         const timer = setInterval(() => setTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
@@ -47,6 +38,8 @@ function WorldClock() {
         { label: 'IST', zone: 'Asia/Kolkata' },
         { label: 'TYO', zone: 'Asia/Tokyo' },
     ];
+
+    if (!time) return null; // Or return a skeleton
 
     return (
         <div className="flex items-center gap-3">
@@ -197,6 +190,7 @@ export default function CorePage() {
             image: "/images/dashboard/data.png",
             items: [] 
         },
+
     ];
 
     return (
@@ -246,30 +240,42 @@ export default function CorePage() {
              <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                  <ZapIcon className="w-4 h-4" /> Quick Actions
              </h2>
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-indigo-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => {}}>
-                     <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400 group-hover:text-indigo-300 transition-colors">
-                        <Calendar className="w-5 h-5" />
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-pink-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
+                     <div className="p-2 bg-pink-500/20 rounded-lg text-pink-400 group-hover:text-pink-300 transition-colors">
+                        <ClipboardList className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">New Event</span>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Applications</span>
                  </button>
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-emerald-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-indigo-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
+                     <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400 group-hover:text-indigo-300 transition-colors">
+                        <Megaphone className="w-5 h-5" />
+                     </div>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Announcements</span>
+                 </button>
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-emerald-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
                      <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 group-hover:text-emerald-300 transition-colors">
                         <Users className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Add Member</span>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Attendance</span>
                  </button>
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => {}}>
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
                      <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400 group-hover:text-purple-300 transition-colors">
                         <FileText className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">New Guide</span>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Meeting Notes</span>
                  </button>
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-orange-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => {}}>
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-orange-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
                      <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400 group-hover:text-orange-300 transition-colors">
-                        <LayoutDashboard className="w-5 h-5" />
+                        <Settings className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Manage Widgets</span>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Add Admin</span>
+                 </button>
+                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-sky-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
+                     <div className="p-2 bg-sky-500/20 rounded-lg text-sky-400 group-hover:text-sky-300 transition-colors">
+                        <BarChart3 className="w-5 h-5" />
+                     </div>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">New Poll</span>
                  </button>
              </div>
         </div>
@@ -287,7 +293,6 @@ export default function CorePage() {
                 );
             })}
         </div>
-
     </div>
   );
 }
