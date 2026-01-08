@@ -13,10 +13,10 @@ export function GetInvolved() {
             Join a community of builders, innovators, and change-makers. Whether you are a student, professional, or partner, there is a place for you.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/public" className="px-8 py-4 bg-white text-black text-lg font-bold rounded-full hover:bg-zinc-200 transition-colors w-full sm:w-auto shadow-lg shadow-white/10">
+                <Link href="/public" className="px-8 py-4 bg-white text-black text-lg font-bold rounded-xl hover:bg-zinc-200 transition-colors w-full sm:w-auto shadow-lg shadow-white/10">
                     Guidebook
                 </Link>
-                <Link href="#contact" className="px-8 py-4 bg-transparent border border-white/20 text-white text-lg font-bold rounded-full hover:bg-white/10 transition-colors w-full sm:w-auto">
+                <Link href="#contact" className="px-8 py-4 bg-transparent border border-white/20 text-white text-lg font-bold rounded-xl hover:bg-white/10 transition-colors w-full sm:w-auto">
                     Contact Us
                 </Link>
             </div>

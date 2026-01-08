@@ -139,12 +139,12 @@ export const HeroActions = ({ translate }: { translate: MotionValue<number> }) =
       className="flex flex-col md:flex-row items-center justify-center gap-6 -mt-9 w-full"
     >
         <div className="flex items-center gap-4">
-            <Link href="/public" className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+            <Link href="/public" className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)]">
                 Guidebook
             </Link>
             <button 
                 onClick={() => signIn('google', { callbackUrl: '/access-check' })}
-                className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
                 Members
             </button>

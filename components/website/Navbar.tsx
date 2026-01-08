@@ -17,7 +17,7 @@ export function Navbar() {
         <Link href="/access-check" className="text-sm text-zinc-400 hover:text-white transition-colors">
           Log in
         </Link>
-        <Link href="/public" className="rounded-full bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors">
+        <Link href="/public" className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors">
           Guidebook
         </Link>
       </div>
