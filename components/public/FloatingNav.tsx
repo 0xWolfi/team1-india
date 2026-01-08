@@ -47,60 +47,62 @@ export function FloatingNav() {
     };
 
     return (
-        <div className={cn(
-            "fixed top-6 left-1/2 -translate-x-1/2 z-50 w-fit max-w-[95vw] transition-all duration-300 ease-out",
-            isScrolled ? "scale-90 translate-y-[-10px]" : "scale-100"
-        )}>
-            <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] supports-[backdrop-filter]:bg-black/20">
-                
-                {/* Logo / Home */}
-                <button 
-                    onClick={scrollToTop}
-                    className="flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-lg transition-all group"
-                >
-                    <div className="relative w-5 h-5 flex items-center justify-center">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-full blur-md opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <img src="/t1-logo.png" alt="T1" className="w-3.5 h-3.5 object-contain relative z-10" />
-                    </div>
-                    <span className="font-bold text-sm text-zinc-300 group-hover:text-white hidden md:block tracking-tight transition-colors">Team1</span>
-                </button>
-
-                {/* Divider */}
-                <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
-
-                {/* Center Nav */}
-                <nav className="flex items-center gap-0.5">
-                    {navItems.map((item) => {
-                        const isActive = activeSection === item.href.substring(1);
-                        return (
-                            <Link
-                                key={item.label}
-                                href={item.href}
-                                className={cn(
-                                    "px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all duration-300 relative",
-                                    isActive 
-                                        ? "text-white" 
-                                        : "text-zinc-500 hover:text-zinc-300"
-                                )}
-                            >
-                                {item.label}
-                            </Link>
-                        );
-                    })}
-                </nav>
-
-                {/* Divider */}
-                <div className="w-px h-6 bg-white/10 mx-1 mobile-hide" />
-
-                {/* Right Actions */}
-                <div className="flex items-center gap-2 pl-1">
-                    <button 
-                        onClick={() => setShowLoginModal(true)}
-                        className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                        title="Member Access"
+        <>
+            <div className={cn(
+                "fixed top-6 left-1/2 -translate-x-1/2 z-50 w-fit max-w-[95vw] transition-all duration-300 ease-out",
+                isScrolled ? "scale-90 translate-y-[-10px]" : "scale-100"
+            )}>
+                <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] supports-[backdrop-filter]:bg-black/20">
+                    
+                    {/* Logo / Home */}
+                    <Link 
+                        href="/"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all group"
                     >
-                        <User className="w-5 h-5" />
-                    </button>
+                        <div className="relative w-5 h-5 flex items-center justify-center">
+                            <div className="absolute inset-0 bg-white rounded-full blur-md opacity-40 group-hover:opacity-100 transition-opacity" />
+                            <img src="/t1-logo.png" alt="T1" className="w-3.5 h-3.5 object-contain relative z-10" />
+                        </div>
+                        <span className="font-bold text-sm text-zinc-300 group-hover:text-white hidden md:block tracking-tight transition-colors">Team1</span>
+                    </Link>
+
+                    {/* Divider */}
+                    <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
+
+                    {/* Center Nav */}
+                    <nav className="flex items-center gap-0.5">
+                        {navItems.map((item) => {
+                            const isActive = activeSection === item.href.substring(1);
+                            return (
+                                <Link
+                                    key={item.label}
+                                    href={item.href}
+                                    className={cn(
+                                        "px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all duration-300 relative",
+                                        isActive 
+                                            ? "text-white" 
+                                            : "text-zinc-500 hover:text-zinc-300"
+                                    )}
+                                >
+                                    {item.label}
+                                </Link>
+                            );
+                        })}
+                    </nav>
+
+                    {/* Divider */}
+                    <div className="w-px h-6 bg-white/10 mx-1 mobile-hide" />
+
+                    {/* Right Actions */}
+                    <div className="flex items-center gap-2 pl-1">
+                        <button 
+                            onClick={() => setShowLoginModal(true)}
+                            className="p-2 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                            title="Member Access"
+                        >
+                            <User className="w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -143,6 +145,6 @@ export function FloatingNav() {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }

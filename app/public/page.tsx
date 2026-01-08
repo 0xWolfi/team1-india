@@ -90,7 +90,8 @@ export default async function PublicPage() {
             <FloatingNav />
             
             <div className="pt-24 px-4 md:px-8 max-w-7xl mx-auto space-y-8">
-                <div className="min-h-[85vh] flex flex-col justify-center">
+                {/* Added pb-32 to push hero up slightly when centered */}
+                <div className="min-h-[85vh] flex flex-col justify-center pb-32">
                     <PublicHero />
                     <div className="relative z-10 -mt-32">
                          <Announcements />
@@ -127,7 +128,9 @@ export default async function PublicPage() {
                             </div>
                         </Link>
                     )) : (
-                        <p className="text-zinc-500 text-sm italic">Announcing Soon</p>
+                        <div className="w-full py-16 rounded-3xl bg-zinc-900/20 border border-white/5 flex items-center justify-center">
+                            <p className="text-zinc-500 font-medium tracking-widest uppercase text-sm">Announcing Soon</p>
+                        </div>
                     )}
                 </SectionCarousel>
 
@@ -159,7 +162,9 @@ export default async function PublicPage() {
                             </div>
                         </Link>
                     )) : (
-                        <p className="text-zinc-500 text-sm italic">Announcing Soon</p>
+                        <div className="w-full py-16 rounded-3xl bg-zinc-900/20 border border-white/5 flex items-center justify-center">
+                            <p className="text-zinc-500 font-medium tracking-widest uppercase text-sm">Announcing Soon</p>
+                        </div>
                     )}
                 </SectionCarousel>
 
@@ -190,7 +195,9 @@ export default async function PublicPage() {
                             </div>
                         </Link>
                     )) : (
-                        <p className="text-zinc-500 text-sm italic">Announcing Soon</p>
+                        <div className="w-full py-16 rounded-3xl bg-zinc-900/20 border border-white/5 flex items-center justify-center">
+                            <p className="text-zinc-500 font-medium tracking-widest uppercase text-sm">Announcing Soon</p>
+                        </div>
                     )}
                 </SectionCarousel>
 
@@ -227,7 +234,9 @@ export default async function PublicPage() {
                             </div>
                          </Link>
                     )) : (
-                        <p className="text-zinc-500 text-sm italic">Announcing Soon</p>
+                        <div className="w-full py-16 rounded-3xl bg-zinc-900/20 border border-white/5 flex items-center justify-center">
+                            <p className="text-zinc-500 font-medium tracking-widest uppercase text-sm">Announcing Soon</p>
+                        </div>
                     )}
                 </SectionCarousel>
 
