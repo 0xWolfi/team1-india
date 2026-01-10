@@ -16,7 +16,7 @@ export async function POST(request: Request) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        // Create unique filename hot fix update
+        // Create unique filename hot fix update2
         const filename = `${uuidv4()}${path.extname(file.name)}`;
         const uploadDir = path.join(process.cwd(), "public", "uploads");
         const filepath = path.join(uploadDir, filename);
