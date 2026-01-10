@@ -1,96 +1,20 @@
-'use client';
-
-import React, { useState } from 'react';
-import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { usePermission } from "@/hooks/usePermission";
-
-interface FormField {
-    id: string;
-    key: string;
-    label: string;
-    type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'email' | 'url' | 'tel';
-    required: boolean;
-    placeholder?: string;
-    options?: string[];
-}
-
-interface GuideDetailProps {
-    guide: {
-        id: string;
-        title: string;
-        type: string;
-        coverImage?: string;
-        body: {
-            description: string;
-            kpis?: { label: string; value: string; color?: string }[];
-            timeline?: { step: string; duration: string }[];
-            rules?: string[];
-        };
-        formSchema?: any; // Can be Record<string,string> (legacy) or FormField[] (new)
-    };
-}
+import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
 export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
     const router = useRouter();
     const canEdit = usePermission('events', 'WRITE');
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    // isAdmin removed, using canEdit
     const [applications, setApplications] = useState<any[]>([]);
     const [view, setView] = useState<'DETAILS' | 'APPLICATIONS'>('DETAILS');
     const [submitted, setSubmitted] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // Normalize form schema to array
-    const formFields: FormField[] = React.useMemo(() => {
-        if (!guide.formSchema) return [];
-        if (Array.isArray(guide.formSchema)) return guide.formSchema;
-        // Legacy support
-        return Object.entries(guide.formSchema).map(([key, label]) => ({
-            id: key,
-            key,
-            label: label as string,
-            type: 'text',
-            required: true
-        }));
-    }, [guide.formSchema]);
+    // ... (keep normalizedSchema and handleSubmit) ...
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            const res = await fetch('/api/applications', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    guideId: guide.id,
-                    data: formData
-                })
-            });
-
-            if (res.ok) {
-                setSubmitted(true);
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    React.useEffect(() => {
-        if (canEdit) {
-            fetch(`/api/guides/${guide.id}/applications`)
-                .then(res => res.json())
-                .then(data => {
-                    if (Array.isArray(data)) setApplications(data);
-                })
-                .catch(err => console.error("Failed to load applications", err));
-        }
-    }, [guide.id, canEdit]);
+    // ... (keep useEffect) ...
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to delete this guide?')) return;
         try {
             const res = await fetch(`/api/guides/${guide.id}`, { method: 'DELETE' });
             if (res.ok) {
@@ -101,86 +25,25 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
         }
     };
 
-    const handleStatusUpdate = async (appId: string, newStatus: string) => {
-        try {
-            const res = await fetch(`/api/applications/${appId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
-            });
+    // ... (keep handleStatusUpdate) ...
 
-            if (res.ok) {
-                setApplications(prev => prev.map(app => 
-                    app.id === appId ? { ...app, status: newStatus } : app
-                ));
-            }
-        } catch (error) {
-            console.error("Failed to update status", error);
-        }
-    };
-
-    if (submitted) {
-        return (
-            <div className="max-w-2xl mx-auto text-center py-20">
-                <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-500" />
-                </div>
-                <h2 className="text-2xl font-bold text-white mb-2">Application Submitted!</h2>
-                <p className="text-zinc-400 mb-8">We have received your request and will review it shortly within the specified timeline.</p>
-                <button 
-                    onClick={() => router.back()}
-                    className="text-sm font-semibold text-white bg-zinc-800 px-6 py-2.5 rounded-xl hover:bg-zinc-700 transition-colors"
-                >
-                    Back to Guides
-                </button>
-            </div>
-        );
-    }
+    // ... (render logic) ...
 
     return (
         <div className="max-w-6xl mx-auto">
+            <ConfirmationModal 
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDelete}
+                title="Delete Guide"
+                message="Are you sure you want to delete this guide? This action cannot be undone."
+                confirmText="Delete Guide"
+                isDestructive={true}
+            />
+
             {/* Header */}
-            <div className="mb-8">
-                <button onClick={() => router.back()} className="text-zinc-500 hover:text-white flex items-center gap-2 text-sm font-medium mb-6 transition-colors">
-                    <ArrowLeft className="w-4 h-4" /> Back to Guides
-                </button>
-                
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h1 className="text-4xl font-bold text-white mb-4">{guide.title}</h1>
-                        <div className="flex items-center gap-3">
-                            <span className="px-3 py-1 bg-white/10 rounded-full text-xs font-bold uppercase tracking-wider text-white">
-                                {guide.type} Guide
-                            </span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
-                                (guide as any).visibility === 'PUBLIC' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                                (guide as any).visibility === 'MEMBER' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' :
-                                'bg-zinc-800 border-zinc-700 text-zinc-400'
-                            }`}>
-                                {(guide as any).visibility || 'CORE'}
-                            </span>
-                            {/* Tags/Audience */}
-                             {(guide as any).audience?.map((tag: string) => (
-                                <span key={tag} className="px-3 py-1 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-full text-xs font-bold uppercase tracking-wider">
-                                    {tag}
-                                </span>
-                             ))}
-                        </div>
-                    </div>
-                </div>
-                
-                {guide.coverImage && (
-                    <div className="relative w-full h-[300px] mt-8 rounded-2xl overflow-hidden border border-white/5">
-                        <img 
-                            src={guide.coverImage} 
-                            alt={guide.title} 
-                            className="w-full h-full object-cover transition-all duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-60" />
-                    </div>
-                )}
-            </div>
-            
+            {/* ... (keep header content) ... */}
+
             <div className="flex justify-end mb-8">
                 {canEdit && (
                         <div className="flex gap-2">
@@ -191,7 +54,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                                 Edit Guide
                              </button>
                              <button 
-                                onClick={handleDelete}
+                                onClick={() => setShowDeleteModal(true)}
                                 className="px-4 py-2 bg-zinc-900 border border-white/10 rounded-lg text-sm font-bold text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300 transition-colors"
                              >
                                 Delete
@@ -199,6 +62,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                         </div>
                     )}
             </div>
+            {/* ... (rest of the component) ... */}
 
             {/* Admin Tabs */}
             {canEdit && (
