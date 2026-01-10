@@ -42,9 +42,53 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
     const [submitted, setSubmitted] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-    // ... (keep normalizedSchema and handleSubmit) ...
+    // Normalize form schema to array
+    const formFields: FormField[] = React.useMemo(() => {
+        if (!guide.formSchema) return [];
+        if (Array.isArray(guide.formSchema)) return guide.formSchema;
+        // Legacy support
+        return Object.entries(guide.formSchema).map(([key, label]) => ({
+            id: key,
+            key,
+            label: label as string,
+            type: 'text',
+            required: true
+        }));
+    }, [guide.formSchema]);
 
-    // ... (keep useEffect) ...
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const res = await fetch('/api/applications', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    guideId: guide.id,
+                    data: formData
+                })
+            });
+
+            if (res.ok) {
+                setSubmitted(true);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    React.useEffect(() => {
+        if (canEdit) {
+            fetch(`/api/guides/${guide.id}/applications`)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) setApplications(data);
+                })
+                .catch(err => console.error("Failed to load applications", err));
+        }
+    }, [guide.id, canEdit]);
 
     const handleDelete = async () => {
         try {
@@ -57,7 +101,23 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
         }
     };
 
-    // ... (keep handleStatusUpdate) ...
+    const handleStatusUpdate = async (appId: string, newStatus: string) => {
+        try {
+            const res = await fetch(`/api/applications/${appId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (res.ok) {
+                setApplications(prev => prev.map(app => 
+                    app.id === appId ? { ...app, status: newStatus } : app
+                ));
+            }
+        } catch (error) {
+            console.error("Failed to update status", error);
+        }
+    };
 
     // ... (render logic) ...
 
