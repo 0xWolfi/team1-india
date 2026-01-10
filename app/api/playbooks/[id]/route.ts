@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
-        console.log(`[API] GET /api/playbooks/${id}`);
+
         const playbook = await prisma.playbook.findUnique({
             where: { id },
             include: {
@@ -31,7 +31,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session = await getServerSession(authOptions);
     const { id } = await params;
-    console.log(`[API] PUT /api/playbooks/${id} - Initiated by ${session?.user?.email}`);
+
 
     if (!session || !session.user?.email) {
         console.warn(`[API] PUT /api/playbooks/${id} - Unauthorized`);
@@ -39,10 +39,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     const body = await request.json();
-    console.log(`[API] PUT /api/playbooks/${id} - Request Body:`, JSON.stringify({ 
-        ...body, 
-        body: body.body ? '(content hidden)' : undefined 
-    }));
+
+
     
     // Permission Check
     // @ts-ignore
@@ -71,7 +69,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     try {
-        console.log(`[API] PUT /api/playbooks/${id} - Executing Update...`);
+
         // Update Playbook
         const updated = await prisma.playbook.update({
             where: { id },
@@ -111,7 +109,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session = await getServerSession(authOptions);
     const { id } = await params;
-    console.log(`[API] DELETE /api/playbooks/${id} - Initiated by ${session?.user?.email}`);
+
 
     if (!session || !session.user?.email) {
         console.warn(`[API] DELETE /api/playbooks/${id} - Unauthorized`);
@@ -145,7 +143,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
             where: { id }
         });
         
-        console.log(`[API] DELETE /api/playbooks/${id} - Success`);
+
 
         const { logAudit } = await import('@/lib/audit');
         await logAudit({

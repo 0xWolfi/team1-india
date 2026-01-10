@@ -38,8 +38,8 @@ export const authOptions: NextAuthOptions = {
              return true;
         }
         
-        console.error(`LOGIN DENIED: User ${user.email} not found in DB.`);
-        return "/public?error=not_member"; 
+        console.log(`Guest Login: User ${user.email} allowed.`);
+        return true; 
       } catch (error) {
         console.error("SignIn Error:", error);
         return "/public?error=server_error"; 
@@ -79,6 +79,13 @@ export const authOptions: NextAuthOptions = {
                 token.tags = communityMember.tags ? [communityMember.tags] : [];
                 return token;
             }
+
+            // 3. Guest User
+            token.id = user.id;
+            token.role = 'GUEST';
+            token.permissions = {};
+            token.tags = [];
+            return token;
 
         } catch (e) {
             console.error(e);

@@ -39,8 +39,7 @@ export async function GET(req: Request) {
         const applications = await prisma.application.findMany({
             orderBy: { submittedAt: 'desc' },
             include: {
-                guide: { select: { title: true, type: true } },
-                program: { select: { title: true } }
+                guide: { select: { title: true, type: true } }
             }
         });
         return NextResponse.json(applications);

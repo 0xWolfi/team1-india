@@ -6,34 +6,10 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText, Globe } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Footer } from "@/components/website/Footer";
+import { ApplicationForm } from "@/components/public/ApplicationForm";
 
-// Interface definitions
-interface FormField {
-    id: string;
-    key: string;
-    label: string;
-    type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'email' | 'url' | 'tel';
-    required: boolean;
-    placeholder?: string;
-    options?: string[];
-}
 
-interface Guide {
-    id: string;
-    title: string;
-    type: string;
-    coverImage?: string;
-    createdAt: string;
-    updatedAt: string;
-    body: {
-        description: string;
-        kpis?: { label: string; value: string; color?: string }[];
-        timeline?: { step: string; duration: string }[];
-        rules?: string[];
-    };
-    formSchema?: any;
-    createdBy?: { email: string; name?: string };
-}
+import { Guide, FormField } from "@/types/public";
 
 export default function PublicGuidePage() {
     const { id } = useParams();
@@ -42,31 +18,6 @@ export default function PublicGuidePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
     
-    // Form State
-    const [formData, setFormData] = useState<Record<string, any>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
-
-    useEffect(() => {
-        if (!id) return;
-        fetch(`/api/public/guides/${id}`)
-            .then(async res => {
-                if (res.ok) {
-                    const data = await res.json();
-                    setGuide(data);
-                } else if (res.status === 404) {
-                    setError("Guide not found.");
-                } else {
-                    setError("Failed to load guide.");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                setError("Network error occurred.");
-            })
-            .finally(() => setIsLoading(false));
-    }, [id]);
-
     // Normalize form schema
     const formFields: FormField[] = useMemo(() => {
         if (!guide?.formSchema) return [];
@@ -80,35 +31,6 @@ export default function PublicGuidePage() {
             required: true
         }));
     }, [guide]);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!guide) return;
-        
-        setIsSubmitting(true);
-        try {
-            const res = await fetch('/api/applications', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    guideId: guide.id,
-                    data: formData,
-                    // Optional: email: "user-input-email" if we added a field for it
-                })
-            });
-
-            if (res.ok) {
-                setSubmitted(true);
-            } else {
-                alert("Failed to submit application. Please try again.");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Network error.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
 
     if (isLoading) return (
         <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -141,23 +63,7 @@ export default function PublicGuidePage() {
             </div>
 
             <div className="max-w-6xl mx-auto px-6 py-8 pb-20">
-                {/* Submitted State */}
-                {submitted ? (
-                     <div className="max-w-2xl mx-auto text-center py-20 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <CheckCircle2 className="w-8 h-8 text-emerald-500" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Application Submitted!</h2>
-                        <p className="text-zinc-400 mb-8 max-w-md mx-auto">We have received your request and will review it shortly within the specified timeline.</p>
-                        <button 
-                            onClick={() => router.push('/public')}
-                            className="text-sm font-bold text-white bg-zinc-800 px-6 py-3 rounded-full hover:bg-zinc-700 transition-colors"
-                        >
-                            Explore More Resources
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                         {/* Main Content */}
                         <div className="lg:col-span-2 space-y-12">
                             
@@ -256,77 +162,12 @@ export default function PublicGuidePage() {
 
                         {/* Sidebar Application Form */}
                         <div className="lg:col-span-1">
-                            <div className="sticky top-8 bg-zinc-900 border border-white/10 rounded-2xl p-6 shadow-2xl shadow-black/50">
-                                <h3 className="text-xl font-bold text-white mb-2">Apply Now</h3>
-                                <p className="text-sm text-zinc-500 mb-6 leading-relaxed">Ready to get started? Submit your details below to initiate this guide process.</p>
-                                
-                                <form onSubmit={handleSubmit} className="space-y-5">
-                                    {formFields.length > 0 ? (
-                                        formFields.map((field, idx) => (
-                                            <div key={field.key || field.id || idx}>
-                                                <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">
-                                                    {field.label} {field.required && <span className="text-indigo-400">*</span>}
-                                                </label>
-                                                
-                                                {/* Render input based on type */}
-                                                {field.type === 'textarea' ? (
-                                                    <textarea 
-                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-zinc-700 min-h-[120px] resize-none"
-                                                        placeholder={field.placeholder || `Enter details...`}
-                                                        required={field.required}
-                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                    />
-                                                ) : field.type === 'select' ? (
-                                                    <select
-                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
-                                                        required={field.required}
-                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                        defaultValue=""
-                                                    >
-                                                        <option value="" disabled>Select an option</option>
-                                                        {field.options?.map(opt => (
-                                                            <option key={opt} value={opt}>{opt}</option>
-                                                        ))}
-                                                    </select>
-                                                ) : field.type === 'checkbox' ? (
-                                                    <label className="flex items-center gap-3 p-4 bg-black/20 rounded-lg border border-white/5 cursor-pointer hover:bg-black/30 transition-colors">
-                                                        <input 
-                                                            type="checkbox"
-                                                            className="w-5 h-5 rounded bg-black border-white/20 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0"
-                                                            required={field.required}
-                                                            onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.checked }))}
-                                                        />
-                                                        <span className="text-sm text-zinc-300 font-medium">{field.placeholder || "Yes, I agree"}</span>
-                                                    </label>
-                                                ) : (
-                                                    <input 
-                                                        type={field.type}
-                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-zinc-700"
-                                                        placeholder={field.placeholder || `Enter ${field.label}...`}
-                                                        required={field.required}
-                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                    />
-                                                )}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className="text-center py-8 bg-white/5 rounded-xl border border-dashed border-white/10 text-sm text-zinc-500">
-                                            No application form required.
-                                        </div>
-                                    )}
-    
-                                    <button 
-                                        type="submit" 
-                                        disabled={isSubmitting || formFields.length === 0}
-                                        className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-white/5 mt-6"
-                                    >
-                                        {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                                    </button>
-                                </form>
+                            <div className="sticky top-8">
+                                <ApplicationForm programId={guide.id} formSchema={formFields} />
                             </div>
                         </div>
                     </div>
-                )}
+
             </div>
             <Footer />
         </div>

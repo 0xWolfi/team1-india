@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
         where: { email: session.user.email }
     });
 
-    const { type, title, video, coverImage, body: guideBody, formSchema, audience, visibility } = result.data as any;
+    const { type, title, coverImage, body: guideBody, formSchema, audience, visibility, maxSubmissionsPublic, maxSubmissionsMember } = result.data as any;
 
     const guide = await prisma.guide.create({
       data: {
@@ -94,6 +94,8 @@ export async function POST(req: NextRequest) {
         audience: audience || [],
         body: guideBody as any, // Prisma Json type workaround
         formSchema: formSchema as any,
+        maxSubmissionsPublic,
+        maxSubmissionsMember,
         createdById: member?.id
       } as any
     });

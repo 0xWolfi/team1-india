@@ -32,8 +32,6 @@ model Member {
   logs               Log[]
 
   auditLogs          AuditLog[]
-  events             Event[]
-  programs           Program[]
   contentResources   ContentResource[]
   createdProjects    Project[]
   createdPartners    Partner[]
@@ -172,6 +170,8 @@ model Guide {
   audience   String[] @default([])
   formSchema Json?
   visibility Visibility @default(CORE)
+  maxSubmissionsPublic Int? @default(1)
+  maxSubmissionsMember Int? @default(10)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
   deletedAt  DateTime?
@@ -196,12 +196,8 @@ model Application {
   guide          Guide?   @relation(fields: [guideId], references: [id])
   guideId        String?
 
-  program        Program? @relation(fields: [programId], references: [id])
-  programId      String?
-
   @@index([status])
   @@index([guideId])
-  @@index([programId])
 }
 
 model Experiment {
@@ -272,48 +268,7 @@ model AuditLog {
   @@index([action])
 }
 
-model Event {
-  id           String    @id @default(uuid())
-  title        String
-  date         DateTime?
-  location     String?
-  status       String    @default("planned") // planned, active, completed, cancelled
-  customFields Json?     @default("{}")
-  description  String?
-  visibility   Visibility @default(CORE)
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @default(now()) @updatedAt
-  deletedAt    DateTime?
-  
-  createdBy    Member?   @relation(fields: [createdById], references: [id])
-  createdById  String?
-
-  @@index([status])
-  @@index([date])
-  @@index([visibility])
-}
-
-model Program {
-  id           String    @id @default(uuid())
-  title        String
-  lead         String?
-  status       String    @default("active")
-  customFields Json?     @default("{}")
-  description  String?
-  visibility   Visibility @default(CORE)
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @default(now()) @updatedAt
-  deletedAt    DateTime?
-  
-  createdBy    Member?   @relation(fields: [createdById], references: [id])
-  createdById  String?
-  applications Application[]
-
-  @@index([status])
-  @@index([visibility])
-}
+// Deleted models: Program, Event
 
 model ContentResource {
   id           String    @id @default(uuid())
@@ -443,4 +398,6 @@ model AttendanceRecord {
   note             String?
   createdAt        DateTime @default(now())
   deletedAt        DateTime?
+
 }
+

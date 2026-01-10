@@ -5,7 +5,9 @@ import { ArrowLeft, Users, Calendar, Clock, Globe } from "lucide-react";
 import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 
-async function getProgram(id: string) {
+import { Program, GuideBody } from "@/types/public";
+
+async function getProgram(id: string): Promise<Program | null> {
   const guide = await prisma.guide.findUnique({
     where: { id },
     select: {
@@ -14,18 +16,29 @@ async function getProgram(id: string) {
       body: true,
       coverImage: true,
       createdAt: true,
-      type: true 
+      updatedAt: true,
+      type: true,
+      visibility: true,
+      formSchema: true
     }
   });
 
   if (!guide || guide.type !== 'PROGRAM') return null;
 
+  const body = guide.body as unknown as GuideBody;
+
   return {
       id: guide.id,
-      title: guide.title,
-      description: (guide.body as any)?.description || "",
+      title: guide.title || "Untitled Program",
+      type: "PROGRAM",
+      description: body.description || "",
       coverImage: guide.coverImage,
-      createdAt: guide.createdAt
+      createdAt: guide.createdAt,
+      updatedAt: guide.updatedAt,
+      visibility: guide.visibility as "PUBLIC" | "MEMBER" | "CORE",
+      status: "active",
+      formSchema: guide.formSchema,
+      body: body
   };
 }
 
@@ -102,7 +115,7 @@ export default async function ProgramDetailPage({ params }: Props) {
             {/* Right: Application Form */}
             <div className="lg:col-span-1">
                 <div className="sticky top-24">
-                   <ApplicationForm programId={program.id} />
+                   <ApplicationForm programId={program.id} formSchema={program.formSchema as any[]} />
                 </div>
             </div>
 

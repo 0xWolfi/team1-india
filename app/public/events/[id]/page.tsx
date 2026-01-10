@@ -3,9 +3,12 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { ArrowLeft, MapPin, Calendar, Clock, Share2, ExternalLink } from "lucide-react";
+import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";
 
-async function getEvent(id: string) {
+import { Event, GuideBody } from "@/types/public";
+
+async function getEvent(id: string): Promise<Event | null> {
   const guide = await prisma.guide.findUnique({
     where: { id },
     select: {
@@ -14,21 +17,30 @@ async function getEvent(id: string) {
       body: true,
       coverImage: true,
       createdAt: true,
+      updatedAt: true,
       type: true,
       visibility: true,
-      createdBy: { select: { name: true, email: true } }
+      createdBy: { select: { name: true, email: true } },
+      formSchema: true
     }
   });
 
   if (!guide || guide.type !== 'EVENT') return null;
+  
+  const body = guide.body as unknown as GuideBody;
 
   return {
     ...guide,
-    description: (guide.body as any)?.description || "",
-    date: (guide.body as any)?.date || guide.createdAt,
-    location: (guide.body as any)?.location || "",
+    title: guide.title || "Untitled Event",
+    type: "EVENT", // override string | null from prisma
+    visibility: guide.visibility as "PUBLIC" | "MEMBER" | "CORE",
+    description: body.description || "",
+    date: body.date || guide.createdAt,
+    location: body.location || "",
+    status: 'planned', // Default for event
+    formSchema: guide.formSchema,
+    body: body
     // coverImage is already at top level
-  };
   };
 }
 
@@ -51,7 +63,7 @@ export default async function PublicEventDetailPage({ params }: Props) {
        {/* Hero Image / Header */}
        <div className="relative h-[50vh] w-full bg-zinc-900">
            {coverImage ? (
-               <img src={coverImage} alt={event.title} className="w-full h-full object-cover opacity-60" />
+               <img src={coverImage as string} alt={event.title || "Event"} className="w-full h-full object-cover opacity-60" />
            ) : (
                 <div className="w-full h-full flex items-center justify-center bg-zinc-900 pattern-grid-lg">
                     <Calendar className="w-20 h-20 text-zinc-800" />
@@ -65,24 +77,8 @@ export default async function PublicEventDetailPage({ params }: Props) {
                </Link>
                <h1 className="text-4xl md:text-6xl font-bold mb-4 max-w-4xl leading-tight">{event.title}</h1>
                <div className="flex flex-wrap items-center gap-6 text-zinc-300 font-medium">
-                   {event.date && (
-                       <div className="flex items-center gap-2">
-                           <Calendar className="w-5 h-5 text-indigo-400" />
-                           {new Date(event.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                       </div>
-                   )}
-                   {event.date && (
-                       <div className="flex items-center gap-2">
-                            <Clock className="w-5 h-5 text-indigo-400" />
-                           {new Date(event.date).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-                       </div>
-                   )}
-                   {event.location && (
-                       <div className="flex items-center gap-2">
-                           <MapPin className="w-5 h-5 text-emerald-400" />
-                           {event.location}
-                       </div>
-                   )}
+
+
                </div>
            </div>
        </div>
@@ -99,52 +95,15 @@ export default async function PublicEventDetailPage({ params }: Props) {
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-6">
-                <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/10 backdrop-blur-sm sticky top-24">
-                    <h3 className="text-lg font-bold text-white mb-6">Event Details</h3>
-                    
-                    <div className="space-y-4 mb-8">
-                        <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400">
-                                <Calendar className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <div className="text-sm font-bold text-zinc-300">Date</div>
-                                <div className="text-sm text-zinc-500">{event.date ? new Date(event.date).toLocaleDateString() : 'TBA'}</div>
-                            </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                            <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400">
-                                <MapPin className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <div className="text-sm font-bold text-zinc-300">Location</div>
-                                <div className="text-sm text-zinc-500">{event.location || 'Online / TBA'}</div>
-                            </div>
-                        </div>
-                    </div>
+    <div className="space-y-6">
 
-                    <button className="w-full py-3.5 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2">
-                        Register Now <ExternalLink className="w-4 h-4" />
-                    </button>
-                    <p className="text-xs text-center text-zinc-600 mt-3">
-                        External registration may be required.
-                    </p>
-                </div>
 
-                <div className="p-6 rounded-2xl border border-white/5">
-                    <h3 className="text-sm font-bold text-zinc-400 mb-4 uppercase tracking-wider">Hosted By</h3>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/20">
-                            {event.createdBy?.name?.[0] || 'T'}
-                        </div>
-                        <div>
-                            <div className="font-bold text-white">{event.createdBy?.name || 'Team 1'}</div>
-                            <div className="text-xs text-zinc-500">Organizer</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                 <div className="sticky top-24">
+                    <ApplicationForm programId={event.id} formSchema={event.formSchema as any[]} />
+                 </div>
+
+
+             </div>
        </div>
 
       <Footer />

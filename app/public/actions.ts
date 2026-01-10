@@ -1,6 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
 
 export async function applyToProgram(programId: string, formData: FormData) {
   const name = formData.get("name") as string;
@@ -10,18 +12,51 @@ export async function applyToProgram(programId: string, formData: FormData) {
     return { success: false, message: "Email is required" };
   }
 
-  try {
+    // Verify Authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+        return { success: false, message: "You must be logged in to apply." };
+    }
+
+    const userEmail = session.user.email;
+    const userName = session.user.name || name;
+
+    // Fetch Guide limits
+    try {
+    const guide = await prisma.guide.findUnique({
+        where: { id: programId }
+    }) as any;
+
+    if (!guide) {
+        return { success: false, message: "Program not found." };
+    }
+
+    // Determine limit based on user type
+    const memberRecord = await prisma.member.findUnique({ where: { email: userEmail }});
+    const limit = memberRecord ? (guide.maxSubmissionsMember || 10) : (guide.maxSubmissionsPublic || 1);
+
+    // Check existing submissions
+    const submissionCount = await prisma.application.count({
+        where: { 
+            guideId: programId,
+            applicantEmail: userEmail
+        }
+    });
+
+    if (submissionCount >= limit) {
+        return { success: false, message: `Submission limit reached (${limit} max).` };
+    }
+
     await prisma.application.create({
       // @ts-ignore
       data: {
-        applicantEmail: email,
-        data: { name }, // storing name in JSON blob for now as schema support varies
+        applicantEmail: userEmail, // Use trusted session email
+        data: { name: userName, ...Object.fromEntries(formData) }, // Store all form data
         status: "pending",
-        guideId: programId // Programs are currently stored as Guides with type='PROGRAM'
+        guideId: programId
       }
     });
 
-    // In a real app, we'd also trigger an email or notification
     return { success: true, message: "Application submitted successfully!" };
   } catch (error) {
     console.error("Application error:", error);

@@ -5,10 +5,11 @@ import { ArrowRight, Book, Code2, Users, Calendar, Trophy, ExternalLink, Clock }
 
 import PublicHero from "@/components/public/PublicHero";
 import { Announcements } from "@/components/website/Announcements";
-// @ts-ignore
 import { FloatingNav } from "@/components/public/FloatingNav";
 import SectionCarousel from "@/components/public/SectionCarousel";
 import PublicContactSection from "@/components/public/PublicContactSection";
+import { Program, Event, Guide } from "@/types/public";
+import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";
 
 
@@ -33,30 +34,54 @@ async function getPublicData() {
             type: true, 
             coverImage: true, 
             body: true,
-            createdAt: true 
+            createdAt: true,
+            updatedAt: true,
+            visibility: true 
         }
     });
 
     // Bucket guides by type
-    const programs: any[] = [];
-    const events: any[] = [];
-    const contentGuides: any[] = [];
+    const programs: Program[] = [];
+    const events: Event[] = [];
+    const contentGuides: Guide[] = [];
 
     publicGuides.forEach((g: any) => {
-        const item = {
+        const common = {
             id: g.id,
             title: g.title,
             coverImage: g.coverImage,
+            createdAt: g.createdAt,
+            updatedAt: g.updatedAt || g.createdAt,
+            visibility: g.visibility,
             description: g.body?.description || "",
-            type: g.type,
-            date: g.body?.date || g.createdAt, // Fallback for event date
-            location: g.body?.location || ""
         };
 
         const type = g.type?.toUpperCase();
-        if (type === "PROGRAM") programs.push(item);
-        else if (type === "EVENT") events.push(item);
-        else contentGuides.push(item);
+        if (type === "PROGRAM") {
+             programs.push({
+                ...common,
+                type: "PROGRAM",
+                status: "active",
+                body: g.body
+             } as Program);
+        }
+        else if (type === "EVENT") {
+             events.push({
+                ...common,
+                type: "EVENT",
+                status: "planned",
+                date: g.body?.date || g.createdAt,
+                location: g.body?.location || "",
+                body: g.body
+             } as Event);
+        }
+        else {
+             contentGuides.push({
+                ...common,
+                type: g.type || "CONTENT",
+                body: g.body
+             } as Guide);
+        }
     });
     
     // Fetch resources (legacy or distinct?) - Keeping as is

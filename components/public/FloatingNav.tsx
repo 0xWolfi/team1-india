@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { User, X } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { User, X, LogOut, LayoutDashboard } from "lucide-react";
 
 const navItems = [
     { label: "Playbooks", href: "#playbooks" },
@@ -16,9 +17,11 @@ const navItems = [
 ];
 
 export function FloatingNav() {
+    const { data: session } = useSession();
     const [activeSection, setActiveSection] = useState("");
     const [isScrolled, setIsScrolled] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showUserMenu, setShowUserMenu] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -95,13 +98,32 @@ export function FloatingNav() {
 
                     {/* Right Actions */}
                     <div className="flex items-center gap-2 pl-1">
-                        <button 
-                            onClick={() => setShowLoginModal(true)}
-                            className="p-2 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-                            title="Member Access"
-                        >
-                            <User className="w-5 h-5" />
-                        </button>
+                        {session?.user ? (
+                            <button 
+                                onClick={() => setShowUserMenu(true)}
+                                className="p-1 pl-2 pr-2 flex items-center gap-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+                            >
+                                <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-black overflow-hidden relative">
+                                    {session.user.image ? (
+                                        <img 
+                                            src={session.user.image} 
+                                            alt={session.user.name || "User"} 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <span>{session.user.name?.[0] || session.user.email?.[0] || "U"}</span>
+                                    )}
+                                </div>
+                            </button>
+                        ) : (
+                            <button 
+                                onClick={() => setShowLoginModal(true)}
+                                className="p-2 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                                title="Member Access"
+                            >
+                                <User className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -124,16 +146,21 @@ export function FloatingNav() {
                         <h3 className="text-xl font-bold text-white mb-2">Member Access</h3>
                         <p className="text-zinc-400 text-sm mb-8 leading-relaxed">
                             This portal is accessible only to verified Team1 members. <br/>
-                            Please log in or apply to join our ecosystem.
+                            To submit applications, you can login as a Guest.
                         </p>
 
                         <div className="flex flex-col gap-3">
-                            <Link 
-                                href="/access-check"
+                            <button 
+                                onClick={() => { 
+                                    setShowLoginModal(false); 
+                                    /* Handled by next-auth page, route there */ 
+                                    const callbackUrl = encodeURIComponent(window.location.href);
+                                    window.location.href = `/auth/signin?callbackUrl=${callbackUrl}`; 
+                                }}
                                 className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors"
                             >
-                                I'm a Member — Log In
-                            </Link>
+                                Log In / Sign Up
+                            </button>
                             <Link 
                                 href="https://tally.so/r/w7Xj0A" 
                                 target="_blank"
@@ -141,6 +168,59 @@ export function FloatingNav() {
                             >
                                 Apply for Membership
                             </Link>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* User Menu Modal */}
+            {showUserMenu && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="relative w-full max-w-sm bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl p-6 animate-in zoom-in-95 duration-200">
+                         <button 
+                            onClick={() => setShowUserMenu(false)}
+                            className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-16 h-16 rounded-full bg-indigo-500 flex items-center justify-center text-white text-2xl font-bold border-2 border-zinc-800 shadow-xl overflow-hidden relative">
+                                {session?.user?.image ? (
+                                    <img 
+                                        src={session.user.image} 
+                                        alt={session.user.name || "User"} 
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span>{session?.user?.name?.[0] || session?.user?.email?.[0] || "U"}</span>
+                                )}
+                            </div>
+                            <div>
+                                <div className="font-bold text-white text-lg">{session?.user?.name || "User"}</div>
+                                <div className="text-xs text-zinc-500">{session?.user?.email}</div>
+                                <div className="mt-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[10px] font-bold uppercase text-zinc-400 w-fit">
+                                    {(session?.user as any)?.role || "Guest"}
+                                </div>
+                            </div>
+                        </div>
+
+                         <div className="space-y-3">
+                            {((session?.user as any)?.role === 'CORE' || (session?.user as any)?.role === 'MEMBER') && (
+                                <Link 
+                                    href="/core"
+                                    className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <LayoutDashboard className="w-4 h-4" /> Go to Dashboard
+                                </Link>
+                            )}
+
+                            <button 
+                                onClick={() => signOut()}
+                                className="w-full py-3 bg-white/5 text-red-400 font-bold rounded-xl hover:bg-red-500/10 border border-white/5 transition-colors flex items-center justify-center gap-2"
+                            >
+                                <LogOut className="w-4 h-4" /> Sign Out
+                            </button>
                         </div>
                     </div>
                 </div>
