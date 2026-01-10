@@ -1,4 +1,36 @@
+'use client';
+
+import React, { useState } from 'react';
+import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { usePermission } from "@/hooks/usePermission";
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
+
+interface FormField {
+    id: string;
+    key: string;
+    label: string;
+    type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'checkbox' | 'email' | 'url' | 'tel';
+    required: boolean;
+    placeholder?: string;
+    options?: string[];
+}
+
+interface GuideDetailProps {
+    guide: {
+        id: string;
+        title: string;
+        type: string;
+        coverImage?: string;
+        body: {
+            description: string;
+            kpis?: { label: string; value: string; color?: string }[];
+            timeline?: { step: string; duration: string }[];
+            rules?: string[];
+        };
+        formSchema?: any; // Can be Record<string,string> (legacy) or FormField[] (new)
+    };
+}
 
 export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
     const router = useRouter();
