@@ -88,7 +88,7 @@ export default function CorePage() {
             items: []
         },
         { 
-            title: "Event Guide", 
+            title: "Events", 
             key: "events", 
             link: "/core/events", 
             icon: <Calendar />, 
@@ -97,7 +97,7 @@ export default function CorePage() {
             items: [] 
         },
         { 
-            title: "Programs Guides", 
+            title: "Programs", 
             key: "programs", 
             link: "/core/programs", 
             icon: <Layers />, 
@@ -106,7 +106,7 @@ export default function CorePage() {
             items: [] 
         },
         { 
-            title: "Content Guide", 
+            title: "Content", 
             key: "content", 
             link: "/core/content", 
             icon: <FileText />, 
@@ -224,6 +224,13 @@ export default function CorePage() {
                              <UserIcon className="w-5 h-5 text-zinc-400" />
                         </div>
                     )}
+                    <Link 
+                        href="/member/profile"
+                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
+                        title="My Profile"
+                    >
+                        <Settings className="w-4 h-4" />
+                    </Link>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}
                         className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 hover:border-red-500/30 transition-all flex items-center justify-center text-red-400 hover:text-red-300"
@@ -240,43 +247,56 @@ export default function CorePage() {
              <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                  <ZapIcon className="w-4 h-4" /> Quick Actions
              </h2>
-             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-pink-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:gap-4">
+                 {/* Applications - Always Shown as requested */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-pink-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
                      <div className="p-2 bg-pink-500/20 rounded-lg text-pink-400 group-hover:text-pink-300 transition-colors">
                         <ClipboardList className="w-5 h-5" />
                      </div>
                      <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Applications</span>
                  </button>
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-indigo-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
+
+                 {/* Announcements - Always Shown */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-indigo-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
                      <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400 group-hover:text-indigo-300 transition-colors">
                         <Megaphone className="w-5 h-5" />
                      </div>
                      <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Announcements</span>
                  </button>
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-emerald-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
+
+                 {/* Attendance - Always Shown as requested */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-emerald-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
                      <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 group-hover:text-emerald-300 transition-colors">
                         <Users className="w-5 h-5" />
                      </div>
                      <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Attendance</span>
                  </button>
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
+
+                 {/* Meeting Notes - Always Shown */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
                      <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400 group-hover:text-purple-300 transition-colors">
                         <FileText className="w-5 h-5" />
                      </div>
                      <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Meeting Notes</span>
                  </button>
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-orange-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
-                     <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400 group-hover:text-orange-300 transition-colors">
-                        <Settings className="w-5 h-5" />
-                     </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Add Admin</span>
-                 </button>
-                 <button className="group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-sky-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
+
+                 {/* New Poll - Always Shown (Restricted inside) */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-sky-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
                      <div className="p-2 bg-sky-500/20 rounded-lg text-sky-400 group-hover:text-sky-300 transition-colors">
                         <BarChart3 className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">New Poll</span>
+                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Vote / Polls</span>
                  </button>
+
+                 {/* Manage Team - Super Admin Only, Last */}
+                 {isSuperAdmin && (
+                     <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-orange-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
+                         <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400 group-hover:text-orange-300 transition-colors">
+                            <Settings className="w-5 h-5" />
+                         </div>
+                         <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Manage Team</span>
+                     </button>
+                 )}
              </div>
         </div>
         

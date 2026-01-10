@@ -68,16 +68,19 @@ export default function NewEventPage() {
 
     return (
         <CoreWrapper>
-            <div className="mb-6">
-                <Link href="/core/events" className="text-zinc-500 hover:text-white flex items-center gap-2 text-sm font-medium mb-4 transition-colors">
-                    <ArrowLeft className="w-4 h-4" /> Back to List
+    return (
+        <CoreWrapper>
+            <CorePageHeader 
+                title="Schedule Event" 
+                description="Create a new event on the calendar."
+                icon={<Calendar className="w-5 h-5 text-zinc-200" />}
+            >
+                <Link href="/core/events">
+                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition-colors border border-white/5">
+                        <X className="w-4 h-4" /> Close
+                    </button>
                 </Link>
-                <CorePageHeader 
-                    title="Schedule Event" 
-                    description="Create a new event on the calendar."
-                    icon={<Calendar className="w-5 h-5 text-zinc-200" />}
-                />
-            </div>
+            </CorePageHeader>
 
             <div className="max-w-2xl mx-auto space-y-8 pb-20">
                  {/* Cover Image */}

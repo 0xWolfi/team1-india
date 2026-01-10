@@ -25,6 +25,16 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 });
 
+    // Permission Check
+    // @ts-ignore
+    const userPermissions = session.user.permissions || {};
+    // @ts-ignore
+    const { hasPermission } = await import("@/lib/permissions");
+    
+    if (!hasPermission(userPermissions, "playbooks", "WRITE")) {
+        return new NextResponse("Forbidden: Insufficient Write Access", { status: 403 });
+    }
+
     try {
         const body = await request.json();
         const validatedData = PlaybookSchema.parse(body);

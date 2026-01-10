@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { usePermission } from "@/hooks/usePermission";
 
 interface FormField {
     id: string;
@@ -32,9 +33,10 @@ interface GuideDetailProps {
 
 export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
     const router = useRouter();
+    const canEdit = usePermission('events', 'WRITE');
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(true); // TODO: Replace with real auth check
+    // isAdmin removed, using canEdit
     const [applications, setApplications] = useState<any[]>([]);
     const [view, setView] = useState<'DETAILS' | 'APPLICATIONS'>('DETAILS');
     const [submitted, setSubmitted] = useState(false);
@@ -77,7 +79,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
     };
 
     React.useEffect(() => {
-        if (isAdmin) {
+        if (canEdit) {
             fetch(`/api/guides/${guide.id}/applications`)
                 .then(res => res.json())
                 .then(data => {
@@ -85,7 +87,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                 })
                 .catch(err => console.error("Failed to load applications", err));
         }
-    }, [guide.id, isAdmin]);
+    }, [guide.id, canEdit]);
 
     const handleDelete = async () => {
         if (!confirm('Are you sure you want to delete this guide?')) return;
@@ -180,7 +182,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
             </div>
             
             <div className="flex justify-end mb-8">
-                {isAdmin && (
+                {canEdit && (
                         <div className="flex gap-2">
                              <button
                                 onClick={() => router.push(`${window.location.pathname}/edit`)} 
@@ -199,7 +201,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
             </div>
 
             {/* Admin Tabs */}
-            {isAdmin && (
+            {canEdit && (
                 <div className="flex gap-6 border-b border-white/5 mb-8">
                     <button 
                         onClick={() => setView('DETAILS')}

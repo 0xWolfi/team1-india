@@ -6,16 +6,18 @@ import { ArrowLeft, Search, LayoutGrid, List as ListIcon, Users, ChevronDown } f
 import { Footer } from "@/components/website/Footer";
 
 async function getPrograms() {
-  // @ts-ignore
-  return prisma.program.findMany({
-    where: { visibility: "PUBLIC" },
+  const guides = await prisma.guide.findMany({
+    where: { 
+        visibility: "PUBLIC",
+        type: "PROGRAM",
+        deletedAt: null
+    },
     orderBy: { createdAt: "desc" },
     select: { 
       id: true, 
       title: true, 
-      description: true, 
-      // @ts-ignore
-      customFields: true,
+      body: true,
+      coverImage: true,
       createdAt: true,
       createdBy: {
         select: {
@@ -24,6 +26,15 @@ async function getPrograms() {
       }
     },
   });
+
+  return guides.map((g: any) => ({
+      id: g.id,
+      title: g.title,
+      description: g.body?.description || "",
+      coverImage: g.coverImage,
+      createdAt: g.createdAt,
+      createdBy: g.createdBy
+  }));
 }
 
 function TimeAgo({ date }: { date: Date }) {
@@ -102,8 +113,8 @@ export default async function PublicProgramsPage() {
                     
                     {/* Image Section */}
                     <div className="h-44 w-full bg-zinc-900 relative">
-                        {(item.customFields as any)?.coverImage ? (
-                            <img src={(item.customFields as any).coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                        {item.coverImage ? (
+                            <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-zinc-900">
                                 <div className="p-4 rounded-full bg-white/5 mx-auto">

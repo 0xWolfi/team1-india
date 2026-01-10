@@ -3,17 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Member } from "./shared";
-// AdminHeader removed
 import { AdminToolbar } from "./components/AdminToolbar";
-import { Users, Plus } from "lucide-react";
-import { CoreWrapper } from "@/components/core/CoreWrapper";
+import { Users, Plus, ShieldAlert } from "lucide-react";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { AdminTable } from "./components/AdminTable";
 import { AddMemberModal } from "./components/modals/AddMemberModal";
 import { EditAccessModal } from "./components/modals/EditAccessModal";
 import { DeleteMemberModal } from "./components/modals/DeleteMemberModal";
 
-export default function MembersPage() {
+export default function TeamPage() {
     const { data: session, status } = useSession();
     const [members, setMembers] = useState<Member[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -163,24 +161,23 @@ export default function MembersPage() {
     if (status === "loading") return <div className="min-h-screen pt-24 px-12 text-zinc-500 font-mono text-sm animate-pulse">Initializing Interface...</div>;
 
     return (
-
-        <CoreWrapper>
+        <div className="md:pt-4">
              {/* Click Outside Handler for Menus */}
              {activeMenuId && (
                 <div className="fixed inset-0 z-20 cursor-default" onClick={() => setActiveMenuId(null)} />
              )}
 
              <CorePageHeader
-                title="Headquarters"
-                description="Central command for access protocol and operative management."
-                icon={<Users className="w-5 h-5 text-zinc-200" />}
+                title="Core Team Management"
+                description="Manage admins and page access permissions. (Member Table)"
+                icon={<ShieldAlert className="w-5 h-5 text-indigo-400" />}
              >
                 {canAddMembers && (
                     <button 
                         onClick={() => setIsAddingMember(true)}
                         className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-white/5 flex items-center gap-2 active:scale-95"
                     >
-                        <Plus className="w-4 h-4" /> Add
+                        <Plus className="w-4 h-4" /> Add Admin
                     </button>
                 )}
              </CorePageHeader>
@@ -226,6 +223,6 @@ export default function MembersPage() {
                 onConfirm={handleDeleteMember}
                 isSubmitting={isSubmitting}
              />
-        </CoreWrapper>
+        </div>
     );
 }

@@ -9,6 +9,8 @@ import { useSession } from "next-auth/react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 
+import { usePermission } from "@/hooks/usePermission";
+
 // Types
 interface Playbook {
     id: string;
@@ -24,6 +26,8 @@ interface Playbook {
 export default function PlaybooksPage() {
     const router = useRouter();
     const { data: session } = useSession();
+    const canCreate = usePermission("playbooks", "WRITE");
+
     const [playbooks, setPlaybooks] = useState<Playbook[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isCreating, setIsCreating] = useState(false);
@@ -131,16 +135,18 @@ export default function PlaybooksPage() {
                 description="Centralized repository for your organization's strategic documentation, SOPs, and knowledge."
                 icon={<BookOpen className="w-5 h-5 text-zinc-200" />}
              >
-                 <button 
-                    onClick={handleCreateClick}
-                    disabled={isCreating}
-                    className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all hover:bg-zinc-200 active:scale-95 text-sm disabled:opacity-70 disabled:hover:scale-100"
-                 >
-                    <span className="flex items-center gap-2">
-                        {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                        New Playbook
-                    </span>
-                 </button>
+                 {canCreate && (
+                     <button 
+                        onClick={handleCreateClick}
+                        disabled={isCreating}
+                        className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all hover:bg-zinc-200 active:scale-95 text-sm disabled:opacity-70 disabled:hover:scale-100"
+                     >
+                        <span className="flex items-center gap-2">
+                            {isCreating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                            New Playbook
+                        </span>
+                     </button>
+                 )}
              </CorePageHeader>
 
             {/* Toolbar */}

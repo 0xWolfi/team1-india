@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Megaphone, Plus, ArrowLeft, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { usePermission } from "@/hooks/usePermission";
 
 interface Announcement {
     id: string;
@@ -14,6 +15,7 @@ interface Announcement {
 }
 
 export default function AnnouncementsPage() {
+    const canManage = usePermission('content', 'WRITE');
     const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [isCreating, setIsCreating] = useState(false);
     
@@ -152,7 +154,7 @@ export default function AnnouncementsPage() {
                      </h1>
                     <p className="text-zinc-400">Broadcast updates to Public, Members, or Everyone.</p>
                 </div>
-                {!isCreating && (
+                {!isCreating && canManage && (
                     <button 
                         onClick={() => setIsCreating(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm font-bold shadow-lg shadow-indigo-500/20"
@@ -286,12 +288,14 @@ export default function AnnouncementsPage() {
                                     </div>
                                 </div>
                             </div>
-                            <button 
-                                onClick={() => handleDelete(item.id)}
-                                className="p-2 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
+                            {canManage && (
+                                <button 
+                                    onClick={() => handleDelete(item.id)}
+                                    className="p-2 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            )}
                         </div>
                     ))
                  )}

@@ -27,20 +27,23 @@ export async function getUserAccess(email: string): Promise<UserAccessContext> {
 }
 
 // Kept for backward compatibility with Access Check page
+// Fixed logic: Check table membership explicitly
 export async function getUserRole(email: string): Promise<'CORE' | 'MEMBER' | 'PUBLIC'> {
-    const { permissions } = await getUserAccess(email);
-    
-    // Logic: If they have FULL_ACCESS or WRITE access (default or *), they are CORE
-    const hasWrite = permissions['*'] === 'FULL_ACCESS' || 
-                     permissions['default'] === 'WRITE' || 
-                     permissions['default'] === 'FULL_ACCESS';
-                     
-    if (hasWrite) return 'CORE';
-    
-    // If they exist in DB (which getUserAccess implies if permissions isn't empty, but let's assume default READ means member)
-    // Actually needed to verify if member exists at all. using prisma check again is cleaner or just rely on auth-options.
-    
-    // Simplified: If they have *any* permissions stored, they are at least a member.
-    // For now, let's trust that anyone calling this is authenticated.
-    return 'MEMBER';
+    // 1. Check Core Member Table
+    const member = await prisma.member.findUnique({
+        where: { email },
+        select: { id: true }
+    });
+
+    if (member) return 'CORE';
+
+    // 2. Check Community Member Table
+    const communityMember = await prisma.communityMember.findUnique({
+        where: { email },
+        select: { id: true }
+    });
+
+    if (communityMember) return 'MEMBER';
+
+    return 'PUBLIC';
 }

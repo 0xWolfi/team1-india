@@ -14,52 +14,52 @@ import { Footer } from "@/components/website/Footer";
 
 
 async function getPublicData() {
-    const [playbooks, programs, guides] = await Promise.all([
-        // @ts-ignore - Prisma Client likely stale
-        prisma.playbook.findMany({
-            // @ts-ignore
-            where: { visibility: "PUBLIC" },
-            orderBy: { createdAt: "desc" },
-            take: 6,
-            // @ts-ignore
-            select: { id: true, title: true, description: true, coverImage: true }
-        }),
-
-        // Programs
-        // @ts-ignore
-        prisma.program.findMany({
-            where: { 
-                visibility: "PUBLIC" 
-            },
-            orderBy: { createdAt: "desc" },
-            take: 6,
-            // @ts-ignore
-            select: { id: true, title: true, description: true, customFields: true } 
-        }),
-        // Content/Guides (excluding programs if needed, or just type=content)
-        // @ts-ignore
-        prisma.guide.findMany({
-            where: { 
-                // @ts-ignore
-                visibility: "PUBLIC",
-                type: "CONTENT"
-            }, 
-            orderBy: { createdAt: "desc" },
-            take: 6,
-            // @ts-ignore
-            select: { id: true, title: true, type: true, coverImage: true }
-        })
-    ]);
-    
-    // @ts-ignore
-    const events = await prisma.event.findMany({
-        where: { visibility: "PUBLIC" },
-        orderBy: { date: "asc" },
+    const playbooks = await prisma.playbook.findMany({
+        where: { visibility: "PUBLIC", deletedAt: null },
+        orderBy: { createdAt: "desc" },
         take: 6,
-        // @ts-ignore
-        select: { id: true, title: true, location: true, date: true, customFields: true } // Assuming description not needed for card but maybe location/date
+        select: { id: true, title: true, description: true, coverImage: true }
     });
 
+    const publicGuides = await prisma.guide.findMany({
+        where: { 
+            visibility: "PUBLIC",
+            deletedAt: null 
+        },
+        orderBy: { createdAt: "desc" },
+        select: { 
+            id: true, 
+            title: true, 
+            type: true, 
+            coverImage: true, 
+            body: true,
+            createdAt: true 
+        }
+    });
+
+    // Bucket guides by type
+    const programs: any[] = [];
+    const events: any[] = [];
+    const contentGuides: any[] = [];
+
+    publicGuides.forEach((g: any) => {
+        const item = {
+            id: g.id,
+            title: g.title,
+            coverImage: g.coverImage,
+            description: g.body?.description || "",
+            type: g.type,
+            date: g.body?.date || g.createdAt, // Fallback for event date
+            location: g.body?.location || ""
+        };
+
+        const type = g.type?.toUpperCase();
+        if (type === "PROGRAM") programs.push(item);
+        else if (type === "EVENT") events.push(item);
+        else contentGuides.push(item);
+    });
+    
+    // Fetch resources (legacy or distinct?) - Keeping as is
     // @ts-ignore
     const resources = await prisma.contentResource.findMany({
         where: { 
@@ -79,7 +79,7 @@ async function getPublicData() {
         description: res.customFields?.description || ""
     }));
 
-    return { playbooks, programs, guides, events, mediaItems };
+    return { playbooks, programs, guides: contentGuides, events, mediaItems };
 }
 
 export default async function PublicPage() {
@@ -105,7 +105,7 @@ export default async function PublicPage() {
                     title="Playbooks" 
                     description="Essential rules, guidelines, and strategies to help you build and scale."
                     seeAllLink="/public/playbooks"
-                    enableScroll={playbooks.length > 0}
+                    enableScroll={playbooks.length > 3}
                 >
                     {playbooks.length > 0 ? playbooks.map((item: any) => (
                         <Link key={item.id} href={`/public/playbooks/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
@@ -141,13 +141,13 @@ export default async function PublicPage() {
                     description="Initiatives to accelerate your growth."
                     seeAllLink="/public/programs"
                     direction="right"
-                    enableScroll={programs.length > 0}
+                    enableScroll={programs.length > 3}
                 >
                     {programs.length > 0 ? programs.map((item: any) => (
                         <Link key={item.id} href={`/public/programs/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group cursor-pointer">
                             <div className="h-36 w-full bg-zinc-800 relative overflow-hidden flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
-                            {(item.customFields as any)?.coverImage ? (
-                                    <img src={(item.customFields as any).coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
+                            {item.coverImage ? (
+                                    <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
                                 ) : (
                                     <Users className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
                                 )}
@@ -175,12 +175,16 @@ export default async function PublicPage() {
                     description="Earn bounties by contributing."
                     seeAllLink="/public/content"
                     seeAllText="View Bounties"
-                    enableScroll={guides.length > 0}
+                    enableScroll={guides.length > 3}
                 >
                     {guides.length > 0 ? guides.map((item: any) => (
                         <Link key={item.id} href={`/public/guides/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
                             <div className="h-36 w-full bg-zinc-800 relative overflow-hidden flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
-                                <Trophy className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
+                                {item.coverImage ? (
+                                    <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
+                                ) : (
+                                    <Trophy className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
+                                )}
                             </div>
                             <div className="p-5 flex flex-col flex-1">
                                 <div className="flex items-center justify-between mb-2">
@@ -208,13 +212,13 @@ export default async function PublicPage() {
                     description="Upcoming meetups and hackathons."
                     seeAllLink="/public/events"
                     direction="right"
-                    enableScroll={events.length > 0}
+                    enableScroll={events.length > 3}
                 >
                     {events.length > 0 ? events.map((item: any) => (
                          <Link key={item.id} href={`/public/events/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
                             <div className="h-36 w-full bg-zinc-800 relative overflow-hidden">
-                                 {(item.customFields as any)?.coverImage ? (
-                                    <img src={(item.customFields as any).coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
+                                 {item.coverImage ? (
+                                    <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
                                  ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
                                         <Calendar className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />

@@ -44,6 +44,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         body: body.body ? '(content hidden)' : undefined 
     }));
     
+    // Permission Check
+    // @ts-ignore
+    const userPermissions = session.user.permissions || {};
+    // @ts-ignore
+    const { hasPermission } = await import("@/lib/permissions");
+    
+    if (!hasPermission(userPermissions, "playbook", "WRITE")) {
+        return new NextResponse("Forbidden: Insufficient Write Access", { status: 403 });
+    }
+    
     // Validate lock ownership
     const user = await prisma.member.findUnique({ where: { email: session.user.email } });
     const playbook = await prisma.playbook.findUnique({ where: { id } });
@@ -116,14 +126,12 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     // Check permissions
-    const userPerms = (user.permissions as Record<string, string>) || {};
-    console.log(`[API] DELETE /api/playbooks/${id} - Permissions check for ${user.email}:`, JSON.stringify(userPerms));
+    // @ts-ignore
+    const userPermissions = session.user.permissions || {};
+    // @ts-ignore
+    const { hasPermission } = await import("@/lib/permissions");
 
-    const canDelete = userPerms['*'] === 'FULL_ACCESS' || 
-                      userPerms['playbooks'] === 'FULL_ACCESS' || 
-                      userPerms['playbooks'] === 'WRITE'; // Maybe WRITE shouldn't delete? But for now consistent.
-
-    if (!canDelete) {
+    if (!hasPermission(userPermissions, "playbook", "WRITE")) { // Using WRITE for delete as well per request implied "write access"
         console.warn(`[API] DELETE /api/playbooks/${id} - Forbidden. Missing permissions.`);
         return new NextResponse("Forbidden: Insufficient permissions", { status: 403 });
     }

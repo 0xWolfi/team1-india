@@ -57,13 +57,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Optional: Add Admin check here if needed
-
     const body = await req.json();
     const result = CreateGuideSchema.safeParse(body);
 
     if (!result.success) {
       return NextResponse.json({ error: "Invalid Request", details: result.error.format() }, { status: 400 });
+    }
+
+    // Permission Check
+    // @ts-ignore
+    const userPermissions = session.user.permissions || {};
+    const guideType = result.data.type.toLowerCase(); // event, program, content
+
+    // Special case for 'playbook' if we ever support it via this route, though schema restricts enum.
+    // If enum is EVENT, PROGRAM, CONTENT, these map to resource keys 'event', 'program', 'content'.
+    
+    // @ts-ignore
+    const { hasPermission } = await import("@/lib/permissions"); // Dynamic import to avoid circular dep if any, or just import at top
+    
+    if (!hasPermission(userPermissions, guideType, "WRITE")) {
+         return NextResponse.json({ error: "Forbidden: Insufficient Write Access" }, { status: 403 });
     }
 
     const member = await prisma.member.findUnique({

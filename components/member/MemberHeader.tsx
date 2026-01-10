@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 interface MemberHeaderProps {
     user?: {
@@ -37,6 +38,13 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                                 <User className="w-5 h-5 text-zinc-400" />
                         </div>
                     )}
+                    <Link 
+                        href="/member/profile"
+                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
+                        title="My Profile"
+                    >
+                        <Settings className="w-4 h-4" />
+                    </Link>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}
                         className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 hover:border-red-500/30 transition-all flex items-center justify-center text-red-400 hover:text-red-300"

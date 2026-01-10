@@ -1,33 +1,36 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Plus, Layers } from 'lucide-react';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import { Plus, Layers } from "lucide-react";
+import Link from "next/link";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { ProgramList } from '@/components/core/ProgramList';
+import { GuideList } from "@/components/guides/GuideList";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function ProgramsPage() {
-    const [programs, setPrograms] = useState([]);
+    const [guides, setGuides] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const canCreate = usePermission("program", "WRITE");
 
-    const fetchPrograms = async () => {
+    const fetchGuides = async () => {
         setIsLoading(true);
         try {
-            const res = await fetch('/api/programs');
+// ... existing code ...
+            const res = await fetch("/api/guides?type=PROGRAM");
             if (res.ok) {
                 const data = await res.json();
-                setPrograms(data);
+                setGuides(data);
             }
         } catch (error) {
-            console.error("Failed to fetch programs", error);
+            console.error("Failed to fetch guides", error);
         } finally {
             setIsLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchPrograms();
+        fetchGuides();
     }, []);
 
     return (
@@ -38,18 +41,21 @@ export default function ProgramsPage() {
                 icon={<Layers className="w-5 h-5 text-zinc-200" />}
             >
                 <div className="flex items-center gap-2">
-                    <Link href="/core/programs/new">
-                        <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors">
-                            <Plus className="w-4 h-4" /> Create Program
-                        </button>
-                    </Link>
+                    {canCreate && (
+                        <Link href="/core/programs/guides/new">
+                            <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors">
+                                <Plus className="w-4 h-4" /> Create Guide
+                            </button>
+                        </Link>
+                    )}
                 </div>
             </CorePageHeader>
 
-            <ProgramList 
-                programs={programs} 
-                basePath="/core/programs" 
-                isLoading={isLoading} 
+            <GuideList 
+                guides={guides} 
+                basePath="/core/programs/guides" 
+                isLoading={isLoading}
+                canWrite={canCreate} 
             />
         </CoreWrapper>
     );

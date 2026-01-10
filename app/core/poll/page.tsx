@@ -5,6 +5,7 @@ import {
     BarChart3, Plus, Trash2, Check, X, Clock, Users, ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
+import { usePermission } from "@/hooks/usePermission";
 
 interface Poll {
     id: string;
@@ -15,6 +16,7 @@ interface Poll {
 }
 
 export default function PollsPage() {
+    const canManage = usePermission('content', 'WRITE');
     const [polls, setPolls] = useState<Poll[]>([]);
     const [isCreating, setIsCreating] = useState(false);
     const [newQuestion, setNewQuestion] = useState("");
@@ -86,7 +88,7 @@ export default function PollsPage() {
                      </h1>
                     <p className="text-zinc-400">Launch and manage governance polls.</p>
                 </div>
-                {!isCreating && (
+                {!isCreating && canManage && (
                     <button 
                         onClick={() => setIsCreating(true)}
                         className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold transition-all shadow-lg hover:shadow-indigo-500/25"
@@ -154,12 +156,12 @@ export default function PollsPage() {
                     <div key={poll.id} className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
                         <div className="flex justify-between items-start mb-4">
                             <button 
-                                onClick={() => toggleStatus(poll.id, poll.status)}
+                                onClick={() => canManage && toggleStatus(poll.id, poll.status)}
                                 className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border ${
                                     poll.status === 'ACTIVE' 
-                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20' 
-                                    : 'bg-zinc-800 text-zinc-500 border-white/5 hover:bg-zinc-700'
-                                }`}
+                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' + (canManage ? ' hover:bg-emerald-500/20' : '')
+                                    : 'bg-zinc-800 text-zinc-500 border-white/5' + (canManage ? ' hover:bg-zinc-700' : '')
+                                } ${!canManage ? 'cursor-default' : ''}`}
                             >
                                 {poll.status}
                             </button>

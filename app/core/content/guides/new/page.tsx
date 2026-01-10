@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { GuideBuilder } from '@/components/guides/GuideBuilder';
-import { PenTool } from 'lucide-react';
+import { BookOpen, X } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NewContentGuidePage() {
     const router = useRouter();
@@ -21,7 +22,7 @@ export default function NewContentGuidePage() {
             });
 
             if (res.ok) {
-                router.push('/core/content/guides');
+                router.push('/core/content');
             }
         } catch (error) {
             console.error(error);
@@ -34,9 +35,15 @@ export default function NewContentGuidePage() {
         <CoreWrapper>
             <CorePageHeader 
                 title="Create Content Guide" 
-                description="Define a new content standard or resource type."
-                icon={<PenTool className="w-5 h-5 text-zinc-200" />}
-            />
+                description="Define standards for content creation."
+                icon={<BookOpen className="w-5 h-5 text-zinc-200" />}
+            >
+                <Link href="/core/content">
+                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition-colors border border-white/5">
+                        <X className="w-4 h-4" /> Close
+                    </button>
+                </Link>
+            </CorePageHeader>
             <GuideBuilder 
                 type="CONTENT" 
                 onSave={handleSave} 

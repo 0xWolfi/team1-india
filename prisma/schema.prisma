@@ -47,6 +47,7 @@ model CommunityMember {
   id        String   @id @default(uuid())
   email     String   @unique
   xHandle   String?
+  telegram  String?
   name      String?
   tags      String?  @default("member") // e.g. "Founder", "Investor"
   status    String   @default("active")

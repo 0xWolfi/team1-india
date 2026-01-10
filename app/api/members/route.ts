@@ -1,14 +1,19 @@
+
 import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options"; 
 import { prisma } from "@/lib/prisma";
+import { checkCoreAccess, hasPermission, PERMISSIONS } from "@/lib/permissions";
 
 export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user?.email) return new NextResponse("Unauthorized", { status: 401 });
+    const access = checkCoreAccess(session);
+    if (!access.authorized) return access.response!;
 
-    // Only Core or Superadmin can view directory properly, but let's allow read for now
-    // Ideally check roles here
+    // @ts-ignore
+    if (!hasPermission(session.user.permissions, 'members', PERMISSIONS.READ)) {
+        return new NextResponse("Insufficient Permissions", { status: 403 });
+    }
 
     try {
         const members = await prisma.member.findMany({
@@ -33,21 +38,30 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user?.email) return new NextResponse("Unauthorized", { status: 401 });
+    const access = checkCoreAccess(session);
+    if (!access.authorized) return access.response!;
 
-    // Check permissions (Full Access required to create members directly)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userPermissions = (session.user as any).permissions || {};
-    const hasFullAccess = userPermissions['*'] === 'FULL_ACCESS' || userPermissions['default'] === 'FULL_ACCESS';
-
-    if (!hasFullAccess) {
-         return new NextResponse("Unauthorized. Requires FULL_ACCESS.", { status: 403 });
+    // @ts-ignore
+    if (!hasPermission(session.user.permissions, 'members', PERMISSIONS.WRITE)) {
+        return new NextResponse("Insufficient Permissions. Write Access Required.", { status: 403 });
     }
 
     try {
         const { email, permissions, tags } = await request.json();
 
         if (!email) return new NextResponse("Email is required", { status: 400 });
+
+        // CROSS-CHECK: Ensure not in Community (CommunityMember table)
+        const existingCommunityMember = await prisma.communityMember.findUnique({ where: { email } });
+        if (existingCommunityMember) {
+            return new NextResponse("Email already exists in Community. Cannot add to Team (Core Admin).", { status: 409 });
+        }
+
+        // Check if already in Team (Implicitly handled by unique constraint, but good for custom message)
+        const existingTeamMember = await prisma.member.findUnique({ where: { email } });
+        if (existingTeamMember) {
+            return new NextResponse("Email already exists in Team.", { status: 409 });
+        }
 
         const newMember = await prisma.member.create({
             data: {
@@ -67,14 +81,14 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user?.email) return new NextResponse("Unauthorized", { status: 401 });
+    const access = checkCoreAccess(session);
+    if (!access.authorized) return access.response!;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const userPermissions = (session.user as any).permissions || {};
-    const hasFullAccess = userPermissions['*'] === 'FULL_ACCESS';
-
-    if (!hasFullAccess) {
-        return new NextResponse("Unauthorized. Requires Superadmin access.", { status: 403 });
+    // @ts-ignore
+    if (!hasPermission(session.user.permissions, 'members', PERMISSIONS.WRITE)) {
+         // Using WRITE for delete is standard, though sometimes DELETE is separate. 
+         // For now WRITE implies capability to manage the collection.
+        return new NextResponse("Insufficient Permissions. Write Access Required.", { status: 403 });
     }
 
     try {
@@ -93,3 +107,4 @@ export async function DELETE(request: Request) {
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
+

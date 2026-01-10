@@ -17,7 +17,7 @@ export async function applyToProgram(programId: string, formData: FormData) {
         applicantEmail: email,
         data: { name }, // storing name in JSON blob for now as schema support varies
         status: "pending",
-        programId: programId
+        guideId: programId // Programs are currently stored as Guides with type='PROGRAM'
       }
     });
 

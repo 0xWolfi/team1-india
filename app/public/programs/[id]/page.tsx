@@ -6,18 +6,27 @@ import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 
 async function getProgram(id: string) {
-  // @ts-ignore
-  return prisma.program.findUnique({
+  const guide = await prisma.guide.findUnique({
     where: { id },
     select: {
       id: true,
       title: true,
-      description: true,
-      // @ts-ignore
-      customFields: true,
-      createdAt: true
+      body: true,
+      coverImage: true,
+      createdAt: true,
+      type: true 
     }
   });
+
+  if (!guide || guide.type !== 'PROGRAM') return null;
+
+  return {
+      id: guide.id,
+      title: guide.title,
+      description: (guide.body as any)?.description || "",
+      coverImage: guide.coverImage,
+      createdAt: guide.createdAt
+  };
 }
 
 type Props = {
@@ -33,7 +42,7 @@ export default async function ProgramDetailPage({ params }: Props) {
   }
 
   // extract image safely
-  const coverImage = (program.customFields as any)?.coverImage;
+  const coverImage = program.coverImage;
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">

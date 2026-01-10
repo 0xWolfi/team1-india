@@ -115,60 +115,66 @@ export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChan
                     </div>
 
                     <div className="space-y-3">
-                        <div className="flex items-center justify-between mt-4 mb-2">
-                            <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Modular Access</label>
-                            <div className="flex gap-2">
-                                <button onClick={() => bulkSetPermissions('READ')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">All Read</button>
-                                <button onClick={() => bulkSetPermissions('WRITE')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">All Write</button>
-                                <button onClick={() => bulkSetPermissions('NONE')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">Reset</button>
+                        <div className="flex items-center justify-between mt-6 mb-3">
+                            <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Modular Access Breakdown</label>
+                            <div className="flex bg-black/40 rounded-lg p-1 border border-white/5">
+                                <button onClick={() => bulkSetPermissions('READ')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">All Read</button>
+                                <div className="w-px bg-white/10 my-1" />
+                                <button onClick={() => bulkSetPermissions('WRITE')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">All Write</button>
+                                <div className="w-px bg-white/10 my-1" />
+                                <button onClick={() => bulkSetPermissions('NONE')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">Reset</button>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="space-y-3">
                             {PERMISSION_SCOPES.map(scope => {
                                 const isFull = (member.permissions || {})['*'] === 'FULL_ACCESS';
+                                const permissions = member.permissions || {};
+                                const currentLevel = permissions[scope.key];
                                 const Icon = scope.icon;
                                 
                                 return (
-                                    <div key={scope.key} className={`flex items-center justify-between p-3 rounded-lg border border-white/5 bg-white/[0.01] ${isFull ? 'opacity-30 pointer-events-none grayscale' : 'hover:bg-white/5 transition-colors'}`}>
-                                        <div className="flex items-center gap-2.5">
-                                            <div className="p-1.5 rounded-md bg-zinc-900 border border-white/5">
-                                                <Icon className="w-4 h-4 text-zinc-500" />
+                                    <div key={scope.key} className={`flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.01] ${isFull ? 'opacity-30 pointer-events-none grayscale' : 'hover:bg-white/[0.03] transition-colors'} group transition-colors`}>
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg border border-white/5 transition-colors ${currentLevel ? 'bg-zinc-800' : 'bg-black/40'}`}>
+                                                <Icon className={`w-4 h-4 ${currentLevel ? 'text-zinc-200' : 'text-zinc-600'}`} />
                                             </div>
                                             <div>
-                                                <div className="font-medium text-xs text-zinc-200">{scope.label}</div>
-                                                <div className="text-[9px] text-zinc-600">{scope.description}</div>
+                                                <div className={`text-sm font-medium transition-colors ${currentLevel ? 'text-zinc-200' : 'text-zinc-500'}`}>{scope.label}</div>
+                                                <div className="text-[10px] text-zinc-600 hidden sm:block">{scope.description}</div>
                                             </div>
                                         </div>
-                                        <div className="flex bg-black/40 rounded border border-white/5 p-[1px]">
+                                        
+                                        {/* Segmented Control */}
+                                        <div className="flex bg-black/40 rounded-lg border border-white/5 p-1">
                                             <button 
                                                 onClick={() => {
-                                                    const np = { ...(member.permissions || {}) };
+                                                    const np = { ...permissions };
                                                     delete np[scope.key]; // Default/None
                                                     onChange({ ...member, permissions: np });
                                                 }}
-                                                className={`px-2 py-1 text-[9px] rounded ${!(member.permissions || {})[scope.key] ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-600 hover:text-zinc-400'}`}
+                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${!currentLevel ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
                                             >
                                                 None
                                             </button>
                                             <button 
                                                 onClick={() => {
-                                                    const np = { ...(member.permissions || {}) };
+                                                    const np = { ...permissions };
                                                     np[scope.key] = 'READ';
                                                     onChange({ ...member, permissions: np });
                                                 }}
-                                                className={`px-2 py-1 text-[9px] rounded ${ (member.permissions || {})[scope.key] === 'READ' ? 'bg-blue-900/50 text-blue-200 border-blue-500/20 shadow-sm' : 'text-zinc-500 hover:text-zinc-400'}`}
+                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${currentLevel === 'READ' ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/20' : 'text-zinc-500 hover:text-zinc-300'}`}
                                             >
-                                                View
+                                                Read
                                             </button>
                                             <button 
                                                 onClick={() => {
-                                                    const np = { ...(member.permissions || {}) };
+                                                    const np = { ...permissions };
                                                     np[scope.key] = 'WRITE';
                                                     onChange({ ...member, permissions: np });
                                                 }}
-                                                className={`px-2 py-1 text-[9px] rounded ${ (member.permissions || {})[scope.key] === 'WRITE' ? 'bg-emerald-900/50 text-emerald-200 border-emerald-500/20 shadow-sm' : 'text-zinc-500 hover:text-zinc-400'}`}
+                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${currentLevel === 'WRITE' ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-900/20' : 'text-zinc-500 hover:text-zinc-300'}`}
                                             >
-                                                Edit
+                                                Write
                                             </button>
                                         </div>
                                     </div>

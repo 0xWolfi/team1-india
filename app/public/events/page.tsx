@@ -6,19 +6,19 @@ import { ArrowLeft, Search, LayoutGrid, List as ListIcon, Calendar, ChevronDown,
 import { Footer } from "@/components/website/Footer";
 
 async function getEvents() {
-  // @ts-ignore
-  return prisma.event.findMany({
-    where: { visibility: "PUBLIC" },
-    orderBy: { date: "asc" }, // Upcoming events first? Or createdAt? Usually date.
-    // If date is passed, check if it's in future? 
-    // For now, just list all Public events, ordered by date.
+  const guides = await prisma.guide.findMany({
+    where: { 
+        visibility: "PUBLIC",
+        type: "EVENT",
+        deletedAt: null
+    },
+    orderBy: { createdAt: "asc" }, // Guides don't have top-level date, sorting by createdAt or body date if possible? Prisma can't sort by json field easily.
+    // For now sort by createdAt or fetch all and sort in JS.
     select: { 
       id: true, 
       title: true, 
-      description: true,
-      date: true,
-      location: true,
-      customFields: true,
+      body: true,
+      coverImage: true,
       createdAt: true,
       createdBy: {
         select: {
@@ -27,6 +27,17 @@ async function getEvents() {
       }
     },
   });
+
+  return guides.map((g: any) => ({
+      id: g.id,
+      title: g.title,
+      description: g.body?.description || "",
+      date: g.body?.date || g.createdAt,
+      location: g.body?.location || "",
+      coverImage: g.coverImage,
+      createdAt: g.createdAt,
+      createdBy: g.createdBy
+  })); // We can add .sort() here if needed based on date
 }
 
 function TimeAgo({ date }: { date: Date }) {
@@ -105,8 +116,8 @@ export default async function PublicEventsPage() {
                     
                     {/* Image Section */}
                     <div className="h-44 w-full bg-zinc-900 relative">
-                        {(item.customFields as any)?.coverImage ? (
-                            <img src={(item.customFields as any).coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                        {item.coverImage ? (
+                            <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-zinc-900">
                                 <div className="p-4 rounded-full bg-white/5 mx-auto">

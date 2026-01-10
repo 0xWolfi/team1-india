@@ -19,12 +19,7 @@ export default async function MemberPage() {
     }
 
     const resources = [
-        { 
-            title: "My Profile", 
-            link: "/member/profile", 
-            icon: <User />, 
-            description: "Update your bio, social links, and contact info.",
-        },
+
         { 
             title: "Community", 
             link: "/public", 

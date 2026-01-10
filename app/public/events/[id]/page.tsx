@@ -6,13 +6,30 @@ import { ArrowLeft, MapPin, Calendar, Clock, Share2, ExternalLink } from "lucide
 import { Footer } from "@/components/website/Footer";
 
 async function getEvent(id: string) {
-  // @ts-ignore
-  return prisma.event.findUnique({
+  const guide = await prisma.guide.findUnique({
     where: { id },
-    include: {
-        createdBy: { select: { name: true, email: true } }
+    select: {
+      id: true,
+      title: true,
+      body: true,
+      coverImage: true,
+      createdAt: true,
+      type: true,
+      visibility: true,
+      createdBy: { select: { name: true, email: true } }
     }
   });
+
+  if (!guide || guide.type !== 'EVENT') return null;
+
+  return {
+    ...guide,
+    description: (guide.body as any)?.description || "",
+    date: (guide.body as any)?.date || guide.createdAt,
+    location: (guide.body as any)?.location || "",
+    // coverImage is already at top level
+  };
+  };
 }
 
 type Props = {
@@ -27,7 +44,7 @@ export default async function PublicEventDetailPage({ params }: Props) {
       return notFound();
   }
 
-  const coverImage = (event.customFields as any)?.coverImage;
+  const coverImage = event.coverImage;
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">

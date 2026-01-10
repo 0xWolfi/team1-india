@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Users, Search, CheckCircle2, Circle, Calendar, Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { usePermission } from "@/hooks/usePermission";
 
 interface Member {
     id: string;
@@ -14,6 +15,7 @@ interface Member {
 }
 
 export default function AttendancePage() {
+    const canManage = usePermission('operations', 'WRITE');
     const [members, setMembers] = useState<Member[]>([]);
     const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
     const [searchQuery, setSearchQuery] = useState("");
@@ -88,13 +90,15 @@ export default function AttendancePage() {
                             className="bg-transparent text-sm text-white focus:outline-none"
                         />
                     </div>
-                     <button 
-                        onClick={handleSave}
-                        disabled={isSaving || selectedMembers.size === 0}
-                        className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <Save className="w-4 h-4" /> {isSaving ? "Saving..." : "Save Log"}
-                    </button>
+                     {canManage && (
+                        <button 
+                            onClick={handleSave}
+                            disabled={isSaving || selectedMembers.size === 0}
+                            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Save className="w-4 h-4" /> {isSaving ? "Saving..." : "Save Log"}
+                        </button>
+                     )}
                 </div>
             </header>
 
@@ -121,10 +125,10 @@ export default function AttendancePage() {
                     {filteredMembers.map(member => (
                         <div 
                             key={member.id} 
-                            onClick={() => toggleMember(member.id)}
-                            className={`p-4 flex items-center gap-4 cursor-pointer transition-colors ${
+                            onClick={() => canManage && toggleMember(member.id)}
+                            className={`p-4 flex items-center gap-4 transition-colors ${
                                 selectedMembers.has(member.id) ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'hover:bg-white/5'
-                            }`}
+                            } ${!canManage ? 'cursor-default' : 'cursor-pointer'}`}
                         >
                             <div className={`p-1 rounded-full border ${selectedMembers.has(member.id) ? 'bg-emerald-500 border-emerald-500 text-black' : 'border-zinc-700 text-transparent'}`}>
                                 <CheckCircle2 className="w-4 h-4" />

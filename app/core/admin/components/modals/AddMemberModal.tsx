@@ -142,43 +142,54 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
 
                                 {/* Granular Toggles - only show if not superadmin */}
                                 {permissions['*'] !== 'FULL_ACCESS' && (
-                                    <>
+                                    <div className="space-y-4">
                                         <div className="flex items-center justify-between mt-4 mb-2">
                                             <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Modular Access</label>
-                                            <div className="flex gap-2">
-                                                <button type="button" onClick={() => bulkSetPermissions('READ')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">All Read</button>
-                                                <button type="button" onClick={() => bulkSetPermissions('WRITE')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">All Write</button>
-                                                <button type="button" onClick={() => bulkSetPermissions('NONE')} className="text-[9px] text-zinc-400 hover:text-white hover:underline">Reset</button>
+                                            <div className="flex bg-black/40 rounded-lg p-1 border border-white/5">
+                                                <button type="button" onClick={() => bulkSetPermissions('READ')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">All Read</button>
+                                                <div className="w-px bg-white/10 my-1" />
+                                                <button type="button" onClick={() => bulkSetPermissions('WRITE')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">All Write</button>
+                                                <div className="w-px bg-white/10 my-1" />
+                                                <button type="button" onClick={() => bulkSetPermissions('NONE')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">Reset</button>
                                             </div>
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div className="space-y-3">
                                             {PERMISSION_SCOPES.map(scope => {
                                                 const Icon = scope.icon;
+                                                const currentLevel = permissions[scope.key];
+                                                
                                                 return (
-                                                    <div key={scope.key} className="flex items-center justify-between p-2 rounded-lg border border-white/5 bg-white/[0.01]">
-                                                        <div className="flex items-center gap-2">
-                                                            <Icon className="w-3.5 h-3.5 text-zinc-600" />
-                                                            <div className="text-xs text-zinc-300">{scope.label}</div>
+                                                    <div key={scope.key} className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors group">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={`p-2 rounded-lg border border-white/5 ${currentLevel ? 'bg-zinc-800' : 'bg-black/40'}`}>
+                                                                <Icon className={`w-4 h-4 ${currentLevel ? 'text-zinc-200' : 'text-zinc-600'}`} />
+                                                            </div>
+                                                            <div>
+                                                                <div className={`text-sm font-medium ${currentLevel ? 'text-zinc-200' : 'text-zinc-500'}`}>{scope.label}</div>
+                                                                <div className="text-[10px] text-zinc-600 hidden sm:block">{scope.description}</div>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex bg-black/40 rounded border border-white/5 p-[1px]">
+                                                        
+                                                        {/* Segmented Control */}
+                                                        <div className="flex bg-black/40 rounded-lg border border-white/5 p-1">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => togglePermission(scope.key, 'NONE')}
-                                                                className={`px-1.5 py-0.5 text-[9px] rounded ${!permissions[scope.key] ? 'bg-zinc-700 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${!permissions[scope.key] ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
                                                             >
                                                                 None
                                                             </button>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => togglePermission(scope.key, 'READ')}
-                                                                className={`px-1.5 py-0.5 text-[9px] rounded ${permissions[scope.key] === 'READ' ? 'bg-blue-900/50 text-blue-200 border-blue-500/20' : 'text-zinc-600 hover:text-zinc-400'}`}
+                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${permissions[scope.key] === 'READ' ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/20' : 'text-zinc-500 hover:text-zinc-300'}`}
                                                             >
                                                                 Read
                                                             </button>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => togglePermission(scope.key, 'WRITE')}
-                                                                className={`px-1.5 py-0.5 text-[9px] rounded ${permissions[scope.key] === 'WRITE' ? 'bg-emerald-900/50 text-emerald-200 border-emerald-500/20' : 'text-zinc-600 hover:text-zinc-400'}`}
+                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${permissions[scope.key] === 'WRITE' ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-900/20' : 'text-zinc-500 hover:text-zinc-300'}`}
                                                             >
                                                                 Write
                                                             </button>
@@ -187,7 +198,7 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                                 );
                                             })}
                                         </div>
-                                    </>
+                                    </div>
                                 )}
                             </div>
 

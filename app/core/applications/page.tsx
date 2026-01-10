@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Loader2, Check, X, ExternalLink, Calendar, Mail, FileText, Filter, ClipboardList } from 'lucide-react';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { usePermission } from "@/hooks/usePermission";
 
 interface Application {
     id: string;
@@ -24,6 +25,7 @@ const TABS = [
 ];
 
 export default function ApplicationsPage() {
+    const canManage = usePermission('applications', 'WRITE');
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);
@@ -168,14 +170,16 @@ export default function ApplicationsPage() {
                                              )}
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button className="p-2.5 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all hover:scale-105 active:scale-95" title="Reject">
-                                            <X className="w-5 h-5" />
-                                        </button>
-                                        <button className="p-2.5 bg-emerald-500/10 text-emerald-500 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20 transition-all hover:scale-105 active:scale-95" title="Approve">
-                                            <Check className="w-5 h-5" />
-                                        </button>
-                                    </div>
+                                    {canManage && (
+                                        <div className="flex gap-2">
+                                            <button className="p-2.5 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all hover:scale-105 active:scale-95" title="Reject">
+                                                <X className="w-5 h-5" />
+                                            </button>
+                                            <button className="p-2.5 bg-emerald-500/10 text-emerald-500 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20 transition-all hover:scale-105 active:scale-95" title="Approve">
+                                                <Check className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Content */}

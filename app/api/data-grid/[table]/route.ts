@@ -16,24 +16,33 @@ const getDelegate = (tableName: string) => {
     }
 };
 
+
+import { checkCoreAccess, hasPermission, PERMISSIONS } from '@/lib/permissions';
+
+// ... (existing imports)
+
 export async function GET(
     request: Request,
-    { params }: { params: Promise<{ table: string }> } // Fix for Next.js 15+
+    { params }: { params: Promise<{ table: string }> }
 ) {
     const { table } = await params;
     
     // Security Check
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) return new NextResponse('Unauthorized', { status: 401 });
+    const access = checkCoreAccess(session);
+    if (!access.authorized) return access.response!;
+
+    // Permission Check
     // @ts-ignore
-    if (session.user.role !== 'CORE') return new NextResponse('Forbidden', { status: 403 });
+    if (!hasPermission(session.user.permissions, table, PERMISSIONS.READ)) {
+        return new NextResponse('Insufficient Permissions', { status: 403 });
+    }
 
     const delegate = getDelegate(table);
     if (!delegate) return new NextResponse('Invalid table', { status: 400 });
 
     try {
         // Fetch data
-        // Casting delegate as 'any' to avoid TS union issues with findMany
         const data = await (delegate as any).findMany({
             where: { deletedAt: null },
             orderBy: { createdAt: 'desc' }
@@ -60,9 +69,14 @@ export async function POST(
     
     // Security Check
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) return new NextResponse('Unauthorized', { status: 401 });
+    const access = checkCoreAccess(session);
+    if (!access.authorized) return access.response!;
+
+    // Permission Check
     // @ts-ignore
-    if (session.user.role !== 'CORE') return new NextResponse('Forbidden', { status: 403 });
+    if (!hasPermission(session.user.permissions, table, PERMISSIONS.WRITE)) {
+        return new NextResponse('Insufficient Permissions. Write Access Required.', { status: 403 });
+    }
 
     const delegate = getDelegate(table);
     if (!delegate) return new NextResponse('Invalid table', { status: 400 });
@@ -78,6 +92,7 @@ export async function POST(
                         ...item,
                         // Ensure relation connection if needed (e.g. createdBy)
                         ...(table !== 'members' ? { 
+                            // @ts-ignore
                             createdBy: { connect: { email: session.user.email } } 
                         } : {})
                     }
@@ -91,6 +106,7 @@ export async function POST(
             data: {
                 ...body,
                  ...(table !== 'members' ? { 
+                    // @ts-ignore
                     createdBy: { connect: { email: session.user.email } } 
                 } : {})
             }
@@ -102,3 +118,4 @@ export async function POST(
         return new NextResponse('Internal Error', { status: 500 });
     }
 }
+
