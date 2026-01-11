@@ -9,16 +9,17 @@ export async function POST(req: Request) {
         const body = await req.json();
 
         // Basic validation
-        if (!body.email || !body.name || !body.consented === false) {
-             // actually body.consented might be undefined or true.
+        if (!body.guideId) {
+            return NextResponse.json({ error: "Guide ID is required" }, { status: 400 });
         }
 
         const application = await prisma.application.create({
             data: {
-                applicantEmail: body.email,
+                guideId: body.guideId,
+                applicantEmail: body.data?.email || body.email,
                 status: "pending",
                 data: {
-                    ...body, 
+                    ...body.data,
                     submittedAt: new Date().toISOString()
                 }
             }
