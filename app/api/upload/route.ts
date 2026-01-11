@@ -1,8 +1,13 @@
 
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { put } from "@vercel/blob";
+
+// Next.js configuration for larger file uploads
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+// Maximum file size: 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export async function POST(request: Request) {
     try {
@@ -13,25 +18,27 @@ export async function POST(request: Request) {
             return new NextResponse("No file uploaded", { status: 400 });
         }
 
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        // Validate file size
+        if (file.size > MAX_FILE_SIZE) {
+            return new NextResponse(`File too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB`, { status: 400 });
+        }
 
-        // Create unique filename hot fix update2
-        const filename = `${uuidv4()}${path.extname(file.name)}`;
-        const uploadDir = path.join(process.cwd(), "public", "uploads");
-        const filepath = path.join(uploadDir, filename);
+        // Validate file type (images only)
+        if (!file.type.startsWith('image/')) {
+            return new NextResponse("Only image files are allowed", { status: 400 });
+        }
 
-        // Ensure upload directory exists
-        await mkdir(uploadDir, { recursive: true });
+        // Upload to Vercel Blob Storage
+        const blob = await put(file.name, file, {
+            access: 'public',
+            addRandomSuffix: true, // Adds random suffix to prevent name collisions
+        });
 
-        await writeFile(filepath, buffer);
-
-        // Return the public URL
-        const publicUrl = `/uploads/${filename}`;
-        
-        return NextResponse.json({ url: publicUrl });
+        // Return the public URL from Vercel Blob
+        return NextResponse.json({ url: blob.url });
     } catch (error) {
         console.error("Upload error:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        console.error("Error details:", error instanceof Error ? error.message : String(error));
+        return new NextResponse("Upload failed. Please try again.", { status: 500 });
     }
 }
