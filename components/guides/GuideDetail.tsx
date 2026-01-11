@@ -34,7 +34,8 @@ interface GuideDetailProps {
 
 export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
     const router = useRouter();
-    const canEdit = usePermission('events', 'WRITE');
+    // Use dynamic permission based on guide type (EVENT -> 'event', PROGRAM -> 'program', CONTENT -> 'content')
+    const canEdit = usePermission(guide.type.toLowerCase(), 'WRITE');
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [applications, setApplications] = useState<any[]>([]);
