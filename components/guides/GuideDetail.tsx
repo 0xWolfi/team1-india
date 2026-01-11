@@ -134,8 +134,24 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                 isDestructive={true}
             />
 
-            {/* Header */}
-            {/* ... (keep header content) ... */}
+            {/* Header with Cover Image */}
+            <div className="mb-8">
+                {guide.coverImage && (
+                    <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-white/10">
+                        <img
+                            src={guide.coverImage}
+                            alt={guide.title}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                )}
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">{guide.title}</h1>
+                <div className="flex items-center gap-3">
+                    <span className="px-3 py-1.5 bg-zinc-800 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider text-zinc-400">
+                        {guide.type}
+                    </span>
+                </div>
+            </div>
 
             <div className="flex justify-end mb-8">
                 {canEdit && (
