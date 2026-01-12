@@ -1,6 +1,6 @@
 import React from "react";
-import { 
-    User, Users, BookOpen, Beaker, Film
+import {
+    BookOpen, Beaker, Vote, Megaphone, FileText, Users, Calendar, Briefcase, Newspaper
 } from "lucide-react";
 import Link from "next/link";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
@@ -13,36 +13,65 @@ import { redirect } from "next/navigation";
 
 export default async function MemberPage() {
     const session = await getServerSession(authOptions);
-    
+
     if (!session) {
         redirect('/public'); // Protect the route
     }
 
     const resources = [
-
-        { 
-            title: "Community", 
-            link: "/public", 
-            icon: <Users />, 
-            description: "Connect with other members and partners.",
+        {
+            title: "Playbooks",
+            link: "/member/playbooks",
+            icon: <BookOpen />,
+            description: "Access member-only and public playbooks and guides.",
         },
-        { 
-            title: "Resources", 
-            link: "/public", 
-            icon: <BookOpen />, 
-            description: "Access guides, playbooks, and learning materials.",
+        {
+            title: "Events",
+            link: "/member/events",
+            icon: <Calendar />,
+            description: "View member-only and public event guides.",
         },
-        { 
-            title: "Experiments", 
-            link: "/core/experiments", 
-            icon: <Beaker />, 
-            description: "View and propose new community experiments.",
+        {
+            title: "Programs",
+            link: "/member/programs",
+            icon: <Briefcase />,
+            description: "Access member-only and public program guides.",
         },
-        { 
-            title: "Media Kit", 
-            link: "/core/mediakit", 
-            icon: <Film />, 
-            description: "Download official brand assets and resources.",
+        {
+            title: "Content",
+            link: "/member/content",
+            icon: <Newspaper />,
+            description: "Browse member-only and public content guides.",
+        },
+        {
+            title: "Experiments",
+            link: "/core/experiments",
+            icon: <Beaker />,
+            description: "Submit proposals, view status, and participate in discussions.",
+        },
+        {
+            title: "Polls",
+            link: "/core/poll",
+            icon: <Vote />,
+            description: "Vote on active community polls.",
+        },
+        {
+            title: "Announcements",
+            link: "/member/announcements",
+            icon: <Megaphone />,
+            description: "View member-only and public announcements.",
+        },
+        {
+            title: "Meeting Notes",
+            link: "/core/notes",
+            icon: <FileText />,
+            description: "View meeting notes and discussions.",
+        },
+        {
+            title: "Members",
+            link: "/member/directory",
+            icon: <Users />,
+            description: "Browse community members directory.",
         },
     ];
 
