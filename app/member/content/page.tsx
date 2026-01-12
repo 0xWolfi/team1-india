@@ -47,7 +47,7 @@ export default function MemberContentGuidesPage() {
 
             <GuideList
                 guides={guides}
-                basePath="/core/content/guides"
+                basePath="/member/content"
                 isLoading={isLoading}
                 canDelete={false}
                 canWrite={false}

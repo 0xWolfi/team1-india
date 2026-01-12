@@ -131,7 +131,7 @@ export default function MemberPlaybooksPage() {
                                     : 'bg-[#121212]/80 backdrop-blur-xl rounded-2xl p-5 flex items-center justify-between hover:bg-white/5'
                                 }
                             `}>
-                                <Link href={`/core/playbooks/${doc.id}`} className="absolute inset-0 z-20" />
+                                <Link href={`/member/playbooks/${doc.id}`} className="absolute inset-0 z-20" />
 
                                 {viewMode === 'grid' && (
                                     <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
