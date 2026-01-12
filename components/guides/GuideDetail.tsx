@@ -72,6 +72,12 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
 
             if (res.ok) {
                 setSubmitted(true);
+                // Reset form data for fresh entry
+                setFormData({});
+                // Reset submitted state after 3 seconds to allow new submissions
+                setTimeout(() => {
+                    setSubmitted(false);
+                }, 3000);
             }
         } catch (error) {
             console.error(error);
@@ -334,69 +340,82 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                             <h3 className="text-lg font-bold text-white mb-2">Apply Now</h3>
                             <p className="text-xs text-zinc-500 mb-6">Start this initiative by submitting the required details below.</p>
                             
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                {formFields.length > 0 ? (
-                                    formFields.map((field, idx) => (
-                                        <div key={field.key || field.id || idx}>
-                                            <label className="block text-xs font-bold text-zinc-400 mb-1.5 uppercase tracking-wider">
-                                                {field.label} {field.required && <span className="text-white">*</span>}
-                                            </label>
-                                            
-                                            {/* Render input based on type */}
-                                            {field.type === 'textarea' ? (
-                                                <textarea 
-                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700 min-h-[100px] resize-none"
-                                                    placeholder={field.placeholder || `Enter ${field.label}...`}
-                                                    required={field.required}
-                                                    onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                />
-                                            ) : field.type === 'select' ? (
-                                                <select
-                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all"
-                                                    required={field.required}
-                                                    onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                    defaultValue=""
-                                                >
-                                                    <option value="" disabled>Select an option</option>
-                                                    {field.options?.map(opt => (
-                                                        <option key={opt} value={opt}>{opt}</option>
-                                                    ))}
-                                                </select>
-                                            ) : field.type === 'checkbox' ? (
-                                                <label className="flex items-center gap-3 p-3 bg-black/20 rounded-lg border border-white/5 cursor-pointer hover:bg-black/30 transition-colors">
-                                                    <input 
-                                                        type="checkbox"
-                                                        className="w-4 h-4 rounded bg-black border-white/20 text-white focus:ring-white"
-                                                        required={field.required}
-                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.checked }))}
-                                                    />
-                                                    <span className="text-sm text-zinc-300">{field.placeholder || "Yes, I agree"}</span>
-                                                </label>
-                                            ) : (
-                                                <input 
-                                                    type={field.type}
-                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700"
-                                                    placeholder={field.placeholder || `Enter ${field.label}...`}
-                                                    required={field.required}
-                                                    onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                />
-                                            )}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="text-center py-4 bg-white/5 rounded-lg border border-dashed border-white/10 text-xs text-zinc-500">
-                                        No application form required.
+                            {submitted ? (
+                                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6 text-center animate-in fade-in zoom-in-95 duration-200">
+                                    <div className="w-12 h-12 rounded-full bg-emerald-500/20 mx-auto mb-3 flex items-center justify-center">
+                                        <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                                     </div>
-                                )}
+                                    <h4 className="text-white font-bold mb-1">Application Submitted!</h4>
+                                    <p className="text-emerald-400 text-xs">Your application has been received successfully.</p>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    {formFields.length > 0 ? (
+                                        formFields.map((field, idx) => (
+                                            <div key={field.key || field.id || idx}>
+                                                <label className="block text-xs font-bold text-zinc-400 mb-1.5 uppercase tracking-wider">
+                                                    {field.label} {field.required && <span className="text-white">*</span>}
+                                                </label>
 
-                                <button 
-                                    type="submit" 
-                                    disabled={isSubmitting || formFields.length === 0}
-                                    className="w-full bg-white text-black font-bold py-3 rounded-lg mt-4 hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                                </button>
-                            </form>
+                                                {/* Render input based on type */}
+                                                {field.type === 'textarea' ? (
+                                                    <textarea
+                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700 min-h-[100px] resize-none"
+                                                        placeholder={field.placeholder || `Enter ${field.label}...`}
+                                                        required={field.required}
+                                                        value={formData[field.key] || ''}
+                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
+                                                    />
+                                                ) : field.type === 'select' ? (
+                                                    <select
+                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all"
+                                                        required={field.required}
+                                                        value={formData[field.key] || ''}
+                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
+                                                    >
+                                                        <option value="" disabled>Select an option</option>
+                                                        {field.options?.map(opt => (
+                                                            <option key={opt} value={opt}>{opt}</option>
+                                                        ))}
+                                                    </select>
+                                                ) : field.type === 'checkbox' ? (
+                                                    <label className="flex items-center gap-3 p-3 bg-black/20 rounded-lg border border-white/5 cursor-pointer hover:bg-black/30 transition-colors">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="w-4 h-4 rounded bg-black border-white/20 text-white focus:ring-white"
+                                                            required={field.required}
+                                                            checked={formData[field.key] || false}
+                                                            onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.checked }))}
+                                                        />
+                                                        <span className="text-sm text-zinc-300">{field.placeholder || "Yes, I agree"}</span>
+                                                    </label>
+                                                ) : (
+                                                    <input
+                                                        type={field.type}
+                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700"
+                                                        placeholder={field.placeholder || `Enter ${field.label}...`}
+                                                        required={field.required}
+                                                        value={formData[field.key] || ''}
+                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
+                                                    />
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-4 bg-white/5 rounded-lg border border-dashed border-white/10 text-xs text-zinc-500">
+                                            No application form required.
+                                        </div>
+                                    )}
+
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting || formFields.length === 0}
+                                        className="w-full bg-white text-black font-bold py-3 rounded-lg mt-4 hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                                    </button>
+                                </form>
+                            )}
                         </div>
                     </div>
                 </div>
