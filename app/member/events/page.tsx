@@ -47,7 +47,7 @@ export default function MemberEventGuidesPage() {
 
             <GuideList
                 guides={guides}
-                basePath="/core/events/guides"
+                basePath="/member/events"
                 isLoading={isLoading}
                 canDelete={false}
                 canWrite={false}
