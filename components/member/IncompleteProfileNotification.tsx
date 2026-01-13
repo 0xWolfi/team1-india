@@ -1,21 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { AlertCircle, X, User } from "lucide-react";
 
 export function IncompleteProfileNotification() {
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
-
-    useEffect(() => {
-        checkProfileCompleteness();
-    }, []);
+    const pathname = usePathname();
 
     const checkProfileCompleteness = async () => {
         try {
-            const res = await fetch("/api/profile");
+            const res = await fetch("/api/profile", { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 // Check if required fields are missing
@@ -28,6 +25,19 @@ export function IncompleteProfileNotification() {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        checkProfileCompleteness();
+    }, [pathname]); // Re-check when route changes (e.g., returning from profile page)
+
+    // Also check periodically in case data was updated
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkProfileCompleteness();
+        }, 2000); // Check every 2 seconds
+
+        return () => clearInterval(interval);
+    }, []);
 
     if (isLoading || !isVisible) return null;
 
