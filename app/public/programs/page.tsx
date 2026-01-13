@@ -145,7 +145,6 @@ export default async function PublicProgramsPage() {
               </Link>
             ))}
           </div>
-        </div>
         
         {programs.length === 0 && (
             <div className="py-32 text-center border-2 border-dashed border-white/5 rounded-3xl">
