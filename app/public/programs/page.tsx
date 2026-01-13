@@ -107,12 +107,12 @@ export default async function PublicProgramsPage() {
         </div>
 
         {/* Vertical List */}
-        <div className="flex flex-col gap-6">
+        <div className="space-y-6">
           {programs.map((item: any) => (
-            <Link key={item.id} href={`/public/programs/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-row h-auto group relative">
+            <Link key={item.id} href={`/public/programs/${item.id}`} className="flex flex-row bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all group">
                     
                     {/* Image Section */}
-                    <div className="w-64 h-48 bg-zinc-900 relative shrink-0">
+                    <div className="w-64 h-48 bg-zinc-900 relative shrink-0 flex-shrink-0">
                         {item.coverImage ? (
                             <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                         ) : (
@@ -125,19 +125,21 @@ export default async function PublicProgramsPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-5 flex flex-col flex-1 bg-zinc-950">
-                        <div className="flex items-start justify-between gap-4 mb-2">
-                            <h3 className="font-bold text-white text-base line-clamp-1">{item.title}</h3>
-                            <span className="shrink-0 px-2 py-1 rounded-lg border border-white/10 text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:bg-white text-white group-hover:text-black transition-all">
-                                Open &rarr;
-                            </span>
+                    <div className="flex-1 p-6 flex flex-col justify-between min-h-[192px]">
+                        <div>
+                            <div className="flex items-start justify-between gap-4 mb-3">
+                                <h3 className="font-bold text-white text-lg line-clamp-2 flex-1">{item.title}</h3>
+                                <span className="shrink-0 px-3 py-1.5 rounded-lg border border-white/10 text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:bg-white group-hover:text-black transition-all whitespace-nowrap">
+                                    Open &rarr;
+                                </span>
+                            </div>
+                            
+                            <p className="text-sm text-zinc-500 line-clamp-3 leading-relaxed">
+                                {item.description || "No description provided."}
+                            </p>
                         </div>
                         
-                        <p className="text-sm text-zinc-500 line-clamp-2 leading-relaxed mb-4 flex-1">
-                            {item.description || "No description provided."}
-                        </p>
-                        
-                        <div className="mt-auto flex items-center justify-between text-xs text-zinc-600 border-t border-white/5 pt-4">
+                        <div className="mt-4 flex items-center justify-between text-xs text-zinc-600 border-t border-white/5 pt-4">
                             <span>by <span className="text-zinc-400">{item.createdBy?.name || 'Team 1'}</span></span>
                             <TimeAgo date={item.createdAt} />
                         </div>

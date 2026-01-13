@@ -95,18 +95,29 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
         }
     }, [session]);
 
-    // Normalize form schema to array
+    // Default fields that are always present
+    const defaultFields: FormField[] = [
+        { id: 'name', key: 'name', label: 'Name', type: 'text', required: true },
+        { id: 'email', key: 'email', label: 'Email', type: 'email', required: true }
+    ];
+
+    // Normalize form schema to array and combine with default fields
     const formFields: FormField[] = React.useMemo(() => {
-        if (!guide.formSchema) return [];
-        if (Array.isArray(guide.formSchema)) return guide.formSchema;
-        // Legacy support
-        return Object.entries(guide.formSchema).map(([key, label]) => ({
-            id: key,
-            key,
-            label: label as string,
-            type: 'text',
-            required: true
-        }));
+        const customFields = !guide.formSchema 
+            ? [] 
+            : Array.isArray(guide.formSchema) 
+                ? guide.formSchema 
+                : Object.entries(guide.formSchema).map(([key, label]) => ({
+                    id: key,
+                    key,
+                    label: label as string,
+                    type: 'text',
+                    required: true
+                }));
+        
+        // Always include default fields first, then custom fields (excluding any duplicate name/email)
+        const customFieldsFiltered = customFields.filter(f => f.key !== 'name' && f.key !== 'email');
+        return [...defaultFields, ...customFieldsFiltered];
     }, [guide.formSchema]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -434,14 +445,18 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                             const fieldLabel = (field.label || '').toLowerCase();
                                             const isNameField = fieldKey === 'name' || fieldLabel === 'name';
                                             const isEmailField = fieldKey === 'email' || fieldLabel === 'email';
-                                            const isReadOnly = isNameField || isEmailField;
+                                            // Name is editable, email is read-only
+                                            const isReadOnly = isEmailField;
                                             
                                             return (
                                                 <div key={field.key || field.id || idx}>
                                                     <label className="block text-xs font-bold text-zinc-400 mb-1.5 uppercase tracking-wider">
                                                         {field.label} {field.required && <span className="text-white">*</span>}
-                                                        {isReadOnly && (
-                                                            <span className="ml-2 text-[10px] text-emerald-400 font-normal">(Verified)</span>
+                                                        {isEmailField && (
+                                                            <span className="ml-2 text-[10px] text-emerald-400 font-normal">(Verified - Read Only)</span>
+                                                        )}
+                                                        {isNameField && !isEmailField && (
+                                                            <span className="ml-2 text-[10px] text-zinc-500 font-normal">(Editable)</span>
                                                         )}
                                                     </label>
 
