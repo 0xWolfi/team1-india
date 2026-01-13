@@ -44,9 +44,7 @@ export default function ExperimentDetailPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userPermissions = (session?.user as any)?.permissions || {};
-  const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
-  // Check if core (simplified check, assumes any specific permission implies core/write access in context of this app's logic)
-  const isCore = isSuperAdmin || !!userPermissions['experiments'] || !!userPermissions['*']; 
+  const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS'; 
 
   useEffect(() => {
     fetchExperiment();
@@ -254,9 +252,9 @@ export default function ExperimentDetailPage() {
                         <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6 pb-4 border-b border-white/5">Governance Actions</h3>
                         
                         <div className="space-y-3">
-                            {/* Move to Discussion: Core Only from Proposed */}
-                            {experiment.stage === 'PROPOSED' && isCore && (
-                                 <button 
+                            {/* Move to Discussion: Superadmin Only from Proposed */}
+                            {experiment.stage === 'PROPOSED' && isSuperAdmin && (
+                                 <button
                                     onClick={() => handleStatusChange("DISCUSSION")}
                                     disabled={actionLoading}
                                     className="w-full py-3.5 px-4 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 hover:border-amber-500/40 text-amber-400 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(245,158,11,0.1)]"
@@ -308,11 +306,11 @@ export default function ExperimentDetailPage() {
                                 </div>
                             )}
 
-                            {!isCore && !isSuperAdmin && experiment.stage === 'PROPOSED' && (
+                            {!isSuperAdmin && experiment.stage === 'PROPOSED' && (
                                 <div className="p-4 bg-white/5 border border-white/5 rounded-xl text-center">
                                     <Clock className="w-5 h-5 text-zinc-500 mx-auto mb-2" />
                                     <p className="text-xs text-zinc-500 italic">
-                                        Proposal is currently under review by Core members.
+                                        Proposal is currently under review by Superadmin.
                                     </p>
                                 </div>
                             )}
