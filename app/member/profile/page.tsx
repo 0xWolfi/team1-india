@@ -12,10 +12,12 @@ export default function ProfilePage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
-        address: "",
-        twitter: "",
+        name: "",
+        xHandle: "",
         telegram: "",
         wallet: "",
+        address: "",
+        twitter: "",
         bio: ""
     });
 
@@ -31,10 +33,12 @@ export default function ProfilePage() {
             if (res.ok) {
                 const data = await res.json();
                 setFormData({
-                    address: data.address || "",
-                    twitter: data.twitter || "",
+                    name: data.name || "",
+                    xHandle: data.xHandle || "",
                     telegram: data.telegram || "",
                     wallet: data.wallet || "",
+                    address: data.address || "",
+                    twitter: data.twitter || "",
                     bio: data.bio || ""
                 });
             }
@@ -49,14 +53,24 @@ export default function ProfilePage() {
         try {
             const res = await fetch("/api/profile", {
                 method: "PATCH",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    customFields: formData
+                    name: formData.name,
+                    xHandle: formData.xHandle,
+                    telegram: formData.telegram,
+                    customFields: {
+                        wallet: formData.wallet,
+                        address: formData.address,
+                        twitter: formData.twitter,
+                        bio: formData.bio
+                    }
                 })
             });
 
             if (res.ok) {
+                await updateSession();
+                router.push("/member");
                 router.refresh();
-                // Show success notification (if available)
             }
         } catch (error) {
             console.error(error);
@@ -124,7 +138,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                                 <p className="text-xs text-blue-400">
-                                    Name and Email are managed by the administrator. Contact support to change them.
+                                    Email is managed by the administrator. You can update your name and other details below.
                                 </p>
                             </div>
                         </div>
