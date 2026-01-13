@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { CoreWrapper } from "@/components/core/CoreWrapper";
-import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { User, Save, Linkedin, Twitter, Wallet, MapPin, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -21,19 +20,26 @@ export default function ProfilePage() {
 
     useEffect(() => {
         if (session?.user) {
-            // @ts-ignore - customFields might be on user object or we need to fetch it?
-            // NextAuth session usually doesn't have customFields unless added to callback.
-            // We should fetch the latest profile data.
             fetchProfile();
         }
     }, [session]);
 
     const fetchProfile = async () => {
-        // Since we don't have a specific GET /api/profile, we might rely on the fact that we can fetch "me".
-        // Or just assume for now we start blank or assume the session has it? 
-        // Actually, without GET endpoint, we can't show current values.
-        // I should stick to fetching from the API I just made? No, I only made PATCH.
-        // Let's UPDATE the API to include GET.
+        try {
+            const res = await fetch("/api/profile");
+            if (res.ok) {
+                const data = await res.json();
+                setFormData({
+                    address: data.address || "",
+                    twitter: data.twitter || "",
+                    telegram: data.telegram || "",
+                    wallet: data.wallet || "",
+                    bio: data.bio || ""
+                });
+            }
+        } catch (error) {
+            console.error("Failed to fetch profile:", error);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -59,12 +65,18 @@ export default function ProfilePage() {
     };
 
     return (
-        <CoreWrapper>
-            <CorePageHeader 
-                title="My Profile" 
-                description="Manage your public information and private details."
-                icon={<User className="w-5 h-5 text-zinc-200" />}
-            />
+        <MemberWrapper>
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-white/5 rounded-lg">
+                        <User className="w-5 h-5 text-zinc-200" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-white">My Profile</h1>
+                        <p className="text-sm text-zinc-400">Manage your public information and private details.</p>
+                    </div>
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
                 {/* Read Only Card */}
@@ -84,7 +96,25 @@ export default function ProfilePage() {
                             <div>
                                 <label className="text-xs font-bold text-zinc-500 uppercase">Role</label>
                                 {/* @ts-ignore */}
-                                <p className="text-sm text-zinc-300">{session?.user?.role || 'MEMBER'}</p>
+                                <p className="text-sm text-zinc-300">
+                                    {(() => {
+                                        const tags = (session?.user as any)?.tags;
+                                        const role = (session?.user as any)?.role;
+
+                                        // For CORE members, show tags array
+                                        if (role === 'CORE' && Array.isArray(tags) && tags.length > 0) {
+                                            return tags.join(', ');
+                                        }
+
+                                        // For MEMBER (community), show tags string
+                                        if (role === 'MEMBER' && tags) {
+                                            return tags;
+                                        }
+
+                                        // Fallback to role
+                                        return role || 'Member';
+                                    })()}
+                                </p>
                             </div>
                             <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                                 <p className="text-xs text-blue-400">
@@ -179,7 +209,7 @@ export default function ProfilePage() {
                     </form>
                 </div>
             </div>
-        </CoreWrapper>
+        </MemberWrapper>
     );
 }
 
