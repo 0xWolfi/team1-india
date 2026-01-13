@@ -108,14 +108,13 @@ export default async function PublicContentPage() {
             </div>
         </div>
 
-        {/* Horizontal Scrolling Carousel */}
-        <div className="overflow-x-auto scrollbar-hide -mx-6 px-6 pb-4 scroll-smooth">
-          <div className="flex gap-6" style={{ width: 'max-content' }}>
-            {guides.map((item: any) => (
-              <Link key={item.id} href={`/public/guides/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[340px] w-[320px] shrink-0 group relative">
+        {/* Vertical List */}
+        <div className="flex flex-col gap-6">
+          {guides.map((item: any) => (
+            <Link key={item.id} href={`/public/guides/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-row h-auto group relative">
                     
                     {/* Image Section */}
-                    <div className="h-44 w-full bg-zinc-900 relative">
+                    <div className="w-64 h-48 bg-zinc-900 relative shrink-0">
                         {item.coverImage ? (
                             <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                         ) : (
@@ -126,7 +125,7 @@ export default async function PublicContentPage() {
                             </div>
                         )}
                         {/* Type Badge */}
-                         <div className="absolute top-4 right-4">
+                        <div className="absolute top-4 right-4">
                             <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 border border-white/10 backdrop-blur-md text-[10px] font-bold text-zinc-300 uppercase tracking-wider">
                                 {item.type || 'Guide'}
                             </span>
