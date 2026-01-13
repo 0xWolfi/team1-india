@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Download, Palette, Video, FileText, Image as ImageIcon } from 'lucide-react';
+import { Download, Palette, Video, FileText, Image as ImageIcon, ExternalLink } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 
 interface MediaItem {
@@ -31,20 +31,26 @@ export function MediaKitModal({ isOpen, onClose, mediaItems }: MediaKitModalProp
                         if (title.includes("photo") || title.includes("image")) Icon = ImageIcon;
 
                         return (
-                            <Link 
-                                key={item.id} 
-                                href={item.links[0] || '#'} 
+                            <Link
+                                key={item.id}
+                                href={item.links[0] || '#'}
                                 target="_blank"
-                                className="p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all group flex flex-col items-center justify-center text-center gap-3 h-40 hover:-translate-y-1"
+                                className="p-5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all group flex flex-col justify-between text-left gap-3 min-h-[140px] hover:-translate-y-1 cursor-pointer"
                             >
-                                <div className="p-3 bg-white/5 rounded-full group-hover:bg-white/10 transition-colors">
-                                    <Icon className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors" />
+                                <div className="flex items-start gap-3">
+                                    <div className="p-2.5 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors flex-shrink-0">
+                                        <Icon className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-bold text-white group-hover:text-white line-clamp-2 leading-snug mb-1">{item.title}</h4>
+                                        {item.description && (
+                                            <p className="text-[11px] text-zinc-500 group-hover:text-zinc-400 line-clamp-2 leading-relaxed">{item.description}</p>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="space-y-1">
-                                    <span className="block text-sm font-bold text-zinc-300 group-hover:text-white line-clamp-2 uppercase tracking-wide">{item.title}</span>
-                                    {item.description && (
-                                        <span className="block text-[10px] text-zinc-500 group-hover:text-zinc-400 line-clamp-1">{item.description}</span>
-                                    )}
+                                <div className="flex items-center gap-1.5 text-zinc-400 group-hover:text-white transition-colors pt-2 border-t border-white/5">
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">Open in Drive</span>
                                 </div>
                             </Link>
                         );

@@ -57,19 +57,36 @@ export async function POST(request: NextRequest) {
     const json = await request.json();
     const body = createSchema.parse(json);
 
-    // Get user from DB to verify
-    const user = await prisma.member.findUnique({
+    // Check both Member (CORE) and CommunityMember (MEMBER) tables
+    let userId: string | null = null;
+
+    // First check Member table (CORE users)
+    const coreMember = await prisma.member.findUnique({
         where: { email: session.user?.email! }
     });
-    
-    if (!user) return new NextResponse("User not found", { status: 404 });
+
+    if (coreMember) {
+        userId = coreMember.id;
+    } else {
+        // Check CommunityMember table (regular members)
+        // @ts-ignore
+        const communityMember = await prisma.communityMember.findUnique({
+            where: { email: session.user?.email! }
+        });
+
+        if (communityMember) {
+            userId = communityMember.id;
+        }
+    }
+
+    if (!userId) return new NextResponse("User not found in system", { status: 404 });
 
     const experiment = await prisma.experiment.create({
       data: {
         title: body.title,
         description: body.description,
         stage: "PROPOSED",
-        createdById: user.id,
+        createdById: userId,
       },
     });
 
@@ -77,7 +94,7 @@ export async function POST(request: NextRequest) {
         action: 'CREATE',
         resource: 'EXPERIMENT',
         resourceId: experiment.id,
-        actorId: user.id,
+        actorId: userId,
         metadata: { title: body.title }
     });
 
@@ -86,6 +103,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return new NextResponse(JSON.stringify(error.issues), { status: 400 });
     }
-    return new NextResponse(null, { status: 500 });
+    console.error("[EXPERIMENTS_POST_ERROR]", error);
+    return new NextResponse(JSON.stringify({ error: "Internal Server Error", details: error instanceof Error ? error.message : String(error) }), { status: 500 });
   }
 }

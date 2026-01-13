@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import { prisma } from "@/lib/prisma";
-import { logActivity } from "@/lib/logger";
 
 export async function GET(request: Request) {
     // Basic authorization check - Vercel Cron uses this header
