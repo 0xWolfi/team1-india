@@ -1,11 +1,19 @@
 
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
 
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
+        // Verify Authentication
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "You must be logged in to apply." }, { status: 401 });
+        }
+
         const body = await req.json();
 
         // Basic validation
@@ -13,9 +21,32 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Guide ID is required" }, { status: 400 });
         }
 
-        const applicantEmail = body.data?.email || body.email;
-        if (!applicantEmail) {
-            return NextResponse.json({ error: "Email is required" }, { status: 400 });
+        // Use session email (trusted) instead of body email
+        const applicantEmail = session.user.email;
+        
+        // Fetch user name from database
+        let userName = session.user.name || body.data?.name || body.name || '';
+        try {
+            const memberRecord = await prisma.member.findUnique({ 
+                where: { email: applicantEmail },
+                select: { name: true }
+            });
+            
+            if (memberRecord?.name) {
+                userName = memberRecord.name;
+            } else {
+                // Check CommunityMember table
+                const communityMember = await prisma.communityMember.findUnique({
+                    where: { email: applicantEmail },
+                    select: { name: true }
+                });
+                
+                if (communityMember?.name) {
+                    userName = communityMember.name;
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching user name from database:", error);
         }
 
         // Check for existing submission within last 7 days
@@ -50,9 +81,11 @@ export async function POST(req: Request) {
         const application = await prisma.application.create({
             data: {
                 guideId: body.guideId,
-                applicantEmail: applicantEmail,
+                applicantEmail: applicantEmail, // Use trusted session email
                 status: "pending",
                 data: {
+                    name: userName, // Use database name
+                    email: applicantEmail, // Use trusted session email
                     ...body.data,
                     submittedAt: new Date().toISOString()
                 }

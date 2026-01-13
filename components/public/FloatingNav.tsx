@@ -150,15 +150,6 @@ export function FloatingNav() {
                         </p>
 
                         <div className="flex flex-col gap-3">
-                            <button
-                                onClick={() => {
-                                    setShowLoginModal(false);
-                                    signIn('google', { callbackUrl: '/access-check' });
-                                }}
-                                className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors"
-                            >
-                                Log In / Sign Up
-                            </button>
                             <Link
                                 href="https://tally.so/r/w7Xj0A"
                                 target="_blank"

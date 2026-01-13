@@ -17,16 +17,20 @@ export async function GET(request: NextRequest) {
         if (role === 'CORE') {
             member = await prisma.member.findUnique({ 
                 where: { email: session.user.email },
-                select: { customFields: true }
+                select: { customFields: true, name: true, email: true }
             });
         } else {
             member = await prisma.communityMember.findUnique({ 
                 where: { email: session.user.email },
-                select: { customFields: true }
+                select: { customFields: true, name: true, email: true }
             });
         }
 
-        return NextResponse.json(member?.customFields || {});
+        return NextResponse.json({
+            customFields: member?.customFields || {},
+            name: member?.name || session.user.name || '',
+            email: member?.email || session.user.email || ''
+        });
     } catch (error) {
         console.error("[PROFILE_GET]", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

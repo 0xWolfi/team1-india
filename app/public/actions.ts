@@ -19,7 +19,32 @@ export async function applyToProgram(programId: string, formData: FormData) {
     }
 
     const userEmail = session.user.email;
-    const userName = session.user.name || name;
+    
+    // Fetch user name from database (Member or CommunityMember)
+    let userName = session.user.name || name;
+    try {
+        const memberRecord = await prisma.member.findUnique({ 
+            where: { email: userEmail },
+            select: { name: true }
+        });
+        
+        if (memberRecord?.name) {
+            userName = memberRecord.name;
+        } else {
+            // Check CommunityMember table
+            const communityMember = await prisma.communityMember.findUnique({
+                where: { email: userEmail },
+                select: { name: true }
+            });
+            
+            if (communityMember?.name) {
+                userName = communityMember.name;
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching user name from database:", error);
+        // Fallback to session name or form name
+    }
 
     // Fetch Guide limits
     try {
