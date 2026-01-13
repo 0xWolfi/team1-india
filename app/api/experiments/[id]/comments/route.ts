@@ -21,18 +21,35 @@ export async function POST(
     const json = await request.json();
     const body = commentSchema.parse(json);
 
-    // Get user
-    const user = await prisma.member.findUnique({
+    // Check both Member (CORE) and CommunityMember (MEMBER) tables
+    let userId: string | null = null;
+
+    // First check Member table (CORE users)
+    const coreMember = await prisma.member.findUnique({
         where: { email: session.user?.email! }
     });
 
-    if (!user) return new NextResponse("User not found", { status: 404 });
+    if (coreMember) {
+        userId = coreMember.id;
+    } else {
+        // Check CommunityMember table (regular members)
+        // @ts-ignore
+        const communityMember = await prisma.communityMember.findUnique({
+            where: { email: session.user?.email! }
+        });
+
+        if (communityMember) {
+            userId = communityMember.id;
+        }
+    }
+
+    if (!userId) return new NextResponse("User not found in system", { status: 404 });
 
     const comment = await prisma.experimentComment.create({
       data: {
         body: body.body,
         experimentId: id,
-        authorId: user.id
+        authorId: userId
       },
       include: {
         author: { select: { name: true, image: true } }
@@ -44,6 +61,7 @@ export async function POST(
      if (error instanceof z.ZodError) {
       return new NextResponse(JSON.stringify(error.issues), { status: 400 });
     }
-    return new NextResponse(null, { status: 500 });
+    console.error("[EXPERIMENT_COMMENT_POST_ERROR]", error);
+    return new NextResponse(JSON.stringify({ error: "Internal Server Error", details: error instanceof Error ? error.message : String(error) }), { status: 500 });
   }
 }

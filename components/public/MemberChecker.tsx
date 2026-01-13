@@ -6,12 +6,13 @@ import { Search, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 export default function MemberChecker() {
     const [email, setEmail] = useState("");
     const [xHandle, setXHandle] = useState("");
+    const [telegram, setTelegram] = useState("");
     const [status, setStatus] = useState<'IDLE' | 'LOADING' | 'FOUND' | 'NOT_FOUND'>('IDLE');
     const [result, setResult] = useState<{ name?: string; role?: string } | null>(null);
 
     const handleCheck = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email && !xHandle) return;
+        if (!email && !xHandle && !telegram) return;
 
         setStatus('LOADING');
         setResult(null);
@@ -20,7 +21,7 @@ export default function MemberChecker() {
             const res = await fetch('/api/public/check-member', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, xHandle })
+                body: JSON.stringify({ email, xHandle, telegram })
             });
 
             if (res.ok) {
@@ -44,10 +45,10 @@ export default function MemberChecker() {
         <div className="w-full">
             <div>
                 <form onSubmit={handleCheck} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label className="block text-[10px] font-bold text-zinc-600 uppercase mb-1 ml-1">Email Address</label>
-                            <input 
+                            <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -59,7 +60,7 @@ export default function MemberChecker() {
                             <label className="block text-[10px] font-bold text-zinc-600 uppercase mb-1 ml-1">X Handle</label>
                             <div className="relative">
                                 <span className="absolute left-3 top-2.5 text-zinc-600 text-sm">@</span>
-                                <input 
+                                <input
                                     type="text"
                                     value={xHandle}
                                     onChange={(e) => setXHandle(e.target.value.replace('@', ''))}
@@ -68,11 +69,24 @@ export default function MemberChecker() {
                                 />
                             </div>
                         </div>
+                        <div>
+                            <label className="block text-[10px] font-bold text-zinc-600 uppercase mb-1 ml-1">Telegram Handle</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-2.5 text-zinc-600 text-sm">@</span>
+                                <input
+                                    type="text"
+                                    value={telegram}
+                                    onChange={(e) => setTelegram(e.target.value.replace('@', ''))}
+                                    placeholder="username"
+                                    className="w-full bg-black/20 border border-white/5 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-indigo-500/30 focus:bg-black/40 transition-all placeholder:text-zinc-800"
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <button 
-                        type="submit" 
-                        disabled={status === 'LOADING' || (!email && !xHandle)}
+                    <button
+                        type="submit"
+                        disabled={status === 'LOADING' || (!email && !xHandle && !telegram)}
                         className="w-full bg-white/5 hover:bg-white/10 border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed text-zinc-400 hover:text-white font-medium text-sm py-2 rounded-lg transition-all flex items-center justify-center gap-2"
                     >
                         {status === 'LOADING' ? (
