@@ -23,6 +23,7 @@ export async function POST(
 
     // Check both Member (CORE) and CommunityMember (MEMBER) tables
     let userId: string | null = null;
+    let communityMember: any = null;
 
     // First check Member table (CORE users)
     const coreMember = await prisma.member.findUnique({
@@ -34,27 +35,42 @@ export async function POST(
     } else {
         // Check CommunityMember table (regular members)
         // @ts-ignore
-        const communityMember = await prisma.communityMember.findUnique({
+        communityMember = await prisma.communityMember.findUnique({
             where: { email: session.user?.email! }
         });
 
         if (communityMember) {
-            userId = communityMember.id;
+            // For CommunityMembers, we can't use their ID in authorId (foreign key constraint)
+            // Set to null - comments from community members won't have author relation
+            userId = null;
         }
     }
 
-    if (!userId) return new NextResponse("User not found in system", { status: 404 });
+    if (!coreMember && !communityMember) {
+        return new NextResponse("User not found in system", { status: 404 });
+    }
 
     const comment = await prisma.experimentComment.create({
       data: {
         body: body.body,
         experimentId: id,
-        authorId: userId
+        authorId: userId // null for CommunityMembers, Member ID for Core members
       },
       include: {
-        author: { select: { name: true, image: true } }
+        author: userId ? { select: { name: true, image: true } } : undefined
       }
     });
+
+    // If author is null (CommunityMember), add their info manually
+    if (!comment.author && communityMember) {
+        return NextResponse.json({
+            ...comment,
+            author: {
+                name: communityMember.name,
+                image: null
+            }
+        });
+    }
 
     return NextResponse.json(comment);
   } catch (error) {

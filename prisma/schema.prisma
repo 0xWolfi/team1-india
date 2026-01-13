@@ -10,20 +10,20 @@ datasource db {
 model Member {
   id           String    @id @default(uuid())
   email        String    @unique
-  xHandle      String?   
+  xHandle      String?
   name         String?
   image        String?
   permissions  Json?     @default("{\"default\": \"READ\"}")
   tags         String[]  @default([])
-  status       String    // applied, approved, active, paused
+  status       String // applied, approved, active, paused
   customFields Json?     @default("{}")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   deletedAt    DateTime?
 
   // Relations
-  lockedPlaybooks    Playbook[] @relation("LockedBy")
-  createdPlaybooks   Playbook[] @relation("CreatedBy")
+  lockedPlaybooks    Playbook[]          @relation("LockedBy")
+  createdPlaybooks   Playbook[]          @relation("CreatedBy")
   assignedOperations Operation[]
   createdMedia       MediaItem[]
   experiments        Experiment[]
@@ -31,67 +31,63 @@ model Member {
   mediaComments      Comment[]
   logs               Log[]
 
-  auditLogs          AuditLog[]
-  contentResources   ContentResource[]
-  createdProjects    Project[]
-  createdPartners    Partner[]
-  guides             Guide[]
+  auditLogs        AuditLog[]
+  contentResources ContentResource[]
+  createdProjects  Project[]
+  createdPartners  Partner[]
+  guides           Guide[]
 
   @@index([status])
   @@index([xHandle])
 }
 
 model CommunityMember {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  xHandle   String?
-  telegram  String?
-  name      String?
-  tags      String?  @default("member") // e.g. "Founder", "Investor"
-  status    String   @default("active")
+  id           String    @id @default(uuid())
+  email        String    @unique
+  xHandle      String?
+  telegram     String?
+  name         String?
+  tags         String?   @default("member") // e.g. "Founder", "Investor"
+  status       String    @default("active")
   customFields Json?     @default("{}")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  deletedAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
 
   @@index([status])
   @@index([xHandle])
 }
 
 model Playbook {
-  id             String    @id @default(uuid())
+  id             String     @id @default(uuid())
   title          String
   body           Json
   markdownExport String?
-  status         String?   // draft, pending, approved, published
+  status         String? // draft, pending, approved, published
   visibility     Visibility @default(CORE)
   coverImage     String?
   description    String?
   tags           String[]
-  version        Int       @default(1)
-  createdAt      DateTime  @default(now())
+  version        Int        @default(1)
+  createdAt      DateTime   @default(now())
   deletedAt      DateTime?
 
   // Relations
-  lockedBy       Member?   @relation("LockedBy", fields: [lockedById], references: [id])
-  lockedById     String?
-  lockedAt       DateTime?
-  updatedAt      DateTime  @default(now()) @updatedAt
-  createdBy      Member?   @relation("CreatedBy", fields: [createdById], references: [id])
-  createdById    String?
+  lockedBy    Member?   @relation("LockedBy", fields: [lockedById], references: [id])
+  lockedById  String?
+  lockedAt    DateTime?
+  updatedAt   DateTime  @default(now()) @updatedAt
+  createdBy   Member?   @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById String?
 
   @@index([status])
   @@index([visibility])
 }
 
-
-
-
-
 model Operation {
   id              String    @id @default(uuid())
   title           String?
-  type            String?   // task, meeting
+  type            String? // task, meeting
   status          String?
   dueDate         DateTime?
   relatedType     String?
@@ -103,8 +99,8 @@ model Operation {
   createdAt       DateTime  @default(now())
   deletedAt       DateTime?
 
-  assignee        Member?   @relation(fields: [assigneeId], references: [id])
-  assigneeId      String?
+  assignee   Member? @relation(fields: [assigneeId], references: [id])
+  assigneeId String?
 
   @@index([status])
   @@index([type])
@@ -117,11 +113,11 @@ model MediaItem {
   description String?
   platform    String[]
   links       String[]
-  status      String?   // draft, needs_edit, pending_approval, approved, posted
+  status      String? // draft, needs_edit, pending_approval, approved, posted
   createdAt   DateTime  @default(now())
   deletedAt   DateTime?
 
-  createdBy   Member?   @relation(fields: [createdById], references: [id])
+  createdBy   Member?     @relation(fields: [createdById], references: [id])
   createdById String?
   posts       MediaPost[]
   comments    Comment[]
@@ -136,8 +132,8 @@ model MediaPost {
   postedAt  DateTime?
   deletedAt DateTime?
 
-  media     MediaItem @relation(fields: [mediaId], references: [id])
-  mediaId   String
+  media   MediaItem @relation(fields: [mediaId], references: [id])
+  mediaId String
 }
 
 model Comment {
@@ -145,12 +141,12 @@ model Comment {
   content   String
   createdAt DateTime  @default(now())
   deletedAt DateTime?
-  
-  media     MediaItem @relation(fields: [mediaId], references: [id], onDelete: Cascade)
-  mediaId   String
 
-  author    Member    @relation(fields: [authorId], references: [id])
-  authorId  String
+  media   MediaItem @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  mediaId String
+
+  author   Member @relation(fields: [authorId], references: [id])
+  authorId String
 
   @@index([mediaId])
 }
@@ -162,22 +158,22 @@ enum Visibility {
 }
 
 model Guide {
-  id         String   @id @default(uuid())
-  type       String?  // event, program, content
-  title      String?
-  coverImage String?
-  body       Json?
-  audience   String[] @default([])
-  formSchema Json?
-  visibility Visibility @default(CORE)
-  maxSubmissionsPublic Int? @default(1)
-  maxSubmissionsMember Int? @default(10)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
-  deletedAt  DateTime?
+  id                   String     @id @default(uuid())
+  type                 String? // event, program, content
+  title                String?
+  coverImage           String?
+  body                 Json?
+  audience             String[]   @default([])
+  formSchema           Json?
+  visibility           Visibility @default(CORE)
+  maxSubmissionsPublic Int?       @default(1)
+  maxSubmissionsMember Int?       @default(10)
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @default(now()) @updatedAt
+  deletedAt            DateTime?
 
-  createdBy    Member?   @relation(fields: [createdById], references: [id])
-  createdById  String?
+  createdBy   Member? @relation(fields: [createdById], references: [id])
+  createdById String?
 
   applications Application[]
 
@@ -186,42 +182,44 @@ model Guide {
 }
 
 model Application {
-  id             String   @id @default(uuid())
+  id             String    @id @default(uuid())
   applicantEmail String?
   data           Json?
   status         String?
-  submittedAt    DateTime @default(now())
+  submittedAt    DateTime  @default(now())
   deletedAt      DateTime?
 
-  guide          Guide?   @relation(fields: [guideId], references: [id])
-  guideId        String?
+  guide   Guide?  @relation(fields: [guideId], references: [id])
+  guideId String?
 
   @@index([status])
   @@index([guideId])
 }
 
 model Experiment {
-  id          String   @id @default(uuid())
-  title       String?
-  description String?
-  stage       String?  // proposed, discussion, accepted, declined
-  upvotes     Int      @default(0)
-  createdAt   DateTime @default(now())
-  deletedAt   DateTime?
+  id             String    @id @default(uuid())
+  title          String?
+  description    String?
+  stage          String? // proposed, discussion, accepted, declined
+  upvotes        Int       @default(0)
+  createdAt      DateTime  @default(now())
+  deletedAt      DateTime?
+  createdByEmail String? // For CommunityMember creators (since createdById only references Member)
 
-  createdBy   Member?  @relation(fields: [createdById], references: [id])
+  createdBy   Member?             @relation(fields: [createdById], references: [id])
   createdById String?
   comments    ExperimentComment[]
 
   @@index([stage])
+  @@index([createdByEmail])
 }
 
 model ExperimentComment {
-  id           String   @id @default(uuid())
-  body         String?
-  parentId     String?
-  createdAt    DateTime @default(now())
-  deletedAt    DateTime?
+  id        String    @id @default(uuid())
+  body      String?
+  parentId  String?
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
 
   experiment   Experiment @relation(fields: [experimentId], references: [id])
   experimentId String
@@ -232,16 +230,16 @@ model ExperimentComment {
 }
 
 model Log {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   action    String?
   entity    String?
   entityId  String?
   metadata  Json?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   deletedAt DateTime?
 
-  actor     Member?  @relation(fields: [actorId], references: [id])
-  actorId   String?
+  actor   Member? @relation(fields: [actorId], references: [id])
+  actorId String?
 
   @@index([action])
   @@index([entity])
@@ -249,18 +247,18 @@ model Log {
 }
 
 model AuditLog {
-  id         String   @id @default(uuid())
-  action     String   // CREATE, UPDATE, DELETE, LOGIN, ETC
-  resource   String   // Playbook, Member, System
+  id         String    @id @default(uuid())
+  action     String // CREATE, UPDATE, DELETE, LOGIN, ETC
+  resource   String // Playbook, Member, System
   resourceId String?
-  metadata   Json?    // Diff, details, etc
-  createdAt  DateTime @default(now())
+  metadata   Json? // Diff, details, etc
+  createdAt  DateTime  @default(now())
   deletedAt  DateTime?
-  
-  actor      Member?  @relation(fields: [actorId], references: [id])
-  actorId    String?
 
-  mediaItem  MediaItem? @relation(fields: [mediaItemId], references: [id])
+  actor   Member? @relation(fields: [actorId], references: [id])
+  actorId String?
+
+  mediaItem   MediaItem? @relation(fields: [mediaItemId], references: [id])
   mediaItemId String?
 
   @@index([resource, resourceId])
@@ -271,66 +269,66 @@ model AuditLog {
 // Deleted models: Program, Event
 
 model ContentResource {
-  id           String    @id @default(uuid())
+  id           String  @id @default(uuid())
   title        String
-  type         String?   // e.g. "Blog", "Video", "Whitepaper"
-  status       String    @default("draft")
-  customFields Json?     @default("{}")
+  type         String? // e.g. "Blog", "Video", "Whitepaper"
+  status       String  @default("draft")
+  customFields Json?   @default("{}")
   content      String?
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @default(now()) @updatedAt
-  deletedAt    DateTime?
-  
-  createdBy    Member?   @relation(fields: [createdById], references: [id])
-  createdById  String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+
+  createdBy   Member? @relation(fields: [createdById], references: [id])
+  createdById String?
 
   @@index([type])
   @@index([status])
 }
 
 model Project {
-  id           String    @id @default(uuid())
-  name         String
-  status       String    @default("active")
-  visibility   Visibility @default(CORE)
+  id         String     @id @default(uuid())
+  name       String
+  status     String     @default("active")
+  visibility Visibility @default(CORE)
   // Social/Info
-  logo         String?   // SVG/Image URL
-  website      String?
-  twitter      String?
-  telegram     String?
-  
+  logo       String? // SVG/Image URL
+  website    String?
+  twitter    String?
+  telegram   String?
+
   customFields Json?     @default("{}")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   deletedAt    DateTime?
-  
-  createdBy    Member?   @relation(fields: [createdById], references: [id])
-  createdById  String?
+
+  createdBy   Member? @relation(fields: [createdById], references: [id])
+  createdById String?
 
   @@index([status])
   @@index([visibility])
 }
 
 model Partner {
-  id           String    @id @default(uuid())
-  name         String
-  type         String?   // e.g. "Sponsor", "Community", "Vendor"
-  status       String    @default("active")
-  visibility   Visibility @default(CORE)
+  id         String     @id @default(uuid())
+  name       String
+  type       String? // e.g. "Sponsor", "Community", "Vendor"
+  status     String     @default("active")
+  visibility Visibility @default(CORE)
   // Social/Info
-  logo         String?
-  website      String?
-  twitter      String?
-  telegram     String?
+  logo       String?
+  website    String?
+  twitter    String?
+  telegram   String?
 
   customFields Json?     @default("{}")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   deletedAt    DateTime?
-  
-  createdBy    Member?   @relation(fields: [createdById], references: [id])
-  createdById  String?
+
+  createdBy   Member? @relation(fields: [createdById], references: [id])
+  createdById String?
 
   @@index([type])
   @@index([status])
@@ -338,66 +336,64 @@ model Partner {
 }
 
 model TableConfig {
-  id        String   @id @default(uuid())
-  tableName String   @unique // "members", "projects", "partners"
-  columns   Json     // Array of { id, label, type, width, visible }
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id        String    @id @default(uuid())
+  tableName String    @unique // "members", "projects", "partners"
+  columns   Json // Array of { id, label, type, width, visible }
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
 }
 
 model SystemSettings {
-  id        String   @id @default("settings") // Singleton
-  key       String   @unique
+  id        String    @id @default("settings") // Singleton
+  key       String    @unique
   value     String
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
 }
 
 model Announcement {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   title     String
   link      String?
-  audience  String   @default("ALL") // PUBLIC, MEMBER, ALL
-  createdAt DateTime @default(now())
+  audience  String    @default("ALL") // PUBLIC, MEMBER, ALL
+  createdAt DateTime  @default(now())
   expiresAt DateTime?
   deletedAt DateTime?
 }
 
 model Poll {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   question  String
-  options   Json     // Array of {id, text, votes}
-  status    String   @default("ACTIVE") // ACTIVE, CLOSED
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  options   Json // Array of {id, text, votes}
+  status    String    @default("ACTIVE") // ACTIVE, CLOSED
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
 }
 
 model MeetingNote {
-  id        String   @id @default(uuid())
-  content   String   @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id        String    @id @default(uuid())
+  content   String    @default("")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
 }
 
 model ActionItem {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   text      String
-  isDone    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  isDone    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
 }
 
 model AttendanceRecord {
-  id               String   @id @default(uuid())
-  date             DateTime @default(now())
+  id               String    @id @default(uuid())
+  date             DateTime  @default(now())
   presentMemberIds String[] // IDs of members present
   note             String?
-  createdAt        DateTime @default(now())
+  createdAt        DateTime  @default(now())
   deletedAt        DateTime?
-
 }
-

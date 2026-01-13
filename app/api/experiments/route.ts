@@ -42,7 +42,32 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json(experiments);
+    // For experiments created by CommunityMembers (createdBy is null), fetch their data
+    const experimentsWithCreators = await Promise.all(
+      experiments.map(async (exp) => {
+        if (!exp.createdBy && exp.createdByEmail) {
+          // @ts-ignore
+          const communityMember = await prisma.communityMember.findUnique({
+            where: { email: exp.createdByEmail },
+            select: { name: true, email: true }
+          });
+          
+          if (communityMember) {
+            return {
+              ...exp,
+              createdBy: {
+                name: communityMember.name,
+                image: null,
+                email: communityMember.email
+              }
+            };
+          }
+        }
+        return exp;
+      })
+    );
+
+    return NextResponse.json(experimentsWithCreators);
   } catch (error) {
     console.error("[EXPERIMENTS_GET]", error);
     return NextResponse.json({ error: "Internal Server Error", details: error instanceof Error ? error.message : String(error) }, { status: 500 });
@@ -59,6 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Check both Member (CORE) and CommunityMember (MEMBER) tables
     let userId: string | null = null;
+    let creatorEmail: string | null = null;
 
     // First check Member table (CORE users)
     const coreMember = await prisma.member.findUnique({
@@ -67,6 +93,7 @@ export async function POST(request: NextRequest) {
 
     if (coreMember) {
         userId = coreMember.id;
+        creatorEmail = session.user?.email || null;
     } else {
         // Check CommunityMember table (regular members)
         // @ts-ignore
@@ -75,28 +102,38 @@ export async function POST(request: NextRequest) {
         });
 
         if (communityMember) {
-            userId = communityMember.id;
+            // For CommunityMembers, we can't use their ID in createdById (foreign key constraint)
+            // Store their email instead in createdByEmail field
+            creatorEmail = session.user?.email || null;
+            userId = null; // Set to null to avoid foreign key constraint violation
         }
     }
 
-    if (!userId) return new NextResponse("User not found in system", { status: 404 });
+    if (!userId && !creatorEmail) {
+        return new NextResponse("User not found in system", { status: 404 });
+    }
 
     const experiment = await prisma.experiment.create({
       data: {
         title: body.title,
         description: body.description,
         stage: "PROPOSED",
-        createdById: userId,
+        createdById: userId, // Member ID for Core members, null for CommunityMembers
+        createdByEmail: creatorEmail, // Email for both, used to fetch CommunityMember data
       },
     });
 
-    await logAudit({
-        action: 'CREATE',
-        resource: 'EXPERIMENT',
-        resourceId: experiment.id,
-        actorId: userId,
-        metadata: { title: body.title }
-    });
+    // Only log audit if we have a userId (Core members)
+    // For CommunityMembers, we skip audit log since actorId must be a Member ID
+    if (userId) {
+        await logAudit({
+            action: 'CREATE',
+            resource: 'EXPERIMENT',
+            resourceId: experiment.id,
+            actorId: userId,
+            metadata: { title: body.title }
+        });
+    }
 
     return NextResponse.json(experiment);
   } catch (error) {
