@@ -23,6 +23,7 @@ export async function POST(
 
     // Check both Member (CORE) and CommunityMember (MEMBER) tables
     let userId: string | null = null;
+    let authorEmail: string | null = null;
     let communityMember: any = null;
 
     // First check Member table (CORE users)
@@ -32,6 +33,7 @@ export async function POST(
 
     if (coreMember) {
         userId = coreMember.id;
+        authorEmail = session.user?.email || null;
     } else {
         // Check CommunityMember table (regular members)
         // @ts-ignore
@@ -41,7 +43,8 @@ export async function POST(
 
         if (communityMember) {
             // For CommunityMembers, we can't use their ID in authorId (foreign key constraint)
-            // Set to null - comments from community members won't have author relation
+            // Store their email instead
+            authorEmail = session.user?.email || null;
             userId = null;
         }
     }
@@ -54,7 +57,8 @@ export async function POST(
       data: {
         body: body.body,
         experimentId: id,
-        authorId: userId // null for CommunityMembers, Member ID for Core members
+        authorId: userId, // null for CommunityMembers, Member ID for Core members
+        authorEmail: authorEmail // Email for both, used to fetch CommunityMember data
       },
       include: {
         author: userId ? { select: { name: true, image: true } } : undefined

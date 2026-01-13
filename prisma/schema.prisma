@@ -220,6 +220,7 @@ model ExperimentComment {
   parentId  String?
   createdAt DateTime  @default(now())
   deletedAt DateTime?
+  authorEmail String? // For CommunityMember commenters (since authorId only references Member)
 
   experiment   Experiment @relation(fields: [experimentId], references: [id])
   experimentId String
@@ -227,6 +228,7 @@ model ExperimentComment {
   authorId     String?
 
   @@index([experimentId])
+  @@index([authorEmail])
 }
 
 model Log {

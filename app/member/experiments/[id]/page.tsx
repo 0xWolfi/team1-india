@@ -203,7 +203,7 @@ export default function MemberExperimentDetailPage() {
                             )}
                         </div>
 
-                        {experiment.stage !== 'REJECTED' && (
+                        {experiment.stage === 'DISCUSSION' && (
                             <form onSubmit={handlePostComment} className="relative mt-8">
                                 <div className="relative group">
                                     <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl opacity-0 group-focus-within:opacity-30 transition-opacity blur" />
@@ -222,6 +222,14 @@ export default function MemberExperimentDetailPage() {
                                     </button>
                                 </div>
                             </form>
+                        )}
+                        
+                        {experiment.stage !== 'DISCUSSION' && experiment.stage !== 'REJECTED' && (
+                            <div className="mt-8 p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl text-center">
+                                <p className="text-sm text-amber-400">
+                                    Comments will be enabled once this proposal is moved to <strong>DISCUSSION</strong> stage.
+                                </p>
+                            </div>
                         )}
                     </div>
                 </div>
