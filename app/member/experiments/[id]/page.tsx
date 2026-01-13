@@ -107,9 +107,9 @@ export default function MemberExperimentDetailPage() {
   return (
     <MemberWrapper>
         <div className="max-w-6xl mx-auto pb-20">
-            <Link href="/member/experiments" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" />
-                Back to Lab
+                Back to Dashboard
             </Link>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
