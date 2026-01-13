@@ -1,31 +1,21 @@
+"use client";
 
-import { Suspense } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import { ArrowLeft, Search, LayoutGrid, List as ListIcon, MoreVertical, ChevronDown } from "lucide-react";
 import { Footer } from "@/components/website/Footer";
 
-async function getPlaybooks() {
-  // @ts-ignore
-  return prisma.playbook.findMany({
-    where: { 
-      visibility: "PUBLIC",
-      deletedAt: null // Only show non-deleted playbooks
-    },
-    orderBy: { createdAt: "desc" },
-    select: { 
-      id: true, 
-      title: true, 
-      description: true, 
-      coverImage: true, 
-      createdAt: true,
-      createdBy: {
-        select: {
-          name: true
-        }
-      }
-    },
-  });
+interface Playbook {
+  id: string;
+  title: string;
+  description: string | null;
+  coverImage: string | null;
+  createdAt: string;
+  updatedAt: string;
+  visibility: string;
+  createdBy: {
+    name: string | null;
+  } | null;
 }
 
 function TimeAgo({ date }: { date: Date }) {
@@ -42,8 +32,34 @@ function TimeAgo({ date }: { date: Date }) {
     return <span>{text}</span>;
 }
 
-export default async function PublicPlaybooksPage() {
-  const playbooks = await getPlaybooks();
+export default function PublicPlaybooksPage() {
+  const [playbooks, setPlaybooks] = useState<Playbook[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    // Fetch playbooks from API to avoid caching issues
+    fetch('/api/public/playbooks', {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache',
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log(`[PUBLIC_PLAYBOOKS_PAGE] Fetched ${data.length} playbooks`);
+        setPlaybooks(data);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('[PUBLIC_PLAYBOOKS_PAGE] Error fetching playbooks:', err);
+        setIsLoading(false);
+      });
+  }, []);
+
+  const filteredPlaybooks = playbooks.filter(p => 
+    p.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
@@ -78,6 +94,8 @@ export default async function PublicPlaybooksPage() {
                 <input 
                     type="text" 
                     placeholder="Search by title..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-11 pr-4 py-2.5 bg-zinc-900/50 border border-white/10 rounded-xl text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all"
                 />
             </div>
@@ -99,8 +117,13 @@ export default async function PublicPlaybooksPage() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {playbooks.map((item: any) => (
+        {isLoading ? (
+          <div className="py-32 text-center">
+            <p className="text-zinc-500">Loading playbooks...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPlaybooks.map((item) => (
                 <Link key={item.id} href={`/public/playbooks/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[340px] group relative">
                     
                     {/* Image Section */}
@@ -132,16 +155,19 @@ export default async function PublicPlaybooksPage() {
                         
                         <div className="mt-auto flex items-center justify-between text-xs text-zinc-600 border-t border-white/5 pt-4">
                             <span>by <span className="text-zinc-400">{item.createdBy?.name || 'Team 1'}</span></span>
-                            <TimeAgo date={item.createdAt} />
+                            <TimeAgo date={new Date(item.createdAt)} />
                         </div>
                     </div>
                 </Link>
             ))}
-        </div>
+          </div>
+        )}
         
-        {playbooks.length === 0 && (
+        {!isLoading && filteredPlaybooks.length === 0 && (
             <div className="py-32 text-center border-2 border-dashed border-white/5 rounded-3xl">
-                <p className="text-zinc-500">No playbooks found.</p>
+                <p className="text-zinc-500">
+                  {searchTerm ? 'No playbooks match your search.' : 'No playbooks found.'}
+                </p>
             </div>
         )}
 

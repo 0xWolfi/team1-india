@@ -70,22 +70,30 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     try {
 
-        // Update Playbook
+        // Update Playbook - only update fields that are provided
+        const updateData: any = {
+            version: { increment: 1 }, // Always increment version
+            lockedById: null, // Release lock on save
+            lockedAt: null, // Release lock on save
+            updatedAt: new Date(), // Explicitly update timestamp
+        };
+
+        // Only update fields that are provided in the request
+        if (body.body !== undefined) updateData.body = body.body;
+        if (body.title !== undefined) updateData.title = body.title;
+        if (body.visibility !== undefined) {
+            updateData.visibility = body.visibility;
+            console.log(`[API] Updating playbook ${id} visibility to: ${body.visibility}`);
+        }
+        if (body.coverImage !== undefined) updateData.coverImage = body.coverImage;
+        if (body.description !== undefined) updateData.description = body.description;
+
         const updated = await prisma.playbook.update({
             where: { id },
-            data: {
-                body: body.body, // Update content
-                title: body.title, // Update title
-                visibility: body.visibility, // Update visibility
-                coverImage: body.coverImage, // Update cover image
-                description: body.description, // Update description
-                version: { increment: 1 }, // Increment version
-                lockedById: null, // Release lock on save
-                lockedAt: null, // Release lock on save
-                
-
-            }
+            data: updateData
         });
+
+        console.log(`[API] Updated playbook ${id} - visibility: ${updated.visibility}, updatedAt: ${updated.updatedAt}`);
 
         const { logAudit } = await import('@/lib/audit');
         await logAudit({

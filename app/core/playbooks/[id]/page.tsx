@@ -322,11 +322,32 @@ export default function PlaybookPage() {
                                 if (isEditing) {
                                     if(!hasUnsavedChanges) setHasUnsavedChanges(true); 
                                 } else {
+                                    // Ensure we send all fields when updating visibility
+                                    const bodyData = typeof playbook.body === 'string' 
+                                        ? JSON.parse(playbook.body) 
+                                        : playbook.body;
+                                    
                                     fetch(`/api/playbooks/${id}`, {
                                         method: 'PUT',
                                         headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ title: playbook.title, body: JSON.parse(playbook.body), visibility: newVis })
-                                    }).then(() => router.refresh());
+                                        body: JSON.stringify({ 
+                                            title: playbook.title, 
+                                            body: bodyData, 
+                                            visibility: newVis,
+                                            coverImage: playbook.coverImage || null,
+                                            description: playbook.description || null
+                                        })
+                                    }).then((res) => {
+                                        if (res.ok) {
+                                            router.refresh();
+                                        } else {
+                                            console.error('Failed to update visibility');
+                                            alert('Failed to update visibility. Please try again.');
+                                        }
+                                    }).catch((err) => {
+                                        console.error('Error updating visibility:', err);
+                                        alert('Failed to update visibility. Please try again.');
+                                    });
                                 }
                             }}
                             disabled={(!hasWriteAccess || isLockedByOther) && !isEditing}
