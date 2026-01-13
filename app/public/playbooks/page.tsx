@@ -3,6 +3,17 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Search, LayoutGrid, List as ListIcon, MoreVertical, ChevronDown } from "lucide-react";
+
+// Hide scrollbar but keep functionality
+const scrollbarHide = `
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+`;
 import { Footer } from "@/components/website/Footer";
 
 interface Playbook {
@@ -62,7 +73,9 @@ export default function PublicPlaybooksPage() {
   );
 
   return (
-    <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
+    <>
+      <style dangerouslySetInnerHTML={{ __html: scrollbarHide }} />
+      <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
       
       <div className="pt-24 px-6 max-w-7xl mx-auto pb-20">
         
@@ -116,15 +129,16 @@ export default function PublicPlaybooksPage() {
             </div>
         </div>
 
-        {/* Grid */}
+        {/* Horizontal Scrolling Carousel */}
         {isLoading ? (
           <div className="py-32 text-center">
             <p className="text-zinc-500">Loading playbooks...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPlaybooks.map((item) => (
-                <Link key={item.id} href={`/public/playbooks/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[340px] group relative">
+          <div className="overflow-x-auto scrollbar-hide -mx-6 px-6 pb-4 scroll-smooth">
+            <div className="flex gap-6" style={{ width: 'max-content' }}>
+              {filteredPlaybooks.map((item) => (
+                <Link key={item.id} href={`/public/playbooks/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[340px] w-[320px] shrink-0 group relative">
                     
                     {/* Image Section */}
                     <div className="h-44 w-full bg-zinc-900 relative">
@@ -159,7 +173,8 @@ export default function PublicPlaybooksPage() {
                         </div>
                     </div>
                 </Link>
-            ))}
+              ))}
+            </div>
           </div>
         )}
         
@@ -174,5 +189,6 @@ export default function PublicPlaybooksPage() {
       </div>
       <Footer />
     </main>
+    </>
   );
 }

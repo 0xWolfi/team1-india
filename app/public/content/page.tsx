@@ -5,6 +5,17 @@ import { prisma } from "@/lib/prisma";
 import { ArrowLeft, Search, LayoutGrid, List as ListIcon, Trophy, ChevronDown } from "lucide-react";
 import { Footer } from "@/components/website/Footer";
 
+// Hide scrollbar but keep functionality
+const scrollbarHide = `
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
 async function getGuides() {
   // @ts-ignore
   return prisma.guide.findMany({
@@ -44,7 +55,9 @@ export default async function PublicContentPage() {
   const guides = await getGuides();
 
   return (
-    <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
+    <>
+      <style dangerouslySetInnerHTML={{ __html: scrollbarHide }} />
+      <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
       
       <div className="pt-24 px-6 max-w-7xl mx-auto pb-20">
         
@@ -95,10 +108,11 @@ export default async function PublicContentPage() {
             </div>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Horizontal Scrolling Carousel */}
+        <div className="overflow-x-auto scrollbar-hide -mx-6 px-6 pb-4 scroll-smooth">
+          <div className="flex gap-6" style={{ width: 'max-content' }}>
             {guides.map((item: any) => (
-                <Link key={item.id} href={`/public/guides/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[340px] group relative">
+              <Link key={item.id} href={`/public/guides/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[340px] w-[320px] shrink-0 group relative">
                     
                     {/* Image Section */}
                     <div className="h-44 w-full bg-zinc-900 relative">
@@ -137,8 +151,9 @@ export default async function PublicContentPage() {
                             <TimeAgo date={item.createdAt} />
                         </div>
                     </div>
-                </Link>
+              </Link>
             ))}
+          </div>
         </div>
         
         {guides.length === 0 && (
@@ -150,5 +165,6 @@ export default async function PublicContentPage() {
       </div>
       <Footer />
     </main>
+    </>
   );
 }
