@@ -129,19 +129,18 @@ export default function PublicPlaybooksPage() {
             </div>
         </div>
 
-        {/* Horizontal Scrolling Carousel */}
+        {/* Vertical List */}
         {isLoading ? (
           <div className="py-32 text-center">
             <p className="text-zinc-500">Loading playbooks...</p>
           </div>
         ) : (
-          <div className="overflow-x-auto scrollbar-hide -mx-6 px-6 pb-4 scroll-smooth">
-            <div className="flex gap-6" style={{ width: 'max-content' }}>
-              {filteredPlaybooks.map((item) => (
-                <Link key={item.id} href={`/public/playbooks/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[340px] w-[320px] shrink-0 group relative">
+          <div className="flex flex-col gap-6">
+            {filteredPlaybooks.map((item) => (
+              <Link key={item.id} href={`/public/playbooks/${item.id}`} className="block bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all flex flex-row h-auto group relative">
                     
                     {/* Image Section */}
-                    <div className="h-44 w-full bg-zinc-900 relative">
+                    <div className="w-64 h-48 bg-zinc-900 relative shrink-0">
                         {item.coverImage ? (
                             <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                         ) : (
@@ -151,7 +150,6 @@ export default function PublicPlaybooksPage() {
                                 </div>
                             </div>
                         )}
-
                     </div>
 
                     {/* Content */}
