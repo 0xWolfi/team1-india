@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { usePermission } from "@/hooks/usePermission";
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
@@ -130,6 +131,10 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
 
     return (
         <div className="max-w-6xl mx-auto">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+                <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+            </Link>
+            
             <ConfirmationModal 
                 isOpen={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}

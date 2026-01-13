@@ -6,8 +6,17 @@ import { checkCoreAccess, hasPermission, PERMISSIONS } from "@/lib/permissions";
 
 export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
-    const access = checkCoreAccess(session);
-    if (!access.authorized) return access.response!;
+    
+    // Allow both CORE and MEMBER roles to access
+    if (!session?.user?.email) {
+        return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    // @ts-ignore
+    const role = session.user.role;
+    if (role !== 'CORE' && role !== 'MEMBER') {
+        return new NextResponse("Forbidden", { status: 403 });
+    }
 
     try {
         const members = await prisma.communityMember.findMany({

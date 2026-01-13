@@ -63,8 +63,8 @@ export default function MemberPlaybookDetailPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member/playbooks" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-6 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> Back to Playbooks
+            <Link href="/member" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-6 transition-colors text-sm font-medium hover:-translate-x-1 duration-200">
+                <ArrowLeft className="w-4 h-4" /> Back to Dashboard
             </Link>
 
             <div className="max-w-4xl mx-auto">
