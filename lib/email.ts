@@ -183,3 +183,79 @@ export function getRejectionEmailTemplate(applicantName: string, programTitle: s
 </html>
     `;
 }
+
+// Email template for proposal moved to discussion
+export function getDiscussionEmailTemplate(applicantName: string, proposalTitle: string) {
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal Open for Discussion</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #000000; color: #ffffff;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #000000;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #18181b; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; overflow: hidden;">
+
+                    <!-- Header with gradient -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px 30px; text-align: center;">
+                            <div style="width: 64px; height: 64px; margin: 0 auto 20px; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 32px;">💬</span>
+                            </div>
+                            <h1 style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff;">Open for Discussion!</h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6; color: #e4e4e7;">
+                                Hi ${applicantName},
+                            </p>
+
+                            <p style="margin: 0 0 20px; font-size: 16px; line-height: 1.6; color: #e4e4e7;">
+                                Great news! Your proposal <strong style="color: #ffffff;">${proposalTitle}</strong> has been moved to the <strong style="color: #f59e0b;">Discussion</strong> stage.
+                            </p>
+
+                            <div style="background-color: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 8px;">
+                                <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #d4d4d8;">
+                                    <strong style="color: #ffffff;">What's next?</strong><br>
+                                    All members can now comment and provide feedback on your proposal. This is a great opportunity to gather insights and improve your proposal before final approval.
+                                </p>
+                            </div>
+
+                            <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6; color: #e4e4e7;">
+                                We encourage you to actively participate in the discussion and address any questions or concerns raised by the community.
+                            </p>
+
+                            <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.6; color: #e4e4e7;">
+                                Visit the proposal page to join the discussion.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #09090b; padding: 30px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                            <p style="margin: 0 0 10px; font-size: 14px; color: #71717a;">
+                                Best regards,<br>
+                                <strong style="color: #ffffff;">Team1India Team</strong>
+                            </p>
+                            <p style="margin: 16px 0 0; font-size: 12px; color: #52525b;">
+                                This is an automated message. Please do not reply to this email.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+    `;
+}

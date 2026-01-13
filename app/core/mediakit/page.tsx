@@ -1,18 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { 
-    Download, 
-    Search, 
-    Palette, 
-    Image as ImageIcon, 
-    FileText, 
-    Copy, 
-    Check, 
-    Plus, 
-    Loader2 
+import {
+    Download,
+    Search,
+    Palette,
+    Image as ImageIcon,
+    FileText,
+    Copy,
+    Check,
+    Plus,
+    Loader2
 } from 'lucide-react';
 
 interface Asset {
@@ -79,10 +80,11 @@ export default function MediaKitPage() {
                 description="Official brand assets, logos, and resources."
                 icon={<Palette className="w-5 h-5 text-zinc-200" />}
             >
-                {/* Future: Add Upload Button for Admins */}
-                <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors">
-                    <Plus className="w-4 h-4" /> Upload Asset
-                </button>
+                <Link href="/core/mediakit/new">
+                    <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors">
+                        <Plus className="w-4 h-4" /> Upload Asset
+                    </button>
+                </Link>
             </CorePageHeader>
 
             <div className="space-y-6">

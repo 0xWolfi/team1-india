@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { logAudit } from "@/lib/audit";
+import { sendEmail, getApprovalEmailTemplate, getRejectionEmailTemplate, getDiscussionEmailTemplate } from "@/lib/email";
 import * as z from "zod";
 
 const updateSchema = z.object({
@@ -53,8 +54,6 @@ export async function PATCH(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userPermissions = (session.user as any)?.permissions || {};
   const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
-  // Core members have write access to experiments or full access
-  const isCore = isSuperAdmin || userPermissions['experiments'] === 'WRITE' || userPermissions['*'] === 'WRITE';
 
   try {
     const json = await request.json();
@@ -62,17 +61,19 @@ export async function PATCH(
 
     // Permission Check for Stage Change
     if (body.stage) {
-        if (['APPROVED', 'REJECTED'].includes(body.stage)) {
-            if (!isSuperAdmin) return new NextResponse("Only Superadmins can approve/reject", { status: 403 });
-        }
-        if (body.stage === 'DISCUSSION') {
-            if (!isCore) return new NextResponse("Only Core members can move to Discussion", { status: 403 });
+        if (['APPROVED', 'REJECTED', 'DISCUSSION'].includes(body.stage)) {
+            if (!isSuperAdmin) return new NextResponse("Only Superadmins can change proposal status", { status: 403 });
         }
     }
 
     const experiment = await prisma.experiment.update({
       where: { id },
       data: body,
+      include: {
+        createdBy: {
+          select: { name: true, email: true }
+        }
+      }
     });
 
     await logAudit({
@@ -80,9 +81,44 @@ export async function PATCH(
         resource: 'EXPERIMENT',
         resourceId: experiment.id,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        actorId: (session.user as any).id, 
+        actorId: (session.user as any).id,
         metadata: body
     });
+
+    // Send email notifications when status changes
+    if (body.stage && experiment.createdBy?.email) {
+      const creatorName = experiment.createdBy.name || 'Member';
+      const proposalTitle = experiment.title || 'Your Proposal';
+
+      if (body.stage === 'APPROVED') {
+        await sendEmail({
+          to: experiment.createdBy.email,
+          subject: `Proposal Approved: ${proposalTitle}`,
+          html: getApprovalEmailTemplate(
+            creatorName,
+            proposalTitle,
+            'Your proposal has been approved by the governance committee and will move to implementation planning.'
+          )
+        });
+      } else if (body.stage === 'REJECTED') {
+        await sendEmail({
+          to: experiment.createdBy.email,
+          subject: `Proposal Status Update: ${proposalTitle}`,
+          html: getRejectionEmailTemplate(
+            creatorName,
+            proposalTitle,
+            'After careful consideration, the governance committee has decided not to proceed with this proposal at this time.'
+          )
+        });
+      } else if (body.stage === 'DISCUSSION') {
+        // Send notification that proposal is now open for community discussion
+        await sendEmail({
+          to: experiment.createdBy.email,
+          subject: `Proposal Moved to Discussion: ${proposalTitle}`,
+          html: getDiscussionEmailTemplate(creatorName, proposalTitle)
+        });
+      }
+    }
 
     return NextResponse.json(experiment);
   } catch (error) {
