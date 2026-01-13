@@ -277,13 +277,27 @@ export default function PlaybooksPage() {
                                      {/* Grid View: Image Top */}
                                      {viewMode === 'grid' && (
                                          <div className="relative h-48 w-full bg-zinc-900 overflow-hidden border-b border-white/5">
-                                             {doc.coverImage ? (
-                                                 <img 
+                                            {doc.coverImage ? (
+                                                <img 
                                                     src={doc.coverImage} 
-                                                    alt={doc.title} 
+                                                    alt={doc.title}
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                                 />
-                                             ) : (
+                                                    onError={(e) => {
+                                                        // Fallback if image fails to load
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.style.display = 'none';
+                                                        if (target.parentElement) {
+                                                            target.parentElement.innerHTML = `
+                                                                <div class="w-full h-full flex items-center justify-center bg-zinc-800/50">
+                                                                    <svg class="w-12 h-12 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                                    </svg>
+                                                                </div>
+                                                            `;
+                                                        }
+                                                    }}
+                                                />
+                                            ) : (
                                                  <div className="w-full h-full flex items-center justify-center bg-zinc-800/50">
                                                     <FileText className="w-12 h-12 text-zinc-700 group-hover:text-zinc-600 transition-colors" />
                                                  </div>
@@ -379,11 +393,25 @@ export default function PlaybooksPage() {
 
                                     {/* List View: Image Right */}
                                     {viewMode === 'list' && doc.coverImage && (
-                                        <div className="w-32 h-24 rounded-lg overflow-hidden border border-white/10 flex-shrink-0">
+                                        <div className="w-32 h-24 rounded-lg overflow-hidden border border-white/10 flex-shrink-0 bg-zinc-900">
                                             <img 
                                                src={doc.coverImage} 
                                                alt={doc.title} 
                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                               onError={(e) => {
+                                                   // Fallback if image fails to load
+                                                   const target = e.target as HTMLImageElement;
+                                                   target.style.display = 'none';
+                                                   if (target.parentElement) {
+                                                       target.parentElement.innerHTML = `
+                                                           <div class="w-full h-full flex items-center justify-center bg-zinc-800/50">
+                                                               <svg class="w-8 h-8 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                               </svg>
+                                                           </div>
+                                                       `;
+                                                   }
+                                               }}
                                             />
                                         </div>
                                     )}

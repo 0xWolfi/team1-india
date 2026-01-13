@@ -8,7 +8,10 @@ import { Footer } from "@/components/website/Footer";
 async function getPlaybooks() {
   // @ts-ignore
   return prisma.playbook.findMany({
-    where: { visibility: "PUBLIC" },
+    where: { 
+      visibility: "PUBLIC",
+      deletedAt: null // Only show non-deleted playbooks
+    },
     orderBy: { createdAt: "desc" },
     select: { 
       id: true, 

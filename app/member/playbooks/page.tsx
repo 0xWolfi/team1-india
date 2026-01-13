@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { FileText, Search, Globe, Cpu, LayoutGrid, List, ArrowRight, BookOpen, ArrowLeft } from "lucide-react";
+import { FileText, Search, Globe, Cpu, LayoutGrid, List, ArrowRight, BookOpen, ArrowLeft, ChevronDown } from "lucide-react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 
 interface Playbook {
@@ -21,6 +21,7 @@ export default function MemberPlaybooksPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [visibilityFilter, setVisibilityFilter] = useState<'ALL' | 'MEMBER' | 'PUBLIC'>('ALL');
 
     const fetchPlaybooks = () => {
         setIsLoading(true);
@@ -52,9 +53,11 @@ export default function MemberPlaybooksPage() {
         fetchPlaybooks();
     }, []);
 
-    const filtered = playbooks.filter(p =>
-        p.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = playbooks.filter(p => {
+        const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesVisibility = visibilityFilter === 'ALL' || p.visibility === visibilityFilter;
+        return matchesSearch && matchesVisibility;
+    });
 
     return (
         <MemberWrapper>
@@ -87,6 +90,20 @@ export default function MemberPlaybooksPage() {
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                     />
+                </div>
+
+                {/* Visibility Filter */}
+                <div className="relative">
+                    <select
+                        value={visibilityFilter}
+                        onChange={(e) => setVisibilityFilter(e.target.value as 'ALL' | 'MEMBER' | 'PUBLIC')}
+                        className="appearance-none bg-zinc-900/50 border border-white/5 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-zinc-300 focus:outline-none focus:border-white/20 hover:border-white/20 transition-colors cursor-pointer min-w-[140px]"
+                    >
+                        <option value="ALL">All Playbooks</option>
+                        <option value="MEMBER">Member Only</option>
+                        <option value="PUBLIC">Public Only</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
                 </div>
 
                 <div className="flex gap-1 bg-zinc-900/50 border border-white/5 p-1 rounded-xl self-start md:self-auto backdrop-blur-sm">
@@ -149,12 +166,26 @@ export default function MemberPlaybooksPage() {
 
                                 <div className={`relative z-10 w-full ${viewMode === 'list' ? 'flex flex-row items-center justify-between p-6 gap-8' : 'flex flex-col h-full'}`}>
                                     {viewMode === 'grid' && (
-                                        <div className="relative h-48 w-full bg-zinc-900 overflow-hidden border-b border-white/5">
+                                        <div className="relative h-48 w-full bg-zinc-900 overflow-hidden border-b border-white/5 rounded-t-[2rem]">
                                             {doc.coverImage ? (
                                                 <img
                                                     src={doc.coverImage}
                                                     alt={doc.title}
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                    onError={(e) => {
+                                                        // Fallback if image fails to load
+                                                        const target = e.target as HTMLImageElement;
+                                                        target.style.display = 'none';
+                                                        if (target.parentElement) {
+                                                            target.parentElement.innerHTML = `
+                                                                <div class="w-full h-full flex items-center justify-center bg-zinc-800/50">
+                                                                    <svg class="w-12 h-12 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                                    </svg>
+                                                                </div>
+                                                            `;
+                                                        }
+                                                    }}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-zinc-800/50">
