@@ -17,19 +17,26 @@ export async function GET(request: NextRequest) {
         if (role === 'CORE') {
             member = await prisma.member.findUnique({ 
                 where: { email: session.user.email },
-                select: { customFields: true, name: true, email: true }
+                select: { customFields: true, name: true, email: true, xHandle: true }
             });
         } else {
             member = await prisma.communityMember.findUnique({ 
                 where: { email: session.user.email },
-                select: { customFields: true, name: true, email: true }
+                select: { customFields: true, name: true, email: true, xHandle: true, telegram: true }
             });
         }
 
+        const customFields = member?.customFields as any || {};
         return NextResponse.json({
-            customFields: member?.customFields || {},
+            customFields: customFields,
             name: member?.name || session.user.name || '',
-            email: member?.email || session.user.email || ''
+            email: member?.email || session.user.email || '',
+            xHandle: member?.xHandle || '',
+            telegram: (member as any)?.telegram || '',
+            wallet: customFields.wallet || '',
+            address: customFields.address || '',
+            twitter: customFields.twitter || '',
+            bio: customFields.bio || ''
         });
     } catch (error) {
         console.error("[PROFILE_GET]", error);
@@ -45,7 +52,7 @@ export async function PATCH(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { customFields, tags } = body;
+        const { customFields, name, xHandle, telegram } = body;
 
         // Determine if user is Core or Community based on Role
         // @ts-ignore
@@ -55,9 +62,9 @@ export async function PATCH(request: NextRequest) {
             await prisma.member.update({
                 where: { email: session.user.email },
                 data: {
-                    customFields,
-                    // Note: Tags might be locked for Core members too? User said "type member and contributor... set by core... but address... can be edited".
-                    // I'll allow customFields update.
+                    ...(name !== undefined && { name }),
+                    ...(xHandle !== undefined && { xHandle }),
+                    ...(customFields && { customFields }),
                 }
             });
         } else {
@@ -65,8 +72,10 @@ export async function PATCH(request: NextRequest) {
             await prisma.communityMember.update({
                 where: { email: session.user.email },
                 data: {
-                    customFields,
-                    // Tags are locked for members as per requirements ("role set by core")
+                    ...(name !== undefined && { name }),
+                    ...(xHandle !== undefined && { xHandle }),
+                    ...(telegram !== undefined && { telegram }),
+                    ...(customFields && { customFields }),
                 }
             });
         }

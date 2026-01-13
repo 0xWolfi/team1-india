@@ -7,6 +7,7 @@ import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { AnnouncementViewer } from "@/components/public/AnnouncementViewer";
 import { Announcements } from "@/components/website/Announcements";
 import { MemberHeader } from "@/components/member/MemberHeader";
+import { IncompleteProfileNotification } from "@/components/member/IncompleteProfileNotification";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { redirect } from "next/navigation";
@@ -73,6 +74,9 @@ export default async function MemberPage() {
     return (
         <MemberWrapper>
             <MemberHeader user={session.user} />
+
+            {/* Incomplete Profile Notification */}
+            <IncompleteProfileNotification />
 
             {/* Latest Breaking News Pill */}
             <Announcements audience="MEMBER" />

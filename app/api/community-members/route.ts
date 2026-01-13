@@ -51,10 +51,10 @@ export async function POST(request: Request) {
     }
 
     try {
-        const { email, tags, name, telegram, xHandle } = await request.json();
+        const { email, tags } = await request.json();
 
-        if (!email || !name || !telegram || !xHandle) {
-            return new NextResponse("Missing required fields: Email, Name, Telegram, and X Handle are mandatory.", { status: 400 });
+        if (!email) {
+            return new NextResponse("Email is required.", { status: 400 });
         }
 
         // CROSS-CHECK: Ensure not in Team (Member table)
@@ -72,10 +72,10 @@ export async function POST(request: Request) {
         const newMember = await prisma.communityMember.create({
             data: {
                 email,
-                name,
-                telegram,
-                xHandle,
-                tags: tags || "member", // Default tag
+                name: null, // Will be filled by user on first login
+                telegram: null,
+                xHandle: null,
+                tags: tags || "member", // Default to member if not specified
                 status: "active",
             }
         });

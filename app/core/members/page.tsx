@@ -59,7 +59,7 @@ export default function CommunityMembersPage() {
                (m.name && m.name.toLowerCase().includes(searchTerm.toLowerCase()));
     });
 
-    const handleAddMember = async (data: { email: string, name: string, telegram: string, xHandle: string, tags: string[] }) => {
+    const handleAddMember = async (data: { email: string, tags: string }) => {
         if (!data.email) return;
 
         setIsSubmitting(true);
@@ -69,10 +69,7 @@ export default function CommunityMembersPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     email: data.email, 
-                    name: data.name,
-                    telegram: data.telegram,
-                    xHandle: data.xHandle,
-                    tags: data.tags.join(', ') // Schema expects string? API logic might need array handling or comma join
+                    tags: data.tags
                 })
             });
 
