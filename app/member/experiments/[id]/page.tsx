@@ -40,6 +40,7 @@ export default function MemberExperimentDetailPage() {
   const [loading, setLoading] = useState(true);
   const [commentBody, setCommentBody] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userPermissions = (session?.user as any)?.permissions || {};
@@ -228,15 +229,106 @@ export default function MemberExperimentDetailPage() {
                 {/* Sidebar Status Info */}
                 <div className="space-y-6">
                     <div className="bg-[#121212]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-6 sticky top-28 shadow-2xl shadow-black/50">
-                        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6 pb-4 border-b border-white/5">Proposal Status</h3>
+                        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6 pb-4 border-b border-white/5">
+                            {isSuperAdmin ? "Governance Actions" : "Proposal Status"}
+                        </h3>
 
                         <div className="space-y-3">
+                            {/* Superadmin Actions */}
+                            {isSuperAdmin && (
+                                <>
+                                    {/* Move to Discussion: Superadmin Only from Proposed */}
+                                    {experiment.stage === 'PROPOSED' && (
+                                        <button
+                                            onClick={async () => {
+                                                if (!confirm('Are you sure you want to move this to DISCUSSION?')) return;
+                                                setActionLoading(true);
+                                                try {
+                                                    const res = await fetch(`/api/experiments/${id}`, {
+                                                        method: "PATCH",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({ stage: "DISCUSSION" }),
+                                                    });
+                                                    if (!res.ok) throw new Error("Failed to update");
+                                                    await fetchExperiment();
+                                                } catch (error) {
+                                                    alert("Failed to update status");
+                                                } finally {
+                                                    setActionLoading(false);
+                                                }
+                                            }}
+                                            disabled={actionLoading}
+                                            className="w-full py-3.5 px-4 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 hover:border-amber-500/40 text-amber-400 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(245,158,11,0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
+                                            Open for Discussion
+                                        </button>
+                                    )}
+
+                                    {/* Approve/Reject: Superadmin Only */}
+                                    {experiment.stage !== 'APPROVED' && experiment.stage !== 'REJECTED' && (
+                                        <>
+                                            <button 
+                                                onClick={async () => {
+                                                    if (!confirm('Are you sure you want to APPROVE this proposal?')) return;
+                                                    setActionLoading(true);
+                                                    try {
+                                                        const res = await fetch(`/api/experiments/${id}`, {
+                                                            method: "PATCH",
+                                                            headers: { "Content-Type": "application/json" },
+                                                            body: JSON.stringify({ stage: "APPROVED" }),
+                                                        });
+                                                        if (!res.ok) throw new Error("Failed to update");
+                                                        await fetchExperiment();
+                                                    } catch (error) {
+                                                        alert("Failed to update status");
+                                                    } finally {
+                                                        setActionLoading(false);
+                                                    }
+                                                }}
+                                                disabled={actionLoading}
+                                                className="w-full py-3.5 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                                                Approve Proposal
+                                            </button>
+                                            <button 
+                                                onClick={async () => {
+                                                    if (!confirm('Are you sure you want to REJECT this proposal?')) return;
+                                                    setActionLoading(true);
+                                                    try {
+                                                        const res = await fetch(`/api/experiments/${id}`, {
+                                                            method: "PATCH",
+                                                            headers: { "Content-Type": "application/json" },
+                                                            body: JSON.stringify({ stage: "REJECTED" }),
+                                                        });
+                                                        if (!res.ok) throw new Error("Failed to update");
+                                                        await fetchExperiment();
+                                                    } catch (error) {
+                                                        alert("Failed to update status");
+                                                    } finally {
+                                                        setActionLoading(false);
+                                                    }
+                                                }}
+                                                disabled={actionLoading}
+                                                className="w-full py-3.5 px-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(239,68,68,0.1)] disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
+                                                Reject Proposal
+                                            </button>
+                                        </>
+                                    )}
+                                </>
+                            )}
+
                             {/* Status Helpers */}
                             {experiment.stage === 'PROPOSED' && (
                                 <div className="p-4 bg-white/5 border border-white/5 rounded-xl text-center">
                                     <Clock className="w-5 h-5 text-zinc-500 mx-auto mb-2" />
                                     <p className="text-xs text-zinc-500 italic">
-                                        Proposal is currently under review by the governance committee.
+                                        {isSuperAdmin 
+                                            ? "Proposal is waiting for governance action."
+                                            : "Proposal is currently under review by the governance committee."}
                                     </p>
                                 </div>
                             )}

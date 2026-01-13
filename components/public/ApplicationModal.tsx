@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 interface ApplicationModalProps {
     isOpen: boolean;
@@ -10,6 +11,7 @@ interface ApplicationModalProps {
 }
 
 export default function ApplicationModal({ isOpen, onClose }: ApplicationModalProps) {
+    const { data: session } = useSession();
     const [step, setStep] = useState<'form' | 'submitting' | 'success' | 'error'>('form');
     const [error, setError] = useState('');
     
@@ -37,6 +39,32 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
         
         consent: false
     });
+
+    // Fetch user name and email from database when modal opens and user is logged in
+    useEffect(() => {
+        if (isOpen && session?.user?.email) {
+            fetch('/api/profile')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.name || data.email) {
+                        setFormData(prev => ({
+                            ...prev,
+                            name: data.name || prev.name || session.user?.name || '',
+                            email: data.email || prev.email || session.user?.email || ''
+                        }));
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching user profile:", err);
+                    // Fallback to session data
+                    setFormData(prev => ({
+                        ...prev,
+                        name: session.user?.name || prev.name,
+                        email: session.user?.email || prev.email
+                    }));
+                });
+        }
+    }, [isOpen, session]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -120,11 +148,38 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">Full Name *</label>
-                                <input required name="name" value={formData.name} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="John Doe" />
+                                <div className="relative">
+                                    <input 
+                                        required 
+                                        name="name" 
+                                        value={formData.name} 
+                                        readOnly
+                                        className="w-full bg-zinc-900/50 border border-white/5 rounded-lg p-3 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                                        placeholder="John Doe" 
+                                    />
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded border border-white/5">
+                                        Verified
+                                    </div>
+                                </div>
+                                <p className="text-[10px] text-zinc-600 mt-1 ml-1">Name is auto-filled from your account.</p>
                             </div>
                             <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">Email *</label>
-                                <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="john@example.com" />
+                                <div className="relative">
+                                    <input 
+                                        required 
+                                        type="email" 
+                                        name="email" 
+                                        value={formData.email} 
+                                        readOnly
+                                        className="w-full bg-zinc-900/50 border border-white/5 rounded-lg p-3 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                                        placeholder="john@example.com" 
+                                    />
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded border border-white/5">
+                                        Verified
+                                    </div>
+                                </div>
+                                <p className="text-[10px] text-zinc-600 mt-1 ml-1">Email is auto-filled from your account.</p>
                             </div>
                             <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">Telegram Handle *</label>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { applyToProgram } from "@/app/public/actions";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -19,8 +19,28 @@ interface FormField {
 export function ApplicationForm({ programId, formSchema = [] }: { programId: string, formSchema?: FormField[] | any[] }) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   const { data: session, status: sessionStatus } = useSession();
+
+  // Fetch user name and email from database
+  useEffect(() => {
+    if (session?.user?.email) {
+      fetch('/api/profile')
+        .then(res => res.json())
+        .then(data => {
+          if (data.name) setUserName(data.name);
+          if (data.email) setUserEmail(data.email);
+        })
+        .catch(err => {
+          console.error("Error fetching user profile:", err);
+          // Fallback to session data
+          setUserName(session.user?.name || "");
+          setUserEmail(session.user?.email || "");
+        });
+    }
+  }, [session]);
 
   // Normalize form schema if it comes in legacy object format
   const normalizedSchema: FormField[] = Array.isArray(formSchema) 
@@ -33,14 +53,19 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
         required: true
       }));
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setStatus("submitting");
+    setMessage("");
+    
+    const formData = new FormData(e.currentTarget);
     const res = await applyToProgram(programId, formData);
+    
     if (res.success) {
       setStatus("success");
     } else {
       setStatus("error");
-      setMessage(res.message);
+      setMessage(res.message || "Failed to submit application");
     }
   }
 
@@ -82,7 +107,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
   const user = session.user;
 
   return (
-    <form action={handleSubmit} className="bg-zinc-900 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl shadow-black/50">
+    <form onSubmit={handleSubmit} className="bg-zinc-900 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl shadow-black/50">
       <h3 className="text-xl font-bold text-white mb-2">Apply Now</h3>
       <p className="text-zinc-500 text-sm mb-6">Join this program to accelerate your journey.</p>
       
@@ -90,15 +115,21 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
         <div className="space-y-4 mb-6">
             <div>
             <label htmlFor="name" className="block text-sm font-medium text-zinc-400 mb-1.5">Full Name</label>
-            <input 
-                type="text" 
-                name="name" 
-                id="name"
-                defaultValue={user?.name || ""}
-                placeholder="Enter your full name"
-                className="w-full bg-zinc-950/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-zinc-700" 
-                required
-            />
+            <div className="relative">
+                <input 
+                    type="text" 
+                    name="name" 
+                    id="name"
+                    value={userName || user?.name || ""}
+                    readOnly
+                    className="w-full bg-zinc-950/50 border border-white/5 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                    required
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded border border-white/5">
+                    Verified
+                </div>
+            </div>
+            <p className="text-[10px] text-zinc-600 mt-1.5 ml-1">Name is auto-filled from your account.</p>
             </div>
 
             <div>
@@ -108,7 +139,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                     type="email" 
                     name="email" 
                     id="email"
-                    defaultValue={user?.email || ""}
+                    value={userEmail || user?.email || ""}
                     readOnly
                     className="w-full bg-zinc-950/50 border border-white/5 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed focus:outline-none" 
                 />
@@ -116,7 +147,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                     Verified
                 </div>
             </div>
-             <p className="text-[10px] text-zinc-600 mt-1.5 ml-1">Email is auto-filled from your login session.</p>
+             <p className="text-[10px] text-zinc-600 mt-1.5 ml-1">Email is auto-filled from your account.</p>
             </div>
         </div>
 
