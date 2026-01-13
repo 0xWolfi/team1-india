@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import { usePermission } from "@/hooks/usePermission";
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 
@@ -31,18 +32,68 @@ interface GuideDetailProps {
         };
         formSchema?: any; // Can be Record<string,string> (legacy) or FormField[] (new)
     };
+    basePath?: string; // Optional base path for navigation (e.g., '/core', '/member')
 }
 
-export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
+export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => {
     const router = useRouter();
+    const { data: session } = useSession();
     // Use dynamic permission based on guide type (EVENT -> 'event', PROGRAM -> 'program', CONTENT -> 'content')
     const canEdit = usePermission(guide.type.toLowerCase(), 'WRITE');
+    
+    // Determine dashboard path based on current URL or basePath prop
+    const getDashboardPath = () => {
+        if (basePath) return basePath;
+        // Auto-detect from current path
+        if (typeof window !== 'undefined') {
+            const path = window.location.pathname;
+            if (path.startsWith('/core')) return '/core';
+            if (path.startsWith('/member')) return '/member';
+        }
+        return '/member'; // Default fallback
+    };
+    
+    const dashboardPath = getDashboardPath();
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [applications, setApplications] = useState<any[]>([]);
     const [view, setView] = useState<'DETAILS' | 'APPLICATIONS'>('DETAILS');
     const [submitted, setSubmitted] = useState(false);
+    const [submissionMessage, setSubmissionMessage] = useState<string>('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [userName, setUserName] = useState<string>('');
+    const [userEmail, setUserEmail] = useState<string>('');
+
+    // Fetch user name and email from database
+    useEffect(() => {
+        if (session?.user?.email) {
+            fetch('/api/profile')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.name) setUserName(data.name);
+                    if (data.email) setUserEmail(data.email);
+                    // Pre-fill form data with name and email
+                    setFormData(prev => ({
+                        ...prev,
+                        name: data.name || session.user?.name || '',
+                        email: data.email || session.user?.email || ''
+                    }));
+                })
+                .catch(err => {
+                    console.error("Error fetching user profile:", err);
+                    // Fallback to session data
+                    const name = session.user?.name || '';
+                    const email = session.user?.email || '';
+                    setUserName(name);
+                    setUserEmail(email);
+                    setFormData(prev => ({
+                        ...prev,
+                        name,
+                        email
+                    }));
+                });
+        }
+    }, [session]);
 
     // Normalize form schema to array
     const formFields: FormField[] = React.useMemo(() => {
@@ -61,6 +112,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setSubmissionMessage('');
         try {
             const res = await fetch('/api/applications', {
                 method: 'POST',
@@ -71,17 +123,32 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                 })
             });
 
+            const data = await res.json();
+
             if (res.ok) {
                 setSubmitted(true);
-                // Reset form data for fresh entry
-                setFormData({});
-                // Reset submitted state after 3 seconds to allow new submissions
+                setSubmissionMessage('Application submitted successfully! You can apply again after 7 days.');
+                // Reset form data but keep name and email
+                setFormData({
+                    name: userName,
+                    email: userEmail
+                });
+                // Reset submitted state after 10 seconds
                 setTimeout(() => {
                     setSubmitted(false);
-                }, 3000);
+                    setSubmissionMessage('');
+                }, 10000);
+            } else {
+                // Handle 7-day restriction or other errors
+                if (res.status === 429 && data.message) {
+                    setSubmissionMessage(data.message);
+                } else {
+                    setSubmissionMessage(data.error || 'Failed to submit application');
+                }
             }
         } catch (error) {
             console.error(error);
+            setSubmissionMessage('Failed to submit application. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -131,7 +198,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
 
     return (
         <div className="max-w-6xl mx-auto">
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href={dashboardPath} className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" /> Back to Dashboard
             </Link>
             
@@ -345,67 +412,88 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide }) => {
                             <h3 className="text-lg font-bold text-white mb-2">Apply Now</h3>
                             <p className="text-xs text-zinc-500 mb-6">Start this initiative by submitting the required details below.</p>
                             
+                            {submissionMessage && !submitted && (
+                                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-4">
+                                    <p className="text-amber-400 text-xs text-center">{submissionMessage}</p>
+                                </div>
+                            )}
                             {submitted ? (
                                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6 text-center animate-in fade-in zoom-in-95 duration-200">
                                     <div className="w-12 h-12 rounded-full bg-emerald-500/20 mx-auto mb-3 flex items-center justify-center">
                                         <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                                     </div>
                                     <h4 className="text-white font-bold mb-1">Application Submitted!</h4>
-                                    <p className="text-emerald-400 text-xs">Your application has been received successfully.</p>
+                                    <p className="text-emerald-400 text-xs">{submissionMessage || 'Your application has been received successfully. You can apply again after 7 days.'}</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     {formFields.length > 0 ? (
-                                        formFields.map((field, idx) => (
-                                            <div key={field.key || field.id || idx}>
-                                                <label className="block text-xs font-bold text-zinc-400 mb-1.5 uppercase tracking-wider">
-                                                    {field.label} {field.required && <span className="text-white">*</span>}
-                                                </label>
-
-                                                {/* Render input based on type */}
-                                                {field.type === 'textarea' ? (
-                                                    <textarea
-                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700 min-h-[100px] resize-none"
-                                                        placeholder={field.placeholder || `Enter ${field.label}...`}
-                                                        required={field.required}
-                                                        value={formData[field.key] || ''}
-                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                    />
-                                                ) : field.type === 'select' ? (
-                                                    <select
-                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all"
-                                                        required={field.required}
-                                                        value={formData[field.key] || ''}
-                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                    >
-                                                        <option value="" disabled>Select an option</option>
-                                                        {field.options?.map(opt => (
-                                                            <option key={opt} value={opt}>{opt}</option>
-                                                        ))}
-                                                    </select>
-                                                ) : field.type === 'checkbox' ? (
-                                                    <label className="flex items-center gap-3 p-3 bg-black/20 rounded-lg border border-white/5 cursor-pointer hover:bg-black/30 transition-colors">
-                                                        <input
-                                                            type="checkbox"
-                                                            className="w-4 h-4 rounded bg-black border-white/20 text-white focus:ring-white"
-                                                            required={field.required}
-                                                            checked={formData[field.key] || false}
-                                                            onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.checked }))}
-                                                        />
-                                                        <span className="text-sm text-zinc-300">{field.placeholder || "Yes, I agree"}</span>
+                                        formFields.map((field, idx) => {
+                                            // Check if this is name or email field
+                                            const fieldKey = (field.key || field.id || '').toLowerCase();
+                                            const fieldLabel = (field.label || '').toLowerCase();
+                                            const isNameField = fieldKey === 'name' || fieldLabel === 'name';
+                                            const isEmailField = fieldKey === 'email' || fieldLabel === 'email';
+                                            const isReadOnly = isNameField || isEmailField;
+                                            
+                                            return (
+                                                <div key={field.key || field.id || idx}>
+                                                    <label className="block text-xs font-bold text-zinc-400 mb-1.5 uppercase tracking-wider">
+                                                        {field.label} {field.required && <span className="text-white">*</span>}
+                                                        {isReadOnly && (
+                                                            <span className="ml-2 text-[10px] text-emerald-400 font-normal">(Verified)</span>
+                                                        )}
                                                     </label>
-                                                ) : (
-                                                    <input
-                                                        type={field.type}
-                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700"
-                                                        placeholder={field.placeholder || `Enter ${field.label}...`}
-                                                        required={field.required}
-                                                        value={formData[field.key] || ''}
-                                                        onChange={(e) => setFormData(p => ({ ...p, [field.key]: e.target.value }))}
-                                                    />
-                                                )}
-                                            </div>
-                                        ))
+
+                                                    {/* Render input based on type */}
+                                                    {field.type === 'textarea' ? (
+                                                        <textarea
+                                                            className={`w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700 min-h-[100px] resize-none ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
+                                                            placeholder={field.placeholder || `Enter ${field.label}...`}
+                                                            required={field.required}
+                                                            readOnly={isReadOnly}
+                                                            value={formData[field.key] || ''}
+                                                            onChange={(e) => !isReadOnly && setFormData(p => ({ ...p, [field.key]: e.target.value }))}
+                                                        />
+                                                    ) : field.type === 'select' ? (
+                                                        <select
+                                                            className={`w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
+                                                            required={field.required}
+                                                            disabled={isReadOnly}
+                                                            value={formData[field.key] || ''}
+                                                            onChange={(e) => !isReadOnly && setFormData(p => ({ ...p, [field.key]: e.target.value }))}
+                                                        >
+                                                            <option value="" disabled>Select an option</option>
+                                                            {field.options?.map(opt => (
+                                                                <option key={opt} value={opt}>{opt}</option>
+                                                            ))}
+                                                        </select>
+                                                    ) : field.type === 'checkbox' ? (
+                                                        <label className="flex items-center gap-3 p-3 bg-black/20 rounded-lg border border-white/5 cursor-pointer hover:bg-black/30 transition-colors">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="w-4 h-4 rounded bg-black border-white/20 text-white focus:ring-white"
+                                                                required={field.required}
+                                                                disabled={isReadOnly}
+                                                                checked={formData[field.key] || false}
+                                                                onChange={(e) => !isReadOnly && setFormData(p => ({ ...p, [field.key]: e.target.checked }))}
+                                                            />
+                                                            <span className="text-sm text-zinc-300">{field.placeholder || "Yes, I agree"}</span>
+                                                        </label>
+                                                    ) : (
+                                                        <input
+                                                            type={field.type}
+                                                            className={`w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700 ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
+                                                            placeholder={field.placeholder || `Enter ${field.label}...`}
+                                                            required={field.required}
+                                                            readOnly={isReadOnly}
+                                                            value={formData[field.key] || ''}
+                                                            onChange={(e) => !isReadOnly && setFormData(p => ({ ...p, [field.key]: e.target.value }))}
+                                                        />
+                                                    )}
+                                                </div>
+                                            );
+                                        })
                                     ) : (
                                         <div className="text-center py-4 bg-white/5 rounded-lg border border-dashed border-white/10 text-xs text-zinc-500">
                                             No application form required.

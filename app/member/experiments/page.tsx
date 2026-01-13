@@ -63,15 +63,11 @@ export default function MemberExperimentsPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
-                <ArrowLeft className="w-4 h-4" />
-                Back to Dashboard
-            </Link>
-            
             <CorePageHeader
                 title="Experiments Lab"
                 description="The innovation engine. Propose new ideas, debate implementations, and govern the roadmap."
                 icon={<Beaker className="w-5 h-5 text-zinc-200" />}
+                backLink="/member"
             >
                 <div className="flex items-center gap-3">
                     {/* View Toggle */}

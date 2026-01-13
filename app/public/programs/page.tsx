@@ -5,17 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { ArrowLeft, Search, LayoutGrid, List as ListIcon, Users, ChevronDown } from "lucide-react";
 import { Footer } from "@/components/website/Footer";
 
-// Hide scrollbar but keep functionality
-const scrollbarHide = `
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
 async function getPrograms() {
   const guides = await prisma.guide.findMany({
     where: { 
@@ -66,9 +55,7 @@ export default async function PublicProgramsPage() {
   const programs = await getPrograms();
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: scrollbarHide }} />
-      <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
+    <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
       
       <div className="pt-24 px-6 max-w-7xl mx-auto pb-20">
         
@@ -169,6 +156,5 @@ export default async function PublicProgramsPage() {
       </div>
       <Footer />
     </main>
-    </>
   );
 }

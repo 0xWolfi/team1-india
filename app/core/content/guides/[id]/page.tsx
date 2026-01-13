@@ -56,7 +56,7 @@ export default function ContentGuideDetailPage() {
 
     return (
         <CoreWrapper>
-            <GuideDetail guide={guide} />
+            <GuideDetail guide={guide} basePath="/core" />
         </CoreWrapper>
     );
 }

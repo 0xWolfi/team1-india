@@ -170,9 +170,8 @@ export default function PublicPlaybooksPage() {
                             <TimeAgo date={new Date(item.createdAt)} />
                         </div>
                     </div>
-                </Link>
-              ))}
-            </div>
+              </Link>
+            ))}
           </div>
         )}
         
