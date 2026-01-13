@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 // Dynamically import editor to avoid SSR issues
 const Editor = dynamic(() => import("../../../../components/playbooks/Editor"), { ssr: false });
 import ConfirmationModal from "../../../../components/ui/ConfirmationModal";
+import { Toast, ToastType } from "../../../../components/ui/Toast";
 
 interface PlaybookDetail {
     id: string;
@@ -35,6 +36,11 @@ export default function PlaybookPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [isLockedByOther, setIsLockedByOther] = useState(false);
     const [lockOwner, setLockOwner] = useState<string | null>(null);
+    const [toast, setToast] = useState<{ message: string; type: ToastType; visible: boolean }>({
+        message: '',
+        type: 'info',
+        visible: false
+    });
 
 
 
@@ -263,7 +269,14 @@ export default function PlaybookPage() {
     if (!playbook) return <div className="min-h-screen pt-24 text-center text-zinc-500">Playbook not found.</div>;
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-purple-500/30">
+        <>
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.visible}
+                onClose={() => setToast({ ...toast, visible: false })}
+            />
+            <div className="min-h-screen bg-black text-white selection:bg-purple-500/30">
              {/* Header */}
              <div className="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-[#09090b]/80 backdrop-blur fixed top-0 w-full z-50">
                  <div className="flex items-center gap-4 flex-1">
@@ -498,6 +511,30 @@ export default function PlaybookPage() {
                                                 const file = e.target.files?.[0];
                                                 if (!file) return;
 
+                                                // Check file size before uploading (4MB limit to avoid 413 error)
+                                                const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+                                                if (file.size > MAX_FILE_SIZE) {
+                                                    setToast({
+                                                        message: `File size exceeds 4MB limit. Please choose a smaller image.`,
+                                                        type: 'error',
+                                                        visible: true
+                                                    });
+                                                    // Reset input
+                                                    e.target.value = '';
+                                                    return;
+                                                }
+
+                                                // Check file type
+                                                if (!file.type.startsWith('image/')) {
+                                                    setToast({
+                                                        message: 'Only image files are allowed.',
+                                                        type: 'error',
+                                                        visible: true
+                                                    });
+                                                    e.target.value = '';
+                                                    return;
+                                                }
+
                                                 try {
                                                     const formData = new FormData();
                                                     formData.append('file', file);
@@ -511,12 +548,26 @@ export default function PlaybookPage() {
                                                         const data = await res.json();
                                                         setPlaybook({ ...playbook, coverImage: data.url });
                                                         setHasUnsavedChanges(true);
+                                                        setToast({
+                                                            message: 'Cover image uploaded successfully!',
+                                                            type: 'success',
+                                                            visible: true
+                                                        });
                                                     } else {
-                                                        alert('Upload failed');
+                                                        const errorText = await res.text();
+                                                        setToast({
+                                                            message: errorText || 'Upload failed. Please try again.',
+                                                            type: 'error',
+                                                            visible: true
+                                                        });
                                                     }
                                                 } catch (err) {
                                                     console.error(err);
-                                                    alert('Upload failed');
+                                                    setToast({
+                                                        message: 'Upload failed. Please check your connection and try again.',
+                                                        type: 'error',
+                                                        visible: true
+                                                    });
                                                 }
                                             }}
                                         />
@@ -579,5 +630,6 @@ export default function PlaybookPage() {
                 isDestructive={modalConfig.isDestructive}
              />
         </div>
+        </>
     );
 }

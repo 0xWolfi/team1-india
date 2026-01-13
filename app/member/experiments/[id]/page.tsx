@@ -224,7 +224,7 @@ export default function MemberExperimentDetailPage() {
                             </form>
                         )}
                         
-                        {experiment.stage !== 'DISCUSSION' && experiment.stage !== 'REJECTED' && (
+                        {experiment.stage === 'PROPOSED' && (
                             <div className="mt-8 p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl text-center">
                                 <p className="text-sm text-amber-400">
                                     Comments will be enabled once this proposal is moved to <strong>DISCUSSION</strong> stage.

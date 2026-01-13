@@ -6,8 +6,8 @@ import { put } from "@vercel/blob";
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Maximum file size: 5MB
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// Maximum file size: 4MB (reduced to avoid Vercel's 4.5MB body limit)
+const MAX_FILE_SIZE = 4 * 1024 * 1024;
 
 export async function POST(request: Request) {
     try {

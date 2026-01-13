@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Beaker, LayoutGrid, List as ListIcon, Loader2, MessageSquare, ChevronDown } from 'lucide-react';
+import { Plus, Beaker, LayoutGrid, List as ListIcon, Loader2, MessageSquare, ChevronDown, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
@@ -63,6 +63,11 @@ export default function MemberExperimentsPage() {
 
     return (
         <MemberWrapper>
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Dashboard
+            </Link>
+            
             <CorePageHeader
                 title="Experiments Lab"
                 description="The innovation engine. Propose new ideas, debate implementations, and govern the roadmap."
