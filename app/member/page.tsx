@@ -3,7 +3,7 @@ import {
     BookOpen, Beaker, Vote, Megaphone, FileText, Users, Calendar, Briefcase, Newspaper
 } from "lucide-react";
 import Link from "next/link";
-import { CoreWrapper } from "@/components/core/CoreWrapper";
+import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { AnnouncementViewer } from "@/components/public/AnnouncementViewer";
 import { Announcements } from "@/components/website/Announcements";
 import { MemberHeader } from "@/components/member/MemberHeader";
@@ -15,7 +15,14 @@ export default async function MemberPage() {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-        redirect('/public'); // Protect the route
+        redirect('/public');
+    }
+
+    // Check if user has MEMBER or CORE role
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const userRole = (session.user as any)?.role;
+    if (userRole !== 'MEMBER' && userRole !== 'CORE') {
+        redirect('/public?error=access_denied');
     }
 
     const resources = [
@@ -45,27 +52,15 @@ export default async function MemberPage() {
         },
         {
             title: "Experiments",
-            link: "/core/experiments",
+            link: "/member/experiments",
             icon: <Beaker />,
             description: "Submit proposals, view status, and participate in discussions.",
-        },
-        {
-            title: "Polls",
-            link: "/core/poll",
-            icon: <Vote />,
-            description: "Vote on active community polls.",
         },
         {
             title: "Announcements",
             link: "/member/announcements",
             icon: <Megaphone />,
             description: "View member-only and public announcements.",
-        },
-        {
-            title: "Meeting Notes",
-            link: "/core/notes",
-            icon: <FileText />,
-            description: "View meeting notes and discussions.",
         },
         {
             title: "Members",
@@ -76,7 +71,7 @@ export default async function MemberPage() {
     ];
 
     return (
-        <CoreWrapper>
+        <MemberWrapper>
             <MemberHeader user={session.user} />
 
             {/* Latest Breaking News Pill */}
@@ -90,8 +85,8 @@ export default async function MemberPage() {
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
                 {resources.map((resource, idx) => (
-                    <Link 
-                        key={idx} 
+                    <Link
+                        key={idx}
                         href={resource.link}
                         className="group block p-6 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all"
                     >
@@ -107,6 +102,6 @@ export default async function MemberPage() {
                     </Link>
                 ))}
             </div>
-        </CoreWrapper>
+        </MemberWrapper>
     );
 }

@@ -37,9 +37,10 @@ export const authOptions: NextAuthOptions = {
              await prisma.communityMember.update({ where: { id: communityMember.id }, data: { name: user.name } });
              return true;
         }
-        
-        console.log(`Guest Login: User ${user.email} allowed.`);
-        return true; 
+
+        // Reject unauthorized users
+        console.log(`Access Denied: User ${user.email} is not a member.`);
+        return "/public?error=not_member"; 
       } catch (error) {
         console.error("SignIn Error:", error);
         return "/public?error=server_error"; 
@@ -75,14 +76,14 @@ export const authOptions: NextAuthOptions = {
             if (communityMember) {
                 token.id = communityMember.id as string;
                 token.role = 'MEMBER';
-                token.permissions = {}; 
+                token.permissions = {};
                 token.tags = communityMember.tags ? [communityMember.tags] : [];
                 return token;
             }
 
-            // 3. Guest User
-            token.id = user.id;
-            token.role = 'GUEST';
+            // 3. No valid membership found - should not reach here due to signIn check
+            console.error(`User ${user.email} authenticated but has no valid role. This should not happen.`);
+            token.role = 'GUEST'; // Fallback, but signIn callback should have blocked this
             token.permissions = {};
             token.tags = [];
             return token;
