@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CoreWrapper } from "@/components/core/CoreWrapper";
+import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -43,26 +43,26 @@ export default function MemberPlaybookDetailPage() {
 
     if (isLoading) {
         return (
-            <CoreWrapper>
+            <MemberWrapper>
                 <div className="flex justify-center pt-40">
                     <Loader2 className="w-8 h-8 animate-spin text-zinc-500" />
                 </div>
-            </CoreWrapper>
+            </MemberWrapper>
         );
     }
 
     if (error || !playbook) {
         return (
-            <CoreWrapper>
+            <MemberWrapper>
                 <div className="flex flex-col items-center justify-center pt-40 text-zinc-500">
                     <p>{error || "Playbook not found"}</p>
                 </div>
-            </CoreWrapper>
+            </MemberWrapper>
         );
     }
 
     return (
-        <CoreWrapper>
+        <MemberWrapper>
             <Link href="/member/playbooks" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-6 transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Back to Playbooks
             </Link>
@@ -106,6 +106,6 @@ export default function MemberPlaybookDetailPage() {
                     />
                 </div>
             </div>
-        </CoreWrapper>
+        </MemberWrapper>
     );
 }

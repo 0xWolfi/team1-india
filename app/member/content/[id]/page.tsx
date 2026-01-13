@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CoreWrapper } from "@/components/core/CoreWrapper";
+import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { GuideDetail } from '@/components/guides/GuideDetail';
 import { Loader2 } from 'lucide-react';
 
@@ -42,27 +42,27 @@ export default function MemberContentGuideDetailPage() {
 
     if (isLoading) {
         return (
-            <CoreWrapper>
+            <MemberWrapper>
                 <div className="flex justify-center pt-40">
                     <Loader2 className="w-8 h-8 animate-spin text-zinc-500" />
                 </div>
-            </CoreWrapper>
+            </MemberWrapper>
         );
     }
 
     if (error || !guide) {
         return (
-            <CoreWrapper>
+            <MemberWrapper>
                 <div className="flex flex-col items-center justify-center pt-40 text-zinc-500">
                     <p>{error || "Guide not found"}</p>
                 </div>
-            </CoreWrapper>
+            </MemberWrapper>
         );
     }
 
     return (
-        <CoreWrapper>
+        <MemberWrapper>
             <GuideDetail guide={guide} />
-        </CoreWrapper>
+        </MemberWrapper>
     );
 }

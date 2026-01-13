@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Users, Search, Mail, Twitter, Send } from "lucide-react";
-import { CoreWrapper } from "@/components/core/CoreWrapper";
-import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { MemberWrapper } from "@/components/member/MemberWrapper";
 
 interface CommunityMember {
     id: string;
@@ -49,12 +48,18 @@ export default function MemberDirectoryPage() {
     );
 
     return (
-        <CoreWrapper>
-            <CorePageHeader
-                title="Members Directory"
-                description="Connect with fellow community members."
-                icon={<Users className="w-5 h-5 text-zinc-200" />}
-            />
+        <MemberWrapper>
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-white/5 rounded-lg">
+                        <Users className="w-5 h-5 text-zinc-200" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-white">Members Directory</h1>
+                        <p className="text-sm text-zinc-400">Connect with fellow community members.</p>
+                    </div>
+                </div>
+            </div>
 
             {/* Search Bar */}
             <div className="relative mb-10 group">
@@ -152,6 +157,6 @@ export default function MemberDirectoryPage() {
                     ))}
                 </div>
             )}
-        </CoreWrapper>
+        </MemberWrapper>
     );
 }
