@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
-import { CoreWrapper } from "@/components/core/CoreWrapper";
-import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { GuideList } from '@/components/guides/GuideList';
 
 export default function MemberEventGuidesPage() {
@@ -38,12 +37,18 @@ export default function MemberEventGuidesPage() {
     }, []);
 
     return (
-        <CoreWrapper>
-            <CorePageHeader
-                title="Event Guidelines"
-                description="Access member-only and public event guides and templates."
-                icon={<Calendar className="w-5 h-5 text-zinc-200" />}
-            />
+        <MemberWrapper>
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-white/5 rounded-lg">
+                        <Calendar className="w-5 h-5 text-zinc-200" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-white">Event Guidelines</h1>
+                        <p className="text-sm text-zinc-400">Access member-only and public event guides and templates.</p>
+                    </div>
+                </div>
+            </div>
 
             <GuideList
                 guides={guides}
@@ -52,6 +57,6 @@ export default function MemberEventGuidesPage() {
                 canDelete={false}
                 canWrite={false}
             />
-        </CoreWrapper>
+        </MemberWrapper>
     );
 }

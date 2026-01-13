@@ -4,8 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { FileText, Search, Globe, Cpu, LayoutGrid, List, ArrowRight, BookOpen } from "lucide-react";
-import { CoreWrapper } from "@/components/core/CoreWrapper";
-import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { MemberWrapper } from "@/components/member/MemberWrapper";
 
 interface Playbook {
     id: string;
@@ -58,12 +57,18 @@ export default function MemberPlaybooksPage() {
     );
 
     return (
-        <CoreWrapper>
-            <CorePageHeader
-                title="Playbooks"
-                description="Access member-only and public playbooks, guides, and strategic documentation."
-                icon={<BookOpen className="w-5 h-5 text-zinc-200" />}
-            />
+        <MemberWrapper>
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-white/5 rounded-lg">
+                        <BookOpen className="w-5 h-5 text-zinc-200" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-white">Playbooks</h1>
+                        <p className="text-sm text-zinc-400">Access member-only and public playbooks, guides, and strategic documentation.</p>
+                    </div>
+                </div>
+            </div>
 
             {/* Toolbar */}
             <div className="flex flex-col md:flex-row gap-4 mb-10">
@@ -236,6 +241,6 @@ export default function MemberPlaybooksPage() {
                     ))}
                 </div>
             </div>
-        </CoreWrapper>
+        </MemberWrapper>
     );
 }

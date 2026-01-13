@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Briefcase } from 'lucide-react';
-import { CoreWrapper } from "@/components/core/CoreWrapper";
-import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { GuideList } from '@/components/guides/GuideList';
 
 export default function MemberProgramGuidesPage() {
@@ -38,12 +37,18 @@ export default function MemberProgramGuidesPage() {
     }, []);
 
     return (
-        <CoreWrapper>
-            <CorePageHeader
-                title="Program Guidelines"
-                description="Access member-only and public program guides and resources."
-                icon={<Briefcase className="w-5 h-5 text-zinc-200" />}
-            />
+        <MemberWrapper>
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-white/5 rounded-lg">
+                        <Briefcase className="w-5 h-5 text-zinc-200" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-white">Program Guidelines</h1>
+                        <p className="text-sm text-zinc-400">Access member-only and public program guides and resources.</p>
+                    </div>
+                </div>
+            </div>
 
             <GuideList
                 guides={guides}
@@ -52,6 +57,6 @@ export default function MemberProgramGuidesPage() {
                 canDelete={false}
                 canWrite={false}
             />
-        </CoreWrapper>
+        </MemberWrapper>
     );
 }
