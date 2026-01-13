@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { FileText, Search, Globe, Cpu, LayoutGrid, List, ArrowRight, BookOpen } from "lucide-react";
+import { FileText, Search, Globe, Cpu, LayoutGrid, List, ArrowRight, BookOpen, ArrowLeft } from "lucide-react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 
 interface Playbook {
@@ -58,6 +58,11 @@ export default function MemberPlaybooksPage() {
 
     return (
         <MemberWrapper>
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Dashboard
+            </Link>
+            
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-white/5 rounded-lg">
