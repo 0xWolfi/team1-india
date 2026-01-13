@@ -18,8 +18,6 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
     const [description, setDescription] = useState(initialData?.body?.description || '');
     const [coverImage, setCoverImage] = useState(initialData?.coverImage || '');
     const [visibility, setVisibility] = useState<'CORE' | 'MEMBER' | 'PUBLIC'>(initialData?.visibility || 'CORE');
-    const [maxSubmissionsPublic, setMaxSubmissionsPublic] = useState<number>(initialData?.maxSubmissionsPublic || 1);
-    const [maxSubmissionsMember, setMaxSubmissionsMember] = useState<number>(initialData?.maxSubmissionsMember || 10);
     
     // Dynamic Sections
     const [kpis, setKpis] = useState<{ label: string; value: string }[]>(initialData?.body?.kpis || []);
@@ -59,9 +57,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
             coverImage,
             visibility,
             body,
-            formSchema,
-            maxSubmissionsPublic,
-            maxSubmissionsMember
+            formSchema
         });
     };
 
@@ -187,29 +183,6 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                         {visibility === 'PUBLIC' && "Publicly accessible to everyone."}
                      </p>
                 </div>
-                   
-                   <div className="grid grid-cols-2 gap-6 pt-4 border-t border-white/5">
-                        <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Max Submissions (Public)</label>
-                            <input 
-                                type="number"
-                                min="1"
-                                value={maxSubmissionsPublic}
-                                onChange={e => setMaxSubmissionsPublic(parseInt(e.target.value))}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                            />
-                        </div>
-                         <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Max Submissions (Member)</label>
-                            <input 
-                                type="number"
-                                min="1"
-                                value={maxSubmissionsMember}
-                                onChange={e => setMaxSubmissionsMember(parseInt(e.target.value))}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                            />
-                        </div>
-                   </div>
             </section>
 
                 <div className="h-px bg-white/5 my-8" />

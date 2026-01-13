@@ -62,7 +62,7 @@ export default function MemberProgramGuideDetailPage() {
 
     return (
         <MemberWrapper>
-            <GuideDetail guide={guide} />
+            <GuideDetail guide={guide} basePath="/member" />
         </MemberWrapper>
     );
 }

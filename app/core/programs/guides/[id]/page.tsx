@@ -56,7 +56,7 @@ export default function ProgramGuideDetailPage() {
 
     return (
         <CoreWrapper>
-            <GuideDetail guide={guide} />
+            <GuideDetail guide={guide} basePath="/core" />
         </CoreWrapper>
     );
 }
