@@ -39,6 +39,26 @@ export async function GET(
 
   if (!experiment) return new NextResponse("Not found", { status: 404 });
 
+  // If createdBy is null but createdByEmail exists, fetch CommunityMember data
+  if (!experiment.createdBy && experiment.createdByEmail) {
+    // @ts-ignore
+    const communityMember = await prisma.communityMember.findUnique({
+      where: { email: experiment.createdByEmail },
+      select: { name: true, email: true }
+    });
+    
+    if (communityMember) {
+      return NextResponse.json({
+        ...experiment,
+        createdBy: {
+          name: communityMember.name,
+          image: null,
+          email: communityMember.email
+        }
+      });
+    }
+  }
+
   return NextResponse.json(experiment);
 }
 
