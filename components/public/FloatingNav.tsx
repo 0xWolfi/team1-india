@@ -230,8 +230,8 @@ export function FloatingNav() {
 
                          <div className="space-y-3">
                             {((session?.user as any)?.role === 'CORE' || (session?.user as any)?.role === 'MEMBER') && (
-                                <Link 
-                                    href="/core"
+                                <Link
+                                    href={(session?.user as any)?.role === 'CORE' ? '/core' : '/member'}
                                     className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <LayoutDashboard className="w-4 h-4" /> Go to Dashboard
