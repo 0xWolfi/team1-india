@@ -13,6 +13,8 @@ export interface FormField {
     required: boolean;
     placeholder?: string;
     options?: string[]; // For select inputs
+    isDefault?: boolean; // Indicates if this is a default field (name/email)
+    editable?: boolean; // Indicates if the field can be edited
 }
 
 interface FormBuilderProps {
@@ -47,12 +49,22 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
     };
 
     const updateField = (index: number, updates: Partial<FormField>) => {
+        const field = fields[index];
+        // Prevent editing default fields (name and email)
+        if (field.isDefault) {
+            return; // Cannot edit default fields
+        }
         const newFields = [...fields];
         newFields[index] = { ...newFields[index], ...updates };
         onChange(newFields);
     };
 
     const removeField = (index: number) => {
+        // Prevent removal of default fields (name and email)
+        const field = fields[index];
+        if (field.isDefault) {
+            return; // Cannot remove default fields
+        }
         onChange(fields.filter((_, i) => i !== index));
     };
 
@@ -84,13 +96,25 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
 
             {/* Field List */}
             <div className="space-y-4">
-                {fields.map((field, index) => (
-                    <div key={field.id} className="group relative bg-zinc-900/60 border border-white/5 rounded-xl p-4 transition-all hover:bg-zinc-900 hover:border-white/10">
-                        <div className="flex gap-4 items-start">
-                            {/* Drag Handle */}
-                            <div className="mt-3 text-zinc-700 cursor-grab active:cursor-grabbing">
-                                <GripVertical className="w-4 h-4" />
+                {fields.map((field, index) => {
+                    const isDefault = (field as any).isDefault || field.key === 'name' || field.key === 'email';
+                    return (
+                    <div key={field.id} className={`group relative bg-zinc-900/60 border ${isDefault ? 'border-indigo-500/30' : 'border-white/5'} rounded-xl p-4 transition-all hover:bg-zinc-900 hover:border-white/10`}>
+                        {isDefault && (
+                            <div className="absolute top-2 right-2 px-2 py-1 bg-indigo-500/20 border border-indigo-500/30 rounded text-[10px] font-bold text-indigo-400 uppercase">
+                                Default
                             </div>
+                        )}
+                        <div className="flex gap-4 items-start">
+                            {/* Drag Handle - hidden for default fields */}
+                            {!isDefault && (
+                                <div className="mt-3 text-zinc-700 cursor-grab active:cursor-grabbing">
+                                    <GripVertical className="w-4 h-4" />
+                                </div>
+                            )}
+                            {isDefault && (
+                                <div className="mt-3 w-4 h-4"></div>
+                            )}
 
                             <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4">
                                 {/* Label & Key */}
@@ -102,6 +126,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                         <input 
                                             value={field.label}
                                             onChange={(e) => {
+                                                if (isDefault) return; // Cannot edit default fields
                                                 const newLabel = e.target.value;
                                                 const slug = newLabel.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
                                                 updateField(index, { 
@@ -110,7 +135,8 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                                 });
                                             }}
                                             placeholder="e.g. What is your experience?"
-                                            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500 transition-colors"
+                                            readOnly={isDefault}
+                                            className={`w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500 transition-colors ${isDefault ? 'cursor-not-allowed opacity-70' : ''}`}
                                         />
                                         <p className="text-[9px] text-zinc-600 mt-1">The actual question the applicant will see.</p>
                                     </div>
@@ -141,30 +167,39 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                     )}
 
                                     <div className="col-span-2 flex items-center gap-4 pt-2">
-                                        <label className="flex items-center gap-2 cursor-pointer group/check">
+                                        <label className={`flex items-center gap-2 ${isDefault ? 'cursor-not-allowed' : 'cursor-pointer'} group/check`}>
                                             <input 
                                                 type="checkbox"
                                                 checked={field.required}
-                                                onChange={(e) => updateField(index, { required: e.target.checked })}
+                                                onChange={(e) => !isDefault && updateField(index, { required: e.target.checked })}
+                                                disabled={isDefault}
                                                 className="w-4 h-4 rounded bg-black/40 border-white/10 text-indigo-600 focus:ring-indigo-500"
                                             />
-                                            <span className="text-xs text-zinc-400 group-hover/check:text-white transition-colors">Required Field</span>
+                                            <span className={`text-xs ${isDefault ? 'text-zinc-600' : 'text-zinc-400'} group-hover/check:text-white transition-colors`}>
+                                                Required Field {isDefault && '(Always Required)'}
+                                            </span>
                                         </label>
                                     </div>
                                 </div>
                                 
                                 <div className="md:col-span-1 flex justify-end">
-                                    <button 
-                                        onClick={() => removeField(index)}
-                                        className="p-2 text-zinc-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors h-fit"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
+                                    {!isDefault && (
+                                        <button 
+                                            onClick={() => removeField(index)}
+                                            className="p-2 text-zinc-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors h-fit"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                    {isDefault && (
+                                        <div className="w-10 h-10"></div>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
-                ))}
+                    );
+                })}
 
                 {fields.length === 0 && (
                      <div className="flex flex-col items-center justify-center py-12 border border-dashed border-white/10 rounded-xl bg-white/[0.02]">

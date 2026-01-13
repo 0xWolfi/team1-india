@@ -24,9 +24,15 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
     const [timeline, setTimeline] = useState<{ step: string; duration: string }[]>(initialData?.body?.timeline || []);
     const [rules, setRules] = useState<string[]>(initialData?.body?.rules || []);
     
-    // Form Builder (Rich Fields)
-    const [formFields, setFormFields] = useState<any[]>(
-        Array.isArray(initialData?.formSchema) 
+    // Default fields that are always present and cannot be removed
+    const defaultFields = [
+        { id: 'name', key: 'name', label: 'Name', type: 'text', required: true, isDefault: true, editable: true },
+        { id: 'email', key: 'email', label: 'Email', type: 'email', required: true, isDefault: true, editable: false }
+    ];
+
+    // Form Builder (Rich Fields) - filter out default fields from initial data
+    const [formFields, setFormFields] = useState<any[]>(() => {
+        const initialFields = Array.isArray(initialData?.formSchema) 
             ? initialData.formSchema 
             : initialData?.formSchema 
                 ? Object.entries(initialData.formSchema).map(([key, label]) => ({
@@ -36,8 +42,11 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                     type: 'text',
                     required: true
                   }))
-                : []
-    );
+                : [];
+        
+        // Filter out any existing name/email fields from initial data (we'll use defaults)
+        return initialFields.filter((f: any) => f.key !== 'name' && f.key !== 'email');
+    });
     const [isUploading, setIsUploading] = useState(false);
 
     const handleSave = () => {
@@ -336,7 +345,12 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                         </p>
                     </div>
                  </div>
-                 <FormBuilder fields={formFields} onChange={setFormFields} />
+                 {/* Show default fields first, then custom fields */}
+                 <FormBuilder fields={[...defaultFields, ...formFields]} onChange={(newFields) => {
+                     // Filter out default fields from the onChange callback
+                     const customFields = newFields.filter((f: any) => !f.isDefault && f.key !== 'name' && f.key !== 'email');
+                     setFormFields(customFields);
+                 }} />
             </section>
 
             {/* Actions */}
