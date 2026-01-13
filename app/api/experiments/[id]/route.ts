@@ -40,6 +40,7 @@ export async function GET(
   if (!experiment) return new NextResponse("Not found", { status: 404 });
 
   // If createdBy is null but createdByEmail exists, fetch CommunityMember data
+  let experimentWithCreator = experiment;
   if (!experiment.createdBy && experiment.createdByEmail) {
     // @ts-ignore
     const communityMember = await prisma.communityMember.findUnique({
@@ -48,18 +49,45 @@ export async function GET(
     });
     
     if (communityMember) {
-      return NextResponse.json({
+      experimentWithCreator = {
         ...experiment,
         createdBy: {
           name: communityMember.name,
           image: null,
           email: communityMember.email
         }
-      });
+      };
     }
   }
 
-  return NextResponse.json(experiment);
+  // For comments with null author (CommunityMembers), fetch their data using authorEmail
+  const commentsWithAuthors = await Promise.all(
+    experimentWithCreator.comments.map(async (comment: any) => {
+      if (!comment.author && comment.authorEmail) {
+        // @ts-ignore
+        const communityMember = await prisma.communityMember.findUnique({
+          where: { email: comment.authorEmail },
+          select: { name: true, email: true }
+        });
+        
+        if (communityMember) {
+          return {
+            ...comment,
+            author: {
+              name: communityMember.name,
+              image: null
+            }
+          };
+        }
+      }
+      return comment;
+    })
+  );
+
+  return NextResponse.json({
+    ...experimentWithCreator,
+    comments: commentsWithAuthors
+  });
 }
 
 export async function PATCH(
@@ -106,37 +134,56 @@ export async function PATCH(
     });
 
     // Send email notifications when status changes
-    if (body.stage && experiment.createdBy?.email) {
-      const creatorName = experiment.createdBy.name || 'Member';
+    if (body.stage) {
+      // Get creator email - either from createdBy relation or createdByEmail field
+      let creatorEmail = experiment.createdBy?.email || (experiment as any).createdByEmail;
+      let creatorName = experiment.createdBy?.name || 'Member';
+      
+      // If createdBy is null but createdByEmail exists, fetch CommunityMember data
+      if (!experiment.createdBy && (experiment as any).createdByEmail) {
+        // @ts-ignore
+        const communityMember = await prisma.communityMember.findUnique({
+          where: { email: (experiment as any).createdByEmail },
+          select: { name: true, email: true }
+        });
+        
+        if (communityMember) {
+          creatorEmail = communityMember.email;
+          creatorName = communityMember.name || 'Member';
+        }
+      }
+      
       const proposalTitle = experiment.title || 'Your Proposal';
 
-      if (body.stage === 'APPROVED') {
-        await sendEmail({
-          to: experiment.createdBy.email,
-          subject: `Proposal Approved: ${proposalTitle}`,
-          html: getApprovalEmailTemplate(
-            creatorName,
-            proposalTitle,
-            'Your proposal has been approved by the governance committee and will move to implementation planning.'
-          )
-        });
-      } else if (body.stage === 'REJECTED') {
-        await sendEmail({
-          to: experiment.createdBy.email,
-          subject: `Proposal Status Update: ${proposalTitle}`,
-          html: getRejectionEmailTemplate(
-            creatorName,
-            proposalTitle,
-            'After careful consideration, the governance committee has decided not to proceed with this proposal at this time.'
-          )
-        });
-      } else if (body.stage === 'DISCUSSION') {
-        // Send notification that proposal is now open for community discussion
-        await sendEmail({
-          to: experiment.createdBy.email,
-          subject: `Proposal Moved to Discussion: ${proposalTitle}`,
-          html: getDiscussionEmailTemplate(creatorName, proposalTitle)
-        });
+      if (creatorEmail) {
+        if (body.stage === 'APPROVED') {
+          await sendEmail({
+            to: creatorEmail,
+            subject: `Proposal Approved: ${proposalTitle}`,
+            html: getApprovalEmailTemplate(
+              creatorName,
+              proposalTitle,
+              'Your proposal has been approved by the governance committee and will move to implementation planning.'
+            )
+          });
+        } else if (body.stage === 'REJECTED') {
+          await sendEmail({
+            to: creatorEmail,
+            subject: `Proposal Status Update: ${proposalTitle}`,
+            html: getRejectionEmailTemplate(
+              creatorName,
+              proposalTitle,
+              'After careful consideration, the governance committee has decided not to proceed with this proposal at this time.'
+            )
+          });
+        } else if (body.stage === 'DISCUSSION') {
+          // Send notification that proposal is now open for community discussion
+          await sendEmail({
+            to: creatorEmail,
+            subject: `Proposal Moved to Discussion: ${proposalTitle}`,
+            html: getDiscussionEmailTemplate(creatorName, proposalTitle)
+          });
+        }
       }
     }
 
