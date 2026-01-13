@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useSession, signOut } from "next-auth/react";
-import { User, X, LogOut, LayoutDashboard } from "lucide-react";
+import { useSession, signOut, signIn } from "next-auth/react";
+import { User, X, LogOut, LayoutDashboard, LogIn } from "lucide-react";
 
 const navItems = [
     { label: "Playbooks", href: "#playbooks" },
@@ -144,30 +144,53 @@ export function FloatingNav() {
                         </div>
 
                         <h3 className="text-xl font-bold text-white mb-2">Member Access</h3>
-                        <p className="text-zinc-400 text-sm mb-8 leading-relaxed">
+                        <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
                             This portal is accessible only to verified Team1 members. <br/>
                             To submit applications, you can login as a Guest.
                         </p>
 
                         <div className="flex flex-col gap-3">
-                            <button 
-                                onClick={() => { 
-                                    setShowLoginModal(false); 
-                                    /* Handled by next-auth page, route there */ 
-                                    const callbackUrl = encodeURIComponent(window.location.href);
-                                    window.location.href = `/auth/signin?callbackUrl=${callbackUrl}`; 
+                            <button
+                                onClick={() => {
+                                    setShowLoginModal(false);
+                                    signIn('google', { callbackUrl: '/access-check' });
                                 }}
                                 className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors"
                             >
                                 Log In / Sign Up
                             </button>
-                            <Link 
-                                href="https://tally.so/r/w7Xj0A" 
+                            <Link
+                                href="https://tally.so/r/w7Xj0A"
                                 target="_blank"
                                 className="w-full py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 border border-white/10 transition-colors"
                             >
                                 Apply for Membership
                             </Link>
+                        </div>
+
+                        {/* Login Buttons for Members */}
+                        <div className="mt-6 pt-6 border-t border-white/10">
+                            <p className="text-zinc-500 text-xs mb-3 text-center">Already a member?</p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => {
+                                        setShowLoginModal(false);
+                                        signIn('google', { callbackUrl: '/access-check' });
+                                    }}
+                                    className="flex-1 py-2.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold rounded-lg hover:bg-indigo-500/20 transition-colors flex items-center justify-center gap-2 text-xs"
+                                >
+                                    <LogIn className="w-3.5 h-3.5" /> Member Login
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setShowLoginModal(false);
+                                        signIn('google', { callbackUrl: '/access-check' });
+                                    }}
+                                    className="flex-1 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold rounded-lg hover:bg-emerald-500/20 transition-colors flex items-center justify-center gap-2 text-xs"
+                                >
+                                    <LogIn className="w-3.5 h-3.5" /> Core Team Login
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
