@@ -44,6 +44,8 @@ export default function RootLayout({
                         noise={{ opacity: 0.2, scale: 1.2 }} // Reduced noise opacity for background
                         sizing="fill"
                     />
+                    {/* Indian Flag Gradient Overlay */}
+                    <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#FF9933,#FFFFFF,#138808)] opacity-10 mix-blend-overlay" />
                 </div>
                 <div className="relative z-10">
                     {children}

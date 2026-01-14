@@ -9,6 +9,7 @@ import {
     LogOut, User as UserIcon, Lock, LayoutDashboard, BarChart3, ClipboardList
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 // Types
@@ -218,7 +219,9 @@ export default function CorePage() {
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
                     {session?.user?.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full ring-2 ring-white/10" />
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/10">
+                             <Image src={session.user.image} alt="Profile" fill className="object-cover" />
+                        </div>
                     ) : (
                         <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center ring-2 ring-white/10">
                              <UserIcon className="w-5 h-5 text-zinc-400" />
@@ -332,10 +335,11 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
                 <div className="h-32 relative w-full overflow-hidden border-b border-white/5">
                     {resource.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img 
+                        <Image 
                             src={resource.image} 
                             alt={resource.title}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                     ) : (
                         <div className="w-full h-full bg-zinc-800 flex items-center justify-center">

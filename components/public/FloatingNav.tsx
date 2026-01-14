@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useSession, signOut, signIn } from "next-auth/react";
-import { User, X, LogOut, LayoutDashboard, LogIn } from "lucide-react";
+import { User, X, LogOut, LayoutDashboard, LogIn, Menu } from "lucide-react";
 
 const navItems = [
     { label: "Playbooks", href: "#playbooks" },
@@ -22,6 +23,7 @@ export function FloatingNav() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -52,10 +54,10 @@ export function FloatingNav() {
     return (
         <>
             <div className={cn(
-                "fixed top-6 left-1/2 -translate-x-1/2 z-50 w-fit max-w-[95vw] transition-all duration-300 ease-out",
+                "fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95vw] md:w-fit max-w-[95vw] transition-all duration-300 ease-out",
                 isScrolled ? "scale-90 translate-y-[-10px]" : "scale-100"
             )}>
-                <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] supports-[backdrop-filter]:bg-black/20">
+                <div className="flex items-center justify-between md:justify-start w-full gap-1 p-1.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] supports-[backdrop-filter]:bg-black/20">
                     
                     {/* Logo / Home */}
                     <Link 
@@ -63,17 +65,17 @@ export function FloatingNav() {
                         className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all group"
                     >
                         <div className="relative w-5 h-5 flex items-center justify-center">
-                            <div className="absolute inset-0 bg-white rounded-full blur-md opacity-40 group-hover:opacity-100 transition-opacity" />
-                            <img src="/t1-logo.png" alt="T1" className="w-3.5 h-3.5 object-contain relative z-10" />
+
+                            <Image src="/t1-logo.png" alt="T1" width={14} height={14} className="object-contain relative z-10" />
                         </div>
                         <span className="font-bold text-sm text-zinc-300 group-hover:text-white hidden md:block tracking-tight transition-colors">Team1</span>
                     </Link>
 
                     {/* Divider */}
-                    <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
+                    <div className="w-px h-6 bg-white/10 mx-1 hidden md:block" />
 
-                    {/* Center Nav */}
-                    <nav className="flex items-center gap-0.5">
+                    {/* Center Nav (Desktop) */}
+                    <nav className="hidden md:flex items-center gap-0.5">
                         {navItems.map((item) => {
                             const isActive = activeSection === item.href.substring(1);
                             return (
@@ -94,7 +96,7 @@ export function FloatingNav() {
                     </nav>
 
                     {/* Divider */}
-                    <div className="w-px h-6 bg-white/10 mx-1 mobile-hide" />
+                    <div className="w-px h-6 bg-white/10 mx-1 hidden md:block" />
 
                     {/* Right Actions */}
                     <div className="flex items-center gap-2 pl-1">
@@ -105,10 +107,11 @@ export function FloatingNav() {
                             >
                                 <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-black overflow-hidden relative">
                                     {session.user.image ? (
-                                        <img 
+                                        <Image 
                                             src={session.user.image} 
                                             alt={session.user.name || "User"} 
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            className="object-cover"
                                         />
                                     ) : (
                                         <span>{session.user.name?.[0] || session.user.email?.[0] || "U"}</span>
@@ -124,9 +127,90 @@ export function FloatingNav() {
                                 <User className="w-5 h-5" />
                             </button>
                         )}
+
+                        {/* Mobile Menu Button */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="md:hidden p-2 text-zinc-400 hover:text-white transition-colors"
+                        >
+                            <Menu className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Menu Overlay */}
+            {isMobileMenuOpen && (
+                <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-xl animate-in fade-in duration-200 md:hidden">
+                    <div className="flex flex-col h-full p-6">
+                        <div className="flex justify-end mb-8">
+                            <button 
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="p-2 text-zinc-400 hover:text-white transition-colors"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+                        
+                        <nav className="flex flex-col gap-6 items-center justify-center flex-1">
+                            {navItems.map((item) => (
+                                <Link
+                                    key={item.label}
+                                    href={item.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={cn(
+                                        "text-2xl font-bold uppercase tracking-widest transition-colors",
+                                        activeSection === item.href.substring(1)
+                                            ? "text-white"
+                                            : "text-zinc-500 hover:text-zinc-300"
+                                    )}
+                                >
+                                    {item.label}
+                                </Link>
+                            ))}
+                        </nav>
+
+                        <div className="mt-auto pt-8 border-t border-white/10 flex flex-col gap-4">
+                             {session?.user ? (
+                                <div className="flex items-center gap-4 bg-zinc-900/50 p-4 rounded-xl border border-white/5">
+                                    <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold overflow-hidden relative">
+                                        {session.user.image ? (
+                                            <Image 
+                                                src={session.user.image} 
+                                                alt={session.user.name || "User"} 
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <span>{session.user.name?.[0] || "U"}</span>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="text-white font-bold truncate">{session.user.name}</div>
+                                        <div className="text-zinc-500 text-xs truncate">{session.user.email}</div>
+                                    </div>
+                                    <button 
+                                        onClick={() => setShowUserMenu(true)} 
+                                        className="text-indigo-400 text-sm font-bold uppercase tracking-wider"
+                                    >
+                                        Menu
+                                    </button>
+                                </div>
+                             ) : (
+                                <button
+                                    onClick={() => {
+                                        setIsMobileMenuOpen(false);
+                                        setShowLoginModal(true);
+                                    }}
+                                    className="w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2"
+                                >
+                                    <User className="w-5 h-5" /> Member Login
+                                </button>
+                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Login Modal */}
             {showLoginModal && (
@@ -150,38 +234,29 @@ export function FloatingNav() {
                         </p>
 
                         <div className="flex flex-col gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowLoginModal(false);
+                                    signIn('google', { callbackUrl: '/access-check' });
+                                }}
+                                className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                            >
+                                <LogIn className="w-4 h-4" /> Member Login
+                            </button>
+
+                            <div className="flex items-center gap-4 my-2">
+                                <div className="h-px bg-white/10 flex-1" />
+                                <span className="text-zinc-500 text-xs uppercase tracking-widest">or</span>
+                                <div className="h-px bg-white/10 flex-1" />
+                            </div>
+
                             <Link
                                 href="https://tally.so/r/w7Xj0A"
                                 target="_blank"
-                                className="w-full py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 border border-white/10 transition-colors"
+                                className="w-full py-3 bg-white/5 text-zinc-400 font-bold rounded-xl hover:bg-white/10 border border-white/10 transition-colors flex items-center justify-center gap-2"
                             >
                                 Apply for Membership
                             </Link>
-                        </div>
-
-                        {/* Login Buttons for Members */}
-                        <div className="mt-6 pt-6 border-t border-white/10">
-                            <p className="text-zinc-500 text-xs mb-3 text-center">Already a member?</p>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => {
-                                        setShowLoginModal(false);
-                                        signIn('google', { callbackUrl: '/access-check' });
-                                    }}
-                                    className="flex-1 py-2.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold rounded-lg hover:bg-indigo-500/20 transition-colors flex items-center justify-center gap-2 text-xs"
-                                >
-                                    <LogIn className="w-3.5 h-3.5" /> Member Login
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setShowLoginModal(false);
-                                        signIn('google', { callbackUrl: '/access-check' });
-                                    }}
-                                    className="flex-1 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold rounded-lg hover:bg-emerald-500/20 transition-colors flex items-center justify-center gap-2 text-xs"
-                                >
-                                    <LogIn className="w-3.5 h-3.5" /> Core Team Login
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -201,10 +276,11 @@ export function FloatingNav() {
                         <div className="flex items-center gap-4 mb-6">
                             <div className="w-16 h-16 rounded-full bg-indigo-500 flex items-center justify-center text-white text-2xl font-bold border-2 border-zinc-800 shadow-xl overflow-hidden relative">
                                 {session?.user?.image ? (
-                                    <img 
+                                    <Image 
                                         src={session.user.image} 
                                         alt={session.user.name || "User"} 
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        className="object-cover"
                                     />
                                 ) : (
                                     <span>{session?.user?.name?.[0] || session?.user?.email?.[0] || "U"}</span>

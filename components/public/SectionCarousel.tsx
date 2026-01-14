@@ -41,9 +41,10 @@ export default function SectionCarousel({
                         </p>
                     </div>
                     
+                    {/* Desktop See All Button */}
                     <Link 
                         href={seeAllLink}
-                        className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-2 rounded-lg transition-all"
+                        className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-2 rounded-lg transition-all"
                     >
                         {seeAllText}
                         <ArrowRight className="w-4 h-4" />
@@ -51,26 +52,49 @@ export default function SectionCarousel({
                 </div>
             </div>
 
-            {enableScroll ? (
-                /* Marquee Container */
-                <div className="relative w-full overflow-hidden mask-gradient">
-                    <div 
-                        className="flex gap-6 animate-marquee w-max py-4 hover:pause"
-                        style={{ animationDirection: direction === 'right' ? 'reverse' : 'normal' }}
-                    >
-                        {scrollingContent.map((child, index) => (
-                            <div key={index} className="shrink-0">
-                                {child}
-                            </div>
-                        ))}
+            {/* Mobile View: Horizontal Scroll (Max 5 items) */}
+            <div className="md:hidden container mx-auto px-6 mb-8">
+                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 scrollbar-hide">
+                    {items.slice(0, 5).map((child, index) => (
+                        <div key={index} className="shrink-0 snap-center w-[280px]">
+                            {child}
+                        </div>
+                    ))}
+                </div>
+                
+                {/* Mobile See All Button (Bottom) */}
+                <Link 
+                    href={seeAllLink}
+                    className="flex w-full justify-center items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-3 rounded-xl transition-all mt-4"
+                >
+                    {seeAllText}
+                    <ArrowRight className="w-4 h-4" />
+                </Link>
+            </div>
+
+            {/* Desktop View: Marquee or Grid */}
+            <div className="hidden md:block">
+                {enableScroll ? (
+                    /* Marquee Container */
+                    <div className="relative w-full overflow-hidden mask-gradient">
+                        <div 
+                            className="flex gap-6 animate-marquee w-max py-4 hover:pause"
+                            style={{ animationDirection: direction === 'right' ? 'reverse' : 'normal' }}
+                        >
+                            {scrollingContent.map((child, index) => (
+                                <div key={index} className="shrink-0">
+                                    {child}
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            ) : (
-                /* Static Container */
-                <div className="container mx-auto px-6">
-                    {children}
-                </div>
-            )}
+                ) : (
+                    /* Static Container or Grid Fallback */
+                    <div className="container mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {children}
+                    </div>
+                )}
+            </div>
             
             <style jsx>{`
                 @keyframes marquee {
@@ -86,11 +110,14 @@ export default function SectionCarousel({
                 .mask-gradient {
                     mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
                 }
-                /* Mobile optimization */
-                @media (max-width: 768px) {
-                    .animate-marquee {
-                        animation-duration: 90s;
-                    }
+                /* Hide scrollbar for Chrome, Safari and Opera */
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+                /* Hide scrollbar for IE, Edge and Firefox */
+                .scrollbar-hide {
+                    -ms-overflow-style: none;  /* IE and Edge */
+                    scrollbar-width: none;  /* Firefox */
                 }
             `}</style>
         </section>

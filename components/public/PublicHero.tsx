@@ -23,7 +23,7 @@ export default function PublicHero({ heroItem }: { heroItem?: HeroItem }) {
 
 
             {/* Dashboard Header Content */}
-            <div className="flex flex-col items-center justify-center space-y-8 py-32">
+            <div className="flex flex-col items-center justify-center space-y-8 py-20 md:py-32">
                 
                 {/* Brand Identity & Context */}
                 <div className="flex flex-col items-center text-center max-w-4xl space-y-8 px-4">
@@ -45,7 +45,7 @@ export default function PublicHero({ heroItem }: { heroItem?: HeroItem }) {
                             <button onClick={() => setShowApplication(true)} className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center gap-2 text-lg">
                                 <Zap className="w-5 h-5 fill-black" /> Apply for Membership
                             </button>
-                            <Link href="#resources" className="px-8 py-4 bg-white/5 border border-white/10 text-white font-medium rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2 text-lg">
+                            <Link href="#playbooks" className="px-8 py-4 bg-white/5 border border-white/10 text-white font-medium rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2 text-lg">
                                 <LayoutGrid className="w-5 h-5" /> Browse Resources
                             </Link>
                         </div>

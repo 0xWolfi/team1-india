@@ -50,8 +50,10 @@ export function Programs() {
 
             {programs.map((program, idx) => (
                 <div key={idx} className="group p-8 border-b border-r border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors relative">
-                    <div className="mb-6">{program.icon}</div>
-                    <h3 className="text-xl font-bold text-white mb-3 relative z-10">{program.title}</h3>
+                    <div className="flex items-center gap-4 mb-3 relative z-10">
+                        {program.icon}
+                        <h3 className="text-xl font-bold text-white">{program.title}</h3>
+                    </div>
                     <p className="text-sm text-zinc-500 leading-relaxed relative z-10">
                         {program.desc}
                     </p>

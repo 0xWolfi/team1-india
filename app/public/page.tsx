@@ -15,30 +15,42 @@ import { Footer } from "@/components/website/Footer";
 
 
 async function getPublicData() {
-    const playbooks = await prisma.playbook.findMany({
-        where: { visibility: "PUBLIC", deletedAt: null },
-        orderBy: { createdAt: "desc" },
-        take: 6,
-        select: { id: true, title: true, description: true, coverImage: true }
-    });
-
-    const publicGuides = await prisma.guide.findMany({
-        where: { 
-            visibility: "PUBLIC",
-            deletedAt: null 
-        },
-        orderBy: { createdAt: "desc" },
-        select: { 
-            id: true, 
-            title: true, 
-            type: true, 
-            coverImage: true, 
-            body: true,
-            createdAt: true,
-            updatedAt: true,
-            visibility: true 
-        }
-    });
+    const [playbooks, publicGuides, resources] = await Promise.all([
+        prisma.playbook.findMany({
+            where: { visibility: "PUBLIC", deletedAt: null },
+            orderBy: { createdAt: "desc" },
+            take: 6,
+            select: { id: true, title: true, description: true, coverImage: true }
+        }),
+        prisma.guide.findMany({
+            where: { 
+                visibility: "PUBLIC",
+                deletedAt: null 
+            },
+            orderBy: { createdAt: "desc" },
+            select: { 
+                id: true, 
+                title: true, 
+                type: true, 
+                coverImage: true, 
+                body: true,
+                createdAt: true,
+                updatedAt: true,
+                visibility: true 
+            }
+        }),
+        // @ts-ignore
+        prisma.contentResource.findMany({
+            where: { 
+                type: { in: ["BRAND_ASSET", "FILE", "BIO"] },
+                status: "published",
+                deletedAt: null
+            },
+            take: 6,
+            orderBy: { createdAt: "desc" },
+            select: { id: true, title: true, content: true, customFields: true }
+        })
+    ]);
 
     // Bucket guides by type
     const programs: Program[] = [];
@@ -83,19 +95,6 @@ async function getPublicData() {
              } as Guide);
         }
     });
-    
-    // Fetch resources (legacy or distinct?) - Keeping as is
-    // @ts-ignore
-    const resources = await prisma.contentResource.findMany({
-        where: { 
-            type: { in: ["BRAND_ASSET", "FILE", "BIO"] },
-            status: "published",
-            deletedAt: null
-        },
-        take: 6,
-        orderBy: { createdAt: "desc" },
-        select: { id: true, title: true, content: true, customFields: true }
-    });
 
     const mediaItems = resources.map((res: any) => ({
         id: res.id,
@@ -118,7 +117,7 @@ export default async function PublicPage() {
                 {/* Added pb-32 to push hero up slightly when centered */}
                 <div className="min-h-[85vh] flex flex-col justify-center pb-32">
                     <PublicHero />
-                    <div className="relative z-10 -mt-32">
+                    <div className="relative z-10 -mt-12 md:-mt-32">
                          <Announcements />
                     </div>
                 </div>
