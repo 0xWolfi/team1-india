@@ -6,6 +6,7 @@ import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import Editor from '@/components/playbooks/Editor';
 
 export default function MemberPlaybookDetailPage() {
     const params = useParams();
@@ -99,12 +100,12 @@ export default function MemberPlaybookDetailPage() {
                 </div>
 
                 {/* Content */}
-                <div className="prose prose-invert max-w-none">
-                    <div
-                        className="text-zinc-300 leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: playbook.content || '<p>No content available.</p>' }}
-                    />
-                </div>
+                <Editor
+                    // Playbook content is stored in `body` (BlockNote JSON)
+                    initialContent={playbook.body}
+                    editable={false}
+                    onChange={() => {}}
+                />
             </div>
         </MemberWrapper>
     );
