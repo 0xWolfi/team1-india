@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 
 interface MemberWrapperProps {
@@ -13,6 +13,39 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
     const { data: session, status } = useSession();
     const router = useRouter();
     const pathname = usePathname();
+
+    // Check if user still exists (for auto-logout when deleted by superadmin)
+    React.useEffect(() => {
+        if (!requireAuth || status !== "authenticated") return;
+
+        const checkUserValidity = async () => {
+            try {
+                const res = await fetch("/api/auth/check-validity", { cache: "no-store" });
+                const data = await res.json();
+
+                if (!data.valid) {
+                    // User has been deleted or is inactive - force logout
+                    console.warn(`User validity check failed: ${data.reason}. Forcing logout.`);
+                    await signOut({ 
+                        redirect: false,
+                        callbackUrl: '/public?error=account_removed'
+                    });
+                    router.push('/public?error=account_removed');
+                }
+            } catch (error) {
+                console.error("Failed to check user validity:", error);
+                // Don't logout on network errors, just log
+            }
+        };
+
+        // Check immediately
+        checkUserValidity();
+
+        // Check periodically every 30 seconds
+        const interval = setInterval(checkUserValidity, 30000);
+
+        return () => clearInterval(interval);
+    }, [status, requireAuth, router, pathname]); // Added pathname to check on route changes too
 
     React.useEffect(() => {
         if (requireAuth && status === "unauthenticated") {
