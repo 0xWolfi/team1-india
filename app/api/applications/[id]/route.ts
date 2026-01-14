@@ -48,27 +48,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
       if (applicantEmail) {
         if (status === 'APPROVED') {
-          const emailHtml = getApprovalEmailTemplate(
-            applicantName,
-            programTitle,
-            'You will receive further instructions shortly.'
-          );
+          const emailHtml = getApprovalEmailTemplate(applicantName, programTitle);
 
           await sendEmail({
             to: applicantEmail,
-            subject: `🎉 Application Approved - ${programTitle}`,
+            subject: `Your ${programTitle} Application Has Been Approved`,
             html: emailHtml
           });
         } else if (status === 'REJECTED') {
-          const emailHtml = getRejectionEmailTemplate(
-            applicantName,
-            programTitle,
-            'We received many qualified applications and had to make difficult decisions.'
-          );
+          const emailHtml = getRejectionEmailTemplate(applicantName, programTitle);
 
           await sendEmail({
             to: applicantEmail,
-            subject: `Application Status Update - ${programTitle}`,
+            subject: `Update on Your ${programTitle} Application`,
             html: emailHtml
           });
         }

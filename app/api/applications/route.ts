@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
+import { sendEmail, getDiscussionEmailTemplate } from "@/lib/email";
 
 const prisma = new PrismaClient();
 
@@ -91,6 +92,25 @@ export async function POST(req: Request) {
                 }
             }
         });
+
+        // Send discussion email to applicant
+        try {
+            const guide = await prisma.guide.findUnique({
+                where: { id: body.guideId },
+                select: { title: true }
+            });
+            const programTitle = guide?.title || 'the program';
+            const applicantName = userName || applicantEmail.split('@')[0];
+            const emailHtml = getDiscussionEmailTemplate(applicantName, programTitle);
+            await sendEmail({
+                to: applicantEmail,
+                subject: `Your ${programTitle} Application Is Under Discussion`,
+                html: emailHtml
+            });
+        } catch (emailError) {
+            console.error("Failed to send discussion email:", emailError);
+            // Don't fail the request if email fails
+        }
 
         return NextResponse.json({ success: true, id: application.id });
     } catch (error) {

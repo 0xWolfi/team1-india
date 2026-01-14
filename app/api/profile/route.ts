@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
             telegram: (member as any)?.telegram || '',
             wallet: customFields.wallet || '',
             address: customFields.address || '',
-            twitter: customFields.twitter || '',
+            discord: customFields.discord || '',
             bio: customFields.bio || ''
         });
     } catch (error) {
