@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
-import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft } from "lucide-react";
+import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
@@ -17,7 +17,7 @@ export default function ProfilePage() {
         telegram: "",
         wallet: "",
         address: "",
-        twitter: "",
+        discord: "",
         bio: ""
     });
 
@@ -38,7 +38,7 @@ export default function ProfilePage() {
                     telegram: data.telegram || "",
                     wallet: data.wallet || "",
                     address: data.address || "",
-                    twitter: data.twitter || "",
+                    discord: data.discord || "",
                     bio: data.bio || ""
                 });
             }
@@ -61,7 +61,7 @@ export default function ProfilePage() {
                     customFields: {
                         wallet: formData.wallet,
                         address: formData.address,
-                        twitter: formData.twitter,
+                        discord: formData.discord,
                         bio: formData.bio
                     }
                 })
@@ -209,15 +209,15 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-zinc-400 uppercase">X (Twitter) URL</label>
+                                <label className="text-xs font-bold text-zinc-400 uppercase">Discord Handle</label>
                                 <div className="relative">
-                                    <Twitter className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
+                                    <MessageCircle className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
                                     <input 
-                                        type="url" 
-                                        value={formData.twitter}
-                                        onChange={(e) => setFormData({...formData, twitter: e.target.value})}
+                                        type="text" 
+                                        value={formData.discord}
+                                        onChange={(e) => setFormData({...formData, discord: e.target.value})}
                                         className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
-                                        placeholder="https://x.com/username"
+                                        placeholder="@username or username#1234"
                                     />
                                 </div>
                             </div>

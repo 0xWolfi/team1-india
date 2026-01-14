@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options"; 
 import { prisma } from "@/lib/prisma";
 import { checkCoreAccess, hasPermission, PERMISSIONS } from "@/lib/permissions";
+import { sendEmail, getWelcomeEmailTemplate } from "@/lib/email";
 
 export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
@@ -79,6 +80,20 @@ export async function POST(request: Request) {
                 status: "active",
             }
         });
+
+        // Send welcome email
+        try {
+            const memberName = newMember.name || email.split('@')[0];
+            const emailHtml = getWelcomeEmailTemplate(memberName);
+            await sendEmail({
+                to: email,
+                subject: "Welcome to Team1 India 🎉",
+                html: emailHtml
+            });
+        } catch (emailError) {
+            console.error("Failed to send welcome email:", emailError);
+            // Don't fail the request if email fails
+        }
 
         return NextResponse.json(newMember);
     } catch (error) {

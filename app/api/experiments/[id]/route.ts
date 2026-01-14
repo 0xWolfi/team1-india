@@ -159,22 +159,14 @@ export async function PATCH(
         if (body.stage === 'APPROVED') {
           await sendEmail({
             to: creatorEmail,
-            subject: `Proposal Approved: ${proposalTitle}`,
-            html: getApprovalEmailTemplate(
-              creatorName,
-              proposalTitle,
-              'Your proposal has been approved by the governance committee and will move to implementation planning.'
-            )
+            subject: `Your ${proposalTitle} Application Has Been Approved`,
+            html: getApprovalEmailTemplate(creatorName, proposalTitle)
           });
         } else if (body.stage === 'REJECTED') {
           await sendEmail({
             to: creatorEmail,
-            subject: `Proposal Status Update: ${proposalTitle}`,
-            html: getRejectionEmailTemplate(
-              creatorName,
-              proposalTitle,
-              'After careful consideration, the governance committee has decided not to proceed with this proposal at this time.'
-            )
+            subject: `Update on Your ${proposalTitle} Application`,
+            html: getRejectionEmailTemplate(creatorName, proposalTitle)
           });
         } else if (body.stage === 'DISCUSSION') {
           // Send notification that proposal is now open for community discussion
