@@ -129,11 +129,23 @@ export function MemberDashboard({
                             >
                                 <div className="h-40 bg-zinc-800 relative overflow-hidden">
                                     {item.coverImage ? (
-                                        <Image 
-                                            src={item.coverImage} 
-                                            alt={item.title} 
-                                            fill 
-                                            className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" 
+                                        <img
+                                            src={item.coverImage}
+                                            alt={item.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = "none";
+                                                if (target.parentElement) {
+                                                    target.parentElement.innerHTML = `
+                                                        <div class="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
+                                                            <svg class="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                                            </svg>
+                                                        </div>
+                                                    `;
+                                                }
+                                            }}
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
