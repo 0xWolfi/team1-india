@@ -41,6 +41,7 @@ interface MemberDashboardProps {
     playbooks: any[];
     experiments: ExperimentMock[];
     members: CommunityMember[];
+    isProfileComplete?: boolean;
 }
 
 type Tab = "EVENTS" | "PROGRAMS" | "CONTENT";
@@ -53,7 +54,8 @@ export function MemberDashboard({
     content = [],
     playbooks = [],
     experiments = [],
-    members: _members = []
+    members: _members = [],
+    isProfileComplete = true
 }: MemberDashboardProps) {
     const [activeTab, setActiveTab] = useState<Tab>("EVENTS");
     const [viewFilter, setViewFilter] = useState<ViewFilter>("ALL");
@@ -81,6 +83,25 @@ export function MemberDashboard({
     return (
         <div className="min-h-screen text-white">
             <MemberHeader user={user} />
+
+            {/* Profile Incomplete Notification */}
+            {!isProfileComplete && (
+                <Link
+                    href="/member/profile"
+                    className="mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between gap-4 hover:bg-amber-500/20 transition-colors group"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-amber-500/20 rounded-lg">
+                            <Users className="w-5 h-5 text-amber-400" />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-amber-200">Complete Your Profile</h3>
+                            <p className="text-sm text-amber-400/70">Please fill in your name, X handle, telegram, and wallet address to complete your profile.</p>
+                        </div>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                </Link>
+            )}
 
             {/* Controls & Tabs */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">

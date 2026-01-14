@@ -49,8 +49,11 @@ export default async function MemberPage() {
         redirect('/public?error=access_denied');
     }
 
+    // Get user's email for profile check
+    const userEmail = session.user?.email;
+
     // Parallel Data Fetching
-    const [playbooks, rawGuides, experiments, communityMembers] = await Promise.all([
+    const [playbooks, rawGuides, experiments, communityMembers, userProfile] = await Promise.all([
         prisma.playbook.findMany({
             where: {
                 visibility: { in: ["PUBLIC", "MEMBER"] },
@@ -84,10 +87,29 @@ export default async function MemberPage() {
                 telegram: true,
                 tags: true
             }
-        })
+        }),
+        // Fetch current user's profile to check completeness
+        userRole === 'CORE'
+            ? prisma.member.findUnique({
+                where: { email: userEmail || '' },
+                select: { name: true, xHandle: true, customFields: true }
+            })
+            : prisma.communityMember.findUnique({
+                where: { email: userEmail || '' },
+                select: { name: true, xHandle: true, telegram: true, customFields: true }
+            })
     ]);
 
     const { programs, events, content } = bucketGuides(rawGuides);
+
+    // Check if profile is complete
+    const customFields = (userProfile?.customFields as any) || {};
+    const isProfileComplete = Boolean(
+        userProfile?.name &&
+        userProfile?.xHandle &&
+        (userRole === 'CORE' || (userProfile as any)?.telegram) &&
+        customFields.wallet
+    );
 
     return (
         <MemberWrapper>
@@ -99,6 +121,7 @@ export default async function MemberPage() {
                 content={content}
                 experiments={experiments}
                 members={communityMembers}
+                isProfileComplete={isProfileComplete}
             />
         </MemberWrapper>
     );
