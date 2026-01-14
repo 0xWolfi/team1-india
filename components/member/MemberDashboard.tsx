@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
+// NOTE: We intentionally use <img> for cover images here because Next/Image can
+// break for unconfigured remote hosts in some deployments (shows a broken placeholder).
 import Link from "next/link";
 import { 
     Calendar, Users, FileText, BookOpen, Beaker, Vote, 
@@ -199,12 +200,24 @@ export function MemberDashboard({
                         >
                             <div className="mb-4">
                                 {playbook.coverImage ? (
-                                    <div className="relative w-full h-32 rounded-lg overflow-hidden mb-3">
-                                         <Image 
-                                            src={playbook.coverImage} 
-                                            alt={playbook.title} 
-                                            fill 
-                                            className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                    <div className="relative w-full h-32 rounded-lg overflow-hidden mb-3 bg-zinc-800">
+                                        <img
+                                            src={playbook.coverImage}
+                                            alt={playbook.title}
+                                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = "none";
+                                                if (target.parentElement) {
+                                                    target.parentElement.innerHTML = `
+                                                        <div class="w-full h-full flex items-center justify-center bg-zinc-800/50">
+                                                            <svg class="w-8 h-8 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                                            </svg>
+                                                        </div>
+                                                    `;
+                                                }
+                                            }}
                                         />
                                     </div>
                                 ) : (
