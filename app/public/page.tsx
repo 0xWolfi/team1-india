@@ -1,6 +1,7 @@
-import { Suspense } from "react";
+ "use client";
+
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import { ArrowRight, Book, Code2, Users, Calendar, Trophy, ExternalLink, Clock } from "lucide-react";
 
 import PublicHero from "@/components/public/PublicHero";
@@ -12,102 +13,44 @@ import { Program, Event, Guide } from "@/types/public";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";
 
+type PublicHomePayload = {
+    playbooks: any[];
+    programs: Program[];
+    guides: Guide[];
+    events: Event[];
+    mediaItems: any[];
+};
 
-
-async function getPublicData() {
-    const [playbooks, publicGuides, resources] = await Promise.all([
-        prisma.playbook.findMany({
-            where: { visibility: "PUBLIC", deletedAt: null },
-            orderBy: { createdAt: "desc" },
-            take: 6,
-            select: { id: true, title: true, description: true, coverImage: true }
-        }),
-        prisma.guide.findMany({
-            where: { 
-                visibility: "PUBLIC",
-                deletedAt: null 
-            },
-            orderBy: { createdAt: "desc" },
-            select: { 
-                id: true, 
-                title: true, 
-                type: true, 
-                coverImage: true, 
-                body: true,
-                createdAt: true,
-                updatedAt: true,
-                visibility: true 
-            }
-        }),
-        // @ts-ignore
-        prisma.contentResource.findMany({
-            where: { 
-                type: { in: ["BRAND_ASSET", "FILE", "BIO"] },
-                status: "published",
-                deletedAt: null
-            },
-            take: 6,
-            orderBy: { createdAt: "desc" },
-            select: { id: true, title: true, content: true, customFields: true }
-        })
-    ]);
-
-    // Bucket guides by type
-    const programs: Program[] = [];
-    const events: Event[] = [];
-    const contentGuides: Guide[] = [];
-
-    publicGuides.forEach((g: any) => {
-        const common = {
-            id: g.id,
-            title: g.title,
-            coverImage: g.coverImage,
-            createdAt: g.createdAt,
-            updatedAt: g.updatedAt || g.createdAt,
-            visibility: g.visibility,
-            description: g.body?.description || "",
-        };
-
-        const type = g.type?.toUpperCase();
-        if (type === "PROGRAM") {
-             programs.push({
-                ...common,
-                type: "PROGRAM",
-                status: "active",
-                body: g.body
-             } as Program);
-        }
-        else if (type === "EVENT") {
-             events.push({
-                ...common,
-                type: "EVENT",
-                status: "planned",
-                date: g.body?.date || g.createdAt,
-                location: g.body?.location || "",
-                body: g.body
-             } as Event);
-        }
-        else {
-             contentGuides.push({
-                ...common,
-                type: g.type || "CONTENT",
-                body: g.body
-             } as Guide);
-        }
+export default function PublicPage() {
+    const [data, setData] = useState<PublicHomePayload>({
+        playbooks: [],
+        programs: [],
+        guides: [],
+        events: [],
+        mediaItems: []
     });
 
-    const mediaItems = resources.map((res: any) => ({
-        id: res.id,
-        title: res.title,
-        links: [res.content || "#"],
-        description: res.customFields?.description || ""
-    }));
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await fetch("/api/public/home", { cache: "no-store" });
+                if (!res.ok) throw new Error(await res.text());
+                const json = await res.json();
+                if (!cancelled) setData(json);
+            } catch (e) {
+                if (!cancelled) {
+                    setData({ playbooks: [], programs: [], guides: [], events: [], mediaItems: [] });
+                }
+                console.error(e);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
-    return { playbooks, programs, guides: contentGuides, events, mediaItems };
-}
-
-export default async function PublicPage() {
-    const { playbooks, programs, guides, events, mediaItems } = await getPublicData();
+    const { playbooks, programs, guides, events, mediaItems } = data;
 
     return (
         <main className="min-h-screen text-white selection:bg-zinc-800 selection:text-zinc-200">
