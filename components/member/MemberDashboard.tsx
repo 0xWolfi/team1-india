@@ -233,10 +233,10 @@ export function MemberDashboard({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
                 
                 {/* Experiments (Active) */}
-                <div className="bg-zinc-900/50 border border-white/5 rounded-3xl p-6 md:p-8">
+                <div className="bg-zinc-900 border border-white/5 rounded-3xl p-6 md:p-8">
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
-                             <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400">
+                             <div className="p-2 bg-white/5 rounded-lg text-zinc-300">
                                 <Beaker className="w-5 h-5" />
                              </div>
                              <div>
@@ -254,14 +254,14 @@ export function MemberDashboard({
                             <Link 
                                 key={exp.id}
                                 href={`/member/experiments/${exp.id}`}
-                                className="block p-4 bg-black/40 border border-white/5 rounded-xl hover:border-emerald-500/30 transition-all group"
+                                className="block p-4 bg-zinc-800/20 border border-white/5 rounded-xl hover:border-white/20 transition-all group"
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <h4 className="font-bold text-sm text-zinc-200 group-hover:text-emerald-400 transition-colors mb-1">{exp.title}</h4>
+                                        <h4 className="font-bold text-sm text-zinc-200 group-hover:text-white transition-colors mb-1">{exp.title}</h4>
                                         <p className="text-xs text-zinc-500 line-clamp-1">{exp.description}</p>
                                     </div>
-                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/10">
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white/5 text-zinc-400 border border-white/5 group-hover:bg-emerald-500/10 group-hover:text-emerald-400 group-hover:border-emerald-500/20 transition-all">
                                         {exp.stage}
                                     </span>
                                 </div>
@@ -275,10 +275,10 @@ export function MemberDashboard({
                 </div>
 
                 {/* Proposals */}
-                <div className="bg-zinc-900/50 border border-white/5 rounded-3xl p-6 md:p-8">
+                <div className="bg-zinc-900 border border-white/5 rounded-3xl p-6 md:p-8">
                      <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
-                             <div className="p-2 bg-orange-500/10 rounded-lg text-orange-400">
+                             <div className="p-2 bg-white/5 rounded-lg text-zinc-300">
                                 <Vote className="w-5 h-5" />
                              </div>
                              <div>
@@ -296,15 +296,15 @@ export function MemberDashboard({
                             <Link 
                                 key={prop.id}
                                 href={`/member/experiments/${prop.id}`}
-                                className="block p-4 bg-black/40 border border-white/5 rounded-xl hover:border-orange-500/30 transition-all group"
+                                className="block p-4 bg-zinc-800/20 border border-white/5 rounded-xl hover:border-white/20 transition-all group"
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <h4 className="font-bold text-sm text-zinc-200 group-hover:text-orange-400 transition-colors mb-1">{prop.title}</h4>
+                                        <h4 className="font-bold text-sm text-zinc-200 group-hover:text-white transition-colors mb-1">{prop.title}</h4>
                                         <p className="text-xs text-zinc-500 line-clamp-1">{prop.description}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="flex items-center gap-1 text-[10px] text-zinc-500">
+                                        <span className="flex items-center gap-1 text-[10px] text-zinc-500 group-hover:text-zinc-300">
                                             <Vote className="w-3 h-3" /> {prop.upvotes}
                                         </span>
                                     </div>
