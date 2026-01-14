@@ -61,9 +61,9 @@ export default function AttendancePage() {
         }
     };
 
-    const filteredMembers = members.filter(m => 
-        m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        m.email.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredMembers = members.filter(m =>
+        (m.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (m.email || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -136,10 +136,10 @@ export default function AttendancePage() {
                             
                             <div className="flex-1">
                                 <div className="flex items-center gap-2">
-                                    <h3 className="font-bold text-sm text-white">{member.name}</h3>
+                                    <h3 className="font-bold text-sm text-white">{member.name || 'Unknown'}</h3>
                                     <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-zinc-400 uppercase tracking-wider">{member.type}</span>
                                 </div>
-                                <div className="text-xs text-zinc-500">{member.email} {member.xHandle && `• @${member.xHandle}`}</div>
+                                <div className="text-xs text-zinc-500">{member.email || ''} {member.xHandle && `• @${member.xHandle}`}</div>
                             </div>
                         </div>
                     ))}
