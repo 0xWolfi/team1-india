@@ -281,7 +281,8 @@ export default function PlaybooksPage() {
                                                 <img 
                                                     src={doc.coverImage} 
                                                     alt={doc.title}
-                                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                                                    style={{ objectFit: 'cover', objectPosition: 'center' }}
                                                     onError={(e) => {
                                                         // Fallback if image fails to load
                                                         const target = e.target as HTMLImageElement;
