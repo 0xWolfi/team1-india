@@ -5,8 +5,8 @@ import React, { useState } from "react";
 // break for unconfigured remote hosts in some deployments (shows a broken placeholder).
 import Link from "next/link";
 import {
-    Calendar, Users, FileText, BookOpen, Beaker, Vote,
-    ArrowRight, Filter, LayoutGrid, List, Mail, MapPin, UserCircle, Twitter, Send, MessageCircle
+    Calendar, Users, FileText, BookOpen, Vote,
+    ArrowRight, Filter, Twitter, Send
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
@@ -30,7 +30,6 @@ interface CommunityMember {
     email: string;
     xHandle?: string | null;
     telegram?: string | null;
-    discord?: string | null;
     tags?: string | null;
 }
 
@@ -372,17 +371,6 @@ export function MemberDashboard({
                                         >
                                             <Twitter className="w-3.5 h-3.5 text-zinc-600" />
                                             <span className="truncate">{member.xHandle}</span>
-                                        </a>
-                                    )}
-                                    {member.discord && (
-                                        <a
-                                            href={`https://discord.com/users/${member.discord}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors"
-                                        >
-                                            <MessageCircle className="w-3.5 h-3.5 text-zinc-600" />
-                                            <span className="truncate">{member.discord}</span>
                                         </a>
                                     )}
                                 </div>

@@ -82,7 +82,6 @@ export default async function MemberPage() {
                 email: true,
                 xHandle: true,
                 telegram: true,
-                discord: true,
                 tags: true
             }
         })
