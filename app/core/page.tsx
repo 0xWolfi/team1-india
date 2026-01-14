@@ -9,6 +9,7 @@ import {
     LogOut, User as UserIcon, Lock, LayoutDashboard, BarChart3, ClipboardList
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 // Types
@@ -218,7 +219,9 @@ export default function CorePage() {
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
                     {session?.user?.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={session.user.image} alt="Profile" className="w-10 h-10 rounded-full ring-2 ring-white/10" />
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/10">
+                             <Image src={session.user.image} alt="Profile" fill className="object-cover" />
+                        </div>
                     ) : (
                         <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center ring-2 ring-white/10">
                              <UserIcon className="w-5 h-5 text-zinc-400" />
@@ -248,53 +251,53 @@ export default function CorePage() {
                  <ZapIcon className="w-4 h-4" /> Quick Actions
              </h2>
              <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:gap-4">
-                 {/* Applications - Always Shown as requested */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-pink-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
-                     <div className="p-2 bg-pink-500/20 rounded-lg text-pink-400 group-hover:text-pink-300 transition-colors">
+                 {/* Applications */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <ClipboardList className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Applications</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Applications</span>
                  </button>
 
-                 {/* Announcements - Always Shown */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-indigo-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
-                     <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400 group-hover:text-indigo-300 transition-colors">
+                 {/* Announcements */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <Megaphone className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Announcements</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Announcements</span>
                  </button>
 
-                 {/* Attendance - Always Shown as requested */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-emerald-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
-                     <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 group-hover:text-emerald-300 transition-colors">
+                 {/* Attendance */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <Users className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Attendance</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Attendance</span>
                  </button>
 
-                 {/* Meeting Notes - Always Shown */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
-                     <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400 group-hover:text-purple-300 transition-colors">
+                 {/* Meeting Notes */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <FileText className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Meeting Notes</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Meeting Notes</span>
                  </button>
 
-                 {/* New Poll - Always Shown (Restricted inside) */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-sky-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
-                     <div className="p-2 bg-sky-500/20 rounded-lg text-sky-400 group-hover:text-sky-300 transition-colors">
+                 {/* New Poll */}
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <BarChart3 className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Vote / Polls</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Vote / Polls</span>
                  </button>
 
-                 {/* Manage Team - Super Admin Only, Last */}
+                 {/* Manage Team */}
                  {isSuperAdmin && (
-                     <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-orange-500/30 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
-                         <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400 group-hover:text-orange-300 transition-colors">
+                     <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
+                         <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                             <Settings className="w-5 h-5" />
                          </div>
-                         <span className="text-sm font-bold text-zinc-300 group-hover:text-white">Manage Team</span>
+                         <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Manage Team</span>
                      </button>
                  )}
              </div>
@@ -332,10 +335,11 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
                 <div className="h-32 relative w-full overflow-hidden border-b border-white/5">
                     {resource.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img 
+                        <Image 
                             src={resource.image} 
                             alt={resource.title}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                     ) : (
                         <div className="w-full h-full bg-zinc-800 flex items-center justify-center">

@@ -56,8 +56,10 @@ export function WhatWeDo() {
 
              {cards.map((card, idx) => (
                  <div key={idx} className={`p-8 border-b border-r border-white/10 relative group ${card.colSpan} bg-white/5 backdrop-blur-md hover:bg-white/10 transition-all duration-300`}>
-                     <div className="mb-6">{card.icon}</div>
-                    <h3 className="text-xl font-bold text-white mb-3 relative z-10">{card.title}</h3>
+                     <div className="flex items-center gap-4 mb-3 relative z-10">
+                        {card.icon}
+                        <h3 className="text-xl font-bold text-white">{card.title}</h3>
+                     </div>
                     <p className="text-zinc-500 text-sm leading-relaxed relative z-10">
                       {card.desc}
                     </p>

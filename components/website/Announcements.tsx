@@ -53,16 +53,16 @@ export async function Announcements({ audience = "PUBLIC" }: AnnouncementsProps)
             Latest Updates
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="flex flex-wrap justify-center gap-4">
             {announcements.map((announcement) => (
                 <Link 
                     key={announcement.id}
                     href={announcement.link || "/core/announcements"}
                     target={announcement.link?.startsWith('http') ? "_blank" : "_self"}
-                    className="group flex items-center gap-3 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                    className="group flex items-center gap-3 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] w-full md:w-auto"
                 >
                     <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider min-w-fit">
-                        {announcement.audience === 'ALL' ? 'Update' : 'New'}
+                        New
                     </span>
                     <span className="text-sm text-zinc-300 group-hover:text-white transition-colors truncate">
                         {announcement.title}
