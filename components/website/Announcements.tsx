@@ -1,48 +1,44 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
-import { Announcement } from "@prisma/client";
+
+interface Announcement {
+  id: string;
+  title: string;
+  link: string | null;
+  audience: string;
+  createdAt: string;
+  expiresAt?: string | null;
+}
 
 interface AnnouncementsProps {
   audience?: "PUBLIC" | "MEMBER";
 }
 
-export async function Announcements({ audience = "PUBLIC" }: AnnouncementsProps) {
-  let whereClause: any = {};
-  if (audience === 'PUBLIC') {
-      whereClause = {
-          OR: [
-              { audience: 'PUBLIC' },
-              { audience: 'ALL' }
-          ]
-      };
-  } else if (audience === 'MEMBER') {
-       whereClause = {
-          OR: [
-              { audience: 'MEMBER' },
-              { audience: 'ALL' }
-          ]
-      };
-  }
+export function Announcements({ audience = "PUBLIC" }: AnnouncementsProps) {
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
-  let announcements: Announcement[] = [];
-  try {
-      // Add expiration filter
-      whereClause.OR = [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-      ];
-
-      announcements = await prisma.announcement.findMany({
-          where: whereClause,
-          orderBy: { createdAt: 'desc' },
-          take: 6
-      });
-  } catch (error) {
-      console.error("Failed to fetch announcements:", error);
-      return null;
-  }
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const res = await fetch(`/api/announcements?audience=${audience}`, { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          // Filter to max 6 and ensure they're not expired
+          const now = new Date();
+          const filtered = data
+            .filter((a: Announcement) => !a.expiresAt || new Date(a.expiresAt) > now)
+            .slice(0, 6);
+          setAnnouncements(filtered);
+        }
+      } catch (error) {
+        console.error("Failed to fetch announcements:", error);
+      }
+    };
+    fetchAnnouncements();
+  }, [audience]);
 
   if (!announcements.length) return null;
 
