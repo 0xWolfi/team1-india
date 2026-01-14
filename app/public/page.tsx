@@ -1,6 +1,6 @@
- "use client";
+"use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Book, Code2, Users, Calendar, Trophy, ExternalLink, Clock } from "lucide-react";
 
@@ -29,6 +29,7 @@ export default function PublicPage() {
         events: [],
         mediaItems: []
     });
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         let cancelled = false;
@@ -37,10 +38,14 @@ export default function PublicPage() {
                 const res = await fetch("/api/public/home", { cache: "no-store" });
                 if (!res.ok) throw new Error(await res.text());
                 const json = await res.json();
-                if (!cancelled) setData(json);
+                if (!cancelled) {
+                    setData(json);
+                    setIsLoading(false);
+                }
             } catch (e) {
                 if (!cancelled) {
                     setData({ playbooks: [], programs: [], guides: [], events: [], mediaItems: [] });
+                    setIsLoading(false);
                 }
                 console.error(e);
             }
@@ -194,7 +199,16 @@ export default function PublicPage() {
                             </div>
                             <div className="p-5 flex flex-col flex-1">
                                 <div className="text-[10px] font-bold text-zinc-400 mb-2 uppercase tracking-wider flex items-center gap-2">
-                                    <Calendar className="w-3 h-3" /> {item.date ? new Date(item.date).toLocaleDateString() : 'TBA'}
+                                    <Calendar className="w-3 h-3" /> {item.date ? (() => {
+                                        try {
+                                            const dateStr = typeof item.date === 'string' ? item.date : item.date?.toString();
+                                            if (!dateStr) return 'TBA';
+                                            const date = new Date(dateStr);
+                                            return isNaN(date.getTime()) ? 'TBA' : date.toLocaleDateString();
+                                        } catch {
+                                            return 'TBA';
+                                        }
+                                    })() : 'TBA'}
                                 </div>
                                 <h3 className="font-bold text-white mb-2 line-clamp-2 leading-tight group-hover:text-zinc-200 transition-colors">{item.title}</h3>
                                 {item.location && <p className="text-sm text-zinc-500 mb-4 flex-1">{item.location}</p>}
