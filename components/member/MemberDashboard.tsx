@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
     Calendar, Users, FileText, BookOpen, Beaker, Vote,
-    ArrowRight, Filter, LayoutGrid, List, Mail, MapPin, UserCircle
+    ArrowRight, Filter, LayoutGrid, List, Mail, MapPin, UserCircle, Twitter, Send, MessageCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
@@ -24,6 +24,16 @@ interface ExperimentMock {
     createdAt: Date;
 }
 
+interface CommunityMember {
+    id: string;
+    name: string | null;
+    email: string;
+    xHandle?: string | null;
+    telegram?: string | null;
+    discord?: string | null;
+    tags?: string | null;
+}
+
 interface MemberDashboardProps {
     user: any;
     events: Event[];
@@ -31,18 +41,20 @@ interface MemberDashboardProps {
     content: Guide[];
     playbooks: any[];
     experiments: ExperimentMock[];
+    members: CommunityMember[];
 }
 
 type Tab = "EVENTS" | "PROGRAMS" | "CONTENT";
 type ViewFilter = "ALL" | "MEMBER" | "PUBLIC";
 
-export function MemberDashboard({ 
-    user, 
-    events = [], 
-    programs = [], 
-    content = [], 
-    playbooks = [], 
-    experiments = [] 
+export function MemberDashboard({
+    user,
+    events = [],
+    programs = [],
+    content = [],
+    playbooks = [],
+    experiments = [],
+    members = []
 }: MemberDashboardProps) {
     const [activeTab, setActiveTab] = useState<Tab>("EVENTS");
     const [viewFilter, setViewFilter] = useState<ViewFilter>("ALL");
@@ -305,70 +317,81 @@ export function MemberDashboard({
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
                              <div className="p-2 bg-white/5 rounded-lg text-zinc-300">
-                                <UserCircle className="w-5 h-5" />
+                                <Users className="w-5 h-5" />
                              </div>
                              <div>
                                 <h2 className="text-xl font-bold">Member Details</h2>
-                                <p className="text-xs text-zinc-500 mt-1">Your membership information</p>
+                                <p className="text-xs text-zinc-500 mt-1">Connect with community members</p>
                              </div>
                         </div>
+                        <Link href="/member/directory" className="p-2 hover:bg-white/5 rounded-lg transition-colors">
+                            <ArrowRight className="w-4 h-4 text-zinc-500" />
+                        </Link>
                     </div>
 
-                    <div className="space-y-6">
-                        {/* Profile Info */}
-                        <div className="p-5 bg-zinc-800/20 border border-white/5 rounded-xl">
-                            <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
-                                    {user?.name?.charAt(0).toUpperCase() || 'M'}
+                    <div className="space-y-4">
+                        {members.length > 0 ? members.slice(0, 3).map((member) => (
+                            <div
+                                key={member.id}
+                                className="p-4 bg-zinc-800/20 border border-white/5 rounded-xl hover:border-white/20 transition-all"
+                            >
+                                <div className="flex items-start gap-3 mb-3">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                        {(member.name || member.email).charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-bold text-sm text-white truncate mb-1">
+                                            {member.name || member.email.split('@')[0]}
+                                        </h4>
+                                        {member.tags && (
+                                            <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-mono bg-white/5 px-1.5 py-0.5 rounded">
+                                                {member.tags}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="flex-1">
-                                    <h4 className="font-bold text-sm text-white mb-1">{user?.name || 'Member'}</h4>
-                                    {user?.email && (
-                                        <div className="flex items-center gap-2 text-xs text-zinc-500 mb-1">
-                                            <Mail className="w-3 h-3" />
-                                            <span>{user.email}</span>
-                                        </div>
-                                    )}
-                                    {user?.location && (
-                                        <div className="flex items-center gap-2 text-xs text-zinc-500">
-                                            <MapPin className="w-3 h-3" />
-                                            <span>{user.location}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Membership Stats */}
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="p-4 bg-zinc-800/20 border border-white/5 rounded-xl text-center">
-                                <div className="text-2xl font-bold text-white mb-1">
-                                    {events.length + programs.length}
-                                </div>
-                                <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">
-                                    Activities
+                                <div className="space-y-2 pl-0">
+                                    {member.telegram && (
+                                        <a
+                                            href={`https://t.me/${member.telegram.replace('@', '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors"
+                                        >
+                                            <Send className="w-3.5 h-3.5 text-zinc-600" />
+                                            <span className="truncate">{member.telegram}</span>
+                                        </a>
+                                    )}
+                                    {member.xHandle && (
+                                        <a
+                                            href={`https://x.com/${member.xHandle.replace('@', '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors"
+                                        >
+                                            <Twitter className="w-3.5 h-3.5 text-zinc-600" />
+                                            <span className="truncate">{member.xHandle}</span>
+                                        </a>
+                                    )}
+                                    {member.discord && (
+                                        <a
+                                            href={`https://discord.com/users/${member.discord}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors"
+                                        >
+                                            <MessageCircle className="w-3.5 h-3.5 text-zinc-600" />
+                                            <span className="truncate">{member.discord}</span>
+                                        </a>
+                                    )}
                                 </div>
                             </div>
-                            <div className="p-4 bg-zinc-800/20 border border-white/5 rounded-xl text-center">
-                                <div className="text-2xl font-bold text-white mb-1">
-                                    {content.length}
-                                </div>
-                                <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">
-                                    Resources
-                                </div>
+                        )) : (
+                            <div className="py-8 text-center bg-black/20 rounded-xl border border-white/5 border-dashed">
+                                <p className="text-zinc-500 text-xs">No members found.</p>
                             </div>
-                        </div>
-
-                        {/* Membership Status */}
-                        <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-xl">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-xs text-zinc-400 mb-1">Status</div>
-                                    <div className="font-bold text-white">Active Member</div>
-                                </div>
-                                <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
 
