@@ -50,11 +50,11 @@ export default async function MemberPage() {
     }
 
     // Parallel Data Fetching
-    const [playbooks, rawGuides, experiments] = await Promise.all([
+    const [playbooks, rawGuides, experiments, communityMembers] = await Promise.all([
         prisma.playbook.findMany({
-            where: { 
+            where: {
                 visibility: { in: ["PUBLIC", "MEMBER"] },
-                deletedAt: null 
+                deletedAt: null
             },
             orderBy: { createdAt: "desc" },
             take: 10,
@@ -71,6 +71,20 @@ export default async function MemberPage() {
             where: { deletedAt: null },
             orderBy: { createdAt: "desc" },
             take: 20
+        }),
+        prisma.communityMember.findMany({
+            where: { status: 'active' },
+            orderBy: { createdAt: "desc" },
+            take: 10,
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                xHandle: true,
+                telegram: true,
+                discord: true,
+                tags: true
+            }
         })
     ]);
 
@@ -78,13 +92,14 @@ export default async function MemberPage() {
 
     return (
         <MemberWrapper>
-            <MemberDashboard 
+            <MemberDashboard
                 user={session.user}
                 playbooks={playbooks}
                 programs={programs}
                 events={events}
                 content={content}
                 experiments={experiments}
+                members={communityMembers}
             />
         </MemberWrapper>
     );
