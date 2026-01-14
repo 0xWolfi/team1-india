@@ -4,9 +4,9 @@ import React, { useState } from "react";
 // NOTE: We intentionally use <img> for cover images here because Next/Image can
 // break for unconfigured remote hosts in some deployments (shows a broken placeholder).
 import Link from "next/link";
-import { 
-    Calendar, Users, FileText, BookOpen, Beaker, Vote, 
-    ArrowRight, Filter, LayoutGrid, List
+import {
+    Calendar, Users, FileText, BookOpen, Beaker, Vote,
+    ArrowRight, Filter, LayoutGrid, List, Mail, MapPin, UserCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
@@ -64,8 +64,7 @@ export function MemberDashboard({
 
     const activeItems = getActiveContent();
 
-    // Experiment Split
-    const activeExperiments = experiments.filter(e => e.stage === 'accepted' || e.stage === 'active');
+    // Proposals Split
     const proposals = experiments.filter(e => e.stage === 'proposed' || e.stage === 'discussion');
 
     return (
@@ -254,52 +253,10 @@ export function MemberDashboard({
                 </div>
             </div>
 
-            {/* Experiments & Proposals - Side by Side */}
+            {/* New Proposals & Member Details - Side by Side */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
-                
-                {/* Experiments (Active) */}
-                <div className="bg-zinc-900 border border-white/5 rounded-3xl p-6 md:p-8">
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-3">
-                             <div className="p-2 bg-white/5 rounded-lg text-zinc-300">
-                                <Beaker className="w-5 h-5" />
-                             </div>
-                             <div>
-                                <h2 className="text-xl font-bold">Active Experiments</h2>
-                                <p className="text-xs text-zinc-500 mt-1">Ongoing initiatives and pilots</p>
-                             </div>
-                        </div>
-                        <Link href="/member/experiments" className="p-2 hover:bg-white/5 rounded-lg transition-colors">
-                            <ArrowRight className="w-4 h-4 text-zinc-500" />
-                        </Link>
-                    </div>
 
-                    <div className="space-y-4">
-                        {activeExperiments.length > 0 ? activeExperiments.slice(0, 3).map((exp) => (
-                            <Link 
-                                key={exp.id}
-                                href={`/member/experiments/${exp.id}`}
-                                className="block p-4 bg-zinc-800/20 border border-white/5 rounded-xl hover:border-white/20 transition-all group"
-                            >
-                                <div className="flex items-start justify-between gap-4">
-                                    <div>
-                                        <h4 className="font-bold text-sm text-zinc-200 group-hover:text-white transition-colors mb-1">{exp.title}</h4>
-                                        <p className="text-xs text-zinc-500 line-clamp-1">{exp.description}</p>
-                                    </div>
-                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white/5 text-zinc-400 border border-white/5 group-hover:bg-emerald-500/10 group-hover:text-emerald-400 group-hover:border-emerald-500/20 transition-all">
-                                        {exp.stage}
-                                    </span>
-                                </div>
-                            </Link>
-                        )) : (
-                            <div className="py-8 text-center bg-black/20 rounded-xl border border-white/5 border-dashed">
-                                <p className="text-zinc-500 text-xs">No active experiments.</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Proposals */}
+                {/* New Proposals */}
                 <div className="bg-zinc-900 border border-white/5 rounded-3xl p-6 md:p-8">
                      <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
@@ -318,7 +275,7 @@ export function MemberDashboard({
 
                     <div className="space-y-4">
                         {proposals.length > 0 ? proposals.slice(0, 3).map((prop) => (
-                            <Link 
+                            <Link
                                 key={prop.id}
                                 href={`/member/experiments/${prop.id}`}
                                 className="block p-4 bg-zinc-800/20 border border-white/5 rounded-xl hover:border-white/20 transition-all group"
@@ -340,6 +297,78 @@ export function MemberDashboard({
                                 <p className="text-zinc-500 text-xs">No active proposals.</p>
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Member Details */}
+                <div className="bg-zinc-900 border border-white/5 rounded-3xl p-6 md:p-8">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                             <div className="p-2 bg-white/5 rounded-lg text-zinc-300">
+                                <UserCircle className="w-5 h-5" />
+                             </div>
+                             <div>
+                                <h2 className="text-xl font-bold">Member Details</h2>
+                                <p className="text-xs text-zinc-500 mt-1">Your membership information</p>
+                             </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        {/* Profile Info */}
+                        <div className="p-5 bg-zinc-800/20 border border-white/5 rounded-xl">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                                    {user?.name?.charAt(0).toUpperCase() || 'M'}
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-bold text-sm text-white mb-1">{user?.name || 'Member'}</h4>
+                                    {user?.email && (
+                                        <div className="flex items-center gap-2 text-xs text-zinc-500 mb-1">
+                                            <Mail className="w-3 h-3" />
+                                            <span>{user.email}</span>
+                                        </div>
+                                    )}
+                                    {user?.location && (
+                                        <div className="flex items-center gap-2 text-xs text-zinc-500">
+                                            <MapPin className="w-3 h-3" />
+                                            <span>{user.location}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Membership Stats */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="p-4 bg-zinc-800/20 border border-white/5 rounded-xl text-center">
+                                <div className="text-2xl font-bold text-white mb-1">
+                                    {events.length + programs.length}
+                                </div>
+                                <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">
+                                    Activities
+                                </div>
+                            </div>
+                            <div className="p-4 bg-zinc-800/20 border border-white/5 rounded-xl text-center">
+                                <div className="text-2xl font-bold text-white mb-1">
+                                    {content.length}
+                                </div>
+                                <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">
+                                    Resources
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Membership Status */}
+                        <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-xl">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <div className="text-xs text-zinc-400 mb-1">Status</div>
+                                    <div className="font-bold text-white">Active Member</div>
+                                </div>
+                                <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
