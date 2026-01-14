@@ -44,8 +44,8 @@ export default function MemberDirectoryPage() {
     };
 
     const filtered = members.filter(m =>
-        m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.email.toLowerCase().includes(searchTerm.toLowerCase())
+        (m.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (m.email || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -111,11 +111,11 @@ export default function MemberDirectoryPage() {
                             {/* Avatar/Initials */}
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center text-white font-bold text-lg">
-                                    {member.name.charAt(0).toUpperCase()}
+                                    {(member.name || '?').charAt(0).toUpperCase()}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <h3 className="text-lg font-bold text-white truncate">
-                                        {member.name}
+                                        {member.name || 'Unknown'}
                                     </h3>
                                     {member.tags && (
                                         <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono bg-white/5 px-2 py-0.5 rounded">
@@ -127,13 +127,15 @@ export default function MemberDirectoryPage() {
 
                             {/* Contact Details */}
                             <div className="space-y-2">
-                                <a
-                                    href={`mailto:${member.email}`}
-                                    className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group/item"
-                                >
-                                    <Mail className="w-4 h-4 text-zinc-600 group-hover/item:text-blue-400 transition-colors" />
-                                    <span className="truncate">{member.email}</span>
-                                </a>
+                                {member.email && (
+                                    <a
+                                        href={`mailto:${member.email}`}
+                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group/item"
+                                    >
+                                        <Mail className="w-4 h-4 text-zinc-600 group-hover/item:text-blue-400 transition-colors" />
+                                        <span className="truncate">{member.email}</span>
+                                    </a>
+                                )}
 
                                 {member.xHandle && (
                                     <a
