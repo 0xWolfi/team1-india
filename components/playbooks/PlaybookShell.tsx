@@ -43,7 +43,7 @@ export function PlaybookShell({
     };
 
     return (
-        <div className={cn("min-h-screen bg-black text-white selection:bg-purple-500/30 font-sans", className)}>
+        <div className={cn("min-h-screen text-white selection:bg-purple-500/30 font-sans", className)}>
             
             {/* Top Navigation Bar (Transparent, for Action Buttons only) */}
             <div className="fixed top-0 w-full z-50 px-6 h-16 flex items-center justify-between pointer-events-none">
