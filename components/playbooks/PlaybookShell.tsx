@@ -7,6 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { HelpfulWidget } from "./HelpfulWidget";
 import { Footer } from "@/components/website/Footer";
 import { cn } from "@/lib/utils";
+import { TableOfContents } from "./TableOfContents";
 
 interface PlaybookShellProps {
     playbook: {
@@ -57,7 +58,7 @@ export function PlaybookShell({
                  )}
             </div>
 
-            <div className={cn("max-w-7xl mx-auto px-6 pt-24 pb-12", contentClassName)}>
+            <div className={cn("max-w-[1400px] mx-auto px-6 pt-24 pb-12", contentClassName)}> {/* Increased max-w for 5 cols */}
                 {/* Banner & Back Button Container */}
                 <div className="relative w-full rounded-3xl overflow-hidden min-h-[300px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
                     
@@ -77,7 +78,7 @@ export function PlaybookShell({
                         {playbook.coverImage ? (
                             <>
                                 <img src={playbook.coverImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                <div className="absolute inset-0 bg-black/20" /> {/* Lighter overlay since text is outside */}
+                                <div className="absolute inset-0 bg-black/20" /> 
                             </>
                         ) : (
                              // Theme-Aligned Gradient
@@ -88,36 +89,41 @@ export function PlaybookShell({
                     </div>
                 </div>
 
-                {/* Title & Description (Moved Below Banner) */}
-                <div className="max-w-4xl space-y-8 mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+                {/* Title & Description (Full Width) */}
+                <div className="max-w-4xl mx-auto text-center space-y-6 mb-24 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
                         {playbook.title}
                     </h1>
                     {playbook.description && (
-                        <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl leading-relaxed font-medium">
+                        <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed font-medium">
                             {playbook.description}
                         </p>
                     )}
                 </div>
 
-                {/* Main Content Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-24 relative z-10">
+                {/* Main Content Layout (5 Columns) */}
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 relative z-10">
                     
-                    {/* Left Column: Content */}
-                    <div className="lg:col-span-3 space-y-12">
+                    {/* Left Column (1/5): Table of Contents */}
+                    <div className="lg:col-span-1 hidden lg:block">
+                        <TableOfContents />
+                    </div>
+
+                    {/* Middle Column (3/5): content */}
+                    <div className="lg:col-span-3 space-y-16">
                          {/* Editor Canvas */}
-                        <div className="min-h-[500px]">
+                        <div className="min-h-[500px] prose prose-invert prose-lg max-w-none">
                             {children}
                         </div>
 
-                        {/* Helpful Widget */}
+                        {/* Helpful Widget (Footer of Content) */}
                         <div className="pt-12 border-t border-white/5">
                              <HelpfulWidget onCopyMarkdown={handleCopyMarkdown} />
                         </div>
                     </div>
 
-                    {/* Right Column: Sidebar (Minimalist) */}
-                    <div className="lg:col-span-1 space-y-8 h-fit sticky top-24">
+                    {/* Right Column (1/5): Sidebar Metadata */}
+                    <div className="lg:col-span-1 space-y-8 h-fit sticky top-32">
                         
                         {/* Author Info */}
                         <div className="space-y-2">
@@ -127,21 +133,6 @@ export function PlaybookShell({
                                     {playbook.createdBy?.name || playbook.createdBy?.email?.split('@')[0] || 'Team 1'}
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Divider */}
-                        <div className="h-px bg-white/5 w-full" />
-
-                        {/* Need Help Info (2nd Position) */}
-                        <div className="space-y-2">
-                            <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Need Help?</h3>
-                            <a 
-                                href="mailto:support@team1.india" 
-                                className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors group"
-                            >
-                                Reach out to the team 
-                                <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                            </a>
                         </div>
 
                         {/* Divider */}
@@ -160,6 +151,21 @@ export function PlaybookShell({
                             </div>
                         </div>
 
+                        {/* Divider */}
+                        <div className="h-px bg-white/5 w-full" />
+
+                        {/* Need Help Info */}
+                        <div className="space-y-2">
+                            <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Need Help?</h3>
+                            <a 
+                                href="mailto:support@team1.india" 
+                                className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors group"
+                            >
+                                Reach out to the team 
+                                <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                        </div>
+                        
                          {/* Divider */}
                          <div className="h-px bg-white/5 w-full" />
 
