@@ -252,7 +252,7 @@ export default function CorePage() {
              </h2>
              <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:gap-4">
                  {/* Applications */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
                      <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <ClipboardList className="w-5 h-5" />
                      </div>
@@ -260,7 +260,7 @@ export default function CorePage() {
                  </button>
 
                  {/* Announcements */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
                      <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <Megaphone className="w-5 h-5" />
                      </div>
@@ -268,7 +268,7 @@ export default function CorePage() {
                  </button>
 
                  {/* Attendance */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
                      <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <Users className="w-5 h-5" />
                      </div>
@@ -276,7 +276,7 @@ export default function CorePage() {
                  </button>
 
                  {/* Meeting Notes */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
                      <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <FileText className="w-5 h-5" />
                      </div>
@@ -284,7 +284,7 @@ export default function CorePage() {
                  </button>
 
                  {/* New Poll */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
                      <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                         <BarChart3 className="w-5 h-5" />
                      </div>
@@ -293,7 +293,7 @@ export default function CorePage() {
 
                  {/* Manage Team */}
                  {isSuperAdmin && (
-                     <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/50 hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
+                     <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
                          <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
                             <Settings className="w-5 h-5" />
                          </div>
@@ -328,7 +328,7 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
             onClick={(e) => isLocked && e.preventDefault()}
         >
             <div className={`
-                h-full bg-zinc-900 border border-white/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300
+                h-full bg-zinc-900/70 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300
                 ${isLocked ? 'opacity-50 grayscale hover:opacity-60' : 'hover:border-zinc-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1'}
             `}>
                 {/* Sleek Image Header */}

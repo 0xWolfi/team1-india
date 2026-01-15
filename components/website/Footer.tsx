@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="py-6 mb-6">
       <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 border border-white/10 rounded-3xl bg-white/5 backdrop-blur-md">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 border border-white/10 rounded-3xl bg-zinc-900/70 backdrop-blur-md">
           <div className="flex flex-col items-center md:items-start">
              <span className="text-xl font-bold text-white tracking-tighter mb-2">Team1India</span>
              <p className="text-zinc-500 text-sm">© 2025 Team1India. All rights reserved.</p>

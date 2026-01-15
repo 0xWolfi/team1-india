@@ -184,7 +184,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                       className="group block w-full sm:w-[280px] md:w-[300px]"
                     >
                       {/* Image Container */}
-                      <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 bg-zinc-900 transition-all duration-500 group-hover:border-white/20 group-hover:shadow-2xl group-hover:shadow-indigo-500/10 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
+                      <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/70 backdrop-blur-md transition-all duration-500 group-hover:border-white/20 group-hover:shadow-2xl group-hover:shadow-indigo-500/10 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
                         {event.cover_url && (
                           <img
                             src={event.cover_url}

@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
     Calendar, Users, FileText, BookOpen, Vote,
-    ArrowRight, Filter
+    ArrowRight, Filter, Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
@@ -59,11 +59,22 @@ export function MemberDashboard({
 }: MemberDashboardProps) {
     const [activeTab, setActiveTab] = useState<Tab>("EVENTS");
     const [viewFilter, setViewFilter] = useState<ViewFilter>("ALL");
+    const [searchQuery, setSearchQuery] = useState("");
 
     // Filter Logic
     const filterByView = (items: any[]) => {
-        if (viewFilter === "ALL") return items;
-        return items.filter(item => item.visibility === viewFilter);
+        let filtered = items;
+        if (viewFilter !== "ALL") {
+            filtered = items.filter(item => item.visibility === viewFilter);
+        }
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(item => 
+                item.title?.toLowerCase().includes(query) || 
+                item.description?.toLowerCase().includes(query)
+            );
+        }
+        return filtered;
     };
 
     const getActiveContent = () => {
@@ -114,8 +125,8 @@ export function MemberDashboard({
                             className={cn(
                                 "px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all",
                                 activeTab === tab 
-                                    ? "bg-indigo-600 text-white shadow-lg" 
-                                    : "text-zinc-400 hover:text-white hover:bg-white/5"
+                                    ? "bg-white text-zinc-900 shadow-xl shadow-white/10" 
+                                    : "text-zinc-500 hover:text-white hover:bg-white/5"
                             )}
                         >
                             {tab}
@@ -123,18 +134,32 @@ export function MemberDashboard({
                     ))}
                 </div>
 
-                {/* Filter Toggle */}
-                <div className="flex items-center gap-3 bg-zinc-900 border border-white/10 rounded-lg p-1 px-2 self-start md:self-auto">
-                    <Filter className="w-3 h-3 text-zinc-500" />
-                    <select 
-                        value={viewFilter}
-                        onChange={(e) => setViewFilter(e.target.value as ViewFilter)}
-                        className="bg-transparent text-xs font-bold uppercase text-zinc-300 focus:outline-none cursor-pointer tracking-wider"
-                    >
-                        <option value="ALL">All View</option>
-                        <option value="MEMBER">Member Only</option>
-                        <option value="PUBLIC">Public</option>
-                    </select>
+                {/* Filter & Search */}
+                <div className="flex gap-3 w-full md:w-auto">
+                    {/* Search */}
+                    <div className="flex-1 md:w-64 flex items-center gap-2 bg-zinc-900/70 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2">
+                        <Search className="w-4 h-4 text-zinc-500" />
+                        <input 
+                            type="text"
+                            placeholder="Search..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none w-full"
+                        />
+                    </div>
+                    {/* Filter Toggle */}
+                    <div className="flex items-center gap-3 bg-zinc-900/70 backdrop-blur-md border border-white/10 rounded-lg p-1 px-2 shrink-0">
+                        <Filter className="w-3 h-3 text-zinc-500" />
+                        <select 
+                            value={viewFilter}
+                            onChange={(e) => setViewFilter(e.target.value as ViewFilter)}
+                            className="bg-transparent text-xs font-bold uppercase text-zinc-300 focus:outline-none cursor-pointer tracking-wider"
+                        >
+                            <option value="ALL">All View</option>
+                            <option value="MEMBER">Member Only</option>
+                            <option value="PUBLIC">Public</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -151,12 +176,12 @@ export function MemberDashboard({
                 </div>
 
                 {activeItems.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
                         {activeItems.slice(0, 6).map((item: any) => (
                             <Link 
                                 key={item.id} 
                                 href={`/member/${activeTab.toLowerCase()}/${item.id}`}
-                                className="group block h-[280px] bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col"
+                                className="group block min-w-[85vw] sm:min-w-[300px] md:min-w-0 snap-center h-[280px] bg-zinc-900/70 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col"
                             >
                                 <div className="h-40 bg-zinc-800 relative overflow-hidden">
                                     {item.coverImage ? (
@@ -234,12 +259,12 @@ export function MemberDashboard({
                     </Link>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
                     {playbooks.slice(0, 4).map((playbook: any) => (
                         <Link 
                             key={playbook.id} 
                             href={`/member/playbooks/${playbook.id}`}
-                            className="group p-5 rounded-2xl bg-zinc-900 border border-white/5 hover:border-indigo-500/30 hover:bg-zinc-900/80 transition-all"
+                            className="group min-w-[70vw] sm:min-w-[250px] md:min-w-0 snap-center p-5 rounded-2xl bg-zinc-900/70 backdrop-blur-md border border-white/5 hover:border-indigo-500/30 hover:bg-zinc-900/80 transition-all block"
                         >
                             <div className="mb-4">
                                 {playbook.coverImage ? (
@@ -289,7 +314,7 @@ export function MemberDashboard({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
 
                 {/* New Proposals */}
-                <div className="bg-zinc-900 border border-white/5 rounded-3xl p-6 md:p-8">
+                <div className="bg-zinc-900/70 backdrop-blur-md border border-white/5 rounded-3xl p-6 md:p-8">
                      <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
                              <div className="p-2 bg-white/5 rounded-lg text-zinc-300">
@@ -333,7 +358,7 @@ export function MemberDashboard({
                 </div>
 
                 {/* Member Details */}
-                <Link href="/member/directory" className="bg-zinc-900 border border-white/5 rounded-3xl p-6 md:p-8 hover:border-white/20 transition-all group block">
+                <Link href="/member/directory" className="bg-zinc-900/70 backdrop-blur-md border border-white/5 rounded-3xl p-6 md:p-8 hover:border-white/20 transition-all group block">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                              <div className="p-2 bg-white/5 rounded-lg text-zinc-300 group-hover:bg-white/10 transition-colors">
