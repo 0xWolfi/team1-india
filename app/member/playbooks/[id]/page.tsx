@@ -67,7 +67,8 @@ export default function MemberPlaybookDetailPage() {
                 playbook={playbook}
                 backLink="/member"
                 backLabel="Back to Dashboard"
-                className="pt-0 min-h-[calc(100vh-80px)]" // Adjust for MemberWrapper padding/layout if needed
+                className="pt-0 min-h-[calc(100vh-80px)]" // Outer adjustment
+                contentClassName="pt-0 px-0" // Inner adjustment (remove double padding)
             >
                 <Editor
                     initialContent={playbook.body}
