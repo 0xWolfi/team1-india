@@ -283,7 +283,7 @@ export function MemberDashboard({
 
                         <Link 
                             href="/member/playbooks"
-                            className="text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white flex items-center gap-2 transition-colors shrink-0"
+                            className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
                         >
                             View All <ArrowRight className="w-3 h-3" />
                         </Link>
@@ -349,9 +349,7 @@ export function MemberDashboard({
 
                 {/* New Proposals */}
                 <div className={cn("rounded-3xl p-6 md:p-8 relative overflow-hidden", glassClass)}>
-                     {/* Decorative Gradient Blob */}
-                     <div className="absolute -top-20 -right-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-
+                     
                      <div className="flex items-center justify-between mb-8 relative z-10">
                         <div className="flex items-center gap-3">
                              <div className="p-2 bg-white/5 rounded-lg text-zinc-300 border border-white/5">
@@ -396,9 +394,7 @@ export function MemberDashboard({
 
                 {/* Member Details */}
                 <Link href="/member/directory" className={cn("rounded-3xl p-6 md:p-8 hover:border-white/20 transition-all group block relative overflow-hidden", glassClass)}>
-                    {/* Decorative Gradient Blob */}
-                    <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
+                    
                     <div className="flex items-center justify-between relative z-10 h-full">
                         <div className="flex items-center gap-4">
                              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
