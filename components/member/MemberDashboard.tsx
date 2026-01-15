@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
 import { Guide, Program, Event } from "@/types/public";
+import { Footer } from "@/components/website/Footer";
 // We can define Experiment type here based on Prisma client if not imported, 
 // using 'any' for now to speed up if types aren't strictly generated or exported for client.
 // Better to define an interface matching the data passed.
@@ -171,6 +172,13 @@ export function MemberDashboard({
                             <option value="PUBLIC" className="bg-zinc-900">Public</option>
                         </select>
                     </div>
+                    {/* See All Button - Beside Filter */}
+                    <Link 
+                        href={`/member/${activeTab.toLowerCase()}`}
+                        className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
+                    >
+                        See All <ArrowRight className="w-3 h-3" />
+                    </Link>
                 </div>
             </div>
 
@@ -178,12 +186,6 @@ export function MemberDashboard({
             <div className="mb-16">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold">{activeTab}</h2>
-                    <Link 
-                        href={`/member/${activeTab.toLowerCase()}`}
-                        className="text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white flex items-center gap-2 transition-colors"
-                    >
-                        See All <ArrowRight className="w-3 h-3" />
-                    </Link>
                 </div>
 
                 {activeItems.length > 0 ? (
@@ -414,6 +416,8 @@ export function MemberDashboard({
                 </Link>
 
             </div>
+            
+            <Footer />
         </div>
     );
 }
