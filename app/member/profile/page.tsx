@@ -72,10 +72,6 @@ export default function ProfilePage() {
             if (res.ok) {
                 await updateSession();
                 setShowToast(true);
-                setTimeout(() => {
-                    router.push("/member");
-                    router.refresh();
-                }, 1500);
             }
         } catch (error) {
             console.error(error);
