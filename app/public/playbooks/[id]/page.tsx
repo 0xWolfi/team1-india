@@ -4,9 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Globe, Clock, ArrowLeft } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { Footer } from "@/components/website/Footer";
+import { Globe, ArrowLeft } from "lucide-react";
+import { PlaybookShell } from "@/components/playbooks/PlaybookShell";
 
 // Dynamic import with NO SSR to avoid build errors with web APIs
 const Editor = dynamic(() => import("@/components/playbooks/Editor"), { ssr: false });
@@ -71,57 +70,16 @@ export default function PublicPlaybookPage() {
     );
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 relative">
-             {/* Back Button */}
-             <div className="absolute top-6 left-6 z-50">
-                <Link href="/public" className="flex items-center gap-2 text-sm font-bold text-white/70 hover:text-white bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 hover:bg-black/80 transition-all">
-                    <ArrowLeft className="w-4 h-4" /> Back
-                </Link>
-             </div>
-            {/* Cover Image */}
-            {playbook.coverImage && (
-                <div className="w-full h-80 md:h-96 relative">
-                    <img 
-                        src={playbook.coverImage} 
-                        alt={playbook.title}
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                </div>
-            )}
-
-            {/* Content */}
-            <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
-                 {/* Title */}
-                 <div className="border-b border-white/10 pb-8">
-                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
-                        {playbook.title}
-                     </h1>
-                 </div>
-
-                 <Editor 
-                    initialContent={playbook.body}
-                    editable={false}
-                    onChange={() => {}} 
-                 />
-
-                 {/* Footer Metadata */}
-                 <div className="border-t border-white/10 pt-8 mt-12 flex items-center justify-between text-zinc-500 text-sm">
-                    <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1.5">
-                            <Clock className="w-4 h-4" />
-                            Updated {formatDistanceToNow(new Date(playbook.updatedAt))} ago
-                        </span>
-                        {playbook.createdBy && (
-                            <span className="flex items-center gap-1.5">
-                                <span className="w-1 h-1 rounded-full bg-zinc-700" />
-                                by {playbook.createdBy.email.split('@')[0]}
-                            </span>
-                        )}
-                    </div>
-                 </div>
-            </div>
-            <Footer />
-        </div>
+        <PlaybookShell 
+            playbook={playbook} 
+            backLink="/public" 
+            backLabel="Back to Directory"
+        >
+             <Editor 
+                initialContent={playbook.body}
+                editable={false}
+                onChange={() => {}} 
+             />
+        </PlaybookShell>
     );
 }

@@ -133,16 +133,18 @@ export default function CommunityMembersPage() {
                 <table className="w-full text-left text-sm">
                     <thead className="bg-white/[0.02] text-zinc-500 font-medium uppercase text-[10px] tracking-wider border-b border-white/5 rounded-t-xl">
                         <tr>
-                            <th className="p-4 pl-6 font-semibold rounded-tl-xl w-[35%]">Member</th>
-                            <th className="p-4 font-semibold w-[20%]">Contact</th>
+                            <th className="p-4 pl-6 font-semibold rounded-tl-xl w-[20%]">Name</th>
+                            <th className="p-4 font-semibold w-[10%]">Role</th>
+                            <th className="p-4 font-semibold w-[20%]">Email</th>
+                            <th className="p-4 font-semibold w-[10%]">X</th>
+                            <th className="p-4 font-semibold w-[10%]">Telegram</th>
                             <th className="p-4 font-semibold w-[15%]">Tags</th>
-                            <th className="p-4 font-semibold w-[15%]">Status</th>
                             <th className="p-4 text-right pr-6 font-semibold rounded-tr-xl w-[15%]">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
                         {members.length === 0 && !isLoading && (
-                            <tr><td colSpan={4} className="p-12 text-center text-zinc-600">No community members found.</td></tr>
+                            <tr><td colSpan={7} className="p-12 text-center text-zinc-600">No community members found.</td></tr>
                         )}
                         {members.map(member => (
                             <tr key={member.id} className="hover:bg-white/[0.02] transition-colors group">
@@ -151,28 +153,36 @@ export default function CommunityMembersPage() {
                                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-[10px] font-bold text-zinc-400">
                                             {member.name ? member.name.charAt(0).toUpperCase() : member.email.charAt(0).toUpperCase()}
                                         </div>
-                                        <div>
-                                            <div className="font-medium text-zinc-200 text-sm">{member.name || "Unknown"}</div>
-                                            <div className="text-[11px] text-zinc-500">{member.email}</div>
-                                        </div>
+                                        <div className="font-medium text-zinc-200 text-sm">{member.name || "Unknown"}</div>
                                     </div>
                                 </td>
                                 <td className="p-4">
-                                    <div className="flex flex-col gap-1">
-                                        {member.telegram && <span className="text-[10px] text-blue-400">tg: {member.telegram}</span>}
-                                        {member.xHandle && <span className="text-[10px] text-zinc-500">x: {member.xHandle}</span>}
-                                    </div>
-                                </td>
-                                <td className="p-4">
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[10px] font-medium bg-zinc-900/50 text-zinc-400 border border-white/5">
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[10px] font-medium bg-zinc-900/50 text-zinc-400 border border-white/5 uppercase">
                                         {member.tags || 'member'}
                                     </span>
                                 </td>
                                 <td className="p-4">
-                                     <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-500">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                                        Active
-                                    </span>
+                                    <div className="text-[11px] text-zinc-500">{member.email}</div>
+                                </td>
+                                <td className="p-4">
+                                    {member.xHandle ? (
+                                        <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.xHandle.replace('@','')}</span>
+                                    ) : (
+                                        <span className="text-zinc-700">-</span>
+                                    )}
+                                </td>
+                                <td className="p-4">
+                                     {member.telegram ? (
+                                        <span className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
+                                    ) : (
+                                        <span className="text-zinc-700">-</span>
+                                    )}
+                                </td>
+                                <td className="p-4">
+                                    <div className="flex gap-1">
+                                         {/* Future tags placeholder */}
+                                         <span className="text-zinc-700 text-xs">-</span>
+                                    </div>
                                 </td>
                                 <td className="p-4 text-right pr-6">
                                     <button 

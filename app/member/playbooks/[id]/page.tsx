@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { Loader2 } from 'lucide-react';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { PlaybookShell } from "@/components/playbooks/PlaybookShell";
 import Editor from '@/components/playbooks/Editor';
 
 export default function MemberPlaybookDetailPage() {
@@ -64,49 +63,18 @@ export default function MemberPlaybookDetailPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-6 transition-colors text-sm font-medium hover:-translate-x-1 duration-200">
-                <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-            </Link>
-
-            <div className="max-w-4xl mx-auto">
-                {/* Cover Image */}
-                {playbook.coverImage && (
-                    <div className="w-full h-64 rounded-2xl overflow-hidden mb-8 border border-white/10">
-                        <img
-                            src={playbook.coverImage}
-                            alt={playbook.title}
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                )}
-
-                {/* Title */}
-                <h1 className="text-4xl font-bold text-white mb-4">{playbook.title}</h1>
-
-                {/* Description */}
-                {playbook.description && (
-                    <p className="text-zinc-400 text-lg mb-8">{playbook.description}</p>
-                )}
-
-                {/* Visibility Badge */}
-                <div className="mb-8">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                        playbook.visibility === 'PUBLIC'
-                            ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                            : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
-                    }`}>
-                        {playbook.visibility}
-                    </span>
-                </div>
-
-                {/* Content */}
+            <PlaybookShell 
+                playbook={playbook}
+                backLink="/member"
+                backLabel="Back to Dashboard"
+                className="pt-0 min-h-[calc(100vh-80px)]" // Adjust for MemberWrapper padding/layout if needed
+            >
                 <Editor
-                    // Playbook content is stored in `body` (BlockNote JSON)
                     initialContent={playbook.body}
                     editable={false}
                     onChange={() => {}}
                 />
-            </div>
+            </PlaybookShell>
         </MemberWrapper>
     );
 }

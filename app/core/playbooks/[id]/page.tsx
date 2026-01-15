@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 const Editor = dynamic(() => import("../../../../components/playbooks/Editor"), { ssr: false });
 import ConfirmationModal from "../../../../components/ui/ConfirmationModal";
 import { Toast, ToastType } from "../../../../components/ui/Toast";
+import { PlaybookShell } from "@/components/playbooks/PlaybookShell";
 
 interface PlaybookDetail {
     id: string;
@@ -276,31 +277,12 @@ export default function PlaybookPage() {
                 isVisible={toast.visible}
                 onClose={() => setToast({ ...toast, visible: false })}
             />
-            <div className="min-h-screen bg-black text-white selection:bg-purple-500/30">
-             {/* Header */}
-             <div className="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-[#09090b]/80 backdrop-blur fixed top-0 w-full z-50">
-                 <div className="flex items-center gap-4 flex-1">
-                     <Link href="/core/playbooks" onClick={handleBackClick} className="p-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-400 hover:text-white">
-                         <ArrowLeft className="w-5 h-5" />
-                     </Link>
-                     <div className="h-6 w-px bg-white/10" />
-                     
-                     {isEditing ? (
-                         <input 
-                            value={playbook.title}
-                            onChange={handleTitleChange}
-                            className="bg-transparent text-lg font-bold focus:outline-none focus:bg-white/5 px-2 rounded -ml-2 w-full max-w-md truncate placeholder:text-zinc-600"
-                            placeholder="Untitled Playbook"
-                         />
-                     ) : (
-                         <h1 className="text-lg font-bold px-2 text-zinc-200 truncate max-w-md">{playbook.title}</h1>
-                     )}
-                     
-                     {hasUnsavedChanges && <span className="text-amber-500 text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">Unsaved</span>}
-                     {isSaving && <span className="text-zinc-500 text-xs flex items-center gap-1"><RefreshCw className="w-3 h-3 animate-spin"/> Saving...</span>}
-                 </div>
-                 
-                 <div className="flex items-center gap-2">
+             <PlaybookShell
+                playbook={playbook}
+                backLink="/core/playbooks"
+                backLabel="Back to Core"
+                headerActions={
+                    <div className="flex items-center gap-2">
                      {/* Visibility Toggle */}
                      {playbook ? (
                         <button
@@ -413,6 +395,9 @@ export default function PlaybookPage() {
                          </div>
                      ) : isEditing ? (
                          <>
+                            {hasUnsavedChanges && <span className="text-amber-500 text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 mr-2">Unsaved</span>}
+                            {isSaving && <span className="text-zinc-500 text-xs flex items-center gap-1 mr-2"><RefreshCw className="w-3 h-3 animate-spin"/> Saving...</span>}
+                            
                             <button 
                                 onClick={async () => {
                                     // Save logic
@@ -494,14 +479,10 @@ export default function PlaybookPage() {
                             )}
                         </div>
                      </div>
-                 </div>
-             </div>
-
-
-
-             {/* Content */}
-             <div className="pt-24 px-4 md:px-0 max-w-4xl mx-auto pb-40">
-                {/* Header Section in Main Content */}
+                  </div>
+                } // End Header Actions
+            >
+                {/* Content Area Inside Shell */}
                 <div className="mb-8">
                     {isEditing ? (
                          <div className="flex-1 space-y-4">
@@ -620,16 +601,34 @@ export default function PlaybookPage() {
                              </div>
                          </div>
                      ) : (
-                         <div className="flex-1">
-                             {playbook.coverImage && (
-                                 <div className="w-full h-48 rounded-xl overflow-hidden mb-6 border border-white/5">
-                                     <img src={playbook.coverImage} className="w-full h-full object-cover" />
-                                 </div>
-                             )}
-                             <h1 className="text-4xl font-bold text-white mb-2">{playbook.title}</h1>
-                             {playbook.description && <p className="text-lg text-zinc-400 mb-4">{playbook.description}</p>}
-
-                         </div>
+                         // VIEW MODE: Title/Desc handled by Shell Banners, so we might want to hide them here or let Shell handle them?
+                         // The Shell handles reading playbook.title/description.
+                         // So in View mode we probably don't need to render them again here.
+                         // However, the Shell Banner is fixed width. If we want editing to happen IN PLACE,
+                         // we need to coordinate.
+                         //
+                         // CURRENT APPROACH: Shell renders Title in Banner.
+                         // Editing Mode switches to rendering Inputs HERE.
+                         // View Mode: Shell renders Title.
+                         
+                         // Wait, if I'm editing, the Shell still shows the Banner?
+                         // No, the Shell takes `playbook` prop and renders the Banner.
+                         // If I want to Edit the Title, I need to either:
+                         // 1. Tell Shell I am editing and pass inputs to it.
+                         // 2. Hide Shell Banner when editing and show custom inputs here.
+                         // 3. Or just let Shell display the "Saved" title and only edit Body here?
+                         //
+                         // User wants: "keep banner at top inside it back button and have padding... on left side keep documentation"
+                         // This implies the standard view.
+                         // For Core Edit, maybe we just use the inputs here and ignore the Shell banner?
+                         // Or we pass `isEditing` to Shell and let it handle inputs?
+                         //
+                         // Let's stick to: Shell always renders the "View" state of Title.
+                         // When Editing, we hide the Shell's Title area? Shell doesn't support hiding yet.
+                         //
+                         // Let's modify Shell to accept `titleOverride` or `isEditing` properly later if needed.
+                         // For now, in Edit mode, we render inputs here. In View mode, we render NOTHING here because Shell handles it.
+                         null
                      )}
                 </div>
 
@@ -638,7 +637,7 @@ export default function PlaybookPage() {
                      editable={isEditing} 
                      onChange={handleEditorChange}
                 />
-             </div>
+             </PlaybookShell>
 
              
              <ConfirmationModal 
@@ -650,7 +649,6 @@ export default function PlaybookPage() {
                 confirmText={modalConfig.confirmText}
                 isDestructive={modalConfig.isDestructive}
              />
-        </div>
         </>
     );
 }
