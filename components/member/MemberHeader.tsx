@@ -15,21 +15,49 @@ interface MemberHeaderProps {
 
 export function MemberHeader({ user }: MemberHeaderProps) {
     return (
-        <header className="mb-8 border-b border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-                    <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                    <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">Member Portal</span>
+        <header className="mb-6 md:mb-8 border-b border-white/5 pb-6 md:pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
+            <div className="flex-1">
+                 {/* Mobile Top Row: Title + Actions */}
+                 <div className="flex items-center justify-between md:block">
+                    <div className="flex items-center gap-2 mb-1 md:mb-2">
+                         <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                         <span className="text-[10px] md:text-xs font-mono text-zinc-500 tracking-widest uppercase">Member Portal</span>
                     </div>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500">
+
+                    {/* Mobile Actions (Visible only on mobile) */}
+                    <div className="flex md:hidden items-center gap-2">
+                        <Link 
+                            href="/member/profile"
+                            className="w-8 h-8 rounded-full bg-zinc-800/50 border border-white/5 flex items-center justify-center text-zinc-400"
+                        >
+                            <Settings className="w-3.5 h-3.5" />
+                        </Link>
+                         {user?.image ? (
+                            <img src={user.image} alt="Profile" className="w-8 h-8 rounded-full ring-1 ring-white/10" />
+                        ) : (
+                            <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
+                                    <User className="w-3.5 h-3.5 text-zinc-400" />
+                            </div>
+                        )}
+                         <button 
+                            onClick={() => signOut({ callbackUrl: '/public' })}
+                            className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/10 flex items-center justify-center text-red-400"
+                        >
+                            <LogOut className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                 </div>
+
+                <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500">
                     Overview
                 </h1>
-                <p className="text-zinc-500 font-medium text-sm mt-2 max-w-lg leading-relaxed">
+                <p className="text-zinc-500 font-medium text-xs md:text-sm mt-1 md:mt-2 max-w-lg leading-relaxed">
                     Welcome back, <span className="text-white">{user?.name || 'Member'}</span>.
                 </p>
             </div>
             
-            <div className="flex items-center gap-6">
+            {/* Desktop Actions (Hidden on mobile) */}
+            <div className="hidden md:flex items-center gap-6">
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
                     {user?.image ? (
                         <img src={user.image} alt="Profile" className="w-10 h-10 rounded-full ring-2 ring-white/10" />

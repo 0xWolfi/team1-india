@@ -81,7 +81,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
   return (
     <div className="w-full max-w-7xl mx-auto space-y-12">
       {/* Sleek Filters */}
-      <div className="relative z-20 flex flex-col md:flex-row gap-2 items-center justify-center bg-zinc-900/80 backdrop-blur-xl border border-white/10 p-1.5 rounded-xl w-full max-w-[90%] md:w-fit mx-auto shadow-2xl shadow-black/50 transition-all hover:border-white/20">
+      <div className="relative z-20 flex flex-col md:flex-row gap-2 items-center justify-center bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] p-1.5 rounded-xl w-full max-w-[90%] md:w-fit mx-auto shadow-2xl shadow-black/50 transition-all hover:border-white/20">
         <input
             type="text"
             value={searchQuery}
@@ -184,7 +184,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                       className="group block w-full sm:w-[280px] md:w-[300px]"
                     >
                       {/* Image Container */}
-                      <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 bg-zinc-900/70 backdrop-blur-md transition-all duration-500 group-hover:border-white/20 group-hover:shadow-2xl group-hover:shadow-indigo-500/10 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
+                      <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] bg-zinc-900/60 backdrop-blur-2xl transition-all duration-500 group-hover:border-white/20 group-hover:shadow-2xl group-hover:shadow-indigo-500/10 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
                         {event.cover_url && (
                           <img
                             src={event.cover_url}
