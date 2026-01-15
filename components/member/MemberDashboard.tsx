@@ -184,9 +184,7 @@ export function MemberDashboard({
 
             {/* Main Content Area */}
             <div className="mb-16">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold">{activeTab}</h2>
-                </div>
+
 
                 {activeItems.length > 0 ? (
                     <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
