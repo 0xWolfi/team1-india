@@ -21,12 +21,13 @@ export default function SectionCarousel({
     seeAllText = "See All",
     direction = "left",
     enableScroll = true,
+    isEmpty = false,
     children
-}: SectionCarouselProps & { direction?: 'left' | 'right', enableScroll?: boolean }) {
+}: SectionCarouselProps & { direction?: 'left' | 'right', enableScroll?: boolean, isEmpty?: boolean }) {
     // Duplicate children for infinite loop effect
     const items = React.Children.toArray(children);
     // Ensure we have enough items for a smooth loop (at least 2 sets, potentially more if very few items)
-    const scrollingContent = enableScroll ? [...items, ...items, ...items, ...items] : [];
+    const scrollingContent = enableScroll && !isEmpty ? [...items, ...items, ...items, ...items] : [];
 
     return (
         <section id={id} className="py-8 relative scroll-mt-24 overflow-hidden">
@@ -42,39 +43,53 @@ export default function SectionCarousel({
                     </div>
                     
                     {/* Desktop See All Button */}
-                    <Link 
-                        href={seeAllLink}
-                        className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-2 rounded-lg transition-all"
-                    >
-                        {seeAllText}
-                        <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    {!isEmpty && (
+                        <Link 
+                            href={seeAllLink}
+                            className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-2 rounded-lg transition-all"
+                        >
+                            {seeAllText}
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    )}
                 </div>
             </div>
 
             {/* Mobile View: Horizontal Scroll (Max 5 items) */}
             <div className="md:hidden container mx-auto px-6 mb-8">
-                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 scrollbar-hide">
-                    {items.slice(0, 5).map((child, index) => (
-                        <div key={index} className="shrink-0 snap-center w-[280px]">
-                            {child}
+                {isEmpty ? (
+                     <div className="w-full">
+                        {children}
+                    </div>
+                ) : (
+                    <>
+                        <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 scrollbar-hide">
+                            {items.slice(0, 5).map((child, index) => (
+                                <div key={index} className="shrink-0 snap-center w-[280px]">
+                                    {child}
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-                
-                {/* Mobile See All Button (Bottom) */}
-                <Link 
-                    href={seeAllLink}
-                    className="flex w-full justify-center items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-3 rounded-xl transition-all mt-4"
-                >
-                    {seeAllText}
-                    <ArrowRight className="w-4 h-4" />
-                </Link>
+                        
+                        {/* Mobile See All Button (Bottom) */}
+                        <Link 
+                            href={seeAllLink}
+                            className="flex w-full justify-center items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-3 rounded-xl transition-all mt-4"
+                        >
+                            {seeAllText}
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </>
+                )}
             </div>
 
             {/* Desktop View: Marquee or Grid */}
             <div className="hidden md:block">
-                {enableScroll ? (
+                {isEmpty ? (
+                    <div className="container mx-auto px-6">
+                        {children}
+                    </div>
+                ) : enableScroll ? (
                     /* Marquee Container */
                     <div className="relative w-full overflow-hidden mask-gradient">
                         <div 
