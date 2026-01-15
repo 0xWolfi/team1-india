@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Search, LayoutGrid, List as ListIcon, MoreVertical, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Hide scrollbar but keep functionality
 const scrollbarHide = `
@@ -43,10 +44,13 @@ function TimeAgo({ date }: { date: Date }) {
     return <span>{text}</span>;
 }
 
+const glassClass = "bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]";
+
 export default function PublicPlaybooksPage() {
   const [playbooks, setPlaybooks] = useState<Playbook[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
     // Fetch playbooks from API to avoid caching issues
@@ -75,7 +79,7 @@ export default function PublicPlaybooksPage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: scrollbarHide }} />
-      <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
+      <main className="min-h-screen text-white selection:bg-zinc-800 selection:text-zinc-200">
       
       <div className="pt-24 px-6 max-w-7xl mx-auto pb-20">
         
@@ -97,7 +101,6 @@ export default function PublicPlaybooksPage() {
                     Centralized repository for your organization's strategic documentation, SOPs, and knowledge.
                 </p>
             </div>
-            {/* Optional "New" Button Placeholder if needed, otherwise empty */}
         </div>
             
         {/* Search & Filter Bar */}
@@ -109,38 +112,64 @@ export default function PublicPlaybooksPage() {
                     placeholder="Search by title..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-11 pr-4 py-2.5 bg-zinc-900/50 border border-white/10 rounded-xl text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all"
+                    className={cn(
+                        "w-full pl-11 pr-4 py-2.5 rounded-xl text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 transition-all",
+                        glassClass
+                    )}
                 />
             </div>
             <div className="flex items-center gap-2">
-                <button className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900/50 border border-white/10 rounded-xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">
+                <button className={cn("flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white transition-all", glassClass)}>
                     <LayoutGrid className="w-4 h-4" /> 
                     <span>All Views</span>
                     <ChevronDown className="w-3 h-3 opacity-50" />
                 </button>
-                <div className="flex items-center bg-zinc-900/50 border border-white/10 rounded-xl p-1">
-                    <button className="p-1.5 rounded-lg bg-zinc-800 text-white shadow-sm">
+                <div className={cn("flex items-center rounded-xl p-1", glassClass)}>
+                    <button 
+                        onClick={() => setViewMode('grid')}
+                        className={cn(
+                            "p-1.5 rounded-lg transition-all",
+                            viewMode === 'grid' ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-white"
+                        )}
+                    >
                         <LayoutGrid className="w-4 h-4" />
                     </button>
-                    <button className="p-1.5 rounded-lg text-zinc-500 hover:text-white transition-colors">
+                    <button 
+                        onClick={() => setViewMode('list')}
+                        className={cn(
+                            "p-1.5 rounded-lg transition-all",
+                             viewMode === 'list' ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-white"
+                        )}
+                    >
                         <ListIcon className="w-4 h-4" />
                     </button>
                 </div>
             </div>
         </div>
 
-        {/* Vertical List */}
+        {/* List / Grid */}
         {isLoading ? (
           <div className="py-32 text-center">
             <p className="text-zinc-500">Loading playbooks...</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-6"}>
             {filteredPlaybooks.map((item) => (
-              <Link key={item.id} href={`/public/playbooks/${item.id}`} className="flex flex-row bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden hover:border-white/20 transition-all group">
+              <Link 
+                key={item.id} 
+                href={`/public/playbooks/${item.id}`} 
+                className={cn(
+                    "rounded-3xl overflow-hidden hover:border-white/20 transition-all group flex",
+                    glassClass,
+                    viewMode === 'grid' ? "flex-col h-full" : "flex-row h-48"
+                )}
+              >
                     
                     {/* Image Section */}
-                    <div className="w-64 h-48 bg-zinc-900 relative shrink-0 flex-shrink-0">
+                    <div className={cn(
+                        "bg-zinc-900 relative shrink-0",
+                        viewMode === 'grid' ? "w-full h-48" : "w-64 h-full"
+                    )}>
                         {item.coverImage ? (
                             <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                         ) : (
@@ -153,13 +182,15 @@ export default function PublicPlaybooksPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 p-6 flex flex-col justify-between min-h-[192px]">
+                    <div className="flex-1 p-6 flex flex-col justify-between">
                         <div>
                             <div className="flex items-start justify-between gap-4 mb-3">
                                 <h3 className="font-bold text-white text-lg line-clamp-2 flex-1">{item.title}</h3>
-                                <span className="shrink-0 px-3 py-1.5 rounded-lg border border-white/10 text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:bg-white group-hover:text-black transition-all whitespace-nowrap">
-                                    Open &rarr;
-                                </span>
+                                {viewMode === 'list' && (
+                                    <span className="shrink-0 px-3 py-1.5 rounded-lg border border-white/10 text-[10px] font-bold text-zinc-500 uppercase tracking-wider group-hover:bg-white group-hover:text-black transition-all whitespace-nowrap">
+                                        Open &rarr;
+                                    </span>
+                                )}
                             </div>
                             
                             <p className="text-sm text-zinc-500 line-clamp-3 leading-relaxed">
