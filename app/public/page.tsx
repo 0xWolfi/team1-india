@@ -78,9 +78,10 @@ export default function PublicPage() {
                     description="Essential rules, guidelines, and strategies to help you build and scale."
                     seeAllLink="/public/playbooks"
                     enableScroll={playbooks.length > 3}
+                    isEmpty={playbooks.length === 0}
                 >
                     {playbooks.length > 0 ? playbooks.map((item: any) => (
-                        <Link key={item.id} href={`/public/playbooks/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
+                        <Link key={item.id} href={`/public/playbooks/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
                             <div className="h-36 w-full bg-zinc-800 relative overflow-hidden">
                                 {item.coverImage ? (
                                     <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
@@ -114,9 +115,10 @@ export default function PublicPage() {
                     seeAllLink="/public/programs"
                     direction="right"
                     enableScroll={programs.length > 3}
+                    isEmpty={programs.length === 0}
                 >
                     {programs.length > 0 ? programs.map((item: any) => (
-                        <Link key={item.id} href={`/public/programs/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group cursor-pointer">
+                        <Link key={item.id} href={`/public/programs/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group cursor-pointer">
                             <div className="h-36 w-full bg-zinc-800 relative overflow-hidden flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
                             {item.coverImage ? (
                                     <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
@@ -146,11 +148,12 @@ export default function PublicPage() {
                     title="Content" 
                     description="Earn bounties by contributing."
                     seeAllLink="/public/content"
-                    seeAllText="View Bounties"
+                    seeAllText="See All"
                     enableScroll={guides.length > 3}
+                    isEmpty={guides.length === 0}
                 >
                     {guides.length > 0 ? guides.map((item: any) => (
-                        <Link key={item.id} href={`/public/guides/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
+                        <Link key={item.id} href={`/public/guides/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
                             <div className="h-36 w-full bg-zinc-800 relative overflow-hidden flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
                                 {item.coverImage ? (
                                     <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
@@ -185,9 +188,10 @@ export default function PublicPage() {
                     seeAllLink="/public/events"
                     direction="right"
                     enableScroll={events.length > 3}
+                    isEmpty={events.length === 0}
                 >
                     {events.length > 0 ? events.map((item: any) => (
-                         <Link key={item.id} href={`/public/events/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
+                         <Link key={item.id} href={`/public/events/${item.id}`} className="block min-w-[260px] w-[260px] snap-center bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col h-[300px] group">
                             <div className="h-36 w-full bg-zinc-800 relative overflow-hidden">
                                  {item.coverImage ? (
                                     <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />

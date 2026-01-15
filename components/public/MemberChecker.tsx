@@ -49,51 +49,51 @@ export default function MemberChecker() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Row 1 */}
                         <div>
-                            <label className="block text-[10px] font-bold text-zinc-600 uppercase mb-1 ml-1">Email Address</label>
+                            <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">Email Address</label>
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="name@example.com"
-                                className="w-full bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-indigo-500/30 focus:bg-black/40 transition-all placeholder:text-zinc-800"
+                                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-bold text-zinc-600 uppercase mb-1 ml-1">X Handle</label>
+                            <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">X Handle</label>
                             <div className="relative">
-                                <span className="absolute left-3 top-2.5 text-zinc-600 text-sm">@</span>
+                                <span className="absolute left-3 top-2.5 text-zinc-500 text-sm">@</span>
                                 <input
                                     type="text"
                                     value={xHandle}
                                     onChange={(e) => setXHandle(e.target.value.replace('@', ''))}
                                     placeholder="username"
-                                    className="w-full bg-black/20 border border-white/5 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-indigo-500/30 focus:bg-black/40 transition-all placeholder:text-zinc-800"
+                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
                                 />
                             </div>
                         </div>
                         
                         {/* Row 2 */}
                         <div>
-                            <label className="block text-[10px] font-bold text-zinc-600 uppercase mb-1 ml-1">Telegram Handle</label>
+                            <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">Telegram Handle</label>
                             <div className="relative">
-                                <span className="absolute left-3 top-2.5 text-zinc-600 text-sm">@</span>
+                                <span className="absolute left-3 top-2.5 text-zinc-500 text-sm">@</span>
                                 <input
                                     type="text"
                                     value={telegram}
                                     onChange={(e) => setTelegram(e.target.value.replace('@', ''))}
                                     placeholder="username"
-                                    className="w-full bg-black/20 border border-white/5 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-indigo-500/30 focus:bg-black/40 transition-all placeholder:text-zinc-800"
+                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
                                 />
                             </div>
                         </div>
                         <div>
-                             <label className="block text-[10px] font-bold text-zinc-600 uppercase mb-1 ml-1">Discord ID</label>
+                             <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">Discord ID</label>
                             <input
                                 type="text"
                                 value={discord}
                                 onChange={(e) => setDiscord(e.target.value)}
                                 placeholder="username"
-                                className="w-full bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-indigo-500/30 focus:bg-black/40 transition-all placeholder:text-zinc-800"
+                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
                             />
                         </div>
                     </div>

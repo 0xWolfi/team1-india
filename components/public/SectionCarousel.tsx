@@ -21,12 +21,13 @@ export default function SectionCarousel({
     seeAllText = "See All",
     direction = "left",
     enableScroll = true,
+    isEmpty = false,
     children
-}: SectionCarouselProps & { direction?: 'left' | 'right', enableScroll?: boolean }) {
+}: SectionCarouselProps & { direction?: 'left' | 'right', enableScroll?: boolean, isEmpty?: boolean }) {
     // Duplicate children for infinite loop effect
     const items = React.Children.toArray(children);
     // Ensure we have enough items for a smooth loop (at least 2 sets, potentially more if very few items)
-    const scrollingContent = enableScroll ? [...items, ...items, ...items, ...items] : [];
+    const scrollingContent = enableScroll && !isEmpty ? [...items, ...items, ...items, ...items] : [];
 
     return (
         <section id={id} className="py-8 relative scroll-mt-24 overflow-hidden">
@@ -54,13 +55,19 @@ export default function SectionCarousel({
 
             {/* Mobile View: Horizontal Scroll (Max 5 items) */}
             <div className="md:hidden container mx-auto px-6 mb-8">
-                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 scrollbar-hide">
-                    {items.slice(0, 5).map((child, index) => (
-                        <div key={index} className="shrink-0 snap-center w-[280px]">
-                            {child}
-                        </div>
-                    ))}
-                </div>
+                {isEmpty ? (
+                     <div className="w-full">
+                        {children}
+                    </div>
+                ) : (
+                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 scrollbar-hide">
+                        {items.slice(0, 5).map((child, index) => (
+                            <div key={index} className="shrink-0 snap-center w-[280px]">
+                                {child}
+                            </div>
+                        ))}
+                    </div>
+                )}
                 
                 {/* Mobile See All Button (Bottom) */}
                 <Link 
@@ -74,7 +81,11 @@ export default function SectionCarousel({
 
             {/* Desktop View: Marquee or Grid */}
             <div className="hidden md:block">
-                {enableScroll ? (
+                {isEmpty ? (
+                    <div className="container mx-auto px-6">
+                        {children}
+                    </div>
+                ) : enableScroll ? (
                     /* Marquee Container */
                     <div className="relative w-full overflow-hidden mask-gradient">
                         <div 
