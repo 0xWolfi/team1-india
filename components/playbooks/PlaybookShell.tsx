@@ -59,15 +59,15 @@ export function PlaybookShell({
 
             <div className={cn("max-w-7xl mx-auto px-6 pt-24 pb-12", contentClassName)}>
                 {/* Banner & Back Button Container */}
-                <div className="relative w-full rounded-3xl overflow-hidden min-h-[300px] mb-12 group border border-white/10 bg-zinc-900/50">
+                <div className="relative w-full rounded-3xl overflow-hidden min-h-[300px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
                     
                     {/* Back Button (Absolute Top Left) */}
                     <div className="absolute top-6 left-6 z-20">
                         <Link 
                             href={backLink} 
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 text-white text-sm font-medium hover:bg-black/60 transition-all border border-white/10 backdrop-blur-md"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 text-white text-sm font-medium hover:bg-black/40 transition-all border border-white/10 backdrop-blur-md group/back"
                         >
-                            <ArrowLeft className="w-4 h-4" />
+                            <ArrowLeft className="w-4 h-4 group-hover/back:-translate-x-0.5 transition-transform" />
                             {backLabel}
                         </Link>
                     </div>
@@ -89,12 +89,12 @@ export function PlaybookShell({
                 </div>
 
                 {/* Title & Description (Moved Below Banner) */}
-                <div className="max-w-4xl space-y-6 mb-16">
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight">
+                <div className="max-w-4xl space-y-8 mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
                         {playbook.title}
                     </h1>
                     {playbook.description && (
-                        <p className="text-lg md:text-xl text-zinc-400 max-w-2xl leading-relaxed font-medium">
+                        <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl leading-relaxed font-medium">
                             {playbook.description}
                         </p>
                     )}
@@ -110,41 +110,47 @@ export function PlaybookShell({
                             {children}
                         </div>
 
-                        {/* Helpful Widget & Need Help Section */}
-                        <div className="pt-12 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between gap-6">
+                        {/* Helpful Widget */}
+                        <div className="pt-12 border-t border-white/5">
                              <HelpfulWidget onCopyMarkdown={handleCopyMarkdown} />
-                             
-                             {/* Need Help Section (Relocated) */}
-                             <div className="flex items-center gap-4 text-sm bg-zinc-900/40 border border-white/5 rounded-2xl px-6 py-4 backdrop-blur-sm">
-                                 <span className="text-zinc-500 font-medium">Need help implementing this?</span>
-                                 <a 
-                                    href="mailto:support@team1.india" 
-                                    className="inline-flex items-center gap-2 text-zinc-300 hover:text-white transition-colors font-medium group"
-                                 >
-                                    Reach out to the team 
-                                    <ArrowUpRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
-                                 </a>
-                             </div>
                         </div>
                     </div>
 
                     {/* Right Column: Sidebar (Minimalist) */}
-                    <div className="lg:col-span-1 space-y-10">
+                    <div className="lg:col-span-1 space-y-8 h-fit sticky top-24">
                         
                         {/* Author Info */}
-                        <div className="space-y-1">
-                            <h3 className="text-sm font-medium text-zinc-500">Written by</h3>
+                        <div className="space-y-2">
+                            <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Written by</h3>
                             <div className="flex items-center gap-2">
-                                <div className="text-base font-bold text-white">
+                                <div className="text-sm font-medium text-zinc-200">
                                     {playbook.createdBy?.name || playbook.createdBy?.email?.split('@')[0] || 'Team 1'}
                                 </div>
                             </div>
                         </div>
 
+                        {/* Divider */}
+                        <div className="h-px bg-white/5 w-full" />
+
+                        {/* Need Help Info (2nd Position) */}
+                        <div className="space-y-2">
+                            <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Need Help?</h3>
+                            <a 
+                                href="mailto:support@team1.india" 
+                                className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors group"
+                            >
+                                Reach out to the team 
+                                <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-px bg-white/5 w-full" />
+
                         {/* Date Info */}
-                        <div className="space-y-1">
-                            <h3 className="text-sm font-medium text-zinc-500">On</h3>
-                            <div className="text-base font-bold text-white">
+                        <div className="space-y-2">
+                            <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">On</h3>
+                            <div className="text-sm font-medium text-zinc-200">
                                  {new Date(playbook.createdAt || playbook.updatedAt).toLocaleDateString(undefined, {
                                     weekday: 'short',
                                     year: 'numeric',
@@ -155,7 +161,7 @@ export function PlaybookShell({
                         </div>
 
                          {/* Divider */}
-                         <div className="h-px bg-zinc-800 w-full" />
+                         <div className="h-px bg-white/5 w-full" />
 
                         {/* Sidebar Actions */}
                         <div className="space-y-4">
