@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
+import { Toast } from "@/components/ui/Toast";
 import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -11,6 +12,7 @@ export default function ProfilePage() {
     const { data: session, update: updateSession } = useSession();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [showToast, setShowToast] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         xHandle: "",
@@ -69,8 +71,11 @@ export default function ProfilePage() {
 
             if (res.ok) {
                 await updateSession();
-                router.push("/member");
-                router.refresh();
+                setShowToast(true);
+                setTimeout(() => {
+                    router.push("/member");
+                    router.refresh();
+                }, 1500);
             }
         } catch (error) {
             console.error(error);
@@ -81,6 +86,12 @@ export default function ProfilePage() {
 
     return (
         <MemberWrapper>
+            <Toast
+                message="Your profile has been saved successfully!"
+                type="success"
+                isVisible={showToast}
+                onClose={() => setShowToast(false)}
+            />
             <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
