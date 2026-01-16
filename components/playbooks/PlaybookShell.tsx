@@ -7,7 +7,8 @@ import { HelpfulWidget } from "./HelpfulWidget";
 import { Footer } from "@/components/website/Footer";
 import { cn } from "@/lib/utils";
 import { TableOfContents } from "./TableOfContents";
-import { ImageCropper } from "../ui/ImageCropper"; // Import Cropper
+import { ImageCropper } from "../ui/ImageCropper";
+import { motion, useScroll, useSpring, AnimatePresence, useMotionValueEvent } from "framer-motion"; // Animation hooks
 
 interface PlaybookShellProps {
     playbook: {
@@ -52,6 +53,16 @@ export function PlaybookShell({
     // Cropper & Upload States
     const [cropperSrc, setCropperSrc] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+
+    // Premium UI States (Scroll & Sticky)
+    const { scrollYProgress, scrollY } = useScroll();
+    const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+    const [showStickyHeader, setShowStickyHeader] = useState(false);
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        if (latest > 400 && !showStickyHeader) setShowStickyHeader(true);
+        if (latest <= 400 && showStickyHeader) setShowStickyHeader(false);
+    });
 
     const handleCopyMarkdown = () => {
         if (!playbook.body) return;
@@ -116,19 +127,56 @@ export function PlaybookShell({
     return (
         <div className={cn("min-h-screen text-white selection:bg-purple-500/30 font-sans", className)}>
             
+            {/* 1. Reading Progress Bar (View Mode Only) */}
+            {!isEditing && (
+                <motion.div 
+                    className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 origin-left z-[100]" 
+                    style={{ scaleX }} 
+                />
+            )}
+
+            {/* 2. Sticky Context Header (View Mode Only) */}
+            <AnimatePresence>
+                {!isEditing && showStickyHeader && (
+                    <motion.div 
+                        initial={{ y: -100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -100, opacity: 0 }}
+                        className="fixed top-0 left-0 right-0 h-16 bg-zinc-900/80 backdrop-blur-md border-b border-white/10 z-50 flex items-center justify-between px-6 shadow-2xl"
+                    >
+                         <div className="flex items-center gap-4">
+                            <Link 
+                                href={backLink} 
+                                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all border border-white/5"
+                                title={backLabel}
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                            </Link>
+                            <h3 className="font-semibold text-white text-sm line-clamp-1 max-w-md">
+                                {playbook.title}
+                            </h3>
+                         </div>
+
+                         <div className="flex items-center gap-2">
+                             <button 
+                                onClick={handleCopyMarkdown}
+                                className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-xs font-medium text-zinc-300 hover:text-white border border-white/5 transition-all flex items-center gap-2"
+                             >
+                                <Copy className="w-3 h-3" /> Share
+                             </button>
+                         </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+
             {/* Cropper Modal */}
             {cropperSrc && (
                 <ImageCropper 
                     imageSrc={cropperSrc}
                     onCropComplete={handleCropComplete}
                     onCancel={() => setCropperSrc(null)}
-                    aspectRatio={4 / 1} // Flexible banner aspect ratio? Or fixed dimensions? User said "auto croping not letting me crop". A wide banner is usually 3:1 or 4:1. Let's try 4:1 (e.g. 1200x300, 1600x400) or maybe just free? No, user wants it to fit H-[400px].
-                    // Actually, since width is max-w-4xl (896px) and height is fixed 400px, responsive aspect changes.
-                    // But usually for banners we pick a wide ratio. Let's prioritize 16:9 or free?
-                    // User complained about "auto crop".
-                    // Let's use 2.5:1 as a safe banner default, or allow the cropper to be free?
-                    // Re-reading: "auto croping not letting me crop also or zoom". 
-                    // Let's set aspect ratio to ~2.2 (896/400 = 2.24) to match the desktop view.
+                    aspectRatio={2.4} 
                 />
             )}
 
@@ -246,7 +294,7 @@ export function PlaybookShell({
                     // ------------------ VIEW MODE HEADER (BLOG STYLE) ------------------
                     // ------------------ VIEW MODE HEADER (HERO STYLE) ------------------
                     // ------------------ VIEW MODE HEADER (HERO STYLE) ------------------
-                    <div className="max-w-3xl mx-auto space-y-8 mb-16 animate-in fade-in duration-500 pt-0">
+                    <div className="max-w-5xl mx-auto space-y-8 mb-16 animate-in fade-in duration-500 pt-0">
                         
                          {/* 1. Feature Image (Top - No Padding above) */}
                         {playbook.coverImage && (
@@ -325,6 +373,14 @@ export function PlaybookShell({
                 ) : (
                     // ------------------ VIEW MODE (SINGLE COLUMN READER) ------------------
                     <div className="max-w-3xl mx-auto relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        
+                        {/* 3. Floating Table of Contents (Desktop Only) */}
+                        <div className="hidden xl:block fixed right-8 top-32 w-64 animate-in fade-in slide-in-from-right-8 duration-700 delay-300">
+                             <div className="pl-6 border-l border-white/5">
+                                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4">On this page</h4>
+                                <TableOfContents contentDependency={playbook} />
+                             </div>
+                        </div>
                         
                         {/* Content */}
                         <div className="min-h-[200px] prose prose-invert prose-lg max-w-none leading-relaxed">
