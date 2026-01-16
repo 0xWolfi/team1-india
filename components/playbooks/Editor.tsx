@@ -7,7 +7,7 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { useEffect, useState, useMemo } from "react";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { Block } from "@blocknote/core";
-import { Eye, FileText, Edit3, Code } from "lucide-react";
+import { Eye, Edit3, Code } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EditorProps {

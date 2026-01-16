@@ -31,7 +31,7 @@ interface PlaybookShellProps {
     onTitleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onDescriptionChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     onCoverImageChange?: (url: string | undefined) => void;
-    readTime?: string;
+
 }
 
 export function PlaybookShell({ 
@@ -47,12 +47,27 @@ export function PlaybookShell({
     onTitleChange,
     onDescriptionChange,
     onCoverImageChange,
-    readTime
 }: PlaybookShellProps) {
 
     // Cropper & Upload States
     const [cropperSrc, setCropperSrc] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+
+    const handleCopyMarkdown = () => {
+        if (!playbook.body) return;
+        
+        let contentToCopy = "";
+        try {
+             // Best effort: Copy title + description + body representation
+             contentToCopy = `# ${playbook.title}\n\n${playbook.description || ''}\n\n`;
+             const bodyStr = typeof playbook.body === 'string' ? playbook.body : JSON.stringify(playbook.body);
+             contentToCopy += bodyStr; 
+        } catch (e) {
+            contentToCopy = "Error copying content.";
+        }
+        
+        navigator.clipboard.writeText(contentToCopy);
+    };
 
     // 1. Intercept Selection
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,10 +111,7 @@ export function PlaybookShell({
         }
     };
 
-    const handleCopyMarkdown = () => {
-        const content = typeof playbook.body === 'string' ? playbook.body : JSON.stringify(playbook.body, null, 2);
-        navigator.clipboard.writeText(content);
-    };
+
 
     return (
         <div className={cn("min-h-screen text-white selection:bg-purple-500/30 font-sans", className)}>
@@ -261,7 +273,7 @@ export function PlaybookShell({
                                 {playbook.title}
                             </h1>
                             {playbook.description && (
-                                <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl leading-relaxed font-medium">
+                                <p className="text-lg text-zinc-400 max-w-3xl leading-relaxed font-medium">
                                     {playbook.description}
                                 </p>
                             )}
@@ -269,84 +281,82 @@ export function PlaybookShell({
                     </div>
                 )}
 
-
                 {/* ==================================================================================
-                    MAIN CONTENT GRID
+                    MAIN CONTENT AREA
                    ================================================================================== */}
                 
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 relative z-10">
-                    
-                    {/* Left Column: TOC (Always Visible Now) */}
-                    <div className="hidden lg:block lg:col-span-1">
-                         <TableOfContents contentDependency={playbook} />
-                    </div>
-
-                    {/* Middle Column: Content */}
-                    <div className="lg:col-span-3 space-y-16">
-                         <div className={cn("min-h-[500px] prose prose-invert prose-lg max-w-none", isEditing && "max-w-4xl")}>
-                            {children}
+                {isEditing ? (
+                    // ------------------ EDIT MODE (GRID LAYOUT) ------------------
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 relative z-10">
+                        {/* Left Column: TOC */}
+                        <div className="hidden lg:block lg:col-span-1">
+                             <TableOfContents contentDependency={playbook} />
                         </div>
 
-                        {/* Footer Widget: View Only */}
-                        {!isEditing && (
-                            <div className="pt-12 border-t border-white/5">
-                                 <HelpfulWidget onCopyMarkdown={handleCopyMarkdown} />
+                        {/* Middle Column: Content */}
+                        <div className="lg:col-span-3 space-y-16">
+                             <div className="min-h-[500px] prose prose-invert prose-lg max-w-none max-w-4xl">
+                                {children}
                             </div>
-                        )}
-                    </div>
+                        </div>
 
-                    {/* Right Column: Metadata (View Only) */}
-                    {!isEditing && (
+                        {/* Right Column: Metadata (Edit Mode Only - likely empty or actions) */}
                         <div className="lg:col-span-1 space-y-8 h-fit sticky top-32">
-                            
-                            <div className="space-y-2">
-                                <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Written by</h3>
-                                <div className="flex items-center gap-2">
-                                    <div className="text-sm font-medium text-zinc-200">
-                                        {playbook.createdBy?.name || playbook.createdBy?.email?.split('@')[0] || 'Team 1'}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="h-px bg-white/5 w-full" />
-
-                            <div className="space-y-2">
-                                <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">On</h3>
-                                <div className="text-sm font-medium text-zinc-200">
-                                     {new Date(playbook.createdAt || playbook.updatedAt).toLocaleDateString(undefined, {
-                                        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
-                                     })}
-                                </div>
-                            </div>
- 
-                            <div className="h-px bg-white/5 w-full" />
-
-                            {/* Read Time */}
-                            <div className="space-y-2">
-                                <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Read Time</h3>
-                                <div className="text-sm font-medium text-zinc-200">
-                                     {readTime || 'Less than 1 min'}
-                                </div>
-                            </div>
-
-                            <div className="h-px bg-white/5 w-full" />
-
-                            <div className="space-y-2">
-                                <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Need Help?</h3>
-                                <a href="mailto:support@team1.india" className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors group">
-                                    Reach out to the team <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                </a>
-                            </div>
-                            
-                            <div className="h-px bg-white/5 w-full" />
-
-                            <div className="space-y-4">
+                             <div className="space-y-4">
                                 {sidebarActions}
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    // ------------------ VIEW MODE (SINGLE COLUMN READER) ------------------
+                    <div className="max-w-3xl mx-auto relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        
+                        {/* Content */}
+                        <div className="min-h-[200px] prose prose-invert prose-lg max-w-none leading-relaxed">
+                            {children}
+                        </div>
+
+                        {/* Reader Footer: Metadata & Actions */}
+                        <div className="mt-20 pt-10 border-t border-white/5 space-y-10">
+                            
+                            {/* 1. Author & Date */}
+                            <div className="flex items-center justify-between text-zinc-500 text-sm font-medium">
+                                <div className="space-y-1">
+                                    <h3 className="text-[10px] uppercase tracking-wider font-bold text-zinc-600">Written by</h3>
+                                    <span className="text-zinc-300">
+                                        {playbook.createdBy?.name || playbook.createdBy?.email?.split('@')[0] || 'Team 1'}
+                                    </span>
+                                </div>
+                                <div className="text-right space-y-1">
+                                    <h3 className="text-[10px] uppercase tracking-wider font-bold text-zinc-600">On</h3>
+                                    <span className="text-zinc-300">
+                                        {new Date(playbook.createdAt || playbook.updatedAt).toLocaleDateString(undefined, {
+                                            weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+                                        })}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* 2. Helpful / Copy / Need Help */}
+                            <div className="bg-zinc-900/40 rounded-2xl border border-white/5 p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                                <div className="space-y-2">
+                                     <h3 className="text-base font-semibold text-white">Need help with this playbook?</h3>
+                                     <a href="mailto:support@team1.india" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group">
+                                        Reach out to the team <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                     </a>
+                                </div>
+                                
+                                <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
+                                    <HelpfulWidget onCopyMarkdown={handleCopyMarkdown} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
+
+
+
             
             {!isEditing && <Footer />}
         </div>

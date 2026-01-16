@@ -140,8 +140,8 @@ export default function PlaybookPage() {
     }, [hasUnsavedChanges, isEditing]);
 
     // Manual Save Function - UPDATED with Confetti
-    const handleManualSave = async () => {
-        if (!playbook || !contentRef.current) return;
+    const handleManualSave = async (): Promise<boolean> => {
+        if (!playbook || !contentRef.current) return false;
         
         setIsSaving(true);
         try {
@@ -160,8 +160,9 @@ export default function PlaybookPage() {
             if (!res.ok) throw new Error("Failed to save");
             
             const updatedPlaybook = await res.json();
-            setPlaybook(updatedPlaybook);
-            setReadTime(calculateReadTime(updatedPlaybook.body)); // Update Read Time
+            // Use functional update to ensure we don't clobber other pending state
+            setPlaybook(prev => ({ ...updatedPlaybook, body: JSON.stringify(updatedPlaybook.body) }));
+            setReadTime(calculateReadTime(updatedPlaybook.body));
             
             setHasUnsavedChanges(false);
             
@@ -173,10 +174,12 @@ export default function PlaybookPage() {
                 colors: ['#a855f7', '#ec4899', '#ffffff'] // Brand colors
             });
             setToast({ message: "Saved successfully!", type: 'success', visible: true });
+            return true;
 
         } catch (error) {
             console.error("Save failed", error);
             alert("Failed to save changes. Please try again.");
+            return false;
         } finally {
             setIsSaving(false);
         }
@@ -185,7 +188,10 @@ export default function PlaybookPage() {
     // ... (Exit Edit, Unload, Modal logic stays same)
 
     const handleExitEdit = async () => {
-        if (hasUnsavedChanges) await handleManualSave();
+        if (hasUnsavedChanges) {
+             const success = await handleManualSave();
+             if (!success) return; // Don't exit if save failed
+        }
         setIsEditing(false);
         try { await fetch(`/api/playbooks/${id}/unlock`, { method: 'POST' }); } catch (e) { console.error(e); }
     };
@@ -210,7 +216,10 @@ export default function PlaybookPage() {
                 title: "Unsaved Changes",
                 message: "You have unsaved changes. Save before leaving?",
                 confirmText: "Save & Leave",
-                onConfirm: async () => { await handleManualSave(); router.push('/core/playbooks'); },
+                onConfirm: async () => { 
+                    const success = await handleManualSave(); 
+                    if (success) router.push('/core/playbooks'); 
+                },
                 isDestructive: false
             });
         }
@@ -262,8 +271,15 @@ export default function PlaybookPage() {
                 backLabel="Back to Core"
                 isEditing={isEditing}
                 onTitleChange={handleTitleChange}
-                onDescriptionChange={(e) => { setPlaybook({ ...playbook, description: e.target.value }); setHasUnsavedChanges(true); }}
-                onCoverImageChange={(url) => { setPlaybook({ ...playbook, coverImage: url }); setHasUnsavedChanges(true); }}
+                onDescriptionChange={(e) => { 
+                    const val = e.target.value;
+                    setPlaybook(prev => prev ? { ...prev, description: val } : null); 
+                    setHasUnsavedChanges(true); 
+                }}
+                onCoverImageChange={(url) => { 
+                    setPlaybook(prev => prev ? { ...prev, coverImage: url } : null); 
+                    setHasUnsavedChanges(true); 
+                }}
                 readTime={readTime}
                 headerActions={
                     <div className="flex items-center gap-3">
@@ -289,8 +305,7 @@ export default function PlaybookPage() {
                                     return;
                                 }
 
-                                const newPlaybookState = { ...playbook, visibility: newVis };
-                                setPlaybook(newPlaybookState);
+                                setPlaybook(prev => prev ? { ...prev, visibility: newVis } : null);
                                 if (isEditing) {
                                     if(!hasUnsavedChanges) setHasUnsavedChanges(true); 
                                 } else {
@@ -368,15 +383,8 @@ export default function PlaybookPage() {
                                 onClick={async () => {
                                     // Save logic
                                     if (hasUnsavedChanges) {
-                                        setIsSaving(true);
-                                        try {
-                                             await handleManualSave();
-                                        } catch(e) { 
-                                            // logic inside handleManualSave handles error alerts
-                                            setIsSaving(false);
-                                            return; 
-                                        }
-                                        setIsSaving(false);
+                                        const success = await handleManualSave();
+                                        if (!success) return; // Stop if save failed
                                     }
                                     
                                     // Exit logic
