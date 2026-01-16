@@ -341,6 +341,20 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                     color: white !important;
                     transform: translateY(-1px);
                 }
+
+                /* Fix Heading Spacing */
+                .bn-block-content h1, 
+                .bn-block-content h2, 
+                .bn-block-content h3 {
+                    margin-top: 0.5em !important; 
+                    margin-bottom: 0.2em !important;
+                }
+                /* Ensure first block doesn't have extra gap */
+                .bn-editor .bn-block-group > .bn-block:first-child .bn-block-content h1,
+                .bn-editor .bn-block-group > .bn-block:first-child .bn-block-content h2,
+                .bn-editor .bn-block-group > .bn-block:first-child .bn-block-content h3 {
+                    margin-top: 0 !important;
+                }
              `}</style>
         </div>
     );

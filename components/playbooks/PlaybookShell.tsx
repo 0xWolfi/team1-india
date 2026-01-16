@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, X, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, X, Image as ImageIcon, Loader2 } from "lucide-react";
 import { HelpfulWidget } from "./HelpfulWidget";
 import { Footer } from "@/components/website/Footer";
 import { cn } from "@/lib/utils";
 import { TableOfContents } from "./TableOfContents";
+import { ImageCropper } from "../ui/ImageCropper"; // Import Cropper
 
 interface PlaybookShellProps {
     playbook: {
@@ -49,13 +50,37 @@ export function PlaybookShell({
     readTime
 }: PlaybookShellProps) {
 
-    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Cropper & Upload States
+    const [cropperSrc, setCropperSrc] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    // 1. Intercept Selection
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file || !onCoverImageChange) return;
+        if (!file) return;
+
+        // Read file as URL for Cropper
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+             setCropperSrc(reader.result?.toString() || null);
+        });
+        reader.readAsDataURL(file);
         
+        // Reset input to allow re-selecting same file
+        e.target.value = ""; 
+    };
+
+    // 2. Upload Cropped Blob
+    const handleCropComplete = async (croppedBlob: Blob) => {
+        setCropperSrc(null); // Close Cropper
+        setIsUploading(true); // Show Loader
+
+        if (!onCoverImageChange) return;
+
         try {
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append('file', croppedBlob, 'cover.jpg'); 
+            
             const res = await fetch('/api/upload', { method: 'POST', body: formData });
             if (res.ok) {
                 const data = await res.json();
@@ -66,6 +91,8 @@ export function PlaybookShell({
         } catch (err) {
             console.error(err);
             alert("Upload error");
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -77,6 +104,22 @@ export function PlaybookShell({
     return (
         <div className={cn("min-h-screen text-white selection:bg-purple-500/30 font-sans", className)}>
             
+            {/* Cropper Modal */}
+            {cropperSrc && (
+                <ImageCropper 
+                    imageSrc={cropperSrc}
+                    onCropComplete={handleCropComplete}
+                    onCancel={() => setCropperSrc(null)}
+                    aspectRatio={4 / 1} // Flexible banner aspect ratio? Or fixed dimensions? User said "auto croping not letting me crop". A wide banner is usually 3:1 or 4:1. Let's try 4:1 (e.g. 1200x300, 1600x400) or maybe just free? No, user wants it to fit H-[400px].
+                    // Actually, since width is max-w-4xl (896px) and height is fixed 400px, responsive aspect changes.
+                    // But usually for banners we pick a wide ratio. Let's prioritize 16:9 or free?
+                    // User complained about "auto crop".
+                    // Let's use 2.5:1 as a safe banner default, or allow the cropper to be free?
+                    // Re-reading: "auto croping not letting me crop also or zoom". 
+                    // Let's set aspect ratio to ~2.2 (896/400 = 2.24) to match the desktop view.
+                />
+            )}
+
             {/* Top Navigation Bar: Actions Only (Save/Cancel/Back) */}
             <div className="fixed top-0 w-full z-50 px-6 h-16 flex items-center justify-between pointer-events-none">
                  <div /> {/* Spacer */}
@@ -102,8 +145,17 @@ export function PlaybookShell({
                         <div className="relative w-full group">
                             {playbook.coverImage ? (
                                 <div className="relative w-full rounded-2xl overflow-hidden h-[400px] border border-white/10 bg-zinc-900/50 shadow-2xl transition-all hover:border-white/20">
-                                    <img src={playbook.coverImage} className="w-full h-full object-cover" />
+                                    <img src={playbook.coverImage} className={`w-full h-full object-cover transition-opacity duration-300 ${isUploading ? 'opacity-50' : 'opacity-100'}`} />
+                                    
+                                    {/* Uploading Spinner */}
+                                    {isUploading && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-30">
+                                            <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                                        </div>
+                                    )}
+
                                     {/* Remove Cover Button */}
+                                    {!isUploading && (
                                     <button 
                                         onClick={() => onCoverImageChange?.(undefined)}
                                         className="absolute top-4 right-4 w-9 h-9 bg-black/60 hover:bg-red-500/90 rounded-xl text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10 z-30 shadow-lg"
@@ -111,6 +163,7 @@ export function PlaybookShell({
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
+                                    )}
                                     {/* Back Button */}
                                     <div className="absolute top-4 left-4 z-20">
                                         <Link 
@@ -125,22 +178,30 @@ export function PlaybookShell({
                             ) : (
                                 /* Placeholder Box: "Add Cover" - Sleeker Design */
                                 <div className="w-full rounded-2xl h-[280px] border border-dashed border-zinc-800 bg-zinc-900/20 flex flex-col items-center justify-center gap-4 transition-all hover:bg-zinc-900/40 hover:border-zinc-700 relative group/placeholder">
-                                    <div className="absolute top-4 left-4 z-20">
-                                        <Link 
-                                            href={backLink} 
-                                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-800/50 text-white hover:bg-zinc-800 transition-all border border-white/10"
-                                            title={backLabel}
-                                        >
-                                            <ArrowLeft className="w-4 h-4" />
-                                        </Link>
-                                    </div>
-                                    <label className="flex flex-col items-center cursor-pointer group/label p-8">
-                                        <div className="w-14 h-14 rounded-2xl bg-zinc-900 flex items-center justify-center mb-3 group-hover/label:bg-zinc-800 transition-all border border-white/5 shadow-inner">
-                                            <ImageIcon className="w-6 h-6 text-zinc-500 group-hover/label:text-zinc-200 transition-colors" />
-                                        </div>
-                                        <span className="text-sm font-semibold text-zinc-500 group-hover/label:text-zinc-300 transition-colors">Add Cover Image</span>
-                                        <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
-                                    </label>
+                                    
+                                     {/* Uploading Spinner or content */}
+                                    {isUploading ? (
+                                        <Loader2 className="w-8 h-8 text-zinc-500 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <div className="absolute top-4 left-4 z-20">
+                                                <Link 
+                                                    href={backLink} 
+                                                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-800/50 text-white hover:bg-zinc-800 transition-all border border-white/10"
+                                                    title={backLabel}
+                                                >
+                                                    <ArrowLeft className="w-4 h-4" />
+                                                </Link>
+                                            </div>
+                                            <label className="flex flex-col items-center cursor-pointer group/label p-8">
+                                                <div className="w-14 h-14 rounded-2xl bg-zinc-900 flex items-center justify-center mb-3 group-hover/label:bg-zinc-800 transition-all border border-white/5 shadow-inner">
+                                                    <ImageIcon className="w-6 h-6 text-zinc-500 group-hover/label:text-zinc-200 transition-colors" />
+                                                </div>
+                                                <span className="text-sm font-semibold text-zinc-500 group-hover/label:text-zinc-300 transition-colors">Add Cover Image</span>
+                                                <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+                                            </label>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
