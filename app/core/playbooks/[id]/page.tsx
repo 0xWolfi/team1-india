@@ -460,7 +460,6 @@ export default function PlaybookPage() {
                         {MenuAction}
                     </div>
                 }
-            >Header Actions
             >
                 <Editor 
                      initialContent={playbook.body}
