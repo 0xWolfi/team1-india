@@ -215,11 +215,11 @@ model Experiment {
 }
 
 model ExperimentComment {
-  id        String    @id @default(uuid())
-  body      String?
-  parentId  String?
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
+  id          String    @id @default(uuid())
+  body        String?
+  parentId    String?
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
   authorEmail String? // For CommunityMember commenters (since authorId only references Member)
 
   experiment   Experiment @relation(fields: [experimentId], references: [id])
@@ -266,6 +266,26 @@ model AuditLog {
   @@index([resource, resourceId])
   @@index([actorId])
   @@index([action])
+}
+
+model Contribution {
+  id                       String    @id @default(uuid())
+  type                     String // "event-host", "content", "programs", "internal-works"
+  name                     String
+  email                    String
+  status                   String    @default("pending") // pending, approved, rejected
+  eventDate                String?
+  eventLocation            String?
+  contentUrl               String?
+  programId                String?
+  internalWorksDescription String?
+  submittedAt              DateTime  @default(now())
+  deletedAt                DateTime?
+
+  @@index([email])
+  @@index([type])
+  @@index([status])
+  @@index([submittedAt])
 }
 
 // Deleted models: Program, Event

@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
-import { User, LogOut, Settings } from "lucide-react";
+import React, { useState } from "react";
+import { User, LogOut, Settings, Plus } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import { ContributionModal } from "./ContributionModal";
 
 interface MemberHeaderProps {
     user?: {
@@ -14,7 +15,10 @@ interface MemberHeaderProps {
 }
 
 export function MemberHeader({ user }: MemberHeaderProps) {
+    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+
     return (
+        <>
         <header className="mb-6 md:mb-8 border-b border-white/5 pb-6 md:pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
             <div className="flex-1">
                  {/* Mobile Top Row: Title + Actions */}
@@ -54,6 +58,13 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                 <p className="text-zinc-500 font-medium text-xs md:text-sm mt-1 md:mt-2 max-w-lg leading-relaxed">
                     Welcome back, <span className="text-white">{user?.name || 'Member'}</span>.
                 </p>
+                <button
+                    onClick={() => setIsContributionModalOpen(true)}
+                    className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+                >
+                    <Plus className="w-4 h-4" />
+                    Submit your contributions
+                </button>
             </div>
             
             {/* Desktop Actions (Hidden on mobile) */}
@@ -83,5 +94,12 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                 </div>
             </div>
         </header>
+
+        <ContributionModal
+            isOpen={isContributionModalOpen}
+            onClose={() => setIsContributionModalOpen(false)}
+            user={user}
+        />
+        </>
     );
 }
