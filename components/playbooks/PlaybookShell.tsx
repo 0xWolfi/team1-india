@@ -2,8 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Clock, Calendar, Hash, ArrowUpRight } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { ArrowLeft, ArrowUpRight, X, Image as ImageIcon } from "lucide-react";
 import { HelpfulWidget } from "./HelpfulWidget";
 import { Footer } from "@/components/website/Footer";
 import { cn } from "@/lib/utils";
@@ -24,9 +23,13 @@ interface PlaybookShellProps {
     backLabel?: string;
     children: React.ReactNode;
     sidebarActions?: React.ReactNode; 
-    headerActions?: React.ReactNode; // For edit buttons etc.
-    className?: string; // Outer container class
-    contentClassName?: string; // Inner container class (for padding overrides)
+    headerActions?: React.ReactNode; 
+    className?: string; 
+    contentClassName?: string;
+    isEditing?: boolean;
+    onTitleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onDescriptionChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+    onCoverImageChange?: (url: string | undefined) => void;
 }
 
 export function PlaybookShell({ 
@@ -37,8 +40,32 @@ export function PlaybookShell({
     sidebarActions, 
     headerActions,
     className,
-    contentClassName
+    contentClassName,
+    isEditing = false,
+    onTitleChange,
+    onDescriptionChange,
+    onCoverImageChange
 }: PlaybookShellProps) {
+
+    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !onCoverImageChange) return;
+        
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+            if (res.ok) {
+                const data = await res.json();
+                onCoverImageChange(data.url);
+            } else {
+                alert("Upload failed");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Upload error");
+        }
+    };
 
     const handleCopyMarkdown = () => {
         const content = typeof playbook.body === 'string' ? playbook.body : JSON.stringify(playbook.body, null, 2);
@@ -48,7 +75,7 @@ export function PlaybookShell({
     return (
         <div className={cn("min-h-screen text-white selection:bg-purple-500/30 font-sans", className)}>
             
-            {/* Top Navigation Bar (Transparent, for Action Buttons only) */}
+            {/* Top Navigation Bar: Actions Only (Save/Cancel/Back) */}
             <div className="fixed top-0 w-full z-50 px-6 h-16 flex items-center justify-between pointer-events-none">
                  <div /> {/* Spacer */}
                  {headerActions && (
@@ -58,127 +85,198 @@ export function PlaybookShell({
                  )}
             </div>
 
-            <div className={cn("max-w-[1400px] mx-auto px-6 pt-24 pb-12", contentClassName)}> {/* Increased max-w for 5 cols */}
-                {/* Banner & Back Button Container */}
-                <div className="relative w-full rounded-3xl overflow-hidden min-h-[400px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
-                    
-                    {/* Back Button (Circular) */}
-                    <div className="absolute top-6 left-6 z-20">
-                        <Link 
-                            href={backLink} 
-                            className="w-12 h-12 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-all border border-white/10 backdrop-blur-md group/back"
-                            title={backLabel}
-                        >
-                            <ArrowLeft className="w-5 h-5 group-hover/back:-translate-x-0.5 transition-transform" />
-                        </Link>
+            <div className={cn("max-w-[1400px] mx-auto px-6 pt-24 pb-12", contentClassName)}>
+                
+                {/* ==================================================================================
+                    HEADER AREA: Banner + Title + Description
+                    Strictly separated for View vs Edit to prevent Duplication
+                   ================================================================================== */}
+                
+                {isEditing ? (
+                    // ------------------ EDIT MODE HEADER ------------------
+                    <div className="space-y-8 mb-16 animate-in fade-in duration-300">
+                        
+                        {/* 1. Editable Cover Area */}
+                        <div className="relative w-full group">
+                            {playbook.coverImage ? (
+                                <div className="relative w-full rounded-3xl overflow-hidden min-h-[400px] border border-white/10 bg-zinc-900/50 shadow-2xl">
+                                    <img src={playbook.coverImage} className="w-full h-full object-cover" />
+                                    {/* Remove Cover Button */}
+                                    <button 
+                                        onClick={() => onCoverImageChange?.(undefined)}
+                                        className="absolute top-6 right-6 w-10 h-10 bg-black/50 hover:bg-red-500/80 rounded-full text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10 z-30"
+                                        title="Remove Cover"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                    {/* Back Button */}
+                                    <div className="absolute top-6 left-6 z-20">
+                                        <Link 
+                                            href={backLink} 
+                                            className="w-12 h-12 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-all border border-white/10 backdrop-blur-md"
+                                            title={backLabel}
+                                        >
+                                            <ArrowLeft className="w-5 h-5" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            ) : (
+                                /* Placeholder Box: "Add Cover" */
+                                <div className="w-full rounded-3xl min-h-[400px] border-2 border-dashed border-zinc-800 bg-zinc-900/20 flex flex-col items-center justify-center gap-4 transition-colors hover:border-zinc-700 relative">
+                                    <div className="absolute top-6 left-6 z-20">
+                                        <Link 
+                                            href={backLink} 
+                                            className="w-12 h-12 flex items-center justify-center rounded-full bg-zinc-800/50 text-white hover:bg-zinc-800 transition-all border border-white/10"
+                                            title={backLabel}
+                                        >
+                                            <ArrowLeft className="w-5 h-5" />
+                                        </Link>
+                                    </div>
+                                    <label className="flex flex-col items-center cursor-pointer group/label p-8">
+                                        <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mb-4 group-hover/label:bg-zinc-700 transition-colors border border-white/5">
+                                            <ImageIcon className="w-8 h-8 text-zinc-400 group-hover/label:text-white" />
+                                        </div>
+                                        <span className="text-lg font-medium text-zinc-400 group-hover/label:text-zinc-200">Add Cover Image</span>
+                                        <span className="text-sm text-zinc-600 mt-2">Recommended: 1920x600px</span>
+                                        <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+                                    </label>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 2. Editable Title & Description */}
+                        <div className="max-w-4xl space-y-4">
+                            <input 
+                                value={playbook.title}
+                                onChange={onTitleChange}
+                                placeholder="Untitled Playbook"
+                                className="w-full bg-transparent text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1] border-none focus:ring-0 placeholder:text-zinc-700 px-0 outline-none"
+                            />
+                            <textarea 
+                                value={playbook.description || ''}
+                                onChange={onDescriptionChange}
+                                placeholder="Add a brief description..."
+                                className="w-full bg-transparent text-xl md:text-2xl text-zinc-400 font-medium leading-relaxed border-none focus:ring-0 placeholder:text-zinc-700 px-0 resize-none outline-none"
+                                rows={1}
+                                onInput={(e) => {
+                                    e.currentTarget.style.height = 'auto';
+                                    e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+                                }}
+                            />
+                        </div>
+
                     </div>
+                ) : (
+                    // ------------------ VIEW MODE HEADER ------------------
+                    <div className="space-y-6 mb-16 animate-in fade-in duration-500">
+                        {/* 1. View Banner */}
+                        <div className="relative w-full rounded-3xl overflow-hidden min-h-[400px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
+                            <div className="absolute top-6 left-6 z-20">
+                                <Link 
+                                    href={backLink} 
+                                    className="w-12 h-12 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-all border border-white/10 backdrop-blur-md group/back"
+                                    title={backLabel}
+                                >
+                                    <ArrowLeft className="w-5 h-5 group-hover/back:-translate-x-0.5 transition-transform" />
+                                </Link>
+                            </div>
+                            <div className="absolute inset-0 z-0">
+                                {playbook.coverImage ? (
+                                    <>
+                                        <img src={playbook.coverImage} className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/20" /> 
+                                    </>
+                                ) : (
+                                    <div className="w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black" />
+                                )}
+                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+                            </div>
+                        </div>
 
-                    {/* Background: Image or Subtle Gradient */}
-                    <div className="absolute inset-0 z-0">
-                        {playbook.coverImage ? (
-                            <>
-                                <img src={playbook.coverImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                <div className="absolute inset-0 bg-black/20" /> 
-                            </>
-                        ) : (
-                             // Theme-Aligned Gradient
-                            <div className="w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black" />
-                        )}
-                         {/* Noise Texture */}
-                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+                        {/* 2. View Title & Description */}
+                        <div className="max-w-4xl space-y-6">
+                            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
+                                {playbook.title}
+                            </h1>
+                            {playbook.description && (
+                                <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl leading-relaxed font-medium">
+                                    {playbook.description}
+                                </p>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Title & Description (Left Aligned) */}
-                <div className="max-w-4xl space-y-6 mb-24 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
-                        {playbook.title}
-                    </h1>
-                    {playbook.description && (
-                        <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl leading-relaxed font-medium">
-                            {playbook.description}
-                        </p>
-                    )}
-                </div>
 
-                {/* Main Content Layout (5 Columns) */}
+                {/* ==================================================================================
+                    MAIN CONTENT GRID
+                   ================================================================================== */}
+                
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 relative z-10">
                     
-                    {/* Left Column (1/5): Table of Contents */}
-                    <div className="lg:col-span-1 hidden lg:block">
+                    {/* Left Column: TOC (Always Visible) */}
+                    <div className="hidden lg:block lg:col-span-1">
                         <TableOfContents />
                     </div>
 
-                    {/* Middle Column (3/5): content */}
-                    <div className="lg:col-span-3 space-y-16">
-                         {/* Editor Canvas */}
-                        <div className="min-h-[500px] prose prose-invert prose-lg max-w-none">
+                    {/* Middle Column: Content */}
+                    <div className={`${isEditing ? 'lg:col-span-4' : 'lg:col-span-3'} space-y-16`}>
+                         <div className="min-h-[500px] prose prose-invert prose-lg max-w-none">
                             {children}
                         </div>
 
-                        {/* Helpful Widget (Footer of Content) */}
-                        <div className="pt-12 border-t border-white/5">
-                             <HelpfulWidget onCopyMarkdown={handleCopyMarkdown} />
-                        </div>
+                        {/* Footer Widget: View Only */}
+                        {!isEditing && (
+                            <div className="pt-12 border-t border-white/5">
+                                 <HelpfulWidget onCopyMarkdown={handleCopyMarkdown} />
+                            </div>
+                        )}
                     </div>
 
-                    {/* Right Column (1/5): Sidebar Metadata */}
-                    <div className="lg:col-span-1 space-y-8 h-fit sticky top-32">
-                        
-                        {/* Author Info */}
-                        <div className="space-y-2">
-                            <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Written by</h3>
-                            <div className="flex items-center gap-2">
-                                <div className="text-sm font-medium text-zinc-200">
-                                    {playbook.createdBy?.name || playbook.createdBy?.email?.split('@')[0] || 'Team 1'}
+                    {/* Right Column: Metadata (View Only) */}
+                    {!isEditing && (
+                        <div className="lg:col-span-1 space-y-8 h-fit sticky top-32">
+                            
+                            <div className="space-y-2">
+                                <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Written by</h3>
+                                <div className="flex items-center gap-2">
+                                    <div className="text-sm font-medium text-zinc-200">
+                                        {playbook.createdBy?.name || playbook.createdBy?.email?.split('@')[0] || 'Team 1'}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Divider */}
-                        <div className="h-px bg-white/5 w-full" />
+                            <div className="h-px bg-white/5 w-full" />
 
-                        {/* Date Info */}
-                        <div className="space-y-2">
-                            <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">On</h3>
-                            <div className="text-sm font-medium text-zinc-200">
-                                 {new Date(playbook.createdAt || playbook.updatedAt).toLocaleDateString(undefined, {
-                                    weekday: 'short',
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                 })}
+                            <div className="space-y-2">
+                                <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">On</h3>
+                                <div className="text-sm font-medium text-zinc-200">
+                                     {new Date(playbook.createdAt || playbook.updatedAt).toLocaleDateString(undefined, {
+                                        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+                                     })}
+                                </div>
+                            </div>
+ 
+                            <div className="h-px bg-white/5 w-full" />
+
+                            <div className="space-y-2">
+                                <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Need Help?</h3>
+                                <a href="mailto:support@team1.india" className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors group">
+                                    Reach out to the team <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                </a>
+                            </div>
+                            
+                            <div className="h-px bg-white/5 w-full" />
+
+                            <div className="space-y-4">
+                                {sidebarActions}
                             </div>
                         </div>
-
-                        {/* Divider */}
-                        <div className="h-px bg-white/5 w-full" />
-
-                        {/* Need Help Info */}
-                        <div className="space-y-2">
-                            <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Need Help?</h3>
-                            <a 
-                                href="mailto:support@team1.india" 
-                                className="flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300 transition-colors group"
-                            >
-                                Reach out to the team 
-                                <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                            </a>
-                        </div>
-                        
-                         {/* Divider */}
-                         <div className="h-px bg-white/5 w-full" />
-
-                        {/* Sidebar Actions */}
-                        <div className="space-y-4">
-                            {sidebarActions}
-                        </div>
-
-                    </div>
+                    )}
                 </div>
             </div>
             
-            <Footer />
+            {!isEditing && <Footer />}
         </div>
     );
 }

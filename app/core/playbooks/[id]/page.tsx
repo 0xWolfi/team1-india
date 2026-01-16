@@ -281,6 +281,16 @@ export default function PlaybookPage() {
                 playbook={playbook}
                 backLink="/core/playbooks"
                 backLabel="Back to Core"
+                isEditing={isEditing}
+                onTitleChange={handleTitleChange}
+                onDescriptionChange={(e) => {
+                    setPlaybook({ ...playbook, description: e.target.value });
+                    setHasUnsavedChanges(true);
+                }}
+                onCoverImageChange={(url) => {
+                    setPlaybook({ ...playbook, coverImage: url });
+                    setHasUnsavedChanges(true);
+                }}
                 headerActions={
                     <div className="flex items-center gap-2">
                      {/* Visibility Toggle */}
@@ -482,156 +492,6 @@ export default function PlaybookPage() {
                   </div>
                 } // End Header Actions
             >
-                {/* Content Area Inside Shell */}
-                <div className="mb-8">
-                    {isEditing ? (
-                         <div className="flex-1 space-y-4">
-                             {/* Cover Image Input */}
-                             {playbook.coverImage ? (
-                                 <div className="relative w-full h-48 rounded-xl overflow-hidden group border border-white/10">
-                                     <img src={playbook.coverImage} className="w-full h-full object-cover" />
-                                     <button 
-                                         onClick={() => {
-                                             setPlaybook({ ...playbook, coverImage: undefined });
-                                             setHasUnsavedChanges(true);
-                                         }}
-                                         className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-red-500/50 rounded-full text-white transition-colors backdrop-blur-md opacity-0 group-hover:opacity-100"
-                                     >
-                                         <X className="w-4 h-4" />
-                                     </button>
-                                 </div>
-                             ) : (
-                                 <div className="w-full">
-                                    <label className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-dashed border-zinc-700 rounded-xl cursor-pointer hover:bg-zinc-800 hover:border-zinc-600 transition-all w-fit">
-                                        <ImageIcon className="w-4 h-4 text-zinc-400" />
-                                        <span className="text-sm text-zinc-400 font-medium">Add Cover Image</span>
-                                        <input 
-                                            type="file" 
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={async (e) => {
-                                                const file = e.target.files?.[0];
-                                                if (!file) return;
-
-                                                // Check file size before uploading (4MB limit to avoid 413 error)
-                                                const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
-                                                if (file.size > MAX_FILE_SIZE) {
-                                                    setToast({
-                                                        message: `File size exceeds 4MB limit. Please choose a smaller image.`,
-                                                        type: 'error',
-                                                        visible: true
-                                                    });
-                                                    // Reset input
-                                                    e.target.value = '';
-                                                    return;
-                                                }
-
-                                                // Check file type
-                                                if (!file.type.startsWith('image/')) {
-                                                    setToast({
-                                                        message: 'Only image files are allowed.',
-                                                        type: 'error',
-                                                        visible: true
-                                                    });
-                                                    e.target.value = '';
-                                                    return;
-                                                }
-
-                                                try {
-                                                    const formData = new FormData();
-                                                    formData.append('file', file);
-
-                                                    const res = await fetch('/api/upload', {
-                                                        method: 'POST',
-                                                        body: formData
-                                                    });
-
-                                                    if (res.ok) {
-                                                        const data = await res.json();
-                                                        setPlaybook({ ...playbook, coverImage: data.url });
-                                                        setHasUnsavedChanges(true);
-                                                        setToast({
-                                                            message: 'Cover image uploaded successfully!',
-                                                            type: 'success',
-                                                            visible: true
-                                                        });
-                                                    } else {
-                                                        const errorText = await res.text();
-                                                        setToast({
-                                                            message: errorText || 'Upload failed. Please try again.',
-                                                            type: 'error',
-                                                            visible: true
-                                                        });
-                                                    }
-                                                } catch (err) {
-                                                    console.error(err);
-                                                    setToast({
-                                                        message: 'Upload failed. Please check your connection and try again.',
-                                                        type: 'error',
-                                                        visible: true
-                                                    });
-                                                }
-                                            }}
-                                        />
-                                    </label>
-                                 </div>
-                             )}
-
-                             <div className="space-y-2">
-                                 <input 
-                                     value={playbook.title}
-                                     onChange={handleTitleChange}
-                                     className="text-4xl font-bold bg-transparent text-white border-none focus:ring-0 placeholder:text-zinc-600 w-full px-0"
-                                     placeholder="Untitled Playbook"
-                                 />
-                                 <textarea 
-                                     value={playbook.description || ''}
-                                     onChange={(e) => {
-                                         setPlaybook({ ...playbook, description: e.target.value });
-                                         setHasUnsavedChanges(true);
-                                     }}
-                                     className="text-lg bg-transparent text-zinc-400 border-none focus:ring-0 placeholder:text-zinc-700 w-full px-0 resize-none h-auto"
-                                     placeholder="Add a brief description..."
-                                     rows={1}
-                                     onInput={(e) => {
-                                         e.currentTarget.style.height = 'auto';
-                                         e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
-                                     }}
-                                 />
-                             </div>
-                         </div>
-                     ) : (
-                         // VIEW MODE: Title/Desc handled by Shell Banners, so we might want to hide them here or let Shell handle them?
-                         // The Shell handles reading playbook.title/description.
-                         // So in View mode we probably don't need to render them again here.
-                         // However, the Shell Banner is fixed width. If we want editing to happen IN PLACE,
-                         // we need to coordinate.
-                         //
-                         // CURRENT APPROACH: Shell renders Title in Banner.
-                         // Editing Mode switches to rendering Inputs HERE.
-                         // View Mode: Shell renders Title.
-                         
-                         // Wait, if I'm editing, the Shell still shows the Banner?
-                         // No, the Shell takes `playbook` prop and renders the Banner.
-                         // If I want to Edit the Title, I need to either:
-                         // 1. Tell Shell I am editing and pass inputs to it.
-                         // 2. Hide Shell Banner when editing and show custom inputs here.
-                         // 3. Or just let Shell display the "Saved" title and only edit Body here?
-                         //
-                         // User wants: "keep banner at top inside it back button and have padding... on left side keep documentation"
-                         // This implies the standard view.
-                         // For Core Edit, maybe we just use the inputs here and ignore the Shell banner?
-                         // Or we pass `isEditing` to Shell and let it handle inputs?
-                         //
-                         // Let's stick to: Shell always renders the "View" state of Title.
-                         // When Editing, we hide the Shell's Title area? Shell doesn't support hiding yet.
-                         //
-                         // Let's modify Shell to accept `titleOverride` or `isEditing` properly later if needed.
-                         // For now, in Edit mode, we render inputs here. In View mode, we render NOTHING here because Shell handles it.
-                         null
-                     )}
-                </div>
-
                 <Editor 
                      initialContent={playbook.body}
                      editable={isEditing} 
