@@ -143,7 +143,7 @@ export function PlaybookShell({
                         initial={{ y: -100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: -100, opacity: 0 }}
-                        className="fixed top-6 left-1/2 -translate-x-1/2 w-auto max-w-2xl bg-black/80 backdrop-blur-xl rounded-xl border border-white/10 z-50 flex items-center justify-between py-2 pl-2 pr-4 shadow-2xl gap-6 ring-1 ring-white/5"
+                        className="fixed top-4 left-4 w-auto max-w-lg bg-black/80 backdrop-blur-xl rounded-xl border border-white/10 z-50 flex items-center justify-between py-2 pl-2 pr-4 shadow-2xl gap-6 ring-1 ring-white/5"
                     >
                          <div className="flex items-center gap-3">
                             <Link 
