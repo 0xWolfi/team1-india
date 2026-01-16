@@ -27,29 +27,7 @@ interface PlaybookDetail {
 }
 
 // Helper to calculate read time from BlockNote blocks
-const calculateReadTime = (body: any): string => {
-    try {
-        const blocks = typeof body === 'string' ? JSON.parse(body) : body;
-        if (!Array.isArray(blocks)) return "1 min read";
-        
-        // Extract text from blocks
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let text = "";
-        blocks.forEach((block: any) => {
-            if (block.content && Array.isArray(block.content)) {
-                block.content.forEach((c: any) => {
-                    if (c.type === 'text') text += c.text + " ";
-                });
-            }
-        });
-        
-        const words = text.trim().split(/\s+/).length;
-        const minutes = Math.ceil(words / 200); // 200 WPM
-        return `${minutes} min read`;
-    } catch (e) {
-        return "1 min read";
-    }
-};
+
 
 export default function PlaybookPage() {
     const { id } = useParams();
@@ -63,7 +41,6 @@ export default function PlaybookPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [isLockedByOther, setIsLockedByOther] = useState(false);
     const [lockOwner, setLockOwner] = useState<string | null>(null);
-    const [readTime, setReadTime] = useState("1 min read"); // Read Time State
     
     const [toast, setToast] = useState<{ message: string; type: ToastType; visible: boolean }>({
         message: '', type: 'info', visible: false
@@ -85,7 +62,6 @@ export default function PlaybookPage() {
                 if (typeof data.body === 'string') bodyStr = data.body;
                 
                 setPlaybook({ ...data, body: bodyStr });
-                setReadTime(calculateReadTime(data.body)); // Calc Read Time
 
                 // ... (Lock logic)
                 const lockedByOtherUser = data.lockedBy && data.lockedBy.email !== session?.user?.email;
@@ -162,8 +138,6 @@ export default function PlaybookPage() {
             const updatedPlaybook = await res.json();
             // Use functional update to ensure we don't clobber other pending state
             setPlaybook(prev => ({ ...updatedPlaybook, body: JSON.stringify(updatedPlaybook.body) }));
-            setReadTime(calculateReadTime(updatedPlaybook.body));
-            
             setHasUnsavedChanges(false);
             
             // Celebration!
@@ -280,7 +254,6 @@ export default function PlaybookPage() {
                     setPlaybook(prev => prev ? { ...prev, coverImage: url } : null); 
                     setHasUnsavedChanges(true); 
                 }}
-                readTime={readTime}
                 headerActions={
                     <div className="flex items-center gap-3">
                      
