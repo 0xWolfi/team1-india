@@ -60,16 +60,16 @@ export function PlaybookShell({
 
             <div className={cn("max-w-[1400px] mx-auto px-6 pt-24 pb-12", contentClassName)}> {/* Increased max-w for 5 cols */}
                 {/* Banner & Back Button Container */}
-                <div className="relative w-full rounded-3xl overflow-hidden min-h-[300px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
+                <div className="relative w-full rounded-3xl overflow-hidden min-h-[400px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
                     
-                    {/* Back Button (Absolute Top Left) */}
+                    {/* Back Button (Circular) */}
                     <div className="absolute top-6 left-6 z-20">
                         <Link 
                             href={backLink} 
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 text-white text-sm font-medium hover:bg-black/40 transition-all border border-white/10 backdrop-blur-md group/back"
+                            className="w-12 h-12 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-all border border-white/10 backdrop-blur-md group/back"
+                            title={backLabel}
                         >
-                            <ArrowLeft className="w-4 h-4 group-hover/back:-translate-x-0.5 transition-transform" />
-                            {backLabel}
+                            <ArrowLeft className="w-5 h-5 group-hover/back:-translate-x-0.5 transition-transform" />
                         </Link>
                     </div>
 
@@ -89,13 +89,13 @@ export function PlaybookShell({
                     </div>
                 </div>
 
-                {/* Title & Description (Full Width) */}
-                <div className="max-w-4xl mx-auto text-center space-y-6 mb-24 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+                {/* Title & Description (Left Aligned) */}
+                <div className="max-w-4xl space-y-6 mb-24 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
                         {playbook.title}
                     </h1>
                     {playbook.description && (
-                        <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed font-medium">
+                        <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl leading-relaxed font-medium">
                             {playbook.description}
                         </p>
                     )}

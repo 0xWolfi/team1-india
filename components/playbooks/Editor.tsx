@@ -143,6 +143,8 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                 editable={editable}
                 theme={customDarkTheme}
                 className="min-h-[500px]" 
+                slashMenu={false}
+                sideMenu={false}
              />
              <style jsx global>{`
                 .bn-block-content[data-content-type="heading"] {
