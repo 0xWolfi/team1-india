@@ -148,14 +148,18 @@ export function PlaybookShell({
                         className="fixed top-4 left-4 w-auto max-w-4xl bg-black/80 backdrop-blur-xl rounded-xl border border-white/10 z-50 flex items-center justify-between py-2 pl-2 pr-4 shadow-2xl gap-6 ring-1 ring-white/5"
                     >
                          <div className="flex items-center gap-3">
-                            <Link 
-                                href={backLink} 
-                                className="w-9 h-9 flex items-center justify-center rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all border border-white/5"
-                                title={backLabel}
-                            >
-                                <ArrowLeft className="w-4 h-4" />
-                            </Link>
-                            <span className="w-px h-4 bg-white/10" />
+                            {backLink.startsWith('/core') && (
+                                <>
+                                    <Link 
+                                        href={backLink} 
+                                        className="w-9 h-9 flex items-center justify-center rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all border border-white/5"
+                                        title={backLabel}
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                    </Link>
+                                    <span className="w-px h-4 bg-white/10" />
+                                </>
+                            )}
                             <h3 className="font-medium text-zinc-200 text-sm line-clamp-1 max-w-[200px] md:max-w-xs">
                                 {playbook.title}
                             </h3>
@@ -393,7 +397,21 @@ export function PlaybookShell({
                              {/* Divider after Body */}
                              <div className="w-full h-px bg-white/10" />
 
-                             {/* 1. Metadata (Left: By, Right: On) */}
+                             {/* 1. Share or Remix (Plain Text style) */}
+                             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 border-b border-white/5">
+                                <div className="space-y-0.5">
+                                    <h3 className="text-sm font-semibold text-white">Share or Remix</h3>
+                                    <p className="text-xs text-zinc-400">Copy the markdown source for this playbook.</p>
+                                </div>
+                                <button 
+                                    onClick={handleCopyMarkdown}
+                                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium transition-all"
+                                >
+                                    <Copy className="w-4 h-4" /> Copy Markdown
+                                </button>
+                             </div>
+
+                             {/* 2. Metadata (Left: By, Right: On) */}
                              <div className="flex items-center justify-between text-sm py-4 border-b border-white/5">
                                 <div className="flex items-center gap-2">
                                      <span className="text-zinc-500 font-medium">Written by</span>
@@ -411,22 +429,8 @@ export function PlaybookShell({
                                 </div>
                              </div>
 
-                             {/* 2. Copy as Markdown Box */}
-                             <div className="bg-zinc-900/40 rounded-xl border border-white/5 p-6 flex items-center justify-between group hover:border-white/10 transition-colors">
-                                <div className="space-y-1">
-                                    <h3 className="text-sm font-semibold text-white">Share or Remix</h3>
-                                    <p className="text-xs text-zinc-400">Copy the markdown source for this playbook.</p>
-                                </div>
-                                <button 
-                                    onClick={handleCopyMarkdown}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white text-sm font-medium transition-all"
-                                >
-                                    <Copy className="w-4 h-4" /> Copy Markdown
-                                </button>
-                             </div>
-
                              {/* 3. Feedback & Support Row */}
-                             <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-2">
+                             <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-4">
                                 {/* Left: Feedback */}
                                 <HelpfulWidget />
 
