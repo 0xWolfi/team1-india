@@ -234,6 +234,53 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                   background: #333; 
                   border-radius: 4px;
                 }
+
+                /* Glassy Slash Menu & Suggestion Menus */
+                .mantine-Menu-dropdown, 
+                .bn-suggestion-menu,
+                .bn-slash-menu {
+                   background: rgba(24, 24, 27, 0.4) !important;
+                   backdrop-filter: blur(16px) saturate(180%) !important;
+                   -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+                   border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                   border-radius: 16px !important;
+                   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+                   padding: 6px !important;
+                   overflow: hidden !important;
+                }
+                
+                /* Items Polish */
+                .mantine-Menu-item,
+                .bn-suggestion-item {
+                   border-radius: 8px !important;
+                   color: #a1a1aa !important; /* Zinc-400 */
+                   transition: all 0.15s ease !important;
+                   margin-bottom: 2px !important;
+                   padding: 8px 12px !important;
+                   font-size: 0.85rem !important;
+                   font-weight: 500 !important;
+                }
+
+                /* Hover / Selected State */
+                .mantine-Menu-item[data-hovered],
+                .mantine-Menu-item:hover,
+                .bn-suggestion-item[aria-selected="true"],
+                .bn-suggestion-item[data-hovered] {
+                   background: rgba(255, 255, 255, 0.08) !important;
+                   color: #fff !important;
+                   transform: translateX(2px);
+                }
+
+                /* Icons in menu */
+                .mantine-Menu-item .mantine-Menu-itemIcon,
+                .bn-suggestion-item-icon {
+                    opacity: 0.7;
+                }
+                .mantine-Menu-item[data-hovered] .mantine-Menu-itemIcon,
+                .bn-suggestion-item[aria-selected="true"] .bn-suggestion-item-icon {
+                    opacity: 1;
+                    color: #fff !important;
+                }
              `}</style>
         </div>
     );

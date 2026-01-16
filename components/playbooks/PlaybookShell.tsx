@@ -94,69 +94,68 @@ export function PlaybookShell({
                 
                 {isEditing ? (
                     // ------------------ EDIT MODE HEADER ------------------
-                    <div className="space-y-8 mb-16 animate-in fade-in duration-300">
+                    <div className="space-y-6 mb-8 animate-in fade-in duration-300">
                         
                         {/* 1. Editable Cover Area */}
                         <div className="relative w-full group">
                             {playbook.coverImage ? (
-                                <div className="relative w-full rounded-3xl overflow-hidden min-h-[400px] border border-white/10 bg-zinc-900/50 shadow-2xl">
+                                <div className="relative w-full rounded-2xl overflow-hidden min-h-[350px] border border-white/10 bg-zinc-900/50 shadow-2xl transition-all hover:border-white/20">
                                     <img src={playbook.coverImage} className="w-full h-full object-cover" />
                                     {/* Remove Cover Button */}
                                     <button 
                                         onClick={() => onCoverImageChange?.(undefined)}
-                                        className="absolute top-6 right-6 w-10 h-10 bg-black/50 hover:bg-red-500/80 rounded-full text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10 z-30"
+                                        className="absolute top-4 right-4 w-9 h-9 bg-black/60 hover:bg-red-500/90 rounded-xl text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10 z-30 shadow-lg"
                                         title="Remove Cover"
                                     >
-                                        <X className="w-5 h-5" />
+                                        <X className="w-4 h-4" />
                                     </button>
                                     {/* Back Button */}
-                                    <div className="absolute top-6 left-6 z-20">
+                                    <div className="absolute top-4 left-4 z-20">
                                         <Link 
                                             href={backLink} 
-                                            className="w-12 h-12 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-all border border-white/10 backdrop-blur-md"
+                                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/40 text-white hover:bg-black/60 transition-all border border-white/10 backdrop-blur-md"
                                             title={backLabel}
                                         >
-                                            <ArrowLeft className="w-5 h-5" />
+                                            <ArrowLeft className="w-4 h-4" />
                                         </Link>
                                     </div>
                                 </div>
                             ) : (
-                                /* Placeholder Box: "Add Cover" */
-                                <div className="w-full rounded-3xl min-h-[400px] border-2 border-dashed border-zinc-800 bg-zinc-900/20 flex flex-col items-center justify-center gap-4 transition-colors hover:border-zinc-700 relative">
-                                    <div className="absolute top-6 left-6 z-20">
+                                /* Placeholder Box: "Add Cover" - Sleeker Design */
+                                <div className="w-full rounded-2xl h-[280px] border border-dashed border-zinc-800 bg-zinc-900/20 flex flex-col items-center justify-center gap-4 transition-all hover:bg-zinc-900/40 hover:border-zinc-700 relative group/placeholder">
+                                    <div className="absolute top-4 left-4 z-20">
                                         <Link 
                                             href={backLink} 
-                                            className="w-12 h-12 flex items-center justify-center rounded-full bg-zinc-800/50 text-white hover:bg-zinc-800 transition-all border border-white/10"
+                                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-800/50 text-white hover:bg-zinc-800 transition-all border border-white/10"
                                             title={backLabel}
                                         >
-                                            <ArrowLeft className="w-5 h-5" />
+                                            <ArrowLeft className="w-4 h-4" />
                                         </Link>
                                     </div>
                                     <label className="flex flex-col items-center cursor-pointer group/label p-8">
-                                        <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mb-4 group-hover/label:bg-zinc-700 transition-colors border border-white/5">
-                                            <ImageIcon className="w-8 h-8 text-zinc-400 group-hover/label:text-white" />
+                                        <div className="w-14 h-14 rounded-2xl bg-zinc-900 flex items-center justify-center mb-3 group-hover/label:bg-zinc-800 transition-all border border-white/5 shadow-inner">
+                                            <ImageIcon className="w-6 h-6 text-zinc-500 group-hover/label:text-zinc-200 transition-colors" />
                                         </div>
-                                        <span className="text-lg font-medium text-zinc-400 group-hover/label:text-zinc-200">Add Cover Image</span>
-                                        <span className="text-sm text-zinc-600 mt-2">Recommended: 1920x600px</span>
+                                        <span className="text-sm font-semibold text-zinc-500 group-hover/label:text-zinc-300 transition-colors">Add Cover Image</span>
                                         <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
                                     </label>
                                 </div>
                             )}
                         </div>
 
-                        {/* 2. Editable Title & Description */}
-                        <div className="max-w-4xl space-y-4">
+                        {/* 2. Editable Title & Description - Tighter & Aligned */}
+                        <div className="max-w-4xl space-y-2 px-1">
                             <input 
                                 value={playbook.title}
                                 onChange={onTitleChange}
                                 placeholder="Untitled Playbook"
-                                className="w-full bg-transparent text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1] border-none focus:ring-0 placeholder:text-zinc-700 px-0 outline-none"
+                                className="w-full bg-transparent text-5xl md:text-6xl font-bold tracking-tight text-white leading-tight border-none focus:ring-0 placeholder:text-zinc-800 px-0 outline-none"
                             />
                             <textarea 
                                 value={playbook.description || ''}
                                 onChange={onDescriptionChange}
                                 placeholder="Add a brief description..."
-                                className="w-full bg-transparent text-xl md:text-2xl text-zinc-400 font-medium leading-relaxed border-none focus:ring-0 placeholder:text-zinc-700 px-0 resize-none outline-none"
+                                className="w-full bg-transparent text-lg md:text-xl text-zinc-400 font-medium leading-relaxed border-none focus:ring-0 placeholder:text-zinc-800 px-0 resize-none outline-none min-h-[40px]"
                                 rows={1}
                                 onInput={(e) => {
                                     e.currentTarget.style.height = 'auto';
@@ -214,14 +213,16 @@ export function PlaybookShell({
                 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 relative z-10">
                     
-                    {/* Left Column: TOC (Always Visible) */}
-                    <div className="hidden lg:block lg:col-span-1">
-                        <TableOfContents />
-                    </div>
+                    {/* Left Column: TOC (View Only) */}
+                    {!isEditing && (
+                        <div className="hidden lg:block lg:col-span-1">
+                            <TableOfContents />
+                        </div>
+                    )}
 
                     {/* Middle Column: Content */}
-                    <div className={`${isEditing ? 'lg:col-span-4' : 'lg:col-span-3'} space-y-16`}>
-                         <div className="min-h-[500px] prose prose-invert prose-lg max-w-none">
+                    <div className={`${isEditing ? 'lg:col-span-5' : 'lg:col-span-3'} space-y-16`}>
+                         <div className={`min-h-[500px] prose prose-invert prose-lg max-w-none ${isEditing ? 'max-w-4xl' : ''}`}>
                             {children}
                         </div>
 
