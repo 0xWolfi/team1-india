@@ -317,6 +317,30 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                     opacity: 1;
                     color: #fff !important;
                 }
+
+                /* Floating Text Toolbar (Popover) */
+                .mantine-Popover-dropdown {
+                    background: rgba(24, 24, 27, 0.85) !important;
+                    backdrop-filter: blur(16px) saturate(180%) !important;
+                    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+                    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                    border-radius: 12px !important;
+                    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6) !important;
+                    padding: 4px !important;
+                    color: white !important;
+                }
+                
+                /* Toolbar Buttons */
+                .mantine-ActionIcon-root {
+                    color: #a1a1aa !important;
+                    transition: all 0.2s ease !important;
+                    border-radius: 6px !important;
+                }
+                .mantine-ActionIcon-root:hover {
+                    background: rgba(255, 255, 255, 0.1) !important;
+                    color: white !important;
+                    transform: translateY(-1px);
+                }
              `}</style>
         </div>
     );

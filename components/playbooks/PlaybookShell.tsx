@@ -30,6 +30,7 @@ interface PlaybookShellProps {
     onTitleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onDescriptionChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     onCoverImageChange?: (url: string | undefined) => void;
+    readTime?: string;
 }
 
 export function PlaybookShell({ 
@@ -44,7 +45,8 @@ export function PlaybookShell({
     isEditing = false,
     onTitleChange,
     onDescriptionChange,
-    onCoverImageChange
+    onCoverImageChange,
+    readTime
 }: PlaybookShellProps) {
 
     const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -258,6 +260,16 @@ export function PlaybookShell({
                                 </div>
                             </div>
  
+                            <div className="h-px bg-white/5 w-full" />
+
+                            {/* Read Time */}
+                            <div className="space-y-2">
+                                <h3 className="text-xs uppercase tracking-wider font-bold text-zinc-600">Read Time</h3>
+                                <div className="text-sm font-medium text-zinc-200">
+                                     {readTime || 'Less than 1 min'}
+                                </div>
+                            </div>
+
                             <div className="h-px bg-white/5 w-full" />
 
                             <div className="space-y-2">
