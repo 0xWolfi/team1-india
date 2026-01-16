@@ -135,18 +135,14 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
 
     return (
         <div className="editor-wrapper flex flex-col gap-4">
-             {/* Tab Switcher - Only visible if editable, OR if we want to allow viewing source in view mode? 
-                 Let's allow switching in Edit mode. For View mode, maybe just Preview/MD?
-                 Actually, simpler: Visible if editable. If not editable, it's just Preview Mode implied (or we can show Tabs if user wants to see MD).
-                 Let's show Tabs if editable. If not editable, standard view.
-              */}
+             {/* Tab Switcher - Right Aligned & Boxy */}
              {editable && (
-                 <div className="flex items-center gap-1 p-1 bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-full w-fit mb-4">
+                 <div className="flex items-center gap-1 p-1 bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-lg w-fit self-end">
                      <button
                          onClick={() => handleModeChange('write')}
                          className={cn(
-                             "flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all",
-                             viewMode === 'write' ? "bg-zinc-800 text-white shadow-lg border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                             "flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-semibold transition-all",
+                             viewMode === 'write' ? "bg-zinc-800 text-white shadow-sm border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
                          )}
                      >
                          <Edit3 className="w-3.5 h-3.5" /> Write
@@ -154,8 +150,8 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                      <button
                          onClick={() => handleModeChange('markdown')}
                          className={cn(
-                             "flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all",
-                             viewMode === 'markdown' ? "bg-zinc-800 text-white shadow-lg border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                             "flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-semibold transition-all",
+                             viewMode === 'markdown' ? "bg-zinc-800 text-white shadow-sm border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
                          )}
                      >
                          <Code className="w-3.5 h-3.5" /> Markdown
@@ -163,8 +159,8 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                      <button
                          onClick={() => handleModeChange('preview')}
                          className={cn(
-                             "flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold transition-all",
-                             viewMode === 'preview' ? "bg-zinc-800 text-white shadow-lg border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                             "flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-semibold transition-all",
+                             viewMode === 'preview' ? "bg-zinc-800 text-white shadow-sm border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
                          )}
                      >
                          <Eye className="w-3.5 h-3.5" /> Preview
@@ -172,7 +168,16 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                  </div>
              )}
 
-            <div className="relative min-h-[500px] text-zinc-200" style={{ '--bn-editor-background': 'transparent' } as React.CSSProperties}>
+            {/* Editor Body - Dotted Border, Dark Grey, Transparent */}
+            <div 
+                className={cn(
+                    "relative min-h-[500px] text-zinc-200 rounded-xl p-4 transition-all",
+                    editable ? "border-2 border-dotted border-zinc-800 bg-transparent" : "border-none"
+                    // User asked for "dark grey in color and transparent". 
+                    // border-zinc-800 is dark grey.
+                )} 
+                style={{ '--bn-editor-background': 'transparent' } as React.CSSProperties}
+            >
                 
                 {/* 1. WRITE MODE */}
                 <div className={cn("transition-opacity duration-300", viewMode === 'write' ? "opacity-100 relative z-10" : "opacity-0 absolute inset-0 -z-10 pointer-events-none")}>
@@ -188,11 +193,11 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
 
                 {/* 2. MARKDOWN MODE */}
                 {viewMode === 'markdown' && (
-                    <div className="absolute inset-0 z-10 h-full">
+                    <div className="absolute inset-0 z-10 h-full p-4">
                         <textarea
                             value={markdownContent}
                             onChange={(e) => setMarkdownContent(e.target.value)}
-                            className="w-full h-full min-h-[600px] bg-zinc-950/30 border border-white/10 rounded-xl p-6 font-mono text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-white/20 resize-none leading-relaxed"
+                            className="w-full h-full min-h-[600px] bg-transparent border-none font-mono text-sm text-zinc-300 focus:outline-none resize-none leading-relaxed"
                             placeholder="# Write your markdown here..."
                         />
                     </div>
@@ -201,7 +206,6 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                 {/* 3. PREVIEW MODE */}
                 {viewMode === 'preview' && (
                      <div className="absolute inset-0 z-10 h-full bg-transparent">
-                          {/* We reuse BlockNoteView but non-editable for consistent rendering */}
                           <div className="pointer-events-none select-text">
                             <BlockNoteView 
                                 editor={editor} 
