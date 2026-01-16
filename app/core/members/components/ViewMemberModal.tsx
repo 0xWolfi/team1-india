@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Loader2, XCircle, User, Mail, Twitter, Send, Wallet, MapPin, MessageCircle, FileText, Tag } from "lucide-react";
+import { X, Loader2, XCircle, User, Mail, Twitter, Send, Wallet, MapPin, MessageCircle, FileText, Tag, ExternalLink } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export interface CommunityMember {
     id: string;
@@ -29,6 +30,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
     onRoleChange,
     isSubmitting = false 
 }) => {
+    const router = useRouter();
     const [memberData, setMemberData] = useState<CommunityMember | null>(member);
     const [isChangingRole, setIsChangingRole] = useState(false);
     const [selectedRole, setSelectedRole] = useState<string>(member?.tags || "member");
@@ -105,9 +107,22 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                             {getInitials(memberData.name, memberData.email)}
                         </div>
                         <div className="flex-1">
-                            <h4 className="text-xl font-bold text-white mb-1">
-                                {memberData.name || "Unknown"}
-                            </h4>
+                            <div className="flex items-center gap-3 mb-1">
+                                <h4 className="text-xl font-bold text-white">
+                                    {memberData.name || "Unknown"}
+                                </h4>
+                                <button
+                                    onClick={() => {
+                                        onClose();
+                                        router.push(`/core/members/${memberData.id}`);
+                                    }}
+                                    className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-medium hover:bg-indigo-700 transition-colors flex items-center gap-1.5"
+                                    title="View Full Details"
+                                >
+                                    <ExternalLink className="w-3 h-3" />
+                                    View in Detail
+                                </button>
+                            </div>
                             <p className="text-sm text-zinc-400 mb-3">{memberData.email}</p>
                             <div className="flex items-center gap-2">
                                 <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium bg-zinc-900/50 text-zinc-400 border border-white/5 uppercase">
