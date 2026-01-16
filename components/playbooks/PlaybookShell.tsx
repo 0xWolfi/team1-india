@@ -243,42 +243,57 @@ export function PlaybookShell({
                 ) : (
                     // ------------------ VIEW MODE HEADER ------------------
                     // ------------------ VIEW MODE HEADER ------------------
-                    <div className="max-w-3xl mx-auto space-y-8 mb-12 animate-in fade-in duration-500">
-                        {/* 1. View Banner */}
-                        <div className="relative w-full rounded-2xl overflow-hidden h-[240px] group border border-white/5 bg-zinc-900/50 shadow-2xl ring-1 ring-white/10">
-                            <div className="absolute top-6 left-6 z-20">
-                                <Link 
-                                    href={backLink} 
-                                    className="w-12 h-12 flex items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 transition-all border border-white/10 backdrop-blur-md group/back"
-                                    title={backLabel}
-                                >
-                                    <ArrowLeft className="w-5 h-5 group-hover/back:-translate-x-0.5 transition-transform" />
-                                </Link>
-                            </div>
-                            <div className="absolute inset-0 z-0">
-                                {playbook.coverImage ? (
-                                    <>
-                                        <img src={playbook.coverImage} className="w-full h-full object-cover" />
-                                        <div className="absolute inset-0 bg-black/20" /> 
-                                    </>
-                                ) : (
-                                    <div className="w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black" />
-                                )}
-                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-                            </div>
+                    // ------------------ VIEW MODE HEADER (BLOG STYLE) ------------------
+                    <div className="max-w-3xl mx-auto space-y-8 mb-12 animate-in fade-in duration-500 pt-8">
+                        
+                        {/* 0. Back Button (Inline) */}
+                        <div className="flex items-center gap-4">
+                            <Link 
+                                href={backLink} 
+                                className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-all group/back"
+                                title={backLabel}
+                            >
+                                <ArrowLeft className="w-4 h-4 group-hover/back:-translate-x-0.5 transition-transform" />
+                            </Link>
                         </div>
 
-                        {/* 2. View Title & Description */}
-                        <div className="space-y-4">
-                            <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+                        {/* 1. Title & Description */}
+                        <div className="space-y-6">
+                            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
                                 {playbook.title}
                             </h1>
                             {playbook.description && (
-                                <p className="text-base md:text-lg text-zinc-400 leading-relaxed font-medium">
+                                <p className="text-lg text-zinc-400 leading-relaxed font-medium">
                                     {playbook.description}
                                 </p>
                             )}
+
+                             {/* 2. Byline (Author & Date) */}
+                             <div className="flex items-center gap-3 text-sm border-t border-b border-white/5 py-4 mt-6">
+                                <div className="flex items-center gap-2">
+                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white shadow-inner ring-1 ring-white/10">
+                                        {(playbook.createdBy?.name || playbook.createdBy?.email || 'T1').charAt(0).toUpperCase()}
+                                     </div>
+                                     <span className="text-zinc-300 font-medium">
+                                        {playbook.createdBy?.name || playbook.createdBy?.email?.split('@')[0] || 'Team1 India'}
+                                     </span>
+                                </div>
+                                <span className="text-zinc-600">•</span>
+                                <span className="text-zinc-400">
+                                    {new Date(playbook.createdAt || playbook.updatedAt).toLocaleDateString(undefined, {
+                                        month: 'short', day: 'numeric', year: 'numeric'
+                                    })}
+                                </span>
+                             </div>
                         </div>
+
+                        {/* 3. Feature Image (Below Title) */}
+                        {playbook.coverImage && (
+                            <div className="relative w-full rounded-xl overflow-hidden aspect-video border border-white/5 bg-zinc-900 shadow-2xl">
+                                <img src={playbook.coverImage} className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 ring-1 ring-inset ring-white/10" />
+                            </div>
+                        )}
                     </div>
                 )}
 
