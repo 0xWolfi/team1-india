@@ -139,7 +139,7 @@ export function PlaybookShell({
 
             {/* 2. Sticky Context Header (View Mode Only) - Floating Pill */}
             <AnimatePresence>
-                {!isEditing && showStickyHeader && (
+                {!isEditing && (
 
                     <motion.div 
                         initial={{ y: -100, opacity: 0 }}
@@ -181,10 +181,10 @@ export function PlaybookShell({
                 />
             )}
 
-            {/* Top Navigation Bar: Actions Only (Save/Cancel/Back) */}
+            {/* Top Navigation Bar: Actions Only (Save/Cancel/Back) - VISIBLE ONLY IN EDIT MODE */}
             <div className="fixed top-0 w-full z-50 px-6 h-16 flex items-center justify-between pointer-events-none">
                  <div /> {/* Spacer */}
-                 {headerActions && (
+                 {isEditing && headerActions && (
                     <div className="flex items-center gap-3 pointer-events-auto bg-black/50 backdrop-blur-md rounded-full px-4 py-2 mt-4 border border-white/10">
                         {headerActions}
                     </div>
