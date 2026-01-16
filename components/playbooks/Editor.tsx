@@ -318,7 +318,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                     color: #fff !important;
                 }
 
-                /* Floating Text Toolbar (Popover) */
+                /* Floating Text Toolbar (Popover) - HORIZONTAL */
                 .mantine-Popover-dropdown {
                     background: rgba(24, 24, 27, 0.85) !important;
                     backdrop-filter: blur(16px) saturate(180%) !important;
@@ -328,6 +328,24 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                     box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6) !important;
                     padding: 4px !important;
                     color: white !important;
+                    
+                    /* Default to horizontal for the toolbar itself */
+                    display: flex !important;
+                    flex-direction: row !important; 
+                    align-items: center !important;
+                    gap: 4px !important;
+                    min-width: unset !important; /* Allow it to shrink to toolbar size */
+                }
+
+                /* BUT... The "Turn Into" Menu (and others) are properly targeted as Menus - VERTICAL */
+                .mantine-Menu-dropdown,
+                .bn-suggestion-menu,
+                .bn-slash-menu {
+                    /* ... existing styles ... */
+                    display: flex !important;
+                    flex-direction: column !important; /* FORCE VERTICAL */
+                    gap: 2px !important;
+                    min-width: 220px !important; 
                 }
                 
                 /* Toolbar Buttons */
@@ -335,12 +353,22 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                     color: #a1a1aa !important;
                     transition: all 0.2s ease !important;
                     border-radius: 6px !important;
+                    width: 28px !important;
+                    height: 28px !important;
                 }
                 .mantine-ActionIcon-root:hover {
                     background: rgba(255, 255, 255, 0.1) !important;
                     color: white !important;
                     transform: translateY(-1px);
                 }
+                
+                /* SPECIFIC FIX: If a Popover contains a Menu (nested), force it vertical */
+                .mantine-Popover-dropdown:has(.mantine-Menu-item) {
+                     flex-direction: column !important;
+                     padding: 6px !important;
+                     align-items: stretch !important;
+                }
+             `}</style>
 
                 /* Fix Heading Spacing - Zero Gap Mode */
                 .bn-block-content h1, 
