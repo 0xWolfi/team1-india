@@ -236,29 +236,54 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                 }
 
                 /* Glassy Slash Menu & Suggestion Menus */
+                /* Glassy Slash Menu & Main Dropdowns */
                 .mantine-Menu-dropdown, 
                 .bn-suggestion-menu,
                 .bn-slash-menu {
-                   background: rgba(24, 24, 27, 0.4) !important;
-                   backdrop-filter: blur(16px) saturate(180%) !important;
-                   -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+                   background: rgba(24, 24, 27, 0.8) !important;
+                   backdrop-filter: blur(24px) saturate(180%) !important;
+                   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
                    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-                   border-radius: 16px !important;
-                   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+                   border-radius: 12px !important;
+                   box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.7) !important;
                    padding: 6px !important;
-                   overflow: hidden !important;
+                   overflow-y: auto !important;
+                   max-height: 320px !important;
+                   min-width: 220px !important; 
+                   max-width: 280px !important;
+                   display: flex !important;
+                   flex-direction: column !important;
+                }
+
+                /* Submenus (Horizontal Popouts) */
+                .mantine-Menu-submenu,
+                .mantine-Menu-dropdown .mantine-Menu-dropdown {
+                   background: rgba(24, 24, 27, 0.9) !important;
+                   border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                   box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.8) !important;
+                   overflow: visible !important; /* Allow further nesting */
+                   margin-left: 8px !important; /* Spacing from parent */
+                   animation: fadeIn 0.2s ease-out;
                 }
                 
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateX(-10px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+
                 /* Items Polish */
                 .mantine-Menu-item,
                 .bn-suggestion-item {
-                   border-radius: 8px !important;
-                   color: #a1a1aa !important; /* Zinc-400 */
-                   transition: all 0.15s ease !important;
+                   border-radius: 6px !important;
+                   color: #9da3ae !important; /* Zinc-400 */
+                   transition: all 0.1s ease !important;
                    margin-bottom: 2px !important;
-                   padding: 8px 12px !important;
+                   padding: 6px 10px !important;
                    font-size: 0.85rem !important;
                    font-weight: 500 !important;
+                   display: flex !important;
+                   align-items: center !important;
+                   gap: 8px !important;
                 }
 
                 /* Hover / Selected State */
@@ -266,15 +291,26 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                 .mantine-Menu-item:hover,
                 .bn-suggestion-item[aria-selected="true"],
                 .bn-suggestion-item[data-hovered] {
-                   background: rgba(255, 255, 255, 0.08) !important;
+                   background: rgba(255, 255, 255, 0.1) !important;
                    color: #fff !important;
-                   transform: translateX(2px);
+                }
+
+                /* Labels/Groups */
+                .mantine-Menu-label {
+                    color: #52525b !important; /* Zinc-600 */
+                    font-size: 0.7rem !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.05em !important;
+                    padding: 8px 12px 4px !important;
+                    font-weight: 600 !important;
                 }
 
                 /* Icons in menu */
                 .mantine-Menu-item .mantine-Menu-itemIcon,
                 .bn-suggestion-item-icon {
-                    opacity: 0.7;
+                    opacity: 0.6;
+                    width: 16px !important;
+                    height: 16px !important;
                 }
                 .mantine-Menu-item[data-hovered] .mantine-Menu-itemIcon,
                 .bn-suggestion-item[aria-selected="true"] .bn-suggestion-item-icon {
