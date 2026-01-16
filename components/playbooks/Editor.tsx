@@ -55,17 +55,15 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
     });
 
     // Sync Logic
+    // Sync Logic: Only tracking "Save" updates here.
+    // Content state sync happens explicitly on Mode Change to avoid race conditions.
     useEffect(() => {
         if (!editor) return;
 
         const handleChange = async () => {
             if (editable) {
+                // Trigger parent onChange for auto-saving
                 onChange(JSON.stringify(editor.document));
-                // Only sync MD if we are not currently editing MD (prevent loop)
-                if (viewMode !== 'markdown') {
-                   const md = editor.blocksToMarkdownLossy(editor.document);
-                   setMarkdownContent(md);
-                }
             }
         };
 
@@ -73,30 +71,38 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
         return () => {
              if (typeof cleanup === 'function') cleanup();
         };
-    }, [editor, editable, onChange, viewMode]);
+    }, [editor, editable, onChange]);
 
-    // Initial MD Load
+    // Initial MD Load (One time only)
     useEffect(() => {
-        if (editor && editor.document) {
-            const md = editor.blocksToMarkdownLossy(editor.document);
-            setMarkdownContent(md);
+        if (editor && editor.document && !markdownContent) {
+            const initMd = async () => {
+                 const md = await editor.blocksToMarkdownLossy(editor.document);
+                 setMarkdownContent(md);
+            };
+            initMd();
         }
-    }, [editor]);
+    }, [editor]); // Run once on editor init
 
     // Handle Mode Switch
     const handleModeChange = async (newMode: ViewMode) => {
         if (newMode === viewMode) return;
-
+        
+        // 1. Markdown -> Write (or Preview)
         if (viewMode === 'markdown' && newMode !== 'markdown') {
-            // Sync Markdown -> Blocks
+            // Parse MD -> Blocks
             const blocks = await editor.tryParseMarkdownToBlocks(markdownContent);
+            // Replace ALL existing blocks with new parsed blocks
             editor.replaceBlocks(editor.document, blocks);
-            onChange(JSON.stringify(blocks)); // Trigger save update
+            // Trigger save immediately
+            onChange(JSON.stringify(blocks)); 
         }
 
-        if (newMode === 'markdown' && viewMode !== 'markdown') {
-            // Already synced via useEffect, but ensure fresh
-            const md = editor.blocksToMarkdownLossy(editor.document);
+        // 2. Write -> Markdown
+        if (newMode === 'markdown') {
+            // Blocks -> MD
+            // Ensure we capture latest state from editor
+            const md = await editor.blocksToMarkdownLossy(editor.document);
             setMarkdownContent(md);
         }
 
@@ -180,7 +186,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
             >
                 
                 {/* 1. WRITE MODE */}
-                <div className={cn("transition-opacity duration-300", viewMode === 'write' ? "opacity-100 relative z-10" : "opacity-0 absolute inset-0 -z-10 pointer-events-none")}>
+                <div className={cn("transition-opacity duration-300", viewMode === 'write' ? "opacity-100 relative z-10 block" : "opacity-0 absolute inset-0 -z-10 pointer-events-none hidden")}>
                      <BlockNoteView 
                         editor={editor} 
                         editable={editable}
@@ -193,11 +199,21 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
 
                 {/* 2. MARKDOWN MODE */}
                 {viewMode === 'markdown' && (
-                    <div className="absolute inset-0 z-10 h-full p-4">
+                    <div className="relative w-full h-full p-4">
                         <textarea
                             value={markdownContent}
-                            onChange={(e) => setMarkdownContent(e.target.value)}
-                            className="w-full h-full min-h-[600px] bg-transparent border-none font-mono text-sm text-zinc-300 focus:outline-none resize-none leading-relaxed"
+                            onChange={(e) => {
+                                setMarkdownContent(e.target.value);
+                                e.target.style.height = 'auto';
+                                e.target.style.height = e.target.scrollHeight + 'px';
+                            }}
+                            ref={(el) => {
+                                if (el) {
+                                    el.style.height = 'auto';
+                                    el.style.height = el.scrollHeight + 'px';
+                                }
+                            }}
+                            className="w-full min-h-[600px] bg-transparent border-none font-mono text-sm text-zinc-300 focus:outline-none resize-none leading-relaxed overflow-hidden"
                             placeholder="# Write your markdown here..."
                         />
                     </div>
@@ -205,7 +221,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
 
                 {/* 3. PREVIEW MODE */}
                 {viewMode === 'preview' && (
-                     <div className="absolute inset-0 z-10 h-full bg-transparent">
+                     <div className="relative w-full h-full bg-transparent p-4">
                           <div className="pointer-events-none select-text">
                             <BlockNoteView 
                                 editor={editor} 
@@ -381,6 +397,26 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                     padding-bottom: 0 !important;
                 }
                 
+                /* H1 WARNING: Title is H1, blocks should be H2+ */
+                .bn-block-content h1 {
+                    color: #f87171 !important; /* Red 400 */
+                    border-left: 2px solid #f87171 !important;
+                    padding-left: 12px !important;
+                    background: rgba(248, 113, 113, 0.1);
+                    border-radius: 4px;
+                    font-size: 1.5em !important; /* Force smaller than Title */
+                }
+                .bn-block-content h1::after {
+                    content: " (Use H2/H3 instead)";
+                    font-size: 0.5em;
+                    text-transform: uppercase;
+                    opacity: 0.7;
+                    vertical-align: middle;
+                    margin-left: 8px;
+                    font-weight: 500;
+                    letter-spacing: 0.05em;
+                }
+
                 /* Tighter Blocks */
                 .bn-block-outer {
                     margin-bottom: 0 !important;

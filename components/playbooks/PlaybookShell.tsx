@@ -276,16 +276,14 @@ export function PlaybookShell({
                 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 relative z-10">
                     
-                    {/* Left Column: TOC (View Only) */}
-                    {!isEditing && (
-                        <div className="hidden lg:block lg:col-span-1">
-                            <TableOfContents />
-                        </div>
-                    )}
+                    {/* Left Column: TOC (Always Visible Now) */}
+                    <div className="hidden lg:block lg:col-span-1">
+                         <TableOfContents contentDependency={playbook} />
+                    </div>
 
                     {/* Middle Column: Content */}
-                    <div className={`${isEditing ? 'lg:col-span-5' : 'lg:col-span-3'} space-y-16`}>
-                         <div className={`min-h-[500px] prose prose-invert prose-lg max-w-none ${isEditing ? 'max-w-4xl' : ''}`}>
+                    <div className="lg:col-span-3 space-y-16">
+                         <div className={cn("min-h-[500px] prose prose-invert prose-lg max-w-none", isEditing && "max-w-4xl")}>
                             {children}
                         </div>
 

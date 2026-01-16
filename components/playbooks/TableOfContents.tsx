@@ -10,38 +10,50 @@ interface Heading {
     level: number;
 }
 
-export function TableOfContents() {
+interface TableOfContentsProps {
+    contentDependency?: any; // To trigger re-scan in edit mode
+}
+
+export function TableOfContents({ contentDependency }: TableOfContentsProps) {
     const [headings, setHeadings] = useState<Heading[]>([]);
     const [activeId, setActiveId] = useState<string>("");
     const [isOpen, setIsOpen] = useState(false); // For mobile
 
     useEffect(() => {
-        const elements = Array.from(document.querySelectorAll("h1, h2, h3"))
-            .filter((element) => element.id && element.textContent && !element.closest('.toc-ignore')); // Filter out TOC itself if marked
+        // Debounce slightly to allow DOM to render
+        const timer = setTimeout(() => {
+            const elements = Array.from(document.querySelectorAll("h1, h2, h3"))
+                .filter((element) => element.id && element.textContent && !element.closest('.toc-ignore')); 
 
-        const headingData = elements.map((element) => ({
-            id: element.id,
-            text: element.textContent ?? "",
-            level: Number(element.tagName.substring(1)),
-        }));
+            const headingData = elements.map((element) => ({
+                id: element.id,
+                text: element.textContent ?? "",
+                level: Number(element.tagName.substring(1)),
+            }));
 
-        setHeadings(headingData);
+            setHeadings(headingData);
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setActiveId(entry.target.id);
-                    }
-                });
-            },
-            { rootMargin: "0px 0px -40% 0px" }
-        );
+            // Re-observe new elements
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            setActiveId(entry.target.id);
+                        }
+                    });
+                },
+                { rootMargin: "0px 0px -40% 0px" }
+            );
 
-        elements.forEach((element) => observer.observe(element));
+            elements.forEach((element) => observer.observe(element));
+            
+            // Clean up internal observer
+            return () => observer.disconnect();
 
-        return () => observer.disconnect();
-    }, []);
+        }, 500); // 500ms delay for typing pauses
+
+        return () => clearTimeout(timer);
+    }, [contentDependency]);
 
     if (headings.length === 0) return null;
 
