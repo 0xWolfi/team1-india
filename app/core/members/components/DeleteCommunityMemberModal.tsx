@@ -2,12 +2,7 @@
 
 import React from "react";
 import { AlertTriangle, Loader2, XCircle } from "lucide-react";
-
-interface CommunityMember {
-    id: string;
-    email: string;
-    name?: string;
-}
+import { type CommunityMember } from "./ViewMemberModal";
 
 interface DeleteCommunityMemberModalProps {
     member: CommunityMember | null;

@@ -10,20 +10,11 @@ import { Member } from "../admin/shared";
 import { AdminToolbar } from "../admin/components/AdminToolbar";
 import { AddCommunityMemberModal } from "./components/AddCommunityMemberModal";
 import { DeleteCommunityMemberModal } from "./components/DeleteCommunityMemberModal";
+import { ViewMemberModal, type CommunityMember } from "./components/ViewMemberModal";
 
 // Simplified Table for Community
 // We will create this inline for now or as simple component since columns differ
-import { MoreVertical, XCircle, CheckCircle } from "lucide-react";
-
-interface CommunityMember {
-    id: string;
-    email: string;
-    name?: string;
-    tags: string; // single string in schema "member" but API returns string?
-    status: string;
-    xHandle?: string;
-    telegram?: string;
-}
+import { MoreVertical, XCircle, CheckCircle, Eye } from "lucide-react";
 
 export default function CommunityMembersPage() {
     const { data: session } = useSession();
@@ -34,6 +25,12 @@ export default function CommunityMembersPage() {
     const [isAddingMember, setIsAddingMember] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [deletingMember, setDeletingMember] = useState<CommunityMember | null>(null);
+    const [viewingMember, setViewingMember] = useState<CommunityMember | null>(null);
+
+    // Check if user is superadmin
+    // @ts-ignore
+    const userPermissions = (session?.user as any)?.permissions || {};
+    const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
 
     const refreshMembers = () => {
         setIsLoading(true);
@@ -98,11 +95,35 @@ export default function CommunityMembersPage() {
              if(res.ok) {
                  setMembers(prev => prev.filter(m => m.id !== deletingMember.id));
                  setDeletingMember(null);
+                 setViewingMember(null); // Close view modal if open
              }
         } catch (e) {
             console.error(e);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleRoleChange = async (memberId: string, newRole: string) => {
+        try {
+            const res = await fetch(`/api/community-members/${memberId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tags: newRole })
+            });
+
+            if (!res.ok) {
+                const error = await res.text();
+                throw new Error(error);
+            }
+
+            // Update local state
+            setMembers(prev => prev.map(m => 
+                m.id === memberId ? { ...m, tags: newRole } : m
+            ));
+        } catch (error) {
+            console.error("Failed to change role:", error);
+            throw error;
         }
     };
 
@@ -185,13 +206,24 @@ export default function CommunityMembersPage() {
                                     </div>
                                 </td>
                                 <td className="p-4 text-right pr-6">
-                                    <button 
-                                        onClick={() => setDeletingMember(member)}
-                                        className="p-1.5 rounded-md hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-colors"
-                                        title="Remove Member"
-                                    >
-                                        <XCircle className="w-4 h-4" />
-                                    </button>
+                                    <div className="flex items-center justify-end gap-2">
+                                        {isSuperAdmin && (
+                                            <button 
+                                                onClick={() => setViewingMember(member)}
+                                                className="p-1.5 rounded-md hover:bg-indigo-500/10 text-zinc-600 hover:text-indigo-400 transition-colors"
+                                                title="View Member Details"
+                                            >
+                                                <Eye className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        <button 
+                                            onClick={() => setDeletingMember(member)}
+                                            className="p-1.5 rounded-md hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-colors"
+                                            title="Remove Member"
+                                        >
+                                            <XCircle className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -211,6 +243,19 @@ export default function CommunityMembersPage() {
                     member={deletingMember} 
                     onClose={() => setDeletingMember(null)}
                     onConfirm={handleDeleteMember}
+                    isSubmitting={isSubmitting}
+                />
+             )}
+
+             {viewingMember && isSuperAdmin && (
+                <ViewMemberModal
+                    member={viewingMember}
+                    onClose={() => setViewingMember(null)}
+                    onDelete={(member) => {
+                        setViewingMember(null);
+                        setDeletingMember(member);
+                    }}
+                    onRoleChange={handleRoleChange}
                     isSubmitting={isSubmitting}
                 />
              )}
