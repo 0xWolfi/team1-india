@@ -138,16 +138,17 @@ export function PlaybookShell({
             {/* 2. Sticky Context Header (View Mode Only) - Floating Pill */}
             <AnimatePresence>
                 {!isEditing && showStickyHeader && (
+
                     <motion.div 
                         initial={{ y: -100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: -100, opacity: 0 }}
-                        className="fixed top-6 left-1/2 -translate-x-1/2 w-auto max-w-2xl bg-black/80 backdrop-blur-xl rounded-full border border-white/10 z-50 flex items-center justify-between py-2 pl-2 pr-4 shadow-2xl gap-6 ring-1 ring-white/5"
+                        className="fixed top-6 left-1/2 -translate-x-1/2 w-auto max-w-2xl bg-black/80 backdrop-blur-xl rounded-xl border border-white/10 z-50 flex items-center justify-between py-2 pl-2 pr-4 shadow-2xl gap-6 ring-1 ring-white/5"
                     >
                          <div className="flex items-center gap-3">
                             <Link 
                                 href={backLink} 
-                                className="w-9 h-9 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all border border-white/5"
+                                className="w-9 h-9 flex items-center justify-center rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all border border-white/5"
                                 title={backLabel}
                             >
                                 <ArrowLeft className="w-4 h-4" />
@@ -156,10 +157,6 @@ export function PlaybookShell({
                             <h3 className="font-medium text-zinc-200 text-sm line-clamp-1 max-w-[200px] md:max-w-xs">
                                 {playbook.title}
                             </h3>
-                         </div>
-
-                         <div className="flex items-center gap-2 pl-4 border-l border-white/5">
-                             {headerActions}
                          </div>
                     </motion.div>
                 )}
