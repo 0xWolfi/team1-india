@@ -220,6 +220,51 @@ export default function PlaybookPage() {
         });
     };
 
+    const handleVisibilityToggle = async () => {
+        if (!playbook) return;
+        if (!isEditing && !hasWriteAccess) return;
+
+        const order: ('CORE' | 'MEMBER' | 'PUBLIC')[] = ['CORE', 'MEMBER', 'PUBLIC'];
+        const currentIndex = order.indexOf(playbook.visibility);
+        const newVis = order[(currentIndex + 1) % 3];
+        
+        if ((newVis === 'MEMBER' || newVis === 'PUBLIC') && !playbook.coverImage) {
+            alert("A cover image is required for Member/Public visibility.");
+            return;
+        }
+
+        // Optimistic update
+        setPlaybook(prev => prev ? { ...prev, visibility: newVis } : null);
+
+        if (isEditing) {
+            if(!hasUnsavedChanges) setHasUnsavedChanges(true); 
+        } else {
+            // Direct save
+            try {
+                const res = await fetch(`/api/playbooks/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        ...playbook, // Use current state including body
+                        visibility: newVis 
+                    })
+                });
+
+                if (res.ok) {
+                    const updated = await res.json();
+                    setPlaybook(prev => ({ ...updated, body: typeof updated.body === 'string' ? updated.body : JSON.stringify(updated.body) }));
+                    setToast({ message: `Visibility changed to ${newVis}`, type: 'success', visible: true });
+                } else {
+                    throw new Error("Failed to save visibility");
+                }
+            } catch (e) {
+                console.error(e);
+                setPlaybook(prev => prev ? { ...prev, visibility: playbook.visibility } : null); // Revert
+                alert("Failed to change visibility.");
+            }
+        }
+    };
+
     useEffect(() => {
         const handleUnload = () => { if (isEditing) navigator.sendBeacon(`/api/playbooks/${id}/unlock`); };
         window.addEventListener('beforeunload', handleUnload);
@@ -232,6 +277,106 @@ export default function PlaybookPage() {
     // derived for badge
     const statusText = isSaving ? "Saving..." : hasUnsavedChanges ? "Unsaved" : "Saved";
     const statusColor = isSaving ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : hasUnsavedChanges ? "bg-zinc-800 text-zinc-400 border-zinc-700" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+
+    // Action Components (Extracted for reuse in Sticky Header)
+    const ViewAction = playbook ? (
+        <button
+            onClick={handleVisibilityToggle}
+            disabled={(!hasWriteAccess || isLockedByOther) && !isEditing}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
+                playbook.visibility === 'PUBLIC' 
+                ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20' 
+                : playbook.visibility === 'CORE'
+                ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20'
+                : 'bg-zinc-800 border-white/10 text-zinc-400 hover:bg-zinc-700'
+            } ${((!hasWriteAccess || isLockedByOther) && !isEditing) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+        >
+            {playbook.visibility === 'PUBLIC' && <Globe className="w-3.5 h-3.5" />}
+            {playbook.visibility === 'MEMBER' && <Shield className="w-3.5 h-3.5" />}
+            {playbook.visibility === 'CORE' && <Cpu className="w-3.5 h-3.5" />}
+            <span>{playbook.visibility === 'CORE' ? 'Core' : playbook.visibility === 'MEMBER' ? 'Members' : 'Public'}</span>
+        </button>
+    ) : null;
+
+    const EditAction = isLockedByOther ? (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-medium">
+              <Lock className="w-3 h-3" />
+              <span className="hidden sm:inline">Locked by {lockOwner}</span>
+          </div>
+      ) : isEditing ? (
+          <>
+             {hasUnsavedChanges && <span className="text-amber-500 text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 mr-2">Unsaved</span>}
+             {isSaving && <span className="text-zinc-500 text-xs flex items-center gap-1 mr-2"><RefreshCw className="w-3 h-3 animate-spin"/> Saving...</span>}
+             
+             <button 
+                 onClick={async () => {
+                     if (hasUnsavedChanges) {
+                         const success = await handleManualSave();
+                         if (!success) return; 
+                     }
+                     setIsEditing(false);
+                     try { await fetch(`/api/playbooks/${id}/unlock`, { method: 'POST' }); } catch (e) { console.error("Unlock error", e); }
+                 }}
+                 disabled={isSaving}
+                 className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-white/10 text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50"
+             >
+                 <Check className="w-3.5 h-3.5" />
+                 Save
+             </button>
+          </>
+      ) : (
+          hasWriteAccess && (
+              <button 
+                 onClick={handleEnterEdit}
+                 className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-700 transition-colors border border-white/5"
+              >
+                 <Edit3 className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Edit</span>
+              </button>
+          )
+      );
+
+    const MenuAction = (
+        <div className="relative group">
+            <button className="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
+                <MoreVertical className="w-4 h-4 text-zinc-400" />
+            </button>
+            <div className="absolute right-0 top-full mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden group-hover:block z-50 animate-in fade-in zoom-in-95 duration-200 p-1">
+                <button 
+                    onClick={() => window.print()}
+                    className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 rounded-lg flex items-center gap-2"
+                >
+                    <Download className="w-3.5 h-3.5" />
+                    Export as PDF
+                </button>
+                <button
+                    onClick={() => {
+                        if(!playbook) return;
+                        const blob = new Blob([playbook.body], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${playbook.title.replace(/\s+/g, '_')}.json`;
+                        a.click();
+                    }}
+                    className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 rounded-lg flex items-center gap-2"
+                >
+                    <FileText className="w-3.5 h-3.5" />
+                    Export JSON
+                </button>
+                <div className="h-px bg-white/5 my-1" />
+                {hasWriteAccess && (
+                    <button
+                        onClick={handleDelete}
+                        className="w-full text-left px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-lg flex items-center gap-2 transition-colors"
+                    >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Delete Playbook
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+
 
     return (
         <>
@@ -264,43 +409,7 @@ export default function PlaybookPage() {
                         </div>
                      )}
 
-                     {/* Visibility Toggle */}
-                     {playbook ? (
-                        <button
-                            onClick={() => {
-                                if (!isEditing && !hasWriteAccess) return;
-                                const order: ('CORE' | 'MEMBER' | 'PUBLIC')[] = ['CORE', 'MEMBER', 'PUBLIC'];
-                                const currentIndex = order.indexOf(playbook.visibility);
-                                const newVis = order[(currentIndex + 1) % 3];
-                                
-                                if ((newVis === 'MEMBER' || newVis === 'PUBLIC') && !playbook.coverImage) {
-                                    alert("A cover image is required for Member/Public visibility.");
-                                    return;
-                                }
-
-                                setPlaybook(prev => prev ? { ...prev, visibility: newVis } : null);
-                                if (isEditing) {
-                                    if(!hasUnsavedChanges) setHasUnsavedChanges(true); 
-                                } else {
-                                    // Direct save logic if not editing...
-                                    // (Simplifying for brevity, keeping existing logic basically)
-                                }
-                            }}
-                            disabled={(!hasWriteAccess || isLockedByOther) && !isEditing}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
-                                playbook.visibility === 'PUBLIC' 
-                                ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20' 
-                                : playbook.visibility === 'CORE'
-                                ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20'
-                                : 'bg-zinc-800 border-white/10 text-zinc-400 hover:bg-zinc-700'
-                            } ${((!hasWriteAccess || isLockedByOther) && !isEditing) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                        >
-                            {playbook.visibility === 'PUBLIC' && <Globe className="w-3.5 h-3.5" />}
-                            {playbook.visibility === 'MEMBER' && <Shield className="w-3.5 h-3.5" />}
-                            {playbook.visibility === 'CORE' && <Cpu className="w-3.5 h-3.5" />}
-                            <span>{playbook.visibility === 'CORE' ? 'Core' : playbook.visibility === 'MEMBER' ? 'Members' : 'Public'}</span>
-                        </button>
-                     ) : null}
+                     {ViewAction}
 
                      {/* Execute Button */}
                      {!isEditing && (
@@ -339,95 +448,19 @@ export default function PlaybookPage() {
 
                      <div className="w-px h-4 bg-white/10 mx-1" />
 
-
-
-                     {/* Edit / Done / Locked Status */}
-                     {isLockedByOther ? (
-                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-medium">
-                             <Lock className="w-3 h-3" />
-                             Locked by {lockOwner}
-                         </div>
-                     ) : isEditing ? (
-                         <>
-                            {hasUnsavedChanges && <span className="text-amber-500 text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 mr-2">Unsaved</span>}
-                            {isSaving && <span className="text-zinc-500 text-xs flex items-center gap-1 mr-2"><RefreshCw className="w-3 h-3 animate-spin"/> Saving...</span>}
-                            
-                            <button 
-                                onClick={async () => {
-                                    // Save logic
-                                    if (hasUnsavedChanges) {
-                                        const success = await handleManualSave();
-                                        if (!success) return; // Stop if save failed
-                                    }
-                                    
-                                    // Exit logic
-                                    setIsEditing(false);
-                                    try {
-                                        await fetch(`/api/playbooks/${id}/unlock`, { method: 'POST' });
-                                    } catch (e) {
-                                        console.error("Unlock error", e);
-                                    }
-                                }}
-                                disabled={isSaving}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-white/10 text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50"
-                            >
-                                <Check className="w-3.5 h-3.5" />
-                                Save
-                            </button>
-                         </>
-                     ) : (
-                         hasWriteAccess && (
-                             <button 
-                                onClick={handleEnterEdit}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-700 transition-colors border border-white/5"
-                             >
-                                <Edit3 className="w-3.5 h-3.5" /> Edit
-                             </button>
-                         )
-                     )}
-
-                     {/* Actions Menu */}
-                     <div className="relative group">
-                        <button className="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
-                            <MoreVertical className="w-4 h-4 text-zinc-400" />
-                        </button>
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden group-hover:block z-50 animate-in fade-in zoom-in-95 duration-200 p-1">
-                            <button 
-                                onClick={() => window.print()}
-                                className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 rounded-lg flex items-center gap-2"
-                            >
-                                <Download className="w-3.5 h-3.5" />
-                                Export as PDF
-                            </button>
-                            <button
-                                onClick={() => {
-                                    if(!playbook) return;
-                                    const blob = new Blob([playbook.body], { type: 'application/json' });
-                                    const url = URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = `${playbook.title.replace(/\s+/g, '_')}.json`;
-                                    a.click();
-                                }}
-                                className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 rounded-lg flex items-center gap-2"
-                            >
-                                <FileText className="w-3.5 h-3.5" />
-                                Export JSON
-                            </button>
-                            <div className="h-px bg-white/5 my-1" />
-                            {hasWriteAccess && (
-                                <button
-                                    onClick={handleDelete}
-                                    className="w-full text-left px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-lg flex items-center gap-2 transition-colors"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                    Delete Playbook
-                                </button>
-                            )}
-                        </div>
-                     </div>
+                     {EditAction}
+                     {MenuAction}
                   </div>
-                } // End Header Actions
+                }
+                stickyActions={
+                    <div className="flex items-center gap-2">
+                        {ViewAction}
+                        <div className="w-px h-4 bg-white/10 mx-1" />
+                        {EditAction}
+                        {MenuAction}
+                    </div>
+                }
+            >Header Actions
             >
                 <Editor 
                      initialContent={playbook.body}

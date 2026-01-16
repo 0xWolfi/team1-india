@@ -26,6 +26,7 @@ interface PlaybookShellProps {
     children: React.ReactNode;
     sidebarActions?: React.ReactNode; 
     headerActions?: React.ReactNode; 
+    stickyActions?: React.ReactNode;
     className?: string; 
     contentClassName?: string;
     isEditing?: boolean;
@@ -42,6 +43,7 @@ export function PlaybookShell({
     children, 
     sidebarActions, 
     headerActions,
+    stickyActions,
     className,
     contentClassName,
     isEditing = false,
@@ -143,7 +145,7 @@ export function PlaybookShell({
                         initial={{ y: -100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: -100, opacity: 0 }}
-                        className="fixed top-4 left-4 w-auto max-w-lg bg-black/80 backdrop-blur-xl rounded-xl border border-white/10 z-50 flex items-center justify-between py-2 pl-2 pr-4 shadow-2xl gap-6 ring-1 ring-white/5"
+                        className="fixed top-4 left-4 w-auto max-w-4xl bg-black/80 backdrop-blur-xl rounded-xl border border-white/10 z-50 flex items-center justify-between py-2 pl-2 pr-4 shadow-2xl gap-6 ring-1 ring-white/5"
                     >
                          <div className="flex items-center gap-3">
                             <Link 
@@ -157,6 +159,12 @@ export function PlaybookShell({
                             <h3 className="font-medium text-zinc-200 text-sm line-clamp-1 max-w-[200px] md:max-w-xs">
                                 {playbook.title}
                             </h3>
+                            {stickyActions && (
+                                <>
+                                    <span className="w-px h-4 bg-white/10" />
+                                    {stickyActions}
+                                </>
+                            )}
                          </div>
                     </motion.div>
                 )}
