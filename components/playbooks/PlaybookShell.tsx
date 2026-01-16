@@ -130,7 +130,7 @@ export function PlaybookShell({
             {/* 1. Reading Progress Bar (View Mode Only) */}
             {!isEditing && (
                 <motion.div 
-                    className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 origin-left z-[100]" 
+                    className="fixed top-0 left-0 right-0 h-1 bg-white origin-left z-[100]" 
                     style={{ scaleX }} 
                 />
             )}
@@ -158,13 +158,8 @@ export function PlaybookShell({
                             </h3>
                          </div>
 
-                         <div className="flex items-center gap-2">
-                             <button 
-                                onClick={handleCopyMarkdown}
-                                className="px-3 py-1.5 rounded-full hover:bg-white/10 text-xs font-medium text-zinc-400 hover:text-white transition-all flex items-center gap-2"
-                             >
-                                <Copy className="w-3 h-3" /> <span className="hidden sm:inline">Copy</span>
-                             </button>
+                         <div className="flex items-center gap-2 pl-4 border-l border-white/5">
+                             {headerActions}
                          </div>
                     </motion.div>
                 )}
