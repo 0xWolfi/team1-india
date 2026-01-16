@@ -31,12 +31,6 @@ export async function POST(request: NextRequest) {
         if (type === "content" && !contentUrl) {
             return new NextResponse("Content URL is required", { status: 400 });
         }
-        if (type === "programs" && !programId) {
-            return new NextResponse("Program selection is required", { status: 400 });
-        }
-        if (type === "internal-works" && !internalWorksDescription) {
-            return new NextResponse("Internal works description is required", { status: 400 });
-        }
 
         // Verify email matches session
         if (email !== session.user.email) {
@@ -58,10 +52,6 @@ export async function POST(request: NextRequest) {
             contributionData.eventLocation = eventLocation;
         } else if (type === "content") {
             contributionData.contentUrl = contentUrl;
-        } else if (type === "programs") {
-            contributionData.programId = programId;
-        } else if (type === "internal-works") {
-            contributionData.internalWorksDescription = internalWorksDescription;
         }
 
         // Create contribution record
