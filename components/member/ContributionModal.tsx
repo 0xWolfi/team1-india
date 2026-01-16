@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Loader2, Send, Calendar, FileText, Link as LinkIcon, Users, Briefcase } from "lucide-react";
+import { X, Loader2, Send, Calendar, FileText } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 interface ContributionModalProps {
@@ -13,12 +13,7 @@ interface ContributionModalProps {
     } | null;
 }
 
-type ContributionType = "event-host" | "content" | "programs" | "internal-works" | "";
-
-interface Program {
-    id: string;
-    title: string | null;
-}
+type ContributionType = "event-host" | "content" | "";
 
 export const ContributionModal: React.FC<ContributionModalProps> = ({ 
     isOpen, 
@@ -30,8 +25,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [programs, setPrograms] = useState<Program[]>([]);
-    const [loadingPrograms, setLoadingPrograms] = useState(false);
 
     // Event Host fields
     const [eventDate, setEventDate] = useState("");
@@ -40,37 +33,13 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
     // Content fields
     const [contentUrl, setContentUrl] = useState("");
 
-    // Programs field
-    const [selectedProgramId, setSelectedProgramId] = useState("");
-
-    // Internal Works field
-    const [internalWorksDescription, setInternalWorksDescription] = useState("");
-
     useEffect(() => {
         if (isOpen && session) {
-            // Pre-fill name and email from session/user
+            // Pre-fill name and email from session/user (read-only)
             setName(user?.name || session.user?.name || "");
             setEmail(user?.email || session.user?.email || "");
         }
     }, [isOpen, session, user]);
-
-    // Fetch programs when "Programs" is selected
-    useEffect(() => {
-        if (contributionType === "programs" && programs.length === 0) {
-            setLoadingPrograms(true);
-            fetch("/api/guides?type=PROGRAM&visibility=PUBLIC")
-                .then(res => res.json())
-                .then(data => {
-                    setPrograms(data.filter((g: any) => g.deletedAt === null));
-                })
-                .catch(err => {
-                    console.error("Failed to fetch programs:", err);
-                })
-                .finally(() => {
-                    setLoadingPrograms(false);
-                });
-        }
-    }, [contributionType, programs.length]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -105,20 +74,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     return;
                 }
                 payload.contentUrl = contentUrl;
-            } else if (contributionType === "programs") {
-                if (!selectedProgramId) {
-                    alert("Please select a program");
-                    setIsSubmitting(false);
-                    return;
-                }
-                payload.programId = selectedProgramId;
-            } else if (contributionType === "internal-works") {
-                if (!internalWorksDescription.trim()) {
-                    alert("Please describe your internal work");
-                    setIsSubmitting(false);
-                    return;
-                }
-                payload.internalWorksDescription = internalWorksDescription;
             }
 
             const res = await fetch("/api/contributions", {
@@ -134,8 +89,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                 setEventDate("");
                 setEventLocation("");
                 setContentUrl("");
-                setSelectedProgramId("");
-                setInternalWorksDescription("");
                 onClose();
             } else {
                 const error = await res.text();
@@ -173,32 +126,32 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
-                    {/* Name Field */}
+                    {/* Name Field - Read Only */}
                     <div className="mb-4">
                         <label className="block text-sm font-semibold text-zinc-300 mb-2">
-                            Name
+                            Name <span className="text-zinc-500 text-xs">(from your profile)</span>
                         </label>
                         <input
                             type="text"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500/50"
+                            readOnly
+                            disabled
+                            className="w-full bg-zinc-900/30 border border-white/5 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed"
                             placeholder="Your name"
                         />
                     </div>
 
-                    {/* Email Field */}
+                    {/* Email Field - Read Only */}
                     <div className="mb-4">
                         <label className="block text-sm font-semibold text-zinc-300 mb-2">
-                            Email
+                            Email <span className="text-zinc-500 text-xs">(from your profile)</span>
                         </label>
                         <input
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500/50"
+                            readOnly
+                            disabled
+                            className="w-full bg-zinc-900/30 border border-white/5 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed"
                             placeholder="your.email@example.com"
                         />
                     </div>
@@ -217,8 +170,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                             <option value="" className="bg-zinc-900">Select contribution type</option>
                             <option value="event-host" className="bg-zinc-900">Event Host</option>
                             <option value="content" className="bg-zinc-900">Content</option>
-                            <option value="programs" className="bg-zinc-900">Programs</option>
-                            <option value="internal-works" className="bg-zinc-900">Internal Works</option>
                         </select>
                     </div>
 
@@ -286,69 +237,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                         </div>
                     )}
 
-                    {/* Programs Fields */}
-                    {contributionType === "programs" && (
-                        <div className="mb-6 p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Users className="w-4 h-4 text-blue-400" />
-                                <label className="text-sm font-semibold text-blue-300">
-                                    Program Selection
-                                </label>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-zinc-400 mb-2">
-                                    Select Program
-                                </label>
-                                {loadingPrograms ? (
-                                    <div className="flex items-center gap-2 text-zinc-500 text-sm">
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        Loading programs...
-                                    </div>
-                                ) : programs.length === 0 ? (
-                                    <div className="text-zinc-500 text-sm">No programs available</div>
-                                ) : (
-                                    <select
-                                        value={selectedProgramId}
-                                        onChange={(e) => setSelectedProgramId(e.target.value)}
-                                        required
-                                        className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/50"
-                                    >
-                                        <option value="" className="bg-zinc-900">Select a program</option>
-                                        {programs.map((program) => (
-                                            <option key={program.id} value={program.id} className="bg-zinc-900">
-                                                {program.title || "Untitled Program"}
-                                            </option>
-                                        ))}
-                                    </select>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Internal Works Fields */}
-                    {contributionType === "internal-works" && (
-                        <div className="mb-6 p-4 bg-amber-500/5 border border-amber-500/20 rounded-lg">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Briefcase className="w-4 h-4 text-amber-400" />
-                                <label className="text-sm font-semibold text-amber-300">
-                                    Internal Works Details
-                                </label>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-zinc-400 mb-2">
-                                    Describe what you have done as part of internal work
-                                </label>
-                                <textarea
-                                    value={internalWorksDescription}
-                                    onChange={(e) => setInternalWorksDescription(e.target.value)}
-                                    required
-                                    rows={6}
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-amber-500/50 resize-none"
-                                    placeholder="Describe your internal work contributions..."
-                                />
-                            </div>
-                        </div>
-                    )}
 
                     {/* Submit Button */}
                     <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5">

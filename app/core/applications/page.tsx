@@ -77,6 +77,28 @@ export default function ApplicationsPage() {
         setLoading(false);
     }, [isSuperAdmin]);
 
+    const handleContributionStatusChange = async (contributionId: string, newStatus: string) => {
+        try {
+            const res = await fetch(`/api/contributions/${contributionId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            if (res.ok) {
+                const updated = await res.json();
+                setContributions(prev => prev.map(c => c.id === contributionId ? updated : c));
+                setSelectedContribution(updated);
+            } else {
+                const error = await res.text();
+                alert(`Failed to update: ${error}`);
+            }
+        } catch (error) {
+            console.error("Failed to update contribution status:", error);
+            alert("Failed to update contribution status. Please try again.");
+        }
+    };
+
     const filteredApps = applications.filter(app => {
         if (activeTab === 'ALL') return true;
         if (activeTab === 'MEMBERSHIP') return !app.guide && !app.program;
@@ -258,12 +280,22 @@ export default function ApplicationsPage() {
                                             </div>
                                         </div>
                                     </div>
-                                    {canManage && (
+                                    {canManage && isSuperAdmin && (
                                         <div className="flex gap-2">
-                                            <button className="p-2.5 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all hover:scale-105 active:scale-95" title="Reject">
+                                            <button 
+                                                onClick={() => handleContributionStatusChange(selectedContribution.id, 'rejected')}
+                                                disabled={selectedContribution.status === 'rejected'}
+                                                className="p-2.5 bg-red-500/10 text-red-500 rounded-xl border border-red-500/20 hover:bg-red-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" 
+                                                title="Reject"
+                                            >
                                                 <X className="w-5 h-5" />
                                             </button>
-                                            <button className="p-2.5 bg-emerald-500/10 text-emerald-500 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20 transition-all hover:scale-105 active:scale-95" title="Approve">
+                                            <button 
+                                                onClick={() => handleContributionStatusChange(selectedContribution.id, 'approved')}
+                                                disabled={selectedContribution.status === 'approved'}
+                                                className="p-2.5 bg-emerald-500/10 text-emerald-500 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed" 
+                                                title="Approve"
+                                            >
                                                 <Check className="w-5 h-5" />
                                             </button>
                                         </div>
@@ -301,30 +333,6 @@ export default function ApplicationsPage() {
                                         </div>
                                     )}
 
-                                    {selectedContribution.type === 'programs' && (
-                                        <div className="space-y-4">
-                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                                                <Users className="w-4 h-4 text-blue-400" /> Program
-                                            </h4>
-                                            <div className="p-4 bg-black/20 rounded-xl border border-white/5">
-                                                <div className="text-xs text-zinc-500 mb-1">Program</div>
-                                                <div className="text-white font-medium">{selectedContribution.programTitle || selectedContribution.programId || 'N/A'}</div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {selectedContribution.type === 'internal-works' && (
-                                        <div className="space-y-4">
-                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                                                <Briefcase className="w-4 h-4 text-amber-400" /> Internal Works Description
-                                            </h4>
-                                            <div className="p-4 bg-black/20 rounded-xl border border-white/5">
-                                                <p className="text-zinc-300 leading-relaxed whitespace-pre-wrap text-sm">
-                                                    {selectedContribution.internalWorksDescription || 'N/A'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         ) : selectedApp ? (

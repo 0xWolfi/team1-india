@@ -30,6 +30,13 @@ export function MemberHeader({ user }: MemberHeaderProps) {
 
                     {/* Mobile Actions (Visible only on mobile) */}
                     <div className="flex md:hidden items-center gap-2">
+                        <button
+                            onClick={() => setIsContributionModalOpen(true)}
+                            className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-all flex items-center gap-1.5"
+                        >
+                            <Plus className="w-3 h-3" />
+                            Submit
+                        </button>
                         <Link 
                             href="/member/profile"
                             className="w-8 h-8 rounded-full bg-zinc-800/50 border border-white/5 flex items-center justify-center text-zinc-400"
@@ -58,17 +65,17 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                 <p className="text-zinc-500 font-medium text-xs md:text-sm mt-1 md:mt-2 max-w-lg leading-relaxed">
                     Welcome back, <span className="text-white">{user?.name || 'Member'}</span>.
                 </p>
-                <button
-                    onClick={() => setIsContributionModalOpen(true)}
-                    className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20"
-                >
-                    <Plus className="w-4 h-4" />
-                    Submit your contributions
-                </button>
             </div>
             
             {/* Desktop Actions (Hidden on mobile) */}
             <div className="hidden md:flex items-center gap-6">
+                <button
+                    onClick={() => setIsContributionModalOpen(true)}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+                >
+                    <Plus className="w-4 h-4" />
+                    Submit your contributions
+                </button>
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
                     {user?.image ? (
                         <img src={user.image} alt="Profile" className="w-10 h-10 rounded-full ring-2 ring-white/10" />
