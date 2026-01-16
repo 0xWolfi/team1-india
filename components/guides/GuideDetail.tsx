@@ -243,7 +243,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
             </div>
 
             <div className="flex justify-end mb-8">
-                {canEdit && (
+                {canEdit && dashboardPath.startsWith('/core') && (
                         <div className="flex gap-2">
                              <button
                                 onClick={() => router.push(`${window.location.pathname}/edit`)} 
@@ -262,8 +262,8 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
             </div>
             {/* ... (rest of the component) ... */}
 
-            {/* Admin Tabs */}
-            {canEdit && (
+            {/* Admin Tabs - Visible only in Core Dashboard */}
+            {canEdit && dashboardPath.startsWith('/core') && (
                 <div className="flex gap-6 border-b border-white/5 mb-8">
                     <button 
                         onClick={() => setView('DETAILS')}
