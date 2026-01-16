@@ -242,9 +242,10 @@ export function PlaybookShell({
                     </div>
                 ) : (
                     // ------------------ VIEW MODE HEADER ------------------
-                    <div className="space-y-6 mb-16 animate-in fade-in duration-500">
+                    // ------------------ VIEW MODE HEADER ------------------
+                    <div className="max-w-3xl mx-auto space-y-8 mb-12 animate-in fade-in duration-500">
                         {/* 1. View Banner */}
-                        <div className="relative w-full rounded-3xl overflow-hidden h-[400px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
+                        <div className="relative w-full rounded-2xl overflow-hidden h-[240px] group border border-white/5 bg-zinc-900/50 shadow-2xl ring-1 ring-white/10">
                             <div className="absolute top-6 left-6 z-20">
                                 <Link 
                                     href={backLink} 
@@ -268,12 +269,12 @@ export function PlaybookShell({
                         </div>
 
                         {/* 2. View Title & Description */}
-                        <div className="max-w-4xl space-y-6">
-                            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
+                        <div className="space-y-4">
+                            <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight">
                                 {playbook.title}
                             </h1>
                             {playbook.description && (
-                                <p className="text-lg text-zinc-400 max-w-3xl leading-relaxed font-medium">
+                                <p className="text-base md:text-lg text-zinc-400 leading-relaxed font-medium">
                                     {playbook.description}
                                 </p>
                             )}
