@@ -268,3 +268,111 @@ export function getDiscussionEmailTemplate(applicantName: string, programTitle: 
 </html>
     `;
 }
+
+// Contribution approval email template
+export function getContributionApprovalEmailTemplate(contributorName: string, contributionType: string) {
+    const typeLabel = contributionType === 'event-host' ? 'Event Host' : 'Content';
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; color: #000000;">
+    <div style="padding: 40px 20px; max-width: 600px; margin: 0 auto;">
+        <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Your Contribution Has Been Approved</h1>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Hi ${contributorName},
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            We're pleased to inform you that your ${typeLabel} contribution to Team1 India has been approved.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Thank you for your valuable contribution to our community. We appreciate your efforts and look forward to more contributions from you.
+        </p>
+        
+        <p style="margin: 24px 0 16px; font-size: 16px; line-height: 1.6; font-weight: bold;">
+            🔐 Verification Notice:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            If anyone contacts you claiming to represent Team1 India, you can verify whether they are an official member or representative through our Member Verification section:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Thank you for your interest and engagement with Team1 India.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Sarnavo<br>
+            Team1 India Team
+        </p>
+    </div>
+</body>
+</html>
+    `;
+}
+
+// Contribution rejection email template
+export function getContributionRejectionEmailTemplate(contributorName: string, contributionType: string) {
+    const typeLabel = contributionType === 'event-host' ? 'Event Host' : 'Content';
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; color: #000000;">
+    <div style="padding: 40px 20px; max-width: 600px; margin: 0 auto;">
+        <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Update on Your Contribution</h1>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Hi ${contributorName},
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Thank you for submitting your ${typeLabel} contribution to Team1 India.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            After careful review, we regret to inform you that your contribution was not approved at this time. Due to current selection criteria and capacity, we're unable to move forward right now.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            We encourage you to stay engaged with Team1 India and submit contributions again for future opportunities.
+        </p>
+        
+        <p style="margin: 24px 0 16px; font-size: 16px; line-height: 1.6; font-weight: bold;">
+            🔐 Security Notice:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Team1 India will not reach out individually regarding rejected contributions. If anyone claims otherwise, you can verify official members and contacts here:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Thank you for your interest and understanding.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Sarnavo<br>
+            Team1 India Team
+        </p>
+    </div>
+</body>
+</html>
+    `;
+}
