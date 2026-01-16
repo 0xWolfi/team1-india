@@ -243,7 +243,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
             </div>
 
             <div className="flex justify-end mb-8">
-                {canEdit && (
+                {canEdit && dashboardPath.startsWith('/core') && (
                         <div className="flex gap-2">
                              <button
                                 onClick={() => router.push(`${window.location.pathname}/edit`)} 
