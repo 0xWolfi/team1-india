@@ -63,7 +63,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                 onChange(JSON.stringify(editor.document));
                 // Only sync MD if we are not currently editing MD (prevent loop)
                 if (viewMode !== 'markdown') {
-                   const md = await editor.blocksToMarkdownLossy(editor.document);
+                   const md = editor.blocksToMarkdownLossy(editor.document);
                    setMarkdownContent(md);
                 }
             }
@@ -78,7 +78,8 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
     // Initial MD Load
     useEffect(() => {
         if (editor && editor.document) {
-            editor.blocksToMarkdownLossy(editor.document).then(setMarkdownContent);
+            const md = editor.blocksToMarkdownLossy(editor.document);
+            setMarkdownContent(md);
         }
     }, [editor]);
 
@@ -95,7 +96,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
 
         if (newMode === 'markdown' && viewMode !== 'markdown') {
             // Already synced via useEffect, but ensure fresh
-            const md = await editor.blocksToMarkdownLossy(editor.document);
+            const md = editor.blocksToMarkdownLossy(editor.document);
             setMarkdownContent(md);
         }
 
