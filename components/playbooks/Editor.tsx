@@ -368,7 +368,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                      padding: 6px !important;
                      align-items: stretch !important;
                 }
-             `}</style>
+
 
                 /* Fix Heading Spacing - Zero Gap Mode */
                 .bn-block-content h1, 
