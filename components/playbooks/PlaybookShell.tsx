@@ -55,6 +55,7 @@ export function PlaybookShell({
     // Cropper & Upload States
     const [cropperSrc, setCropperSrc] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
 
     // Premium UI States (Scroll & Sticky)
     const { scrollYProgress, scrollY } = useScroll();
@@ -79,7 +80,10 @@ export function PlaybookShell({
             contentToCopy = "Error copying content.";
         }
         
+        
         navigator.clipboard.writeText(contentToCopy);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
     };
 
     // 1. Intercept Selection
@@ -160,9 +164,7 @@ export function PlaybookShell({
                                     <span className="w-px h-4 bg-white/10" />
                                 </>
                             )}
-                            <h3 className="font-medium text-zinc-200 text-sm line-clamp-1 max-w-[200px] md:max-w-xs">
-                                {playbook.title}
-                            </h3>
+                            {/* Title Removed: <h3 className="font-medium text-zinc-200 text-sm line-clamp-1 max-w-[200px] md:max-w-xs">{playbook.title}</h3> */}
                             {stickyActions && (
                                 <>
                                     <span className="w-px h-4 bg-white/10" />
@@ -407,7 +409,8 @@ export function PlaybookShell({
                                     onClick={handleCopyMarkdown}
                                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium transition-all"
                                 >
-                                    <Copy className="w-4 h-4" /> Copy Markdown
+                                    {isCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                                    {isCopied ? <span className="text-emerald-400">Copied!</span> : "Copy Markdown"}
                                 </button>
                              </div>
 
