@@ -3,19 +3,8 @@
 import React, { useState } from 'react';
 import { ThumbsUp, ThumbsDown, Copy, Check } from 'lucide-react';
 
-interface HelpfulWidgetProps {
-    onCopyMarkdown: () => void;
-}
-
-export function HelpfulWidget({ onCopyMarkdown }: HelpfulWidgetProps) {
+export function HelpfulWidget() {
     const [vote, setVote] = useState<'yes' | 'no' | null>(null);
-    const [copied, setCopied] = useState(false);
-
-    const handleCopy = () => {
-        onCopyMarkdown();
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
 
     return (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6 rounded-2xl bg-zinc-900/40 border border-white/5 backdrop-blur-sm">
@@ -41,15 +30,6 @@ export function HelpfulWidget({ onCopyMarkdown }: HelpfulWidgetProps) {
                 </div>
                 {vote && <p className="text-xs text-zinc-500 animate-in fade-in">Thanks for your feedback!</p>}
             </div>
-
-            {/* Copy Action */}
-            <button 
-                onClick={handleCopy}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/5 text-zinc-300 hover:text-white transition-all text-sm font-medium"
-            >
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                {copied ? "Copied Markdown" : "Copy as Markdown"}
-            </button>
         </div>
     );
 }

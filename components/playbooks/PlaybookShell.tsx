@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, X, Image as ImageIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, X, Image as ImageIcon, Loader2, Copy, Check } from "lucide-react";
 import { HelpfulWidget } from "./HelpfulWidget";
 import { Footer } from "@/components/website/Footer";
 import { cn } from "@/lib/utils";
@@ -245,56 +245,54 @@ export function PlaybookShell({
                     // ------------------ VIEW MODE HEADER ------------------
                     // ------------------ VIEW MODE HEADER (BLOG STYLE) ------------------
                     // ------------------ VIEW MODE HEADER (HERO STYLE) ------------------
-                    <div className="max-w-3xl mx-auto space-y-10 mb-24 animate-in fade-in duration-500 pt-8">
+                    // ------------------ VIEW MODE HEADER (HERO STYLE) ------------------
+                    <div className="max-w-3xl mx-auto space-y-8 mb-16 animate-in fade-in duration-500 pt-0">
                         
-                        {/* 0. Back Button (Inline) */}
-                        <div className="flex items-center gap-4">
-                            <Link 
-                                href={backLink} 
-                                className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-all group/back"
-                                title={backLabel}
-                            >
-                                <ArrowLeft className="w-4 h-4 group-hover/back:-translate-x-0.5 transition-transform" />
-                            </Link>
-                        </div>
-
-                         {/* 1. Feature Image (Top) */}
+                         {/* 1. Feature Image (Top - No Padding above) */}
                         {playbook.coverImage && (
-                            <div className="relative w-full rounded-2xl overflow-hidden aspect-[2/1] border border-white/5 bg-zinc-900 shadow-2xl ring-1 ring-white/10 group">
+                            <div className="relative w-full rounded-2xl overflow-hidden aspect-[2.4/1] bg-zinc-900 shadow-2xl group mb-8">
                                 <img src={playbook.coverImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
+                                
+                                {/* Back Button Inside Banner */}
+                                <div className="absolute top-4 left-4 z-20">
+                                    <Link 
+                                        href={backLink} 
+                                        className="w-10 h-10 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 transition-all backdrop-blur-md border border-white/10"
+                                        title={backLabel}
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                    </Link>
+                                </div>
                             </div>
+                        )}
+
+                        {!playbook.coverImage && (
+                             <div className="mb-8 pt-8">
+                                 <Link 
+                                    href={backLink} 
+                                    className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-all"
+                                    title={backLabel}
+                                >
+                                    <ArrowLeft className="w-4 h-4" />
+                                </Link>
+                             </div>
                         )}
 
                         {/* 2. Title & Description */}
                         <div className="space-y-6 text-center md:text-left">
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1]">
+                            <h1 className="text-4xl md:text-5xl lg:text-5xl font-bold tracking-tight text-white leading-[1.1]">
                                 {playbook.title}
                             </h1>
                             {playbook.description && (
-                                <p className="text-lg md:text-xl text-zinc-400 leading-relaxed font-medium">
+                                <p className="text-xl text-zinc-400 leading-relaxed font-medium w-full">
                                     {playbook.description}
                                 </p>
                             )}
-
-                             {/* 3. Byline (Author & Date) */}
-                             <div className="flex items-center justify-center md:justify-start gap-4 text-sm pt-4">
-                                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/50 border border-white/5">
-                                     <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white shadow-inner">
-                                        {(playbook.createdBy?.name || playbook.createdBy?.email || 'T1').charAt(0).toUpperCase()}
-                                     </div>
-                                     <span className="text-zinc-300 font-medium">
-                                        {playbook.createdBy?.name || playbook.createdBy?.email?.split('@')[0] || 'Team1 India'}
-                                     </span>
-                                </div>
-                                <span className="text-zinc-600">|</span>
-                                <span className="text-zinc-400 font-medium">
-                                    {new Date(playbook.createdAt || playbook.updatedAt).toLocaleDateString(undefined, {
-                                        month: 'long', day: 'numeric', year: 'numeric'
-                                    })}
-                                </span>
-                             </div>
                         </div>
+
+                        {/* Divider before Body */}
+                        <div className="w-full h-px bg-white/10 my-8" />
                     </div>
                 )}
 
@@ -333,24 +331,58 @@ export function PlaybookShell({
                             {children}
                         </div>
 
-                        {/* Reader Footer: Actions Inline */}
-                        <div className="mt-24 pt-8 border-t border-white/5">
-                             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                
-                                {/* 1. Actions */}
-                                <div className="flex items-center gap-4">
-                                    <HelpfulWidget onCopyMarkdown={handleCopyMarkdown} />
-                                </div>
+                        {/* Reader Footer */}
+                        <div className="mt-16 space-y-8">
+                             
+                             {/* Divider after Body */}
+                             <div className="w-full h-px bg-white/10" />
 
-                                {/* 2. Need Help Link */}
+                             {/* 1. Copy as Markdown Box */}
+                             <div className="bg-zinc-900/40 rounded-xl border border-white/5 p-6 flex items-center justify-between group hover:border-white/10 transition-colors">
+                                <div className="space-y-1">
+                                    <h3 className="text-sm font-semibold text-white">Share or Remix</h3>
+                                    <p className="text-xs text-zinc-400">Copy the markdown source for this playbook.</p>
+                                </div>
+                                <button 
+                                    onClick={handleCopyMarkdown}
+                                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white text-sm font-medium transition-all"
+                                >
+                                    <Copy className="w-4 h-4" /> Copy Markdown
+                                </button>
+                             </div>
+
+                             {/* 2. Metadata (Left: By, Right: On) */}
+                             <div className="flex items-center justify-between text-sm py-4 border-b border-white/5">
+                                <div className="flex items-center gap-2">
+                                     <span className="text-zinc-500 font-medium">Written by</span>
+                                     <span className="text-zinc-200 font-semibold px-2 py-1 bg-zinc-800 rounded text-xs tracking-wide">
+                                        {(playbook.createdBy?.name || playbook.createdBy?.email || 'TEAM 1').toUpperCase()}
+                                     </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                     <span className="text-zinc-500 font-medium">On</span>
+                                     <span className="text-zinc-300 font-medium">
+                                        {new Date(playbook.createdAt || playbook.updatedAt).toLocaleDateString(undefined, {
+                                            month: 'short', day: 'numeric', year: 'numeric'
+                                        })}
+                                     </span>
+                                </div>
+                             </div>
+
+                             {/* 3. Feedback & Support Row */}
+                             <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-2">
+                                {/* Left: Feedback */}
+                                <HelpfulWidget />
+
+                                {/* Right: Support */}
                                 <div className="flex items-center gap-3 text-sm">
                                     <span className="text-zinc-500">Need changes?</span>
                                     <a href="mailto:support@team1.india" className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-white transition-colors group">
                                        Reach out <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
                                     </a>
                                 </div>
-
                              </div>
+
                         </div>
                     </div>
                 )}
