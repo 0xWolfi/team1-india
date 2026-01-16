@@ -99,7 +99,7 @@ export function PlaybookShell({
                         {/* 1. Editable Cover Area */}
                         <div className="relative w-full group">
                             {playbook.coverImage ? (
-                                <div className="relative w-full rounded-2xl overflow-hidden min-h-[350px] border border-white/10 bg-zinc-900/50 shadow-2xl transition-all hover:border-white/20">
+                                <div className="relative w-full rounded-2xl overflow-hidden h-[400px] border border-white/10 bg-zinc-900/50 shadow-2xl transition-all hover:border-white/20">
                                     <img src={playbook.coverImage} className="w-full h-full object-cover" />
                                     {/* Remove Cover Button */}
                                     <button 
@@ -169,7 +169,7 @@ export function PlaybookShell({
                     // ------------------ VIEW MODE HEADER ------------------
                     <div className="space-y-6 mb-16 animate-in fade-in duration-500">
                         {/* 1. View Banner */}
-                        <div className="relative w-full rounded-3xl overflow-hidden min-h-[400px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
+                        <div className="relative w-full rounded-3xl overflow-hidden h-[400px] mb-16 group border border-white/5 bg-zinc-900/50 shadow-2xl shadow-black/50 ring-1 ring-white/10">
                             <div className="absolute top-6 left-6 z-20">
                                 <Link 
                                     href={backLink} 
