@@ -1,43 +1,45 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Plus, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import { prisma } from "@/lib/prisma";
+import { hasPermission } from "@/lib/permissions";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { GuideList } from '@/components/guides/GuideList';
-import { usePermission } from "@/hooks/usePermission";
 
-export default function ContentPage() {
-    const [guides, setGuides] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const canCreate = usePermission("content", "WRITE");
+export const dynamic = 'force-dynamic';
 
-    const fetchGuides = async () => {
-        setIsLoading(true);
-        try {
-            const res = await fetch('/api/guides?type=CONTENT');
-            if (res.ok) {
-                const data = await res.json();
-                setGuides(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch guides", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+export default async function ContentPage() {
+    const session = await getServerSession(authOptions);
+    // @ts-ignore
+    const userPermissions = session?.user?.permissions || {};
+    const canCreate = hasPermission(userPermissions, "content", "WRITE");
 
-    useEffect(() => {
-        fetchGuides();
-    }, []);
+    const rawGuides = await prisma.guide.findMany({
+        where: { 
+            type: 'CONTENT',
+            deletedAt: null
+        },
+        orderBy: { createdAt: 'desc' },
+        include: { createdBy: true }
+    });
+
+    const guides = rawGuides.map(g => ({
+        ...g,
+        createdAt: g.createdAt.toISOString(),
+        updatedAt: g.updatedAt.toISOString(),
+        // Ensure body is typed correctly or cast it if needed, GuideList expects { description: string } inside body
+        body: g.body as any
+    }));
 
     return (
         <CoreWrapper>
              <CorePageHeader
                 title="Content"
                 description="Manage content guidelines, templates, and publishing workflows."
-                icon={<BookOpen className="w-5 h-5 text-zinc-200" />}
+                icon={<BookOpen className="w-5 h-5 text-red-500" />}
              >
                 {canCreate && (
                     <Link href="/core/content/guides/new">
@@ -49,9 +51,8 @@ export default function ContentPage() {
              </CorePageHeader>
 
             <GuideList 
-                guides={guides} 
+                guides={guides as any} 
                 basePath="/core/content/guides" 
-                isLoading={isLoading} 
                 canWrite={canCreate}
             />
         </CoreWrapper>

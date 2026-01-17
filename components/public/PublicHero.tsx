@@ -41,11 +41,11 @@ export default function PublicHero({ heroItem }: { heroItem?: HeroItem }) {
                         <p className="text-zinc-400 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
                             Access our curated collection of guides, playbooks, and community resources. Built for transparency and collaboration.
                         </p>
-                        <div className="flex flex-wrap justify-center gap-4 pt-4">
-                            <button onClick={() => setShowApplication(true)} className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center gap-2 text-lg">
+                        <div className="flex flex-wrap justify-center gap-4 pt-2">
+                            <button onClick={() => setShowApplication(true)} className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center gap-2 text-lg shadow-lg hover:shadow-xl">
                                 <Zap className="w-5 h-5 fill-black" /> Apply for Membership
                             </button>
-                            <Link href="#playbooks" className="px-8 py-4 bg-white/5 border border-white/10 text-white font-medium rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2 text-lg">
+                            <Link href="#playbooks" className="px-8 py-4 bg-white/10 border border-white/20 hover:bg-brand-600/90 hover:border-brand-500/50 text-white font-medium rounded-xl transition-all flex items-center gap-2 text-lg shadow-lg hover:shadow-brand-500/20 backdrop-blur-md">
                                 <LayoutGrid className="w-5 h-5" /> Browse Resources
                             </Link>
                         </div>

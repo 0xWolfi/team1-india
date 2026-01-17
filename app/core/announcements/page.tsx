@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Megaphone, Plus, ArrowLeft, Trash2, ExternalLink } from "lucide-react";
-import Link from "next/link";
+import { Megaphone, Plus, Trash2, ExternalLink } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
+import { CoreWrapper } from "@/components/core/CoreWrapper";
+import { CorePageHeader } from "@/components/core/CorePageHeader";
 
 interface Announcement {
     id: string;
@@ -98,7 +99,7 @@ export default function AnnouncementsPage() {
     };
 
     return (
-        <div className="min-h-screen pt-24 px-6 max-w-5xl mx-auto pb-20 text-white relative">
+        <CoreWrapper>
             {/* Limit Reached Modal */}
             {conflictItems && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -143,29 +144,23 @@ export default function AnnouncementsPage() {
                 </div>
             )}
 
-            <Link href="/core" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-6 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> Back to Core
-            </Link>
-
-            <header className="mb-10 flex justify-between items-end">
-                <div>
-                    <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-                         <Megaphone className="w-8 h-8 text-indigo-500" /> Announcements
-                     </h1>
-                    <p className="text-zinc-400">Broadcast updates to Public, Members, or Everyone.</p>
-                </div>
+            <CorePageHeader
+                title="Announcements"
+                description="Broadcast updates to Public, Members, or Everyone."
+                icon={<Megaphone className="w-5 h-5 text-red-500" />}
+            >
                 {!isCreating && canManage && (
                     <button 
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm font-bold shadow-lg shadow-indigo-500/20"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm font-bold shadow-lg shadow-red-500/20"
                     >
                         <Plus className="w-4 h-4" /> New Announcement
                     </button>
                 )}
-            </header>
+            </CorePageHeader>
 
             {isCreating && (
-                <div className="mb-8 p-6 bg-zinc-900 border border-white/10 rounded-2xl animate-in slide-in-from-top-4 fade-in">
+                <div className="mb-8 p-6 bg-zinc-900/50 backdrop-blur-md border border-white/10 rounded-2xl animate-in slide-in-from-top-4 fade-in">
                     <h2 className="text-lg font-bold mb-4">Create Announcement</h2>
                     <form onSubmit={handleCreate} className="space-y-4">
                         <div>
@@ -228,7 +223,7 @@ export default function AnnouncementsPage() {
                             </div>
                         </div>
                         <div className="flex justify-end gap-3 pt-2">
-                             <button 
+                                <button 
                                 type="button"
                                 onClick={() => setIsCreating(false)}
                                 className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white"
@@ -248,12 +243,12 @@ export default function AnnouncementsPage() {
             )}
 
             <div className="grid gap-3">
-                 {(!Array.isArray(announcements) || announcements.length === 0) ? (
-                    <div className="flex flex-col items-center justify-center text-zinc-500 h-64 border border-dashed border-white/10 rounded-2xl">
+                    {(!Array.isArray(announcements) || announcements.length === 0) ? (
+                    <div className="flex flex-col items-center justify-center text-zinc-500 h-64 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
                         <Megaphone className="w-12 h-12 mb-4 opacity-20" />
                         <p>No active announcements.</p>
                     </div>
-                 ) : (
+                    ) : (
                     announcements.map(item => (
                         <div key={item.id} className="flex items-center justify-between p-4 bg-zinc-900/50 border border-white/5 rounded-xl group hover:border-white/10 transition-all">
                             <div className="flex items-center gap-4">
@@ -298,8 +293,8 @@ export default function AnnouncementsPage() {
                             )}
                         </div>
                     ))
-                 )}
+                    )}
             </div>
-        </div>
+        </CoreWrapper>
     );
 }

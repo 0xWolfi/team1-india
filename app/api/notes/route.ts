@@ -1,53 +1,81 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Handles Notes
+// Handles Meeting Notes using ContentResource
 export async function GET(req: NextRequest) {
     try {
-        // Fetch the latest note to display
-        const note = await prisma.meetingNote.findFirst({
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get('id');
+
+        if (id) {
+            const note = await prisma.contentResource.findUnique({
+                where: { id }
+            });
+            return NextResponse.json(note);
+        }
+
+        // Fetch all meeting notes
+        const notes = await prisma.contentResource.findMany({
+            where: { 
+                type: 'MEETING_NOTE',
+                deletedAt: null
+            },
             orderBy: { createdAt: 'desc' }
         });
-        return NextResponse.json(note || { content: "" });
+        return NextResponse.json(notes);
     } catch (error) {
         console.error("GET /api/notes error:", error);
-        return NextResponse.json({ error: "Failed to fetch note", details: String(error) }, { status: 500 });
+        return NextResponse.json({ error: "Failed to fetch notes", details: String(error) }, { status: 500 });
     }
 }
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { content } = body;
-        
-        // We could update the latest or create new. 
-        // Let's create new if it's been a while, or update if recent? 
-        // For simplicity, let's just create a new record every save, acting like a log, 
-        // OR just have one singleton note for "Today". 
-        // Let's go with: Update latest if created today, else create new.
-        
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        
-        const existing = await prisma.meetingNote.findFirst({
-            where: { createdAt: { gte: today } },
-            orderBy: { createdAt: 'desc' }
+        const { title, date, visibility, content } = body;
+
+        // Validation
+        if (!title || !date) {
+            return NextResponse.json({ error: "Title and Date are required" }, { status: 400 });
+        }
+
+        const note = await prisma.contentResource.create({
+            data: {
+                title,
+                type: 'MEETING_NOTE',
+                content: content || "",
+                status: 'published', // Default status
+                customFields: {
+                    date,
+                    visibility: visibility || 'CORE'
+                }
+            }
         });
 
-        if (existing) {
-            const updated = await prisma.meetingNote.update({
-                where: { id: existing.id },
-                data: { content }
-            });
-            return NextResponse.json(updated);
-        } else {
-            const created = await prisma.meetingNote.create({
-                data: { content }
-            });
-            return NextResponse.json(created);
-        }
+        return NextResponse.json(note);
     } catch (error) {
         console.error("POST /api/notes error:", error);
         return NextResponse.json({ error: "Failed to save note", details: String(error) }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json({ error: "ID is required" }, { status: 400 });
+        }
+
+        await prisma.contentResource.update({
+            where: { id },
+            data: { deletedAt: new Date() }
+        });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("DELETE /api/notes error:", error);
+        return NextResponse.json({ error: "Failed to delete note", details: String(error) }, { status: 500 });
     }
 }

@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { History, Download, Calendar, User as UserIcon, Filter, Activity, FileText } from 'lucide-react';
+import { 
+    History, Download, Filter, 
+    Plus, Pencil, Trash2, LogIn, FileText, 
+    ChevronLeft, ChevronRight, Activity, Calendar
+} from 'lucide-react';
 
 interface AuditLog {
     id: string;
@@ -63,7 +67,7 @@ export default function LogsPage() {
             log.action,
             log.resource,
             log.resourceId || '',
-            JSON.stringify(log.metadata || {}).replace(/"/g, '""') // Escape quotes
+            JSON.stringify(log.metadata || {}).replace(/"/g, '""')
         ]);
 
         const csvContent = [headers.join(','), ...rows.map(r => `"${r.join('","')}"`)].join('\n');
@@ -77,39 +81,59 @@ export default function LogsPage() {
         document.body.removeChild(link);
     };
 
+    const getActionIcon = (action: string) => {
+        switch (action) {
+            case 'CREATE': return <Plus className="w-4 h-4 text-emerald-400" />;
+            case 'UPDATE': return <Pencil className="w-4 h-4 text-blue-400" />;
+            case 'DELETE': return <Trash2 className="w-4 h-4 text-red-400" />;
+            case 'LOGIN': return <LogIn className="w-4 h-4 text-purple-400" />;
+            default: return <Activity className="w-4 h-4 text-zinc-400" />;
+        }
+    };
+
+    const getActionColor = (action: string) => {
+        switch (action) {
+            case 'CREATE': return 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
+            case 'UPDATE': return 'bg-blue-500/10 border-blue-500/20 text-blue-400';
+            case 'DELETE': return 'bg-red-500/10 border-red-500/20 text-red-400';
+            case 'LOGIN': return 'bg-purple-500/10 border-purple-500/20 text-purple-400';
+            default: return 'bg-zinc-800 border-white/5 text-zinc-400';
+        }
+    };
+
     return (
         <CoreWrapper>
             <CorePageHeader
                 title="System Logs"
                 description="Audit trail of critical system activities and changes."
-                icon={<History className="w-5 h-5 text-zinc-200" />}
+                icon={<History className="w-5 h-5 text-red-500" />}
             >
-                <div className="flex items-center gap-2">
-                    <span className="text-xs text-zinc-500">
-                        {pagination.total} Records
+                <div className="flex items-center gap-3">
+                    <span className="text-xs text-zinc-500 font-bold uppercase tracking-wider hidden md:block">
+                        {pagination.total} Records Found
                     </span>
                     <button 
                         onClick={handleDownload}
-                        className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors"
+                        className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-xl font-bold text-xs hover:bg-zinc-200 transition-colors shadow-lg shadow-white/5"
                     >
-                        <Download className="w-4 h-4" /> Export CSV
+                        <Download className="w-3.5 h-3.5" /> Export CSV
                     </button>
                 </div>
             </CorePageHeader>
 
             <div className="space-y-6">
-                {/* Filters */}
-                <div className="flex flex-wrap gap-4 p-4 bg-zinc-900/50 border border-white/5 rounded-xl justify-between items-center">
-                    <div className="flex gap-4">
-                        <div className="flex items-center gap-2">
-                             <Filter className="w-4 h-4 text-zinc-500" />
-                             <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Filter By:</span>
+                {/* Filters & Pagination Bar */}
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
+                    <div className="flex gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/5">
+                             <Filter className="w-3.5 h-3.5 text-zinc-400" />
+                             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Filters</span>
                         </div>
 
                         <select 
                             value={actionFilter}
                             onChange={(e) => setActionFilter(e.target.value)}
-                            className="bg-black/50 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-white/30"
+                            className="bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-xs font-medium text-white focus:outline-none focus:border-red-500/50 hover:bg-white/5 transition-colors cursor-pointer"
                         >
                             <option value="ALL">All Actions</option>
                             <option value="CREATE">Create</option>
@@ -121,102 +145,100 @@ export default function LogsPage() {
                         <select 
                             value={resourceFilter}
                             onChange={(e) => setResourceFilter(e.target.value)}
-                            className="bg-black/50 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-white/30"
+                            className="bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-xs font-medium text-white focus:outline-none focus:border-red-500/50 hover:bg-white/5 transition-colors cursor-pointer"
                         >
                             <option value="ALL">All Resources</option>
                             <option value="MEDIA_KIT">Media Kit</option>
                             <option value="EXPERIMENT">Experiment</option>
                             <option value="GUIDE">Guide</option>
                             <option value="MEMBER">Member</option>
+                            <option value="PLAYBOOK">Playbook</option>
                         </select>
                     </div>
 
-                    {/* Pagination */}
                     <div className="flex items-center gap-2">
                         <button
                             disabled={pagination.page <= 1}
                             onClick={() => fetchLogs(pagination.page - 1)}
-                            className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs font-bold text-white disabled:opacity-50 hover:bg-white/10 transition-colors"
+                            className="p-2 bg-white/5 border border-white/10 rounded-lg text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-colors"
                         >
-                            Prev
+                            <ChevronLeft className="w-4 h-4" />
                         </button>
-                        <span className="text-xs text-zinc-400">
-                            Page {pagination.page} of {pagination.pages}
+                        <span className="text-xs font-mono text-zinc-400 px-2">
+                            {pagination.page} / {pagination.pages || 1}
                         </span>
                         <button
                             disabled={pagination.page >= pagination.pages}
                             onClick={() => fetchLogs(pagination.page + 1)}
-                            className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs font-bold text-white disabled:opacity-50 hover:bg-white/10 transition-colors"
+                            className="p-2 bg-white/5 border border-white/10 rounded-lg text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition-colors"
                         >
-                            Next
+                            <ChevronRight className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
 
-                {/* Logs Table */}
-                <div className="bg-zinc-900 border border-white/5 rounded-xl overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Timestamp</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Actor</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Action</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Resource</th>
-                                    <th className="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Details</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {isLoading ? (
-                                    <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
-                                            Loading logs...
-                                        </td>
-                                    </tr>
-                                ) : logs.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
-                                            No logs found matching your filters.
-                                        </td>
-                                    </tr>
-                                ) : logs.map((log) => (
-                                    <tr key={log.id} className="hover:bg-white/5 transition-colors group">
-                                        <td className="px-6 py-4 text-xs text-zinc-400 font-mono">
-                                            {new Date(log.createdAt).toLocaleString()}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
-                                                {log.actor?.image ? (
-                                                    <img src={log.actor.image} alt="" className="w-5 h-5 rounded-full" />
-                                                ) : (
-                                                    <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center">
-                                                        <UserIcon className="w-3 h-3 text-zinc-500" />
-                                                    </div>
-                                                )}
-                                                <span className="text-sm font-medium text-white">{log.actor?.name || 'System'}</span>
+                {/* Logs List - Card Style */}
+                <div className="space-y-3">
+                    {isLoading ? (
+                        <div className="py-20 text-center text-zinc-500 bg-white/[0.02] border border-dashed border-white/5 rounded-3xl animate-pulse">
+                            Loading logs...
+                        </div>
+                    ) : logs.length === 0 ? (
+                        <div className="py-20 text-center flex flex-col items-center justify-center text-zinc-500 bg-white/[0.02] border border-dashed border-white/5 rounded-3xl">
+                            <FileText className="w-10 h-10 mb-4 opacity-20" />
+                            <p>No logs found matching your filters.</p>
+                        </div>
+                    ) : (
+                        logs.map((log) => (
+                            <div 
+                                key={log.id} 
+                                className="group relative bg-black/20 backdrop-blur-md border border-white/5 rounded-2xl p-5 hover:border-white/10 hover:bg-black/40 transition-all"
+                            >
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    
+                                    {/* Left: Icon & Main Info */}
+                                    <div className="flex items-start gap-4">
+                                        <div className={`p-3 rounded-xl border ${getActionColor(log.action)} mt-1 md:mt-0`}>
+                                            {getActionIcon(log.action)}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h3 className="text-sm font-bold text-white">
+                                                    {log.resource} <span className="text-zinc-500 font-normal">/</span> {log.action}
+                                                </h3>
+                                                <span className="text-[10px] text-zinc-500 font-mono bg-white/5 px-1.5 py-0.5 rounded">
+                                                    {new Date(log.createdAt).toLocaleTimeString()}
+                                                </span>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${
-                                                log.action === 'CREATE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                                log.action === 'DELETE' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                log.action === 'UPDATE' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                                'bg-zinc-800 text-zinc-400 border-zinc-700'
-                                            }`}>
-                                                {log.action}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-zinc-300">
-                                            {log.resource}
-                                        </td>
-                                        <td className="px-6 py-4 text-xs text-zinc-500 max-w-xs truncate font-mono">
-                                            {JSON.stringify(log.metadata)}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                            
+                                            <div className="flex items-center gap-2 text-xs text-zinc-400">
+                                                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 rounded-full border border-white/5">
+                                                    {log.actor?.image ? (
+                                                        <img src={log.actor.image} alt="" className="w-3.5 h-3.5 rounded-full" />
+                                                    ) : (
+                                                        <div className="w-3.5 h-3.5 rounded-full bg-zinc-700" />
+                                                    )}
+                                                    <span className="font-bold text-zinc-300">{log.actor?.name || 'System'}</span>
+                                                </div>
+                                                <span className="hidden md:inline text-zinc-600">•</span>
+                                                <span className="font-mono text-[10px] text-zinc-500 truncate max-w-[150px] md:max-w-md opacity-70 group-hover:opacity-100 transition-opacity">
+                                                    {JSON.stringify(log.metadata)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Right: Date */}
+                                    <div className="flex items-center gap-4 pl-14 md:pl-0">
+                                         <div className="flex items-center gap-1.5 text-xs text-zinc-500 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                                            <Calendar className="w-3 h-3" />
+                                            {new Date(log.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </CoreWrapper>

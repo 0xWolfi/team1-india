@@ -1,15 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { ShieldAlert, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { Member } from "./shared";
-import { AdminToolbar } from "./components/AdminToolbar";
-import { Users, Plus, ShieldAlert } from "lucide-react";
-import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { AdminTable } from "./components/AdminTable";
+import { AdminToolbar } from "./components/AdminToolbar";
 import { AddMemberModal } from "./components/modals/AddMemberModal";
 import { EditAccessModal } from "./components/modals/EditAccessModal";
 import { DeleteMemberModal } from "./components/modals/DeleteMemberModal";
+import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { CoreWrapper } from "@/components/core/CoreWrapper";
+
+import { Member } from "./shared";
 
 export default function TeamPage() {
     const { data: session, status } = useSession();
@@ -132,9 +134,6 @@ export default function TeamPage() {
              if (!hasAdmin) finalTags = [...tags, 'Admin'];
         }
 
-        // Just in case AddMemberModal didn't ensure tags, but it likely did.
-        // We'll trust the Modal passed valid data, but we can do a quick check if desired.
-
         try {
             const res = await fetch('/api/members', {
                 method: 'POST',
@@ -161,7 +160,7 @@ export default function TeamPage() {
     if (status === "loading") return <div className="min-h-screen pt-24 px-12 text-zinc-500 font-mono text-sm animate-pulse">Initializing Interface...</div>;
 
     return (
-        <div className="md:pt-4">
+        <>
              {/* Click Outside Handler for Menus */}
              {activeMenuId && (
                 <div className="fixed inset-0 z-20 cursor-default" onClick={() => setActiveMenuId(null)} />
@@ -199,7 +198,7 @@ export default function TeamPage() {
                 canGrantAccess={canGrantAccess}
                 onEditAccess={setEditingMember}
                 onDelete={setDeletingMember}
-                onApprove={(id) => handleStatusChange(id, 'approved')}
+                onApprove={(id: string) => handleStatusChange(id, 'approved')}
              />
 
              <AddMemberModal 
@@ -223,6 +222,6 @@ export default function TeamPage() {
                 onConfirm={handleDeleteMember}
                 isSubmitting={isSubmitting}
              />
-        </div>
+        </>
     );
 }

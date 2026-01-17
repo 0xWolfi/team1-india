@@ -100,16 +100,23 @@ export default function ApplicationsPage() {
     };
 
     const filteredApps = applications.filter(app => {
+        const isPending = app.status.toLowerCase() === 'pending';
+        if (!isPending) return false;
+
+        const guideType = app.guide?.type?.toLowerCase();
+
         if (activeTab === 'ALL') return true;
-        if (activeTab === 'MEMBERSHIP') return !app.guide && !app.program;
-        if (activeTab === 'EVENTS') return app.guide?.type === 'event';
-        if (activeTab === 'PROGRAMS') return app.program || app.guide?.type === 'program';
-        if (activeTab === 'CONTENT') return app.guide?.type === 'content';
+        if (activeTab === 'MEMBERSHIP') return !app.guide; // General applications have no guide
+        if (activeTab === 'EVENTS') return guideType === 'event';
+        if (activeTab === 'PROGRAMS') return guideType === 'program'; // Matches guide.type = "PROGRAM"
+        if (activeTab === 'CONTENT') return guideType === 'content';
         if (activeTab === 'CONTRIBUTIONS') return false; // Contributions handled separately
         return true;
     });
 
-    const filteredContributions = activeTab === 'CONTRIBUTIONS' ? contributions : [];
+    const filteredContributions = activeTab === 'CONTRIBUTIONS' 
+        ? contributions.filter(c => c.status.toLowerCase() === 'pending') 
+        : [];
 
     if (loading) return (
         <CoreWrapper>
@@ -124,10 +131,10 @@ export default function ApplicationsPage() {
             <CorePageHeader
                 title="Applications"
                 description="Review and manage incoming membership, program, and event applications."
-                icon={<ClipboardList className="w-5 h-5 text-zinc-200" />}
+                icon={<ClipboardList className="w-5 h-5 text-red-500" />}
             >
                 <div className="text-sm text-zinc-500 font-medium px-4 py-2 bg-white/5 rounded-lg border border-white/5">
-                    {filteredApps.length} Pending
+                    {activeTab === 'CONTRIBUTIONS' ? filteredContributions.length : filteredApps.length} Pending
                 </div>
             </CorePageHeader>
 
@@ -153,7 +160,7 @@ export default function ApplicationsPage() {
                             >
                                 {tab.label}
                                 {activeTab === tab.id && (
-                                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-500 rounded-t-full shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+                                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-red-500 rounded-t-full shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
                                 )}
                             </button>
                         );
@@ -168,7 +175,7 @@ export default function ApplicationsPage() {
                                 {filteredContributions.length === 0 && (
                                     <div className="text-zinc-500 py-12 text-center border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
                                         <Briefcase className="w-8 h-8 mx-auto mb-3 opacity-20" />
-                                        No contributions found.
+                                        No pending contributions.
                                     </div>
                                 )}
                                 {filteredContributions.map(contrib => (
@@ -177,7 +184,7 @@ export default function ApplicationsPage() {
                                         onClick={() => setSelectedContribution(contrib)}
                                         className={`p-5 rounded-xl border cursor-pointer transition-all group relative overflow-hidden ${
                                             selectedContribution?.id === contrib.id 
-                                            ? 'bg-white/[0.03] border-indigo-500/50 shadow-lg shadow-indigo-900/10' 
+                                            ? 'bg-white/5 border-red-500/50 shadow-lg shadow-red-500/10' 
                                             : 'bg-zinc-900/30 border-white/5 hover:border-white/10 hover:bg-white/[0.02]'
                                         }`}
                                     >
@@ -190,11 +197,6 @@ export default function ApplicationsPage() {
                                                     {contrib.type.replace('-', ' ')}
                                                 </div>
                                             </div>
-                                            <span className={`text-[10px] px-2 py-1 rounded-full capitalize font-bold tracking-wide ${
-                                                contrib.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                                            }`}>
-                                                {contrib.status}
-                                            </span>
                                         </div>
                                         
                                         <div className="space-y-1.5 relative z-10">
@@ -213,7 +215,7 @@ export default function ApplicationsPage() {
                                 {filteredApps.length === 0 && (
                                     <div className="text-zinc-500 py-12 text-center border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
                                         <ClipboardList className="w-8 h-8 mx-auto mb-3 opacity-20" />
-                                        No applications found.
+                                        No pending applications.
                                     </div>
                                 )}
                                 {filteredApps.map(app => (
@@ -222,7 +224,7 @@ export default function ApplicationsPage() {
                                 onClick={() => setSelectedApp(app)}
                                 className={`p-5 rounded-xl border cursor-pointer transition-all group relative overflow-hidden ${
                                     selectedApp?.id === app.id 
-                                    ? 'bg-white/[0.03] border-indigo-500/50 shadow-lg shadow-indigo-900/10' 
+                                    ? 'bg-white/5 border-red-500/50 shadow-lg shadow-red-500/10' 
                                     : 'bg-zinc-900/30 border-white/5 hover:border-white/10 hover:bg-white/[0.02]'
                                 }`}
                             >
@@ -239,11 +241,6 @@ export default function ApplicationsPage() {
                                             <div className="text-xs text-zinc-600 mt-1">General Application</div>
                                         )}
                                     </div>
-                                    <span className={`text-[10px] px-2 py-1 rounded-full capitalize font-bold tracking-wide ${
-                                        app.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                                    }`}>
-                                        {app.status}
-                                    </span>
                                 </div>
                                 
                                 <div className="space-y-1.5 relative z-10">
