@@ -3,10 +3,26 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 
+// POLLS API (Using ContentResource)
+// customFields structure:
+// {
+//   audience: 'CORE' | 'PUBLIC',
+//   options: [
+//      { id: '1', text: 'Yes', voters: [{ id: 'u1', name: 'John', image: '...' }] }
+//   ]
+// }
+
 export async function GET(req: NextRequest) {
     try {
-        const polls = await prisma.poll.findMany({
-            orderBy: { createdAt: 'desc' }
+        const polls = await prisma.contentResource.findMany({
+            where: { 
+                type: 'POLL',
+                deletedAt: null
+            },
+            orderBy: [
+                { status: 'asc' }, // active drafts first? actually we use 'active'/'closed'
+                { createdAt: 'desc' }
+            ]
         });
         return NextResponse.json(polls);
     } catch (error) {
@@ -18,19 +34,34 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (!session || !session.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const body = await req.json();
-        const { question, options } = body;
+        const { question, options, audience } = body;
 
         if (!question || !options || !Array.isArray(options)) {
             return NextResponse.json({ error: "Invalid data" }, { status: 400 });
         }
 
-        const poll = await prisma.poll.create({
+        // Initialize options with empty voters array
+        const formattedOptions = options.map((opt: string, idx: number) => ({
+            id: `opt-${Date.now()}-${idx}`,
+            text: opt,
+            voters: []
+        }));
+
+        const creator = await prisma.member.findUnique({ where: { email: session.user.email } });
+
+        const poll = await prisma.contentResource.create({
             data: {
-                question,
-                options
+                title: question,
+                type: 'POLL',
+                status: 'ACTIVE',
+                customFields: {
+                    audience: audience || 'CORE',
+                    options: formattedOptions
+                },
+                createdById: creator?.id
             }
         });
 
@@ -43,34 +74,65 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
     try {
-        // Voting doesn't require auth for now? Or maybe check session. Strict for now?
-        // Let's assume open voting or basic auth check.
+        const session = await getServerSession(authOptions);
+        if (!session || !session.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
         const body = await req.json();
         const { id, type, optionId, status } = body; 
-        // type: 'VOTE' | 'STATUS'
+        
+        const voter = await prisma.member.findUnique({ where: { email: session.user.email } });
+        if (!voter) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
+        const poll = await prisma.contentResource.findUnique({ where: { id } });
+        if (!poll) return NextResponse.json({ error: "Poll not found" }, { status: 404 });
+
+        // STATUS TOGGLE
         if (type === 'STATUS') {
-            const updated = await prisma.poll.update({
+            const updated = await prisma.contentResource.update({
                 where: { id },
                 data: { status }
             });
             return NextResponse.json(updated);
         }
 
+        // VOTE
         if (type === 'VOTE' && optionId) {
-            // Needed to fetch current options, update count, save back.
-            // Concurrency issue? Yes, but low traffic.
-            const poll = await prisma.poll.findUnique({ where: { id } });
-            if (!poll) return NextResponse.json({ error: "Poll not found" }, { status: 404 });
+            const customFields = poll.customFields as any;
+            const options = customFields.options || [];
 
-            const options = poll.options as any[];
-            const newOptions = options.map((opt: any) => 
-                opt.id === optionId ? { ...opt, votes: opt.votes + 1 } : opt
+            // Check if already voted in any option
+            const hasVoted = options.some((opt: any) => 
+                opt.voters?.some((v: any) => v.id === voter.id)
             );
 
-            const updated = await prisma.poll.update({
+            if (hasVoted) {
+                 return NextResponse.json({ error: "Already voted" }, { status: 400 });
+            }
+
+            // Add voter to selected option
+            const newOptions = options.map((opt: any) => {
+                if (opt.id === optionId) {
+                    const currentVoters = opt.voters || [];
+                    return {
+                        ...opt,
+                        voters: [...currentVoters, {
+                            id: voter.id,
+                            name: voter.name || "Unknown",
+                            image: voter.image
+                        }]
+                    };
+                }
+                return opt;
+            });
+
+            const updated = await prisma.contentResource.update({
                 where: { id },
-                data: { options: newOptions }
+                data: {
+                    customFields: {
+                        ...customFields,
+                        options: newOptions
+                    }
+                }
             });
             return NextResponse.json(updated);
         }

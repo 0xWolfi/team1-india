@@ -5,6 +5,7 @@ import {
     Plus, Search, Download, Upload, Trash2, 
     MoreVertical, Save, X, Columns, GripVertical, Pencil 
 } from 'lucide-react';
+import { CorePageHeader } from "@/components/core/CorePageHeader";
 
 interface Column {
     id: string;
@@ -420,14 +421,11 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
     return (
         <div className="space-y-6" onPaste={handlePaste}>
              {/* Header */}
-             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <span className="p-2 bg-zinc-800 rounded-xl">{icon}</span>
-                        {title}
-                    </h1>
-                    <p className="text-zinc-400 text-sm mt-1">{description}</p>
-                </div>
+             <CorePageHeader
+                title={title}
+                description={description}
+                icon={icon}
+             >
                 <div className="flex items-center gap-2">
                      <button onClick={handleExport} className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors" title="Export CSV">
                         <Download className="w-5 h-5" />
@@ -441,12 +439,12 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                       <button 
                         onClick={handleAddRow}
                         disabled={isSaving}
-                        className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-zinc-200 transition-colors text-sm font-bold"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-zinc-200 transition-colors text-sm font-bold active:scale-95 shadow-lg shadow-white/5"
                       >
                         <Plus className="w-4 h-4" /> New Row
                       </button>
                 </div>
-             </div>
+             </CorePageHeader>
 
              {/* Toolbar */}
              <div className="flex items-center gap-4">

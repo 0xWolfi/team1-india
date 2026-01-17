@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import Image from 'next/image';
 import { Search, LayoutGrid, List, MoreHorizontal, Edit, Trash2, Lock, Globe, Cpu, FileText, ArrowRight } from "lucide-react";
 
 interface Guide {
@@ -183,139 +184,143 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
             `}>
                 {filtered.map(doc => (
                     <div key={doc.id} className="relative group/card perspective-1000">
-                        <div className={`
-                            group relative overflow-hidden transition-all duration-500 border border-white/[0.08] hover:border-white/20
-                            ${viewMode === "grid" 
-                                ? "bg-[#121212]/80 backdrop-blur-xl rounded-[2rem] h-full flex flex-col hover:translate-y-[-4px] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]" 
-                                : "bg-[#121212]/80 backdrop-blur-xl rounded-2xl p-5 flex items-center justify-between hover:bg-white/5"
-                            }
-                        `}>
-                            {/* Click Target */}
-                            <Link href={`${basePath}/${doc.id}`} className="absolute inset-0 z-20" />
-                            
-                            {/* Glowing Effect on Hover (Grid only) */}
-                            {viewMode === "grid" && (
-                                <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
-                            )}
-
-                            {/* Card Content */}
-                            <div className={`relative z-10 w-full ${viewMode === "list" ? "flex flex-row items-center justify-between p-6 gap-8" : "flex flex-col h-full"}`}>
+                            <div className={`
+                                group relative overflow-hidden transition-all duration-500 border border-white/[0.08] hover:border-white/20
+                                ${viewMode === "grid" 
+                                    ? "bg-black/40 backdrop-blur-xl rounded-[2rem] h-full flex flex-col hover:translate-y-[-4px] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]" 
+                                    : "bg-black/40 backdrop-blur-xl rounded-2xl p-5 flex items-center justify-between hover:bg-white/5"
+                                }
+                            `}>
+                                {/* Click Target */}
+                                <Link href={`${basePath}/${doc.id}`} className="absolute inset-0 z-20" />
                                 
-                                {/* Grid View: Image Top */}
+                                {/* Glowing Effect on Hover (Grid only) */}
                                 {viewMode === "grid" && (
-                                    <div className="relative h-48 w-full bg-zinc-900 overflow-hidden border-b border-white/5">
-                                        {doc.coverImage ? (
-                                            <img 
-                                                src={doc.coverImage} 
-                                                alt={doc.title} 
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-zinc-800/50">
-                                                <FileText className="w-12 h-12 text-zinc-700 group-hover:text-zinc-600 transition-colors" />
-                                            </div>
-                                        )}
-                                        
-                                        {/* Badges Overlay on Image */}
-                                        <div className="absolute top-4 right-4 flex gap-2">
-                                            {doc.lockedBy && (
-                                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-500/20 text-[10px] uppercase tracking-wider font-bold text-amber-500">
-                                                    <Lock className="w-3 h-3" />
-                                                    Locked
+                                    <div className="absolute -inset-2 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
+                                )}
+
+                                {/* Card Content */}
+                                <div className={`relative z-10 w-full ${viewMode === "list" ? "flex flex-row items-center justify-between p-6 gap-8" : "flex flex-col h-full"}`}>
+                                    
+                                    {/* Grid View: Image Top */}
+                                    {viewMode === "grid" && (
+                                        <div className="relative h-48 w-full bg-zinc-900 overflow-hidden border-b border-white/5">
+                                            {doc.coverImage ? (
+                                                <Image 
+                                                    src={doc.coverImage} 
+                                                    alt={doc.title} 
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-zinc-800/50">
+                                                    <FileText className="w-12 h-12 text-zinc-700 group-hover:text-zinc-600 transition-colors" />
                                                 </div>
                                             )}
-                                            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border backdrop-blur-md text-[10px] uppercase tracking-wider font-bold ${
-                                                doc.visibility === "PUBLIC" ? "bg-black/60 border-blue-500/20 text-blue-400" :
-                                                doc.visibility === "CORE" ? "bg-black/60 border-purple-500/20 text-purple-400" :
-                                                "bg-black/60 border-white/10 text-zinc-400"
-                                            }`}>
-                                                {doc.visibility === "PUBLIC" && <Globe className="w-3 h-3" />}
-                                                {doc.visibility === "MEMBER" && <Cpu className="w-3 h-3" />}
-                                                {doc.visibility === "CORE" && <Cpu className="w-3 h-3" />}
-                                                <span>{doc.visibility}</span>
+                                            
+                                            {/* Badges Overlay on Image */}
+                                            <div className="absolute top-4 right-4 flex gap-2">
+                                                {doc.lockedBy && (
+                                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-red-500/20 text-[10px] uppercase tracking-wider font-bold text-red-500">
+                                                        <Lock className="w-3 h-3" />
+                                                        Locked
+                                                    </div>
+                                                )}
+                                                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border backdrop-blur-md text-[10px] uppercase tracking-wider font-bold ${
+                                                    doc.visibility === "PUBLIC" ? "bg-black/60 border-white/10 text-zinc-300" :
+                                                    doc.visibility === "CORE" ? "bg-black/60 border-red-500/20 text-red-400" :
+                                                    "bg-black/60 border-white/10 text-zinc-400"
+                                                }`}>
+                                                    {doc.visibility === "PUBLIC" && <Globe className="w-3 h-3" />}
+                                                    {doc.visibility === "MEMBER" && <Cpu className="w-3 h-3" />}
+                                                    {doc.visibility === "CORE" && <Cpu className="w-3 h-3" />}
+                                                    <span>{doc.visibility}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
-                                {/* Text Content */}
-                                <div className={`flex-1 flex flex-col ${viewMode === "grid" ? "bg-zinc-900/50" : "min-w-0"}`}>
-                                    {viewMode === "grid" ? (
-                                        <>
-                                            <div className="p-4 flex items-start justify-between gap-4 mb-2">
-                                                <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-zinc-200 transition-colors">
-                                                    {doc.title}
-                                                </h3>
-                                                <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white group-hover:bg-zinc-700 transition-all flex items-center gap-2">
-                                                    Open <ArrowRight className="w-3 h-3" />
-                                                </div>
-                                            </div>
-
-                                            <div className="px-4 mb-3 flex-1">
-                                                <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed">
-                                                    {doc.body?.description || "No description provided."}
-                                                </p>
-                                            </div>
-                                            
-                                            <div className="px-4 pb-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-zinc-500 font-medium mt-auto">
-                                                <span className="truncate max-w-[150px]">by <span className="text-zinc-400 capitalize">{doc.createdBy?.email.split("@")[0]}</span></span>
-                                                <span className="flex items-center gap-1.5">
-                                                    {doc.updatedAt && formatDistanceToNow(new Date(doc.updatedAt))} ago
-                                                </span>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="flex items-center justify-between mb-2">
-                                                <h3 className="font-bold text-white text-xl truncate group-hover:text-purple-100 transition-all duration-300">
-                                                    {doc.title}
-                                                </h3>
-                                                
-                                                <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-                                                    {doc.lockedBy && (
-                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-500">
-                                                            <Lock className="w-3 h-3" />
-                                                        </div>
-                                                    )}
-                                                    <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
-                                                        doc.visibility === "PUBLIC" ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
-                                                        doc.visibility === "CORE" ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
-                                                        "bg-zinc-800/50 border-white/5 text-zinc-500"
-                                                    }`}>
-                                                        {doc.visibility}
+                                    {/* Text Content */}
+                                    <div className={`flex-1 flex flex-col ${viewMode === "grid" ? "bg-transparent" : "min-w-0"}`}>
+                                        {viewMode === "grid" ? (
+                                            <>
+                                                <div className="p-4 flex items-start justify-between gap-4 mb-2">
+                                                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-red-400 transition-colors">
+                                                        {doc.title}
+                                                    </h3>
+                                                    <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white group-hover:bg-zinc-700 transition-all flex items-center gap-2">
+                                                        Open <ArrowRight className="w-3 h-3" />
                                                     </div>
                                                 </div>
-                                            </div>
-                                            
-                                            <div className="flex-1">
-                                                <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4">
-                                                    {doc.body?.description || "No description provided."}
-                                                </p>
-                                            </div>
 
-                                            <div className="flex items-center gap-4 text-xs text-zinc-500 font-medium">
-                                                <span className="truncate max-w-[150px] text-zinc-400">By {doc.createdBy?.email.split("@")[0]}</span>
-                                                <span>•</span>
-                                                <span className="flex items-center gap-1.5">
-                                                    {doc.updatedAt && formatDistanceToNow(new Date(doc.updatedAt))} ago
-                                                </span>
-                                            </div>
-                                        </>
+                                                <div className="px-4 mb-3 flex-1">
+                                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed">
+                                                        {doc.body?.description || "No description provided."}
+                                                    </p>
+                                                </div>
+                                                
+                                                <div className="px-4 pb-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-zinc-500 font-medium mt-auto">
+                                                    <span className="truncate max-w-[150px]">by <span className="text-zinc-400 capitalize">{doc.createdBy?.email.split("@")[0]}</span></span>
+                                                    <span className="flex items-center gap-1.5">
+                                                        {doc.updatedAt && formatDistanceToNow(new Date(doc.updatedAt))} ago
+                                                    </span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-red-400 transition-all duration-300">
+                                                        {doc.title}
+                                                    </h3>
+                                                    
+                                                    <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                                                        {doc.lockedBy && (
+                                                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold text-red-500">
+                                                                <Lock className="w-3 h-3" />
+                                                            </div>
+                                                        )}
+                                                        <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
+                                                            doc.visibility === "PUBLIC" ? "bg-zinc-800/50 border-white/10 text-zinc-300" :
+                                                            doc.visibility === "CORE" ? "bg-red-500/10 border-red-500/20 text-red-400" :
+                                                            "bg-zinc-800/50 border-white/5 text-zinc-500"
+                                                        }`}>
+                                                            {doc.visibility}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="flex-1">
+                                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4">
+                                                        {doc.body?.description || "No description provided."}
+                                                    </p>
+                                                </div>
+
+                                                <div className="flex items-center gap-4 text-xs text-zinc-500 font-medium">
+                                                    <span className="truncate max-w-[150px] text-zinc-400">By {doc.createdBy?.email.split("@")[0]}</span>
+                                                    <span>•</span>
+                                                    <span className="flex items-center gap-1.5">
+                                                        {doc.updatedAt && formatDistanceToNow(new Date(doc.updatedAt))} ago
+                                                    </span>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {/* List View: Image Right */}
+                                    {viewMode === "list" && doc.coverImage && (
+                                        <div className="relative w-32 h-24 rounded-lg overflow-hidden border border-white/10 flex-shrink-0">
+                                            <Image 
+                                                src={doc.coverImage} 
+                                                alt={doc.title} 
+                                                fill
+                                                sizes="128px"
+                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        </div>
                                     )}
                                 </div>
-
-                                {/* List View: Image Right */}
-                                {viewMode === "list" && doc.coverImage && (
-                                    <div className="w-32 h-24 rounded-lg overflow-hidden border border-white/10 flex-shrink-0">
-                                        <img 
-                                            src={doc.coverImage} 
-                                            alt={doc.title} 
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                    </div>
-                                )}
                             </div>
-                        </div>
 
                         {/* Menu Actions */}
                         {(effectiveCanWrite || effectiveCanDelete) && (

@@ -252,52 +252,52 @@ export default function CorePage() {
              </h2>
              <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:gap-4">
                  {/* Applications */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-brand-500/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-brand-500/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-brand-500 transition-colors">
                         <ClipboardList className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Applications</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-brand-400">Applications</span>
                  </button>
 
                  {/* Announcements */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-brand-500/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-brand-500/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-brand-500 transition-colors">
                         <Megaphone className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Announcements</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-brand-400">Announcements</span>
                  </button>
 
                  {/* Attendance */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-brand-500/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-brand-500/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-brand-500 transition-colors">
                         <Users className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Attendance</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-brand-400">Attendance</span>
                  </button>
 
                  {/* Meeting Notes */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-brand-500/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-brand-500/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-brand-500 transition-colors">
                         <FileText className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Meeting Notes</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-brand-400">Meeting Notes</span>
                  </button>
 
                  {/* New Poll */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-brand-500/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-brand-500/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
+                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-brand-500 transition-colors">
                         <BarChart3 className="w-5 h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Vote / Polls</span>
+                     <span className="text-sm font-bold text-zinc-400 group-hover:text-brand-400">Vote / Polls</span>
                  </button>
 
                  {/* Manage Team */}
                  {isSuperAdmin && (
-                     <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/70 backdrop-blur-md hover:bg-zinc-900 border border-white/5 hover:border-white/20 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
-                         <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                     <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-brand-500/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-brand-500/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
+                         <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-brand-500 transition-colors">
                             <Settings className="w-5 h-5" />
                          </div>
-                         <span className="text-sm font-bold text-zinc-400 group-hover:text-zinc-200">Manage Team</span>
+                         <span className="text-sm font-bold text-zinc-400 group-hover:text-brand-400">Manage Team</span>
                      </button>
                  )}
              </div>
@@ -328,37 +328,26 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
             onClick={(e) => isLocked && e.preventDefault()}
         >
             <div className={`
-                h-full bg-zinc-900/70 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden flex flex-col transition-all duration-300
-                ${isLocked ? 'opacity-50 grayscale hover:opacity-60' : 'hover:border-zinc-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1'}
+                h-full bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-2xl overflow-hidden flex flex-col transition-all duration-300
+                ${isLocked ? 'opacity-50 grayscale hover:opacity-60' : 'hover:border-brand-500/20 hover:shadow-2xl hover:shadow-brand-500/5 hover:-translate-y-1 hover:bg-zinc-900/40'}
             `}>
                 {/* Sleek Image Header */}
-                <div className="h-32 relative w-full overflow-hidden border-b border-white/5">
-                    {resource.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <Image 
-                            src={resource.image} 
-                            alt={resource.title}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
-                            <Layers className="w-8 h-8 text-zinc-700" />
-                        </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-60" />
+                <div className="h-32 relative w-full overflow-hidden border-b border-white/5 bg-zinc-900/20 flex items-center justify-center group-hover:bg-brand-500/[0.02] transition-colors duration-500">
+                    
+                    {/* Centered Main Icon (No Box) */}
+                    <div className="relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-2xl">
+                         {React.cloneElement(resource.icon as React.ReactElement<{ className?: string }>, { className: "w-12 h-12 text-zinc-500 group-hover:text-brand-500 transition-colors duration-300" })}
+                    </div>
                 </div>
 
-                <div className="p-4 flex flex-col flex-1">
+                <div className="p-5 flex flex-col flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="p-1.5 bg-white/5 rounded-md border border-white/5 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/20 transition-colors">
-                            {React.cloneElement(resource.icon as React.ReactElement<{ className?: string }>, { className: "w-4 h-4 text-zinc-300 group-hover:text-indigo-300" })}
-                        </div>
-                        <h3 className="text-base font-bold text-white group-hover:text-indigo-400 transition-colors">
+                        {/* Removed duplicate icon here */}
+                        <h3 className="text-base font-bold text-white group-hover:text-brand-400 transition-colors duration-300">
                             {resource.title}
                         </h3>
                     </div>
-                    <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
+                    <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2 group-hover:text-zinc-400 transition-colors">
                         {resource.description || "Access and manage resources."}
                     </p>
                 </div>
