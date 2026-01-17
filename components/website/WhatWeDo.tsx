@@ -1,8 +1,8 @@
 import React from "react";
 import { MoveRight, Zap, Users, Shield, TrendingUp, Rocket, Calendar } from "lucide-react";
+import { FeatureGrid, FeatureItem } from "@/components/ui/FeatureGrid";
 
-
-const cards = [
+const cards: FeatureItem[] = [
     {
         title: "Idea Phase Accelerator",
         desc: "We help idea-stage startups find product-market fit. Get funding, mentorship, and resources.",
@@ -50,23 +50,7 @@ export function WhatWeDo() {
             <p className="text-zinc-400 text-lg">From idea to scale, Team1India provides the infrastructure, network, and resources you need.</p>
         </div>
 
-        {/* 6-Item Grid Layout - 3 Columns x 2 Rows */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 max-w-7xl mx-auto border-t border-l border-white/10 relative">
-
-
-             {cards.map((card, idx) => (
-                 <div key={idx} className={`p-8 border-b border-r border-white/10 relative group ${card.colSpan} bg-white/5 backdrop-blur-md hover:bg-white/10 transition-all duration-300`}>
-                     <div className="flex items-center gap-4 mb-3 relative z-10">
-                        {card.icon}
-                        <h3 className="text-xl font-bold text-white">{card.title}</h3>
-                     </div>
-                    <p className="text-zinc-500 text-sm leading-relaxed relative z-10">
-                      {card.desc}
-                    </p>
-                  </div>
-             ))}
-
-        </div>
+        <FeatureGrid items={cards} />
       </div>
     </section>
   );

@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { LumaEventData } from "@/lib/luma";
 import { Calendar } from "lucide-react";
+import Image from "next/image";
 
 interface EventGridProps {
   initialEvents: LumaEventData[];
@@ -160,7 +161,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {(searchQuery || selectedCity || startDate || endDate) && (
             <button 
                 onClick={() => { setSearchQuery(""); setSelectedCity(""); setStartDate(""); setEndDate(""); }}
-                className="px-3 text-xs text-red-400 hover:text-red-300 transition-colors font-medium hover:underline"
+                className="px-3 text-xs text-brand-400 hover:text-brand-300 transition-colors font-medium hover:underline"
             >
                 Reset
             </button>
@@ -173,7 +174,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
             <div className="flex flex-wrap justify-center gap-8 px-4">
               {displayedEvents.map(({ event, api_id }) => {
                  // Fallback gradient if no image
-                 const fallbackGradient = "bg-gradient-to-br from-purple-500/20 to-blue-500/20";
+                 const fallbackGradient = "bg-gradient-to-br from-brand-500/20 to-brand-900/20";
                  
                  return (
                     <a
@@ -184,19 +185,21 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                       className="group block w-full sm:w-[280px] md:w-[300px]"
                     >
                       {/* Image Container */}
-                      <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] bg-zinc-900/60 backdrop-blur-2xl transition-all duration-500 group-hover:border-white/20 group-hover:shadow-2xl group-hover:shadow-indigo-500/10 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
+                      <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] bg-zinc-900/60 backdrop-blur-2xl transition-all duration-500 group-hover:border-brand-500/30 group-hover:shadow-2xl group-hover:shadow-brand-500/10 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
                         {event.cover_url && (
-                          <img
+                          <Image
                             src={event.cover_url}
                             alt={event.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                         )}
                       </div>
 
                       {/* Content Below */}
                       <div className="space-y-2 text-center">
-                        <h3 className="text-xl font-bold text-white leading-tight line-clamp-2 group-hover:text-indigo-400 transition-colors">
+                        <h3 className="text-xl font-bold text-white leading-tight line-clamp-2 group-hover:text-brand-400 transition-colors">
                           {event.name}
                         </h3>
                         <p className="text-sm text-zinc-500 font-medium tracking-wide uppercase">
@@ -211,7 +214,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
             {visibleCount < filteredEvents.length && (
                 <button
                     onClick={() => setVisibleCount((prev) => prev + 6)}
-                    className="px-6 py-2 rounded-full border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-white/5 hover:text-white transition-all"
+                    className="px-6 py-2 rounded-full border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-brand-500/10 hover:border-brand-500/50 hover:text-brand-400 transition-all"
                 >
                     Show More Events
                 </button>
@@ -229,7 +232,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
           href="https://lu.ma/Team1India" 
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition-all hover:scale-105 active:scale-95"
+          className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold hover:bg-brand-500 hover:text-white transition-all hover:scale-105 active:scale-95 shadow-lg shadow-white/10 hover:shadow-brand-500/20"
         >
           See All Events
           <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

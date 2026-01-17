@@ -43,9 +43,9 @@ export function Announcements({ audience = "PUBLIC" }: AnnouncementsProps) {
   if (!announcements.length) return null;
 
   return (
-    <section id="announcements" className="py-8 my-2">
-      <div className="max-w-5xl mx-auto px-4 md:px-8">
-        <h2 className="text-xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-500">
+    <section id="announcements" className="py-8 my-2 relative z-30">
+      <div className="max-w-4xl mx-auto px-4 md:px-8">
+        <h2 className="text-sm font-bold mb-6 text-center text-zinc-500 uppercase tracking-widest">
             Latest Updates
         </h2>
         
@@ -55,15 +55,18 @@ export function Announcements({ audience = "PUBLIC" }: AnnouncementsProps) {
                     key={announcement.id}
                     href={announcement.link || "/core/announcements"}
                     target={announcement.link?.startsWith('http') ? "_blank" : "_self"}
-                    className="group flex items-center gap-3 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 backdrop-blur-md rounded-full transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.05)] w-full md:w-auto"
+                    className="group flex items-center gap-3 px-4 py-2 bg-zinc-900/60 hover:bg-zinc-800/80 border border-white/10 backdrop-blur-2xl rounded-full transition-all duration-300 shadow-xl hover:shadow-brand-500/10 w-full md:w-auto"
                 >
-                    <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider min-w-fit">
-                        New
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                        <span className="text-brand-400 text-[10px] font-bold uppercase tracking-wider min-w-fit">
+                            New
+                        </span>
+                    </div>
                     <span className="text-sm text-zinc-300 group-hover:text-white transition-colors truncate">
                         {announcement.title}
                     </span>
-                    <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-1 transition-all ml-auto min-w-fit" />
+                    <ArrowRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-brand-400 group-hover:translate-x-1 transition-all ml-auto min-w-fit" />
                 </Link>
             ))}
         </div>

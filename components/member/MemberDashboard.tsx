@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
 import { Guide, Program, Event } from "@/types/public";
 import { Footer } from "@/components/website/Footer";
+import { DashboardCard } from "./DashboardCard";
 // We can define Experiment type here based on Prisma client if not imported, 
 // using 'any' for now to speed up if types aren't strictly generated or exported for client.
 // Better to define an interface matching the data passed.
@@ -187,66 +188,18 @@ export function MemberDashboard({
 
 
                 {activeItems.length > 0 ? (
-                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
+                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
                         {activeItems.slice(0, 6).map((item: any) => (
-                            <Link 
-                                key={item.id} 
+                            <DashboardCard
+                                key={item.id}
+                                id={item.id}
+                                title={item.title || "Untitled"}
+                                description={item.description}
+                                coverImage={item.coverImage}
                                 href={`/member/${activeTab.toLowerCase()}/${item.id}`}
-                                className={cn(
-                                    "group block min-w-[85vw] sm:min-w-[300px] md:min-w-0 snap-center h-[280px] rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col",
-                                    glassClass
-                                )}
-                            >
-                                <div className="h-40 bg-zinc-800/50 relative overflow-hidden">
-                                    {item.coverImage ? (
-                                        <img
-                                            src={item.coverImage}
-                                            alt={item.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.style.display = "none";
-                                                if (target.parentElement) {
-                                                    target.parentElement.innerHTML = `
-                                                        <div class="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
-                                                            <svg class="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
-                                                            </svg>
-                                                        </div>
-                                                    `;
-                                                }
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-zinc-800/50 group-hover:bg-zinc-700/50 transition-colors">
-                                            {activeTab === 'EVENTS' && <Calendar className="w-8 h-8 text-zinc-600" />}
-                                            {activeTab === 'PROGRAMS' && <Users className="w-8 h-8 text-zinc-600" />}
-                                            {activeTab === 'CONTENT' && <FileText className="w-8 h-8 text-zinc-600" />}
-                                        </div>
-                                    )}
-                                    <div className="absolute top-3 right-3">
-                                        <span className={cn(
-                                            "px-2 py-0.5 rounded text-[10px] font-bold uppercase border backdrop-blur-md",
-                                            item.visibility === 'MEMBER' 
-                                                ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/20" 
-                                                : "bg-emerald-500/20 text-emerald-300 border-emerald-500/20"
-                                        )}>
-                                            {item.visibility}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="p-5 flex flex-col flex-1">
-                                    <h3 className="font-bold text-white leading-tight mb-2 group-hover:text-zinc-200 line-clamp-2">
-                                        {item.title}
-                                    </h3>
-                                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
-                                        <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
-                                            View Details
-                                        </span>
-                                        <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-white transition-colors" />
-                                    </div>
-                                </div>
-                            </Link>
+                                type={activeTab === 'EVENTS' ? 'EVENT' : activeTab === 'PROGRAMS' ? 'PROGRAM' : 'CONTENT'}
+                                visibility={item.visibility}
+                            />
                         ))}
                     </div>
                 ) : (
@@ -260,9 +213,6 @@ export function MemberDashboard({
             <div className="mb-16">
                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400">
-                             <BookOpen className="w-5 h-5" />
-                        </div>
                         <h2 className="text-2xl font-bold">Playbooks</h2>
                     </div>
                     
@@ -290,49 +240,16 @@ export function MemberDashboard({
                 
                 <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
                     {filteredPlaybooks.slice(0, 4).map((playbook: any) => (
-                        <Link 
-                            key={playbook.id} 
+                        <DashboardCard
+                            key={playbook.id}
+                            id={playbook.id}
+                            title={playbook.title || "Untitled Playbook"}
+                            description={playbook.description}
+                            coverImage={playbook.coverImage}
                             href={`/member/playbooks/${playbook.id}`}
-                            className={cn(
-                                "group min-w-[70vw] sm:min-w-[250px] md:min-w-0 snap-center p-5 rounded-2xl hover:border-indigo-500/30 hover:bg-zinc-900/80 transition-all block",
-                                glassClass
-                            )}
-                        >
-                            <div className="mb-4">
-                                {playbook.coverImage ? (
-                                    <div className="relative w-full h-32 rounded-lg overflow-hidden mb-3 bg-zinc-800">
-                                        <img
-                                            src={playbook.coverImage}
-                                            alt={playbook.title}
-                                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.style.display = "none";
-                                                if (target.parentElement) {
-                                                    target.parentElement.innerHTML = `
-                                                        <div class="w-full h-full flex items-center justify-center bg-zinc-800/50">
-                                                            <svg class="w-8 h-8 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
-                                                            </svg>
-                                                        </div>
-                                                    `;
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mb-3 group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-colors">
-                                        <BookOpen className="w-5 h-5 text-zinc-500" />
-                                    </div>
-                                )}
-                                <h3 className="font-bold text-white leading-tight group-hover:text-indigo-300 transition-colors line-clamp-2">
-                                    {playbook.title}
-                                </h3>
-                            </div>
-                            <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
-                                {playbook.description || "No description provided."}
-                            </p>
-                        </Link>
+                            type='PLAYBOOK'
+                            // Optional: Pass visibility if Playbooks have it, or omit to follow design
+                        />
                     ))}
                     {filteredPlaybooks.length === 0 && (
                          <div className="col-span-full py-10 text-center border border-white/5 border-dashed rounded-xl">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Loader2, Send, Calendar, FileText } from "lucide-react";
+import { X, Loader2, Send, Calendar, FileText, ChevronDown } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 interface ContributionModalProps {
@@ -110,7 +110,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
             onClick={onClose}
         >
             <div 
-                className="bg-[#09090b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200" 
+                className="bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200" 
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
@@ -157,28 +157,31 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     </div>
 
                     {/* Contribution Type Dropdown */}
-                    <div className="mb-6">
+                    <div className="mb-6 relative">
                         <label className="block text-sm font-semibold text-zinc-300 mb-2">
                             Contribution Type
                         </label>
-                        <select
-                            value={contributionType}
-                            onChange={(e) => setContributionType(e.target.value as ContributionType)}
-                            required
-                            className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500/50"
-                        >
-                            <option value="" className="bg-zinc-900">Select contribution type</option>
-                            <option value="event-host" className="bg-zinc-900">Event Host</option>
-                            <option value="content" className="bg-zinc-900">Content</option>
-                        </select>
+                        <div className="relative">
+                            <select
+                                value={contributionType}
+                                onChange={(e) => setContributionType(e.target.value as ContributionType)}
+                                required
+                                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500/50 appearance-none cursor-pointer"
+                            >
+                                <option value="" className="bg-zinc-900">Select contribution type</option>
+                                <option value="event-host" className="bg-zinc-900">Event Host</option>
+                                <option value="content" className="bg-zinc-900">Content</option>
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                        </div>
                     </div>
 
                     {/* Event Host Fields */}
                     {contributionType === "event-host" && (
-                        <div className="mb-6 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
+                        <div className="mb-6 p-4 bg-zinc-800/30 border border-white/5 rounded-lg">
                             <div className="flex items-center gap-2 mb-3">
-                                <Calendar className="w-4 h-4 text-emerald-400" />
-                                <label className="text-sm font-semibold text-emerald-300">
+                                <Calendar className="w-4 h-4 text-zinc-400" />
+                                <label className="text-sm font-semibold text-zinc-200">
                                     Event Host Details
                                 </label>
                             </div>
@@ -192,7 +195,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                         value={eventDate}
                                         onChange={(e) => setEventDate(e.target.value)}
                                         required
-                                        className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/20"
                                     />
                                 </div>
                                 <div>
@@ -204,7 +207,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                         value={eventLocation}
                                         onChange={(e) => setEventLocation(e.target.value)}
                                         required
-                                        className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/20"
                                         placeholder="e.g., Mumbai, India or MIT College"
                                     />
                                 </div>
@@ -214,10 +217,10 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
 
                     {/* Content Fields */}
                     {contributionType === "content" && (
-                        <div className="mb-6 p-4 bg-purple-500/5 border border-purple-500/20 rounded-lg">
+                        <div className="mb-6 p-4 bg-zinc-800/30 border border-white/5 rounded-lg">
                             <div className="flex items-center gap-2 mb-3">
-                                <FileText className="w-4 h-4 text-purple-400" />
-                                <label className="text-sm font-semibold text-purple-300">
+                                <FileText className="w-4 h-4 text-zinc-400" />
+                                <label className="text-sm font-semibold text-zinc-200">
                                     Content Details
                                 </label>
                             </div>
@@ -230,7 +233,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                     value={contentUrl}
                                     onChange={(e) => setContentUrl(e.target.value)}
                                     required
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500/50"
+                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/20"
                                     placeholder="https://example.com/article or draft link"
                                 />
                             </div>

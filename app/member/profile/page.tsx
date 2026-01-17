@@ -1,12 +1,149 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { Toast } from "@/components/ui/Toast";
-import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle } from "lucide-react";
+import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle, ChevronDown, Search, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+// --- API Helpers ---
+const API_BASE = "https://countriesnow.space/api/v0.1/countries";
+
+async function fetchStates() {
+    try {
+        const res = await fetch(`${API_BASE}/states`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ country: "India" }),
+        });
+        const data = await res.json();
+        return data.data?.states?.map((s: any) => s.name) || [];
+    } catch (e) {
+        console.error("Failed to fetch states", e);
+        return [];
+    }
+}
+
+async function fetchCities(state: string) {
+    try {
+        const res = await fetch(`${API_BASE}/state/cities`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ country: "India", state }),
+        });
+        const data = await res.json();
+        return data.data || [];
+    } catch (e) {
+        console.error("Failed to fetch cities", e);
+        return [];
+    }
+}
+
+// --- Components ---
+
+interface SearchableDropdownProps {
+    label: string;
+    placeholder: string;
+    options: string[];
+    value: string;
+    onChange: (value: string) => void;
+    isLoading?: boolean;
+    disabled?: boolean;
+}
+
+function SearchableDropdown({ label, placeholder, options, value, onChange, isLoading, disabled }: SearchableDropdownProps) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const filteredOptions = options.filter(opt => 
+        opt.toLowerCase().includes(search.toLowerCase())
+    );
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // Reset search when opening
+    useEffect(() => {
+        if (isOpen) setSearch("");
+    }, [isOpen]);
+
+    return (
+        <div className="relative" ref={dropdownRef}>
+            <div 
+                onClick={() => !disabled && setIsOpen(!isOpen)}
+                className={cn(
+                    "w-full bg-black/50 border border-white/10 rounded-lg pl-3 pr-8 py-2 text-sm text-white focus:outline-none focus:border-white/30 cursor-pointer flex items-center justify-between min-h-[38px]",
+                    disabled && "opacity-50 cursor-not-allowed",
+                    isOpen && "border-white/30 ring-1 ring-white/10"
+                )}
+            >
+                <span className={cn(!value && "text-zinc-500")}>
+                    {value || placeholder}
+                </span>
+                <ChevronDown className="w-4 h-4 text-zinc-500" />
+            </div>
+
+            {isOpen && (
+                <div className="absolute z-50 w-full mt-2 bg-zinc-900 border border-white/10 rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                    <div className="p-2 border-b border-white/5">
+                        <div className="relative">
+                            <Search className="absolute left-2 top-2 w-3 h-3 text-zinc-500" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="w-full bg-zinc-800/100 border border-white/5 rounded-md pl-7 pr-2 py-1.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:bg-zinc-800"
+                                placeholder={`Search ${label}...`}
+                                autoFocus
+                            />
+                        </div>
+                    </div>
+                    <div className="max-h-[200px] overflow-y-auto p-1 custom-scrollbar">
+                        {isLoading ? (
+                             <div className="flex items-center justify-center py-4 text-zinc-500 gap-2">
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                                <span className="text-xs">Loading...</span>
+                            </div>
+                        ) : filteredOptions.length === 0 ? (
+                            <div className="px-2 py-4 text-center text-xs text-zinc-500">
+                                No results found.
+                            </div>
+                        ) : (
+                            filteredOptions.map((option) => (
+                                <div
+                                    key={option}
+                                    onClick={() => {
+                                        onChange(option);
+                                        setIsOpen(false);
+                                    }}
+                                    className={cn(
+                                        "px-3 py-2 text-sm text-zinc-300 hover:bg-white/10 hover:text-white rounded-md cursor-pointer flex items-center justify-between group transition-colors",
+                                        value === option && "bg-indigo-500/10 text-indigo-400"
+                                    )}
+                                >
+                                    {option}
+                                    {value === option && <Check className="w-3 h-3" />}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 
 export default function ProfilePage() {
     const { data: session, update: updateSession } = useSession();
@@ -23,11 +160,78 @@ export default function ProfilePage() {
         bio: ""
     });
 
+    const [states, setStates] = useState<string[]>([]);
+    const [cities, setCities] = useState<string[]>([]);
+    const [isFetchingStates, setIsFetchingStates] = useState(false);
+    const [isFetchingCities, setIsFetchingCities] = useState(false);
+
+    const [selectedState, setSelectedState] = useState("");
+    const [selectedCity, setSelectedCity] = useState("");
+
+    // Load States on Mount
+    useEffect(() => {
+        async function loadStates() {
+            setIsFetchingStates(true);
+            const list = await fetchStates();
+            setStates(list);
+            setIsFetchingStates(false);
+        }
+        loadStates();
+    }, []);
+
+    // Load Cities when State changes
+    useEffect(() => {
+        if (selectedState) {
+            async function loadCities() {
+                setIsFetchingCities(true);
+                const list = await fetchCities(selectedState);
+                setCities(list);
+                setIsFetchingCities(false);
+            }
+            loadCities();
+        } else {
+            setCities([]);
+        }
+    }, [selectedState]);
+
     useEffect(() => {
         if (session?.user) {
             fetchProfile();
         }
     }, [session]);
+
+    // Parse address into State/City
+    useEffect(() => {
+        if (formData.address) {
+            // Address format: "City, State"
+            const parts = formData.address.split(',').map(s => s.trim());
+            if (parts.length >= 2) {
+                // Try to match basic format
+                const potentialCity = parts[0];
+                const potentialState = parts[1];
+                
+                // We set them as selected even if API hasn't loaded logic yet
+                // However, we ideally want to wait for state list. 
+                // For simplicity, we just set them. SearchableDropdown will show them as value even if not in list initially?
+                // Actually SearchableDropdown displays 'value' prop directly.
+                setSelectedState(potentialState);
+                setSelectedCity(potentialCity);
+            }
+        }
+    }, [formData.address]);
+
+    // Update formData.address when State/City changes
+    // We only update if USER interacts (we check if they match internal state to avoid loop overwrites?)
+    // Actually, simple effect is fine as long as we don't cause infinite loop.
+    const handleLocationChange = (state: string, city: string) => {
+        setSelectedState(state);
+        setSelectedCity(city);
+        if (state && city) {
+            setFormData(prev => ({ ...prev, address: `${city}, ${state}` }));
+        } else if (state) {
+             setFormData(prev => ({ ...prev, address: `${state}` }));
+        }
+    };
 
     const fetchProfile = async () => {
         try {
@@ -107,7 +311,7 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
                 {/* Read Only Card */}
-                <div className="p-6 bg-zinc-900 border border-white/5 rounded-xl h-fit">
+                <div className="p-6 bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl h-fit">
                     <div className="flex flex-col items-center text-center">
                         {session?.user?.image ? (
                             <img src={session.user.image} alt="Profile" className="w-24 h-24 rounded-full border-4 border-white/5 mb-4" />
@@ -153,7 +357,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Edit Form */}
-                <div className="lg:col-span-2 p-6 bg-zinc-900 border border-white/5 rounded-xl">
+                <div className="lg:col-span-2 p-6 bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl">
                     <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                         <SettingsIcon /> Edit Details
                     </h3>
@@ -229,15 +433,27 @@ export default function ProfilePage() {
                                 </div>
                             </div>
                              <div className="space-y-2">
-                                <label className="text-xs font-bold text-zinc-400 uppercase">Location / Address</label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
-                                    <input 
-                                        type="text" 
-                                        value={formData.address}
-                                        onChange={(e) => setFormData({...formData, address: e.target.value})}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
-                                        placeholder="City, Country"
+                                <label className="text-xs font-bold text-zinc-400 uppercase">City, State</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {/* State Selector */}
+                                    <SearchableDropdown 
+                                        label="State"
+                                        placeholder="Select State"
+                                        options={states}
+                                        value={selectedState}
+                                        onChange={(val) => handleLocationChange(val, "")} // Reset city
+                                        isLoading={isFetchingStates}
+                                    />
+
+                                    {/* City Selector */}
+                                     <SearchableDropdown 
+                                        label="City"
+                                        placeholder="Select City"
+                                        options={cities}
+                                        value={selectedCity}
+                                        onChange={(val) => handleLocationChange(selectedState, val)}
+                                        isLoading={isFetchingCities}
+                                        disabled={!selectedState}
                                     />
                                 </div>
                             </div>
