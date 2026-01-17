@@ -167,7 +167,7 @@ export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<n
   return (
     <motion.div 
       style={isDesktop ? { translateY: translate } : {}}
-      className="flex flex-col md:flex-row items-center justify-center gap-6 mt-8 w-full pb-24 md:pb-12 relative z-50 pointer-events-auto"
+      className="flex flex-col md:flex-row items-center justify-center gap-6 mt-4 md:-mt-6 w-full pb-24 md:pb-12 relative z-50 pointer-events-auto"
     >
        {/* Ensure z-50 and pointer-events-auto to stay on top */}
         <div className="flex items-center gap-4">
