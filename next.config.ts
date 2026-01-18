@@ -33,7 +33,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.vercel.app https://public-api.luma.com",
+      "connect-src 'self' https://*.vercel.app https://public-api.luma.com https://vitals.vercel-insights.com",
       "frame-src 'self'",
       "object-src 'none'",
       "base-uri 'self'",

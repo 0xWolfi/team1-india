@@ -1,35 +1,10 @@
 import { NextRequest } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 /**
- * WARNING: This is an in-memory rate limiter that does NOT work in serverless environments.
- * On Vercel, each request may hit a different Lambda instance with empty memory.
- * 
- * CRITICAL: This provides NO protection against brute-force or DoS attacks.
- * 
- * TODO: Replace with @upstash/ratelimit or Vercel KV for distributed rate limiting.
- * 
- * For now, this is a placeholder that logs the limitation.
+ * DB-backed Rate Limiter using Prisma
+ * Works in Serverless environments (Vercel)
  */
-interface RateLimitStore {
-    [key: string]: {
-        count: number;
-        resetAt: number;
-    };
-}
-
-const store: RateLimitStore = {};
-
-/**
- * Clean up expired entries every 5 minutes
- */
-setInterval(() => {
-    const now = Date.now();
-    Object.keys(store).forEach(key => {
-        if (store[key].resetAt < now) {
-            delete store[key];
-        }
-    });
-}, 5 * 60 * 1000);
 
 /**
  * Rate limit check
@@ -38,58 +13,90 @@ setInterval(() => {
  * @param windowMs - Time window in milliseconds
  * @returns Object with allowed status and remaining requests
  */
-export function checkRateLimit(
+export async function checkRateLimit(
     request: NextRequest,
     limit: number = 10,
     windowMs: number = 60 * 1000 // 1 minute default
-): { allowed: boolean; remaining: number; resetAt: number } {
+): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
                request.headers.get('x-real-ip') ||
                'unknown';
     
+    if (ip === 'unknown') {
+        // Fallback for local/dev if headers missing, though risky in prod
+        // In prod, Next.js usually provides these.
+    }
+
     const key = `rate_limit:${ip}`;
     const now = Date.now();
-    
-    const entry = store[key];
-    
-    if (!entry || entry.resetAt < now) {
-        // Create new entry or reset expired entry
-        store[key] = {
-            count: 1,
-            resetAt: now + windowMs
-        };
+    const windowStart = now - windowMs;
+
+    try {
+        // Clean up old entries (Lazy cleanup on write)
+        // Optimization: Do this rarely or rely on Cron, but for now strict safety:
+        // Or better: Upsert logic.
+        
+        let record = await prisma.rateLimit.findUnique({ where: { key } });
+
+        // If no record or expired, reset
+        if (!record || Number(record.resetAt) < now) {
+            record = await prisma.rateLimit.upsert({
+                where: { key },
+                update: {
+                    count: 1,
+                    resetAt: BigInt(now + windowMs) 
+                },
+                create: {
+                    key,
+                    count: 1,
+                    resetAt: BigInt(now + windowMs)
+                }
+            });
+            return {
+                allowed: true,
+                remaining: limit - 1,
+                resetAt: Number(record.resetAt)
+            };
+        }
+
+        // Check limit
+        if (record.count >= limit) {
+             return {
+                allowed: false,
+                remaining: 0,
+                resetAt: Number(record.resetAt)
+            };
+        }
+
+        // Increment
+        record = await prisma.rateLimit.update({
+            where: { key },
+            data: { count: { increment: 1 } }
+        });
+
         return {
             allowed: true,
-            remaining: limit - 1,
-            resetAt: now + windowMs
+            remaining: Math.max(0, limit - record.count),
+            resetAt: Number(record.resetAt)
         };
+
+    } catch (error) {
+        console.error("Rate Limit Error:", error);
+        // Fail open (allow) if DB is down, to avoid blocking legit users during outage
+        // But log critical error
+        return { allowed: true, remaining: 1, resetAt: now + windowMs };
     }
-    
-    if (entry.count >= limit) {
-        return {
-            allowed: false,
-            remaining: 0,
-            resetAt: entry.resetAt
-        };
-    }
-    
-    entry.count++;
-    return {
-        allowed: true,
-        remaining: limit - entry.count,
-        resetAt: entry.resetAt
-    };
 }
 
 /**
- * Rate limit middleware for API routes
+ * Rate limit middleware for API routes - ASYNC
  */
 export function withRateLimit(
     limit: number = 10,
     windowMs: number = 60 * 1000
 ) {
-    return (request: NextRequest): Response | null => {
-        const result = checkRateLimit(request, limit, windowMs);
+    return async (request: NextRequest): Promise<Response | null> => {
+        const result = await checkRateLimit(request, limit, windowMs);
         
         if (!result.allowed) {
             return new Response(

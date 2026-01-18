@@ -43,6 +43,16 @@ export async function logAudit(params: AuditLogParams) {
                 metadata: params.metadata || {},
             }
         });
+
+        // HARDENING: Output to stdout for external log ingestion (Axiom/Datadog)
+        // This ensures an immutable record exists outside the database.
+        // eslint-disable-next-line no-console
+        console.log(JSON.stringify({
+            level: 'INFO',
+            context: 'AUDIT_LOG',
+            timestamp: new Date().toISOString(),
+            ...params
+        }));
     } catch (error) {
         log("ERROR", "Failed to write audit log", "AUDIT", {
             action: params.action,

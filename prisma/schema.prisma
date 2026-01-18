@@ -419,3 +419,10 @@ model AttendanceRecord {
   createdAt        DateTime  @default(now())
   deletedAt        DateTime?
 }
+
+model RateLimit {
+  key       String   @id
+  count     Int      @default(0)
+  resetAt   BigInt
+  deletedAt DateTime?
+}
