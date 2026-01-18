@@ -162,9 +162,11 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
         setFormData({
             name: '', email: '', telegram: '', xHandle: '', about: '', resumeLink: '', skills: '', country: 'India', state: '',
             q_whyJoin: '', q_howHelp: '', q_weeklyHours: '', q_expectations: '',
-            q_whyJoin: '', q_howHelp: '', q_weeklyHours: '', q_expectations: '',
             github: '', otherLink: '', referredBy: '', consent: false
         });
+        setTags([]);
+        setSkillInput('');
+        setFieldErrors({});
         onClose();
     };
 
