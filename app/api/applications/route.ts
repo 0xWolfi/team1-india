@@ -4,8 +4,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { sendEmail, getDiscussionEmailTemplate } from "@/lib/email";
+import { withRateLimit } from "@/lib/rate-limit";
+import { NextRequest } from "next/server";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+    // Rate limiting: 3 applications per hour per IP to prevent spam
+    const rateLimitResponse = await withRateLimit(3, 60 * 60 * 1000)(req);
+    if (rateLimitResponse) {
+        return rateLimitResponse;
+    }
+
     try {
         // Verify Authentication
         const session = await getServerSession(authOptions);
