@@ -42,9 +42,13 @@ export async function POST(request: Request) {
     const access = checkCoreAccess(session);
     if (!access.authorized) return access.response!;
 
+    // Only superadmins can add members
     // @ts-ignore
-    if (!hasPermission(session.user.permissions, 'members', PERMISSIONS.WRITE)) {
-        return new NextResponse("Insufficient Permissions. Write Access Required.", { status: 403 });
+    const userPermissions = session.user.permissions || {};
+    const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
+
+    if (!isSuperAdmin) {
+        return new NextResponse("Only Superadmins can add members", { status: 403 });
     }
 
     try {
@@ -99,11 +103,13 @@ export async function DELETE(request: Request) {
     const access = checkCoreAccess(session);
     if (!access.authorized) return access.response!;
 
+    // Only superadmins can delete members
     // @ts-ignore
-    if (!hasPermission(session.user.permissions, 'members', PERMISSIONS.WRITE)) {
-         // Using WRITE for delete is standard, though sometimes DELETE is separate. 
-         // For now WRITE implies capability to manage the collection.
-        return new NextResponse("Insufficient Permissions. Write Access Required.", { status: 403 });
+    const userPermissions = session.user.permissions || {};
+    const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
+
+    if (!isSuperAdmin) {
+        return new NextResponse("Only Superadmins can delete members", { status: 403 });
     }
 
     try {
