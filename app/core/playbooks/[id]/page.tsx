@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Lock, Unlock, RefreshCw, Trash2, Edit3, Eye, Check, Globe, Shield, Cpu, MoreVertical, Download, FileText, Image as ImageIcon, X } from "lucide-react";
+// Dynamic import for canvas-confetti to avoid SSR issues
 import confetti from "canvas-confetti";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -141,12 +142,14 @@ export default function PlaybookPage() {
             setHasUnsavedChanges(false);
             
             // Celebration!
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#a855f7', '#ec4899', '#ffffff'] // Brand colors
-            });
+            if (typeof window !== 'undefined' && confetti) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#a855f7', '#ec4899', '#ffffff'] // Brand colors
+                });
+            }
             setToast({ message: "Saved successfully!", type: 'success', visible: true });
             return true;
 

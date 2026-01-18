@@ -299,7 +299,7 @@ export function FloatingNav() {
                             {((session?.user as any)?.role === 'CORE' || (session?.user as any)?.role === 'MEMBER') && (
                                 <Link
                                     href={(session?.user as any)?.role === 'CORE' ? '/core' : '/member'}
-                                    className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <LayoutDashboard className="w-4 h-4" /> Go to Dashboard
                                 </Link>
@@ -307,7 +307,7 @@ export function FloatingNav() {
 
                             <button 
                                 onClick={() => signOut()}
-                                className="w-full py-3 bg-white/5 text-red-400 font-bold rounded-xl hover:bg-red-500/10 border border-white/5 transition-colors flex items-center justify-center gap-2"
+                                className="w-full py-3 bg-white/5 text-zinc-400 font-bold rounded-xl hover:bg-white/10 border border-white/5 transition-colors flex items-center justify-center gap-2"
                             >
                                 <LogOut className="w-4 h-4" /> Sign Out
                             </button>

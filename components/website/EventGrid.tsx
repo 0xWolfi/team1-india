@@ -161,7 +161,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {(searchQuery || selectedCity || startDate || endDate) && (
             <button 
                 onClick={() => { setSearchQuery(""); setSelectedCity(""); setStartDate(""); setEndDate(""); }}
-                className="px-3 text-xs text-brand-400 hover:text-brand-300 transition-colors font-medium hover:underline"
+                className="px-3 text-xs text-zinc-400 hover:text-white transition-colors font-medium hover:underline"
             >
                 Reset
             </button>

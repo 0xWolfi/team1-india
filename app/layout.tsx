@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 import { ThemeProvider } from "./providers";
 import { Component as EtheralBackground } from "@/components/ui/etheral-shadow";
 
-import { Analytics } from "@vercel/analytics/next";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function RootLayout({
   children,

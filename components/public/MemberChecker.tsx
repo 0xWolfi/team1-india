@@ -53,9 +53,16 @@ export default function MemberChecker() {
                             <input
                                 type="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    if (e.target.value) {
+                                        setXHandle("");
+                                        setTelegram("");
+                                        setDiscord("");
+                                    }
+                                }}
                                 placeholder="name@example.com"
-                                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
                             />
                         </div>
                         <div>
@@ -65,9 +72,16 @@ export default function MemberChecker() {
                                 <input
                                     type="text"
                                     value={xHandle}
-                                    onChange={(e) => setXHandle(e.target.value.replace('@', ''))}
+                                    onChange={(e) => {
+                                        setXHandle(e.target.value.replace('@', ''));
+                                        if (e.target.value) {
+                                            setEmail("");
+                                            setTelegram("");
+                                            setDiscord("");
+                                        }
+                                    }}
                                     placeholder="username"
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
                                 />
                             </div>
                         </div>
@@ -80,9 +94,16 @@ export default function MemberChecker() {
                                 <input
                                     type="text"
                                     value={telegram}
-                                    onChange={(e) => setTelegram(e.target.value.replace('@', ''))}
+                                    onChange={(e) => {
+                                        setTelegram(e.target.value.replace('@', ''));
+                                        if (e.target.value) {
+                                            setEmail("");
+                                            setXHandle("");
+                                            setDiscord("");
+                                        }
+                                    }}
                                     placeholder="username"
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
                                 />
                             </div>
                         </div>
@@ -91,9 +112,16 @@ export default function MemberChecker() {
                             <input
                                 type="text"
                                 value={discord}
-                                onChange={(e) => setDiscord(e.target.value)}
+                                onChange={(e) => {
+                                    setDiscord(e.target.value);
+                                    if (e.target.value) {
+                                        setEmail("");
+                                        setXHandle("");
+                                        setTelegram("");
+                                    }
+                                }}
                                 placeholder="username"
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
                             />
                         </div>
                     </div>
