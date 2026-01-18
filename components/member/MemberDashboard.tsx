@@ -138,7 +138,7 @@ export function MemberDashboard({
                             className={cn(
                                 "flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all text-center",
                                 activeTab === tab 
-                                    ? "bg-red-500/10 text-red-500 shadow-sm ring-1 ring-red-500/20" 
+                                    ? "bg-white/10 text-white shadow-sm ring-1 ring-white/20" 
                                     : "text-zinc-500 hover:text-white hover:bg-white/5"
                             )}
                         >
@@ -176,7 +176,7 @@ export function MemberDashboard({
                     {/* See All Button - Beside Filter */}
                     <Link 
                         href={`/member/${activeTab.toLowerCase()}`}
-                        className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-400 transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
+                        className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
                     >
                         See All <ArrowRight className="w-3 h-3" />
                     </Link>
@@ -231,7 +231,7 @@ export function MemberDashboard({
 
                         <Link 
                             href="/member/playbooks"
-                            className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-400 transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
+                            className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
                         >
                             View All <ArrowRight className="w-3 h-3" />
                         </Link>
@@ -302,29 +302,35 @@ export function MemberDashboard({
                                 </div>
                             </Link>
                         )) : (
-                            <div className="py-8 text-center bg-black/20 rounded-xl border border-white/5 border-dashed">
-                                <p className="text-zinc-500 text-xs">No active proposals.</p>
+                            <div className="w-full h-32 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center border-dashed">
+                                <p className="text-zinc-500 font-medium text-xs">No active proposals.</p>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Member Details */}
-                <Link href="/member/directory" className={cn("rounded-3xl p-6 md:p-8 hover:border-white/20 transition-all group block relative overflow-hidden", glassClass)}>
+                <Link href="/member/directory" className={cn("rounded-3xl p-6 md:p-8 relative overflow-hidden group flex flex-col", glassClass)}>
                     
-                    <div className="flex items-center justify-between relative z-10 h-full">
-                        <div className="flex items-center gap-4">
-                             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                                <Users className="w-8 h-8 text-zinc-400 group-hover:text-red-400 transition-colors" />
+                    <div className="flex items-center justify-between mb-8 relative z-10">
+                        <div className="flex items-center gap-3">
+                             <div className="p-2 bg-white/5 rounded-lg text-zinc-300 border border-white/5">
+                                <Users className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
                              </div>
                              <div>
-                                <h2 className="text-2xl font-bold group-hover:text-white transition-colors">Member Directory</h2>
-                                <p className="text-sm text-zinc-500 mt-1 max-w-xs leading-relaxed">Connect with other builders, mentors, and contributors in the community.</p>
+                                <h2 className="text-xl font-bold group-hover:text-white transition-colors">Member Directory</h2>
+                                <p className="text-xs text-zinc-500 mt-1">Connect with the community</p>
                              </div>
                         </div>
-                        <div className="p-4 rounded-full border border-white/5 bg-white/5 group-hover:bg-white/10 transition-colors">
-                            <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-white transition-colors" />
+                        <div className="p-2 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors">
+                             <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
                         </div>
+                    </div>
+
+                    <div className="relative z-10 flex-1 flex items-center p-5 bg-zinc-800/30 border border-white/5 rounded-xl group-hover:bg-zinc-800/50 transition-colors">
+                        <p className="text-sm text-zinc-400 leading-relaxed">
+                            Connect with other builders, mentors, and contributors. Find peers and collaborate on new ideas.
+                        </p>
                     </div>
                 </Link>
 

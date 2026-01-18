@@ -50,15 +50,15 @@ export default function MemberDirectoryPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-red-400 transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
             </Link>
             
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/10">
-                        <Users className="w-5 h-5 text-red-400" />
+                    <div className="p-2 bg-white/5 rounded-lg border border-white/5">
+                        <Users className="w-5 h-5 text-zinc-200" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Members Directory</h1>
@@ -110,7 +110,7 @@ export default function MemberDirectoryPage() {
                         >
                             {/* Avatar/Initials */}
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500/20 to-zinc-500/20 border border-white/10 flex items-center justify-center text-white font-bold text-lg">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-zinc-500/20 to-zinc-500/20 border border-white/10 flex items-center justify-center text-white font-bold text-lg">
                                     {(member.name || '?').charAt(0).toUpperCase()}
                                 </div>
                                 <div className="flex-1 min-w-0">
