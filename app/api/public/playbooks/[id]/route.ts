@@ -1,8 +1,16 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withRateLimit } from "@/lib/rate-limit";
+import { NextRequest } from "next/server";
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    // Rate limiting: 20 requests per minute per IP (public endpoint, prevent abuse)
+    const rateLimitResponse = await withRateLimit(20, 60 * 1000)(request);
+    if (rateLimitResponse) {
+        return rateLimitResponse;
+    }
+
     try {
         const { id } = await params;
         const playbook = await prisma.playbook.findFirst({

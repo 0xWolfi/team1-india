@@ -1,10 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withRateLimit } from "@/lib/rate-limit";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Rate limiting: 30 requests per minute per IP (public endpoint, but prevent abuse)
+  const rateLimitResponse = await withRateLimit(30, 60 * 1000)(req);
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   try {
     const [playbooks, publicGuides, resources] = await Promise.all([
       prisma.playbook.findMany({
