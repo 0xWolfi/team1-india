@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options"; 
 import { prisma } from "@/lib/prisma";
 import { checkCoreAccess, hasPermission, PERMISSIONS } from "@/lib/permissions";
-import { sendEmail, getWelcomeEmailTemplate } from "@/lib/email";
+import { sendEmail, getWelcomeEmailTemplate, getMemberRemovalEmailTemplate } from "@/lib/email";
 
 export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
@@ -118,9 +118,37 @@ export async function DELETE(request: Request) {
 
         if (!id) return new NextResponse("ID is required", { status: 400 });
 
+        // Get member details before deleting
+        const member = await prisma.communityMember.findUnique({
+            where: { id },
+            select: {
+                email: true,
+                name: true
+            }
+        });
+
+        if (!member) {
+            return new NextResponse("Member not found", { status: 404 });
+        }
+
+        // Delete the member
         await prisma.communityMember.delete({
             where: { id }
         });
+
+        // Send removal email
+        try {
+            const memberName = member.name || member.email.split('@')[0];
+            const emailHtml = getMemberRemovalEmailTemplate(memberName);
+            await sendEmail({
+                to: member.email,
+                subject: "Membership Update - Team1 India",
+                html: emailHtml
+            });
+        } catch (emailError) {
+            console.error("Failed to send member removal email:", emailError);
+            // Don't fail the request if email fails
+        }
 
         return new NextResponse("Deleted", { status: 200 });
     } catch (error) {

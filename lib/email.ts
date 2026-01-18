@@ -122,9 +122,9 @@ export function getApprovalEmailTemplate(applicantName: string, programTitle: st
         <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Your ${programTitle} Application Has Been Approved</h1>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            Hi ${applicantName},
-        </p>
-        
+                                Hi ${applicantName},
+                            </p>
+
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
             We're pleased to inform you that your application for ${programTitle} with Team1 India has been approved.
         </p>
@@ -208,7 +208,7 @@ export function getRejectionEmailTemplate(applicantName: string, programTitle: s
             Sarnavo<br>
             Team1 India Team
         </p>
-    </div>
+                            </div>
 </body>
 </html>
     `;
@@ -228,9 +228,9 @@ export function getDiscussionEmailTemplate(applicantName: string, programTitle: 
         <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Your ${programTitle} Application Is Under Discussion</h1>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            Hi ${applicantName},
-        </p>
-        
+                                Hi ${applicantName},
+                            </p>
+
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
             Thank you for submitting your application for ${programTitle} with Team1 India.
         </p>
@@ -262,8 +262,8 @@ export function getDiscussionEmailTemplate(applicantName: string, programTitle: 
         <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.6;">
             Sarnavo<br>
             Team1 India Team
-        </p>
-    </div>
+                                </p>
+                            </div>
 </body>
 </html>
     `;
@@ -365,6 +365,57 @@ export function getContributionRejectionEmailTemplate(contributorName: string, c
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
             Thank you for your interest and understanding.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Sarnavo<br>
+            Team1 India Team
+                                </p>
+                            </div>
+</body>
+</html>
+    `;
+}
+
+// Member removal email template
+export function getMemberRemovalEmailTemplate(memberName: string) {
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; color: #000000;">
+    <div style="padding: 40px 20px; max-width: 600px; margin: 0 auto;">
+        <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Membership Update - Team1 India</h1>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Hi ${memberName},
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            We're writing to inform you that due to inactivity, the system has decided to remove you from Team1 India membership.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            If you would like to rejoin or have any questions about this decision, please contact the admin team.
+        </p>
+        
+        <p style="margin: 24px 0 16px; font-size: 16px; line-height: 1.6; font-weight: bold;">
+            🔐 Contact Information:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            You can reach out to us through our official contact page:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Thank you for your understanding.
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
