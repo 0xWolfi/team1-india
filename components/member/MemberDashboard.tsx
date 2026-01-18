@@ -252,8 +252,8 @@ export function MemberDashboard({
                         />
                     ))}
                     {filteredPlaybooks.length === 0 && (
-                         <div className="col-span-full py-10 text-center border border-white/5 border-dashed rounded-xl">
-                            <p className="text-zinc-500 text-sm">
+                         <div className="col-span-full w-full h-40 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center border-dashed">
+                            <p className="text-zinc-500 font-medium text-sm">
                                 {playbookSearch ? `No playbooks matching "${playbookSearch}".` : "No playbooks available."}
                             </p>
                          </div>
