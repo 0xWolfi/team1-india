@@ -32,7 +32,7 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                     <div className="flex md:hidden items-center gap-2">
                         <button
                             onClick={() => setIsContributionModalOpen(true)}
-                            className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-all flex items-center gap-1.5"
+                            className="px-3 py-1.5 bg-white text-black rounded-lg text-xs font-semibold hover:bg-zinc-200 transition-all flex items-center gap-1.5 shadow-lg shadow-white/5"
                         >
                             <Plus className="w-3 h-3" />
                             Submit
