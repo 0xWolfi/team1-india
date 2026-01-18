@@ -16,6 +16,9 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
     useEffect(() => {
         setMounted(true);
+    }, []);
+
+    useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
         } else {

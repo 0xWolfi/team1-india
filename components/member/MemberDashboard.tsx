@@ -138,7 +138,7 @@ export function MemberDashboard({
                             className={cn(
                                 "flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all text-center",
                                 activeTab === tab 
-                                    ? "bg-white/10 text-white shadow-sm ring-1 ring-white/10" 
+                                    ? "bg-red-500/10 text-red-500 shadow-sm ring-1 ring-red-500/20" 
                                     : "text-zinc-500 hover:text-white hover:bg-white/5"
                             )}
                         >
@@ -176,7 +176,7 @@ export function MemberDashboard({
                     {/* See All Button - Beside Filter */}
                     <Link 
                         href={`/member/${activeTab.toLowerCase()}`}
-                        className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
+                        className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-400 transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
                     >
                         See All <ArrowRight className="w-3 h-3" />
                     </Link>
@@ -231,7 +231,7 @@ export function MemberDashboard({
 
                         <Link 
                             href="/member/playbooks"
-                            className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
+                            className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-400 transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
                         >
                             View All <ArrowRight className="w-3 h-3" />
                         </Link>
@@ -313,7 +313,7 @@ export function MemberDashboard({
                     <div className="flex items-center justify-between relative z-10 h-full">
                         <div className="flex items-center gap-4">
                              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                                <Users className="w-8 h-8 text-zinc-400 group-hover:text-white transition-colors" />
+                                <Users className="w-8 h-8 text-zinc-400 group-hover:text-red-400 transition-colors" />
                              </div>
                              <div>
                                 <h2 className="text-2xl font-bold group-hover:text-white transition-colors">Member Directory</h2>
