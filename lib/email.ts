@@ -399,19 +399,7 @@ export function getMemberRemovalEmailTemplate(memberName: string) {
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            If you would like to rejoin or have any questions about this decision, please contact the admin team.
-        </p>
-        
-        <p style="margin: 24px 0 16px; font-size: 16px; line-height: 1.6; font-weight: bold;">
-            🔐 Contact Information:
-        </p>
-        
-        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            You can reach out to us through our official contact page:
-        </p>
-        
-        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            If you would like to rejoin or have any questions about this decision, please reply to this email.
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
