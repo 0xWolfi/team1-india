@@ -39,7 +39,12 @@ export async function GET() {
         },
         take: 6,
         orderBy: { createdAt: "desc" },
-        select: { id: true, title: true, content: true, customFields: true },
+        select: { 
+          id: true, 
+          title: true, 
+          content: true,
+          customFields: true, // We'll filter sensitive data in the mapping below
+        },
       }),
     ]);
 
@@ -85,12 +90,24 @@ export async function GET() {
       }
     });
 
-    const mediaItems = resources.map((res: any) => ({
-      id: res.id,
-      title: res.title,
-      links: [res.content || "#"],
-      description: res.customFields?.description || "",
-    }));
+    // Filter out sensitive data from customFields before exposing publicly
+    const mediaItems = resources.map((res: any) => {
+      const safeCustomFields = res.customFields || {};
+      // Only include public-safe fields (description, public metadata)
+      // Exclude sensitive fields like budget, internal notes, client info, etc.
+      const publicFields: any = {};
+      if (safeCustomFields.description) {
+        publicFields.description = safeCustomFields.description;
+      }
+      // Add other explicitly safe fields here if needed
+      
+      return {
+        id: res.id,
+        title: res.title,
+        links: [res.content || "#"],
+        description: publicFields.description || "",
+      };
+    });
 
     return NextResponse.json(
       { playbooks, programs, guides, events, mediaItems },

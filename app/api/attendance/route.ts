@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // @ts-ignore
+        const role = session.user.role;
+        if (role !== 'CORE') {
+            return NextResponse.json({ error: "Forbidden. Core access required." }, { status: 403 });
+        }
         const { searchParams } = new URL(req.url);
         
         if (searchParams.get('history') === 'true') {
@@ -31,12 +43,23 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(allMembers);
     } catch (error) {
         console.error("GET /api/attendance error:", error);
-        return NextResponse.json({ error: "Failed to fetch data", details: String(error) }, { status: 500 });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 
 export async function POST(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // @ts-ignore
+        const role = session.user.role;
+        if (role !== 'CORE') {
+            return NextResponse.json({ error: "Forbidden. Core access required." }, { status: 403 });
+        }
+
         const { date, presentIds, note } = await req.json();
 
         const record = await prisma.attendanceRecord.create({
@@ -50,12 +73,23 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(record);
     } catch (error) {
         console.error("POST /api/attendance error:", error);
-        return NextResponse.json({ error: "Failed to save attendance", details: String(error) }, { status: 500 });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 
 export async function DELETE(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // @ts-ignore
+        const role = session.user.role;
+        if (role !== 'CORE') {
+            return NextResponse.json({ error: "Forbidden. Core access required." }, { status: 403 });
+        }
+
         const { searchParams } = new URL(req.url);
         const id = searchParams.get('id');
 
@@ -71,6 +105,6 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error("DELETE /api/attendance error:", error);
-        return NextResponse.json({ error: "Failed to delete log", details: String(error) }, { status: 500 });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

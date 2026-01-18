@@ -1,7 +1,22 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options";
+import { checkCoreAccess } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
+    const session = await getServerSession(authOptions);
+    const access = checkCoreAccess(session);
+    if (!access.authorized) return access.response!;
+
+    // @ts-ignore
+    const userPermissions = session.user.permissions || {};
+    const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
+
+    if (!isSuperAdmin) {
+        return new NextResponse("Only Superadmins can seed announcements", { status: 403 });
+    }
+
     try {
         await prisma.announcement.deleteMany({}); // Clear all
 
@@ -27,6 +42,7 @@ export async function GET() {
 
         return NextResponse.json({ success: true, count: announcements.length });
     } catch (e) {
-        return NextResponse.json({ error: String(e) }, { status: 500 });
+        console.error("Seed Announcements Error:", e);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

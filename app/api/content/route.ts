@@ -7,6 +7,12 @@ export async function GET(req: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) return new NextResponse("Unauthorized", { status: 401 });
 
+    // @ts-ignore
+    const role = session.user.role;
+    if (role !== 'CORE' && role !== 'MEMBER') {
+        return new NextResponse("Forbidden", { status: 403 });
+    }
+
     try {
         const content = await prisma.contentResource.findMany({
             orderBy: { createdAt: 'desc' },
@@ -14,7 +20,8 @@ export async function GET(req: NextRequest) {
         });
         return NextResponse.json(content);
     } catch (error) {
-        return new NextResponse("Internal Error", { status: 500 });
+        console.error("GET /api/content error:", error);
+        return new NextResponse("Internal Server Error", { status: 500 });
     }
 }
 

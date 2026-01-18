@@ -14,6 +14,17 @@ import { authOptions } from "@/lib/auth-options";
 
 export async function GET(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // @ts-ignore
+        const role = session.user.role;
+        if (role !== 'CORE' && role !== 'MEMBER') {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+        }
+
         const polls = await prisma.contentResource.findMany({
             where: { 
                 type: 'POLL',
@@ -27,7 +38,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(polls);
     } catch (error) {
         console.error("GET /api/polls error:", error);
-        return NextResponse.json({ error: "Failed to fetch polls", details: String(error) }, { status: 500 });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 
@@ -68,7 +79,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(poll);
     } catch (error) {
         console.error("POST /api/polls error:", error);
-        return NextResponse.json({ error: "Failed to create poll", details: String(error) }, { status: 500 });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 
@@ -141,6 +152,6 @@ export async function PATCH(req: NextRequest) {
 
     } catch (error) {
          console.error("PATCH /api/polls error:", error);
-         return NextResponse.json({ error: "Update failed", details: String(error) }, { status: 500 });
+         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

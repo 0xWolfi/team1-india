@@ -21,8 +21,8 @@ export async function POST(req: Request) {
         // Use session email (trusted) instead of body email
         const applicantEmail = session.user.email;
         
-        // Fetch user name from database
-        let userName = session.user.name || body.data?.name || body.name || '';
+        // Fetch user name from database - prioritize DB over request body to prevent injection
+        let userName = session.user.name || '';
         try {
             const memberRecord = await prisma.member.findUnique({ 
                 where: { email: applicantEmail },
@@ -42,8 +42,16 @@ export async function POST(req: Request) {
                     userName = communityMember.name;
                 }
             }
+            
+            // Only use request body name as last resort if DB has no name, and sanitize it
+            if (!userName && body.data?.name) {
+                // Sanitize: remove any potential script tags or special characters
+                userName = String(body.data.name).replace(/<[^>]*>/g, '').trim().substring(0, 100);
+            }
         } catch (error) {
             console.error("Error fetching user name from database:", error);
+            // Fallback to session name only, never trust request body
+            userName = session.user.name || '';
         }
 
         // Check for existing submission within last 7 days (only if guideId is provided)

@@ -8,8 +8,14 @@ import { Lock, ShieldCheck, Terminal, AlertTriangle, Globe } from "lucide-react"
 
 function SignInContent() {
     const searchParams = useSearchParams();
-    const callbackUrl = searchParams.get("callbackUrl") || "/access-check";
+    const rawCallbackUrl = searchParams.get("callbackUrl");
     const error = searchParams.get("error");
+
+    // Validate callback URL to prevent open redirect attacks
+    const allowedCallbacks = ['/access-check', '/core', '/member', '/public'];
+    const callbackUrl = rawCallbackUrl && allowedCallbacks.some(allowed => rawCallbackUrl.startsWith(allowed))
+        ? rawCallbackUrl
+        : '/access-check';
 
     const handleGoogleSignIn = () => {
         signIn("google", { callbackUrl });

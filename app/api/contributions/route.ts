@@ -2,6 +2,36 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options"; 
 import { prisma } from "@/lib/prisma";
+import { z } from "zod";
+import { log } from "@/lib/logger";
+
+// Zod validation schema for contribution submission
+const ContributionSchema = z.object({
+    type: z.enum(["event-host", "content", "programs", "internal-works"]),
+    name: z.string().min(1).max(200),
+    email: z.string().email(),
+    eventDate: z.string().optional(),
+    eventLocation: z.string().max(500).optional(),
+    contentUrl: z.string().url().optional(),
+    programId: z.string().uuid().optional().nullable(),
+    internalWorksDescription: z.string().max(5000).optional(),
+}).refine((data) => {
+    if (data.type === "event-host") {
+        return data.eventDate && data.eventLocation;
+    }
+    if (data.type === "content") {
+        return data.contentUrl;
+    }
+    if (data.type === "programs") {
+        return data.programId;
+    }
+    if (data.type === "internal-works") {
+        return data.internalWorksDescription && data.internalWorksDescription.length > 0;
+    }
+    return true;
+}, {
+    message: "Type-specific fields are required"
+});
 
 export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
@@ -18,40 +48,50 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json();
-        const { type, name, email, eventDate, eventLocation, contentUrl, programId, internalWorksDescription } = body;
-
-        if (!type || !name || !email) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        
+        // Validate input with Zod
+        const validationResult = ContributionSchema.safeParse(body);
+        if (!validationResult.success) {
+            log("WARN", "Invalid contribution submission", "CONTRIBUTIONS", { 
+                email: session.user.email,
+                errors: validationResult.error.flatten()
+            });
+            return NextResponse.json({ 
+                error: "Invalid input", 
+                details: validationResult.error.flatten() 
+            }, { status: 400 });
         }
 
-        // Validate type-specific fields
-        if (type === "event-host" && (!eventDate || !eventLocation)) {
-            return NextResponse.json({ error: "Event date and location are required" }, { status: 400 });
-        }
-        if (type === "content" && !contentUrl) {
-            return NextResponse.json({ error: "Content URL is required" }, { status: 400 });
-        }
+        const data = validationResult.data;
 
-        // Verify email matches session
-        if (email !== session.user.email) {
+        // Verify email matches session (security check)
+        if (data.email !== session.user.email) {
+            log("WARN", "Email mismatch in contribution submission", "CONTRIBUTIONS", { 
+                sessionEmail: session.user.email,
+                providedEmail: data.email
+            });
             return NextResponse.json({ error: "Email mismatch" }, { status: 403 });
         }
 
         // Store contribution data
         const contributionData: any = {
-            type,
-            name,
-            email,
+            type: data.type,
+            name: data.name,
+            email: data.email,
             status: "pending",
             submittedAt: new Date(),
         };
 
         // Add type-specific data
-        if (type === "event-host") {
-            contributionData.eventDate = eventDate;
-            contributionData.eventLocation = eventLocation;
-        } else if (type === "content") {
-            contributionData.contentUrl = contentUrl;
+        if (data.type === "event-host") {
+            contributionData.eventDate = data.eventDate;
+            contributionData.eventLocation = data.eventLocation;
+        } else if (data.type === "content") {
+            contributionData.contentUrl = data.contentUrl;
+        } else if (data.type === "programs") {
+            contributionData.programId = data.programId;
+        } else if (data.type === "internal-works") {
+            contributionData.internalWorksDescription = data.internalWorksDescription;
         }
 
         // Create contribution record
@@ -59,9 +99,17 @@ export async function POST(request: NextRequest) {
             data: contributionData
         });
 
+        log("INFO", "Contribution submitted", "CONTRIBUTIONS", { 
+            contributionId: contribution.id,
+            type: data.type,
+            email: data.email
+        });
+
         return NextResponse.json({ success: true, id: contribution.id });
     } catch (error) {
-        console.error("Contribution Submission Error", error);
+        log("ERROR", "Contribution submission failed", "CONTRIBUTIONS", { 
+            email: session.user.email 
+        }, error instanceof Error ? error : new Error(String(error)));
         return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     }
 }
@@ -89,7 +137,9 @@ export async function GET(request: NextRequest) {
             });
             return NextResponse.json(contributions);
         } catch (error) {
-            console.error("Contributions Fetch Error (Member)", error);
+            log("ERROR", "Failed to fetch member contributions", "CONTRIBUTIONS", { 
+                email: session.user.email 
+            }, error instanceof Error ? error : new Error(String(error)));
             return NextResponse.json({ error: "Internal Error" }, { status: 500 });
         }
     }
@@ -127,7 +177,9 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(contributionsWithPrograms);
     } catch (error) {
-        console.error("Contributions Fetch Error", error);
+        log("ERROR", "Failed to fetch all contributions", "CONTRIBUTIONS", { 
+            email: session.user.email 
+        }, error instanceof Error ? error : new Error(String(error)));
         return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     }
 }
