@@ -15,7 +15,7 @@ const CheckMemberSchema = z.object({
 
 export async function POST(req: NextRequest) {
   // Rate limiting: 5 requests per hour per IP
-  const rateLimitResponse = withRateLimit(5, 60 * 60 * 1000)(req);
+  const rateLimitResponse = await withRateLimit(5, 60 * 60 * 1000)(req);
   if (rateLimitResponse) {
     return rateLimitResponse;
   }

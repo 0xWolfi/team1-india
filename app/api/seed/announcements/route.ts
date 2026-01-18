@@ -9,9 +9,18 @@ export async function GET() {
     const access = checkCoreAccess(session);
     if (!access.authorized) return access.response!;
 
+    if (!session?.user) {
+        return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     // @ts-ignore
     const userPermissions = session.user.permissions || {};
     const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
+
+    // SECURITY: Prevent seed execution in production
+    if (process.env.NODE_ENV === 'production') {
+         return new NextResponse("Not available in production", { status: 404 });
+    }
 
     if (!isSuperAdmin) {
         return new NextResponse("Only Superadmins can seed announcements", { status: 403 });
