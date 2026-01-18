@@ -42,7 +42,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             />
 
             {/* Content */}
-            <div className="relative w-full max-w-2xl bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-2xl bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-white/5 bg-zinc-900/50">
                     <h3 className="text-xl font-bold text-white">{title}</h3>

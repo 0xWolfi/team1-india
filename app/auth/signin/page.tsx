@@ -67,10 +67,10 @@ function SignInContent() {
                             <motion.div 
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
-                                className="mb-6 p-3 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-3 overflow-hidden"
+                                className="mb-6 p-3 rounded-lg bg-zinc-800/50 border border-white/10 flex items-center gap-3 overflow-hidden text-zinc-300"
                             >
-                                <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                                <span className="text-xs text-red-200 font-medium">Authentication Failed. Access Denied.</span>
+                                <AlertTriangle className="w-4 h-4 text-zinc-400 shrink-0" />
+                                <span className="text-xs font-medium">Authentication Failed. Access Denied.</span>
                             </motion.div>
                         )}
 

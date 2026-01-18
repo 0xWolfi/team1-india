@@ -2,8 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+
+const INDIAN_STATES = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
+    "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana",
+    "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
 
 interface ApplicationModalProps {
     isOpen: boolean;
@@ -37,8 +45,27 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
         otherLink: '',
         referredBy: '',
         
-        consent: false
+        consent: false,
+        
+        // Extended Location
+        state: ''
     });
+
+    const [skillInput, setSkillInput] = useState("");
+    const [tags, setTags] = useState<string[]>([]);
+    const [fieldErrors, setFieldErrors] = useState<{ telegram?: string; xHandle?: string }>({});
+
+    // Sync tags to formData
+    useEffect(() => {
+        setFormData(prev => ({ ...prev, skills: tags.join(', ') }));
+    }, [tags]);
+
+    // Handle Validation
+    const validateHandle = (name: string, value: string) => {
+        if (value.includes('@')) return "Do not include '@' symbol.";
+        if (/[^a-zA-Z0-9_.]/.test(value)) return "Only letters, numbers, underscores, and dots allowed.";
+        return undefined;
+    };
 
     // Fetch user name and email from database when modal opens and user is logged in
     useEffect(() => {
@@ -66,9 +93,33 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
         }
     }, [isOpen, session]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        
+        // Handle Validation logic
+        if (name === 'telegram' || name === 'xHandle') {
+            const error = validateHandle(name, value);
+            setFieldErrors(prev => ({ ...prev, [name]: error }));
+        }
+
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSkillKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === ',' || e.key === 'Enter') {
+            e.preventDefault();
+            const val = skillInput.trim().replace(/,/g, '');
+            if (val && !tags.includes(val)) {
+                setTags(prev => [...prev, val]);
+                setSkillInput("");
+            }
+        } else if (e.key === 'Backspace' && !skillInput && tags.length > 0) {
+            setTags(prev => prev.slice(0, -1));
+        }
+    };
+
+    const removeTag = (tagToRemove: string) => {
+        setTags(prev => prev.filter(tag => tag !== tagToRemove));
     };
 
     const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +160,8 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
     const reset = () => {
         setStep('form');
         setFormData({
-            name: '', email: '', telegram: '', xHandle: '', about: '', resumeLink: '', skills: '', country: '',
+            name: '', email: '', telegram: '', xHandle: '', about: '', resumeLink: '', skills: '', country: 'India', state: '',
+            q_whyJoin: '', q_howHelp: '', q_weeklyHours: '', q_expectations: '',
             q_whyJoin: '', q_howHelp: '', q_weeklyHours: '', q_expectations: '',
             github: '', otherLink: '', referredBy: '', consent: false
         });
@@ -133,7 +185,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                 </div>
             ) : step === 'error' ? (
                 <div className="flex flex-col items-center justify-center p-8 space-y-4 text-center">
-                    <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center text-red-500">
+                    <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400">
                         <AlertCircle className="w-8 h-8" />
                     </div>
                     <h3 className="text-2xl font-bold text-white">Submission Failed</h3>
@@ -161,7 +213,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                                         name="name" 
                                         value={formData.name} 
                                         readOnly
-                                        className="w-full bg-zinc-900/50 border border-white/5 rounded-lg p-3 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-zinc-400 cursor-not-allowed focus:outline-none" 
                                         placeholder="John Doe" 
                                     />
                                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded border border-white/5">
@@ -179,7 +231,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                                         name="email" 
                                         value={formData.email} 
                                         readOnly
-                                        className="w-full bg-zinc-900/50 border border-white/5 rounded-lg p-3 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-zinc-400 cursor-not-allowed focus:outline-none" 
                                         placeholder="john@example.com" 
                                     />
                                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded border border-white/5">
@@ -190,15 +242,61 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                             </div>
                             <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">Telegram Handle *</label>
-                                <input required name="telegram" value={formData.telegram} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="@username" />
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">@</span>
+                                    <input 
+                                        required 
+                                        name="telegram" 
+                                        value={formData.telegram} 
+                                        onChange={handleChange} 
+                                        className={`w-full bg-white/5 border ${fieldErrors.telegram ? 'border-red-500' : 'border-white/10'} rounded-lg pl-7 pr-3 py-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900`} 
+                                        placeholder="username" 
+                                    />
+                                    {fieldErrors.telegram && <p className="text-red-400 text-[10px] mt-1">{fieldErrors.telegram}</p>}
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">X Handle (Twitter) *</label>
-                                <input required name="xHandle" value={formData.xHandle} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="@username" />
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">@</span>
+                                    <input 
+                                        required 
+                                        name="xHandle" 
+                                        value={formData.xHandle} 
+                                        onChange={handleChange} 
+                                        className={`w-full bg-white/5 border ${fieldErrors.xHandle ? 'border-red-500' : 'border-white/10'} rounded-lg pl-7 pr-3 py-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900`} 
+                                        placeholder="username" 
+                                    />
+                                    {fieldErrors.xHandle && <p className="text-red-400 text-[10px] mt-1">{fieldErrors.xHandle}</p>}
+                                </div>
                             </div>
-                            <div className="md:col-span-2">
+                            <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">Country *</label>
-                                <input required name="country" value={formData.country} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="e.g. India" />
+                                <select 
+                                    required 
+                                    name="country" 
+                                    value={formData.country} 
+                                    onChange={handleChange} 
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900 appearance-none"
+                                >
+                                    <option value="India">India</option>
+                                    {/* Future: Add more via API */}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-zinc-400 mb-1">State / Province *</label>
+                                <select 
+                                    required 
+                                    name="state" 
+                                    value={formData.state} 
+                                    onChange={handleChange} 
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900 appearance-none"
+                                >
+                                    <option value="" disabled>Select State</option>
+                                    {INDIAN_STATES.map(st => (
+                                        <option key={st} value={st}>{st}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -208,16 +306,31 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                         <h4 className="text-sm font-bold text-zinc-500 uppercase tracking-widest border-b border-white/5 pb-2">Experience & Skills</h4>
                          <div>
                             <label className="block text-xs font-medium text-zinc-400 mb-1">Short Bio / About You *</label>
-                            <textarea required name="about" value={formData.about} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30 h-24" placeholder="Tell us a bit about yourself..." />
+                            <textarea required name="about" value={formData.about} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900 h-24" placeholder="Tell us a bit about yourself..." />
                         </div>
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">Resume / Portfolio Link *</label>
-                                <input required type="url" name="resumeLink" value={formData.resumeLink} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="https://" />
+                                <input required type="url" name="resumeLink" value={formData.resumeLink} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900" placeholder="https://" />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-zinc-400 mb-1">Top Skills (comma separated) *</label>
-                                <input required name="skills" value={formData.skills} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="React, Solidity, Design, Marketing..." />
+                                <label className="block text-xs font-medium text-zinc-400 mb-1">Top Skills (Type and press comma) *</label>
+                                <div className="w-full bg-white/5 border border-white/10 rounded-lg p-2 flex flex-wrap gap-2 min-h-[50px] focus-within:bg-zinc-900 focus-within:border-white/50 transition-all">
+                                    {tags.map(tag => (
+                                        <span key={tag} className="bg-white/10 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                                            {tag}
+                                            <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-400"><XCircle className="w-3 h-3" /></button>
+                                        </span>
+                                    ))}
+                                    <input 
+                                        value={skillInput}
+                                        onChange={(e) => setSkillInput(e.target.value)}
+                                        onKeyDown={handleSkillKeyDown}
+                                        className="bg-transparent border-none outline-none text-white text-sm flex-1 min-w-[100px]" 
+                                        placeholder="React, Design..."
+                                    />
+                                </div>
+                                <input type="hidden" name="skills" value={formData.skills} />
                             </div>
                          </div>
                     </div>
@@ -228,19 +341,28 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                         
                         <div>
                             <label className="block text-xs font-medium text-zinc-400 mb-1">Why do you want to be a member? *</label>
-                            <textarea required name="q_whyJoin" value={formData.q_whyJoin} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30 h-20" />
+                            <textarea required name="q_whyJoin" value={formData.q_whyJoin} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900 h-20" />
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-zinc-400 mb-1">How can you help Team1? *</label>
-                            <textarea required name="q_howHelp" value={formData.q_howHelp} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30 h-20" />
+                            <textarea required name="q_howHelp" value={formData.q_howHelp} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900 h-20" />
                         </div>
                          <div>
                             <label className="block text-xs font-medium text-zinc-400 mb-1">What are you expecting from us? *</label>
-                            <textarea required name="q_expectations" value={formData.q_expectations} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30 h-20" />
+                            <textarea required name="q_expectations" value={formData.q_expectations} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900 h-20" />
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-zinc-400 mb-1">Hours available weekly? *</label>
-                            <input required name="q_weeklyHours" value={formData.q_weeklyHours} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="e.g. 5-10 hours" />
+                            <label className="block text-xs font-medium text-zinc-400 mb-1">Hours available weekly? (Numbers only) *</label>
+                            <input 
+                                required 
+                                type="number" 
+                                min="0"
+                                name="q_weeklyHours" 
+                                value={formData.q_weeklyHours} 
+                                onChange={handleChange} 
+                                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900" 
+                                placeholder="e.g. 10" 
+                            />
                         </div>
                     </div>
 
@@ -250,11 +372,11 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">GitHub (Optional)</label>
-                                <input name="github" value={formData.github} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" placeholder="github.com/username" />
+                                <input name="github" value={formData.github} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900" placeholder="github.com/username" />
                             </div>
                             <div>
                                 <label className="block text-xs font-medium text-zinc-400 mb-1">Referred By (Optional)</label>
-                                <input name="referredBy" value={formData.referredBy} onChange={handleChange} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30" />
+                                <input name="referredBy" value={formData.referredBy} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/50 transition-colors focus:bg-zinc-900" />
                             </div>
                          </div>
                     </div>
@@ -273,7 +395,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                         <button 
                             type="submit" 
                             disabled={step === 'submitting' || !formData.consent}
-                            className="w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:opacity-100 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                         >
                             {step === 'submitting' && <Loader2 className="w-5 h-5 animate-spin" />}
                             {step === 'submitting' ? 'Submitting Application...' : 'Submit Member Application'}

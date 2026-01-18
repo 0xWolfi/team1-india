@@ -122,7 +122,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                     id="name"
                     value={userName || user?.name || ""}
                     readOnly
-                    className="w-full bg-zinc-950/50 border border-white/5 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed focus:outline-none" 
                     required
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded border border-white/5">
@@ -141,7 +141,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                     id="email"
                     value={userEmail || user?.email || ""}
                     readOnly
-                    className="w-full bg-zinc-950/50 border border-white/5 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed focus:outline-none" 
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded border border-white/5">
                     Verified
@@ -163,14 +163,14 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                     {field.type === 'textarea' ? (
                         <textarea 
                             name={field.key}
-                            className="w-full bg-zinc-950/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-zinc-700 min-h-[100px] resize-none text-sm"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-700 min-h-[100px] resize-none text-sm"
                             placeholder={field.placeholder || `Enter response...`}
                             required={field.required}
                         />
                     ) : field.type === 'select' ? (
                         <select
                             name={field.key}
-                            className="w-full bg-zinc-950/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all text-sm"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all text-sm"
                             required={field.required}
                             defaultValue=""
                         >
@@ -193,7 +193,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                         <input 
                             type={field.type}
                             name={field.key}
-                            className="w-full bg-zinc-950/50 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all placeholder:text-zinc-700 text-sm"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-700 text-sm"
                             placeholder={field.placeholder || `Enter ${field.label}...`}
                             required={field.required}
                         />
@@ -204,7 +204,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
       )}
 
       {status === "error" && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm mb-4">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-zinc-800/50 border border-white/10 text-zinc-300 text-sm mb-4">
             <AlertCircle className="w-4 h-4" /> {message}
         </div>
       )}

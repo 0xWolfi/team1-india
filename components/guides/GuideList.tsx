@@ -351,7 +351,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                         {effectiveCanDelete && (
                                             <button 
                                                 onClick={(e) => handleDeleteClick(e, doc.id)}
-                                                className="text-left px-3 py-2 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg flex items-center gap-2 w-full"
+                                                className="text-left px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg flex items-center gap-2 w-full"
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" /> Delete
                                             </button>
@@ -367,16 +367,16 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
             {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-[#09090b]/90 border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl scale-100 animate-in zoom-in-95 duration-200 backdrop-blur-xl ring-1 ring-red-500/20">
+                    <div className="bg-[#09090b]/90 border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl scale-100 animate-in zoom-in-95 duration-200 backdrop-blur-xl ring-1 ring-white/10">
                         <div className="flex flex-col items-center text-center gap-4">
-                            <div className="p-4 rounded-full bg-red-500/10 border border-red-500/20 text-red-500">
+                            <div className="p-4 rounded-full bg-zinc-800 border border-white/10 text-zinc-400">
                                 <Trash2 className="w-8 h-8" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-2">Delete Guide?</h3>
                                 <p className="text-sm text-zinc-400 leading-relaxed">
                                     Are you sure you want to delete this guide? <br/>
-                                    <span className="text-red-400 font-medium">This action cannot be undone.</span>
+                                    <span className="text-zinc-500 font-medium">This action cannot be undone.</span>
                                 </p>
                             </div>
                             <div className="flex gap-3 w-full mt-2">
@@ -388,7 +388,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                 </button>
                                 <button 
                                     onClick={confirmDelete}
-                                    className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-900/20"
+                                    className="flex-1 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold transition-colors shadow-lg shadow-black/20"
                                 >
                                     Delete Forever
                                 </button>
