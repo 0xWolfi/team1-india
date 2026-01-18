@@ -7,7 +7,7 @@ import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { GuideList } from '@/components/guides/GuideList';
 
 export default function MemberProgramGuidesPage() {
-    const [guides, setGuides] = useState([]);
+    const [guides, setGuides] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -16,17 +16,23 @@ export default function MemberProgramGuidesPage() {
                 const res = await fetch('/api/guides?type=PROGRAM');
                 if (res.ok) {
                     const data = await res.json();
-                    // Filter to only show MEMBER and PUBLIC guides
-                    const memberGuides = data.filter((g: any) =>
-                        g.visibility === 'MEMBER' || g.visibility === 'PUBLIC'
-                    );
-                    // Sort: MEMBER first, then PUBLIC
-                    memberGuides.sort((a: any, b: any) => {
-                        if (a.visibility === 'MEMBER' && b.visibility !== 'MEMBER') return -1;
-                        if (a.visibility !== 'MEMBER' && b.visibility === 'MEMBER') return 1;
-                        return 0;
-                    });
-                    setGuides(memberGuides);
+                    
+                    if (Array.isArray(data)) {
+                         // Filter to only show MEMBER and PUBLIC guides
+                        const memberGuides = data.filter((g: any) =>
+                            g.visibility === 'MEMBER' || g.visibility === 'PUBLIC'
+                        );
+                        // Sort: MEMBER first, then PUBLIC
+                        memberGuides.sort((a: any, b: any) => {
+                            if (a.visibility === 'MEMBER' && b.visibility !== 'MEMBER') return -1;
+                            if (a.visibility !== 'MEMBER' && b.visibility === 'MEMBER') return 1;
+                            return 0;
+                        });
+                        setGuides(memberGuides);
+                    } else {
+                        console.error("API returned non-array data:", data);
+                        setGuides([]);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to fetch guides", error);
@@ -39,15 +45,15 @@ export default function MemberProgramGuidesPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-red-400 transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
             </Link>
             
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-white/5 rounded-lg">
-                        <Briefcase className="w-5 h-5 text-zinc-200" />
+                    <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/10">
+                        <Briefcase className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Program Guidelines</h1>

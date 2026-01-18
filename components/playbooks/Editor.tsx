@@ -2,12 +2,12 @@
 
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+import React, { useEffect, useState, useMemo } from "react";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
-import { useEffect, useState, useMemo } from "react";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { Block } from "@blocknote/core";
-import { Eye, Edit3, Code } from "lucide-react";
+import { Eye, Code } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface EditorProps {
@@ -19,7 +19,7 @@ interface EditorProps {
 type ViewMode = 'write' | 'markdown' | 'preview';
 
 export default function Editor({ initialContent, editable, onChange }: EditorProps) {
-    const [viewMode, setViewMode] = useState<ViewMode>('write');
+    const [viewMode, setViewMode] = useState<ViewMode>(editable ? 'markdown' : 'preview');
     const [markdownContent, setMarkdownContent] = useState<string>("");
 
     // Initialize Editor
@@ -54,24 +54,35 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
         }
     });
 
-    // Sync Logic
-    // Sync Logic: Only tracking "Save" updates here.
-    // Content state sync happens explicitly on Mode Change to avoid race conditions.
+    const isMounted = React.useRef(true);
     useEffect(() => {
-        if (!editor) return;
+        isMounted.current = true;
+        return () => { isMounted.current = false; };
+    }, []);
 
-        const handleChange = async () => {
-            if (editable) {
-                // Trigger parent onChange for auto-saving
-                onChange(JSON.stringify(editor.document));
+    // Debounced Sync: Markdown -> Blocks -> Parent onChange
+    useEffect(() => {
+        if (!editor || !editable) return;
+
+        const timer = setTimeout(async () => {
+            if (!isMounted.current) return;
+            if (markdownContent) {
+                try {
+                    const blocks = await editor.tryParseMarkdownToBlocks(markdownContent);
+                    if (!isMounted.current) return;
+                    
+                    // We keep the invisible editor in sync so "Preview" works if switched
+                     editor.replaceBlocks([...editor.document], blocks);
+                     onChange(JSON.stringify(blocks));
+                } catch (e) {
+                    console.warn("Editor sync skipped:", e);
+                }
             }
-        };
+        }, 500); 
 
-        const cleanup = editor.onChange(handleChange);
-        return () => {
-             if (typeof cleanup === 'function') cleanup();
-        };
-    }, [editor, editable, onChange]);
+        return () => clearTimeout(timer);
+    }, [markdownContent, editor, editable, onChange]);
+
 
     // Initial MD Load (One time only)
     useEffect(() => {
@@ -82,31 +93,60 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
             };
             initMd();
         }
-    }, [editor]); // Run once on editor init
+    }, [editor]); 
 
     // Handle Mode Switch
     const handleModeChange = async (newMode: ViewMode) => {
         if (newMode === viewMode) return;
         
-        // 1. Markdown -> Write (or Preview)
-        if (viewMode === 'markdown' && newMode !== 'markdown') {
-            // Parse MD -> Blocks
-            const blocks = await editor.tryParseMarkdownToBlocks(markdownContent);
-            // Replace ALL existing blocks with new parsed blocks
-            editor.replaceBlocks(editor.document, blocks);
-            // Trigger save immediately
-            onChange(JSON.stringify(blocks)); 
-        }
-
-        // 2. Write -> Markdown
+        // 2. Write -> Markdown (Not needed if Write is gone, but keeping logic sane)
         if (newMode === 'markdown') {
-            // Blocks -> MD
-            // Ensure we capture latest state from editor
-            const md = await editor.blocksToMarkdownLossy(editor.document);
-            setMarkdownContent(md);
+            // If coming from Preview (which uses blocks), ensure MD is fresh?
+             const md = await editor.blocksToMarkdownLossy(editor.document);
+             setMarkdownContent(md);
         }
 
         setViewMode(newMode);
+    };
+
+    // Custom Paste Handler for Images in Markdown
+    const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+        const items = e.clipboardData.items;
+        for (const item of items) {
+            if (item.type.indexOf("image") === 0) {
+                e.preventDefault();
+                const file = item.getAsFile();
+                if (!file) continue;
+
+                // Insert Placeholder
+                const placeholder = `![Uploading ${file.name}...]()`;
+                const textarea = e.currentTarget;
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const text = markdownContent;
+                
+                const newTextWithPlaceholder = text.substring(0, start) + placeholder + text.substring(end);
+                setMarkdownContent(newTextWithPlaceholder);
+
+                // Upload
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                    
+                    if (res.ok) {
+                        const data = await res.json();
+                        const finalImageMarkdown = `![${file.name}](${data.url})`;
+                        setMarkdownContent(prev => prev.replace(placeholder, finalImageMarkdown));
+                    } else {
+                         setMarkdownContent(prev => prev.replace(placeholder, `[Upload Failed]`));
+                    }
+                } catch (err) {
+                    console.error(err);
+                    setMarkdownContent(prev => prev.replace(placeholder, `[Upload Error]`));
+                }
+            }
+        }
     };
 
 
@@ -141,18 +181,9 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
 
     return (
         <div className="editor-wrapper flex flex-col gap-4">
-             {/* Tab Switcher - Right Aligned & Boxy */}
+             {/* Tab Switcher - Just Markdown vs Preview now */}
              {editable && (
                  <div className="flex items-center gap-1 p-1 bg-zinc-900/50 backdrop-blur-md border border-white/5 rounded-lg w-fit self-end">
-                     <button
-                         onClick={() => handleModeChange('write')}
-                         className={cn(
-                             "flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-semibold transition-all",
-                             viewMode === 'write' ? "bg-zinc-800 text-white shadow-sm border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-                         )}
-                     >
-                         <Edit3 className="w-3.5 h-3.5" /> Write
-                     </button>
                      <button
                          onClick={() => handleModeChange('markdown')}
                          className={cn(
@@ -174,30 +205,25 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                  </div>
              )}
 
-            {/* Editor Body - Dotted Border, Dark Grey, Transparent */}
+            {/* Editor Body */}
             <div 
                 className={cn(
                     "relative min-h-[500px] text-zinc-200 rounded-xl p-4 transition-all",
                     editable ? "border-2 border-dotted border-zinc-800 bg-transparent" : "border-none"
-                    // User asked for "dark grey in color and transparent". 
-                    // border-zinc-800 is dark grey.
                 )} 
                 style={{ '--bn-editor-background': 'transparent' } as React.CSSProperties}
             >
                 
-                {/* 1. WRITE MODE */}
-                <div className={cn("transition-opacity duration-300", viewMode === 'write' ? "opacity-100 relative z-10 block" : "opacity-0 absolute inset-0 -z-10 pointer-events-none hidden")}>
+                {/* 1. HIDDEN EDITOR (For Logic/Sync Only) */}
+                <div className="opacity-0 absolute inset-0 -z-10 pointer-events-none">
                      <BlockNoteView 
                         editor={editor} 
-                        editable={editable}
+                        editable={false}
                         theme={customDarkTheme}
-                        className="min-h-[500px]" 
-                        slashMenu={true}
-                        sideMenu={true}
                      />
                 </div>
 
-                {/* 2. MARKDOWN MODE */}
+                {/* 2. MARKDOWN MODE - Primary */}
                 {viewMode === 'markdown' && (
                     <div className="relative w-full h-full p-4">
                         <textarea
@@ -207,14 +233,15 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                                 e.target.style.height = 'auto';
                                 e.target.style.height = e.target.scrollHeight + 'px';
                             }}
+                            onPaste={handlePaste}
                             ref={(el) => {
                                 if (el) {
                                     el.style.height = 'auto';
                                     el.style.height = el.scrollHeight + 'px';
                                 }
                             }}
-                            className="w-full min-h-[600px] bg-transparent border-none font-mono text-sm text-zinc-300 focus:outline-none resize-none leading-relaxed overflow-hidden"
-                            placeholder="# Write your markdown here..."
+                            className="w-full min-h-[600px] bg-transparent border-none font-mono text-sm text-zinc-300 focus:outline-none resize-none leading-relaxed overflow-hidden placeholder:text-zinc-700"
+                            placeholder="# Write your markdown here... (Drag & Drop images support coming soon, use Paste for now)"
                         />
                     </div>
                 )}

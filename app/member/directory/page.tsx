@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Users, Search, Mail, Twitter, Send, ArrowLeft } from "lucide-react";
+import { Users, Search, Mail, Send, ArrowLeft } from "lucide-react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 
 interface CommunityMember {
@@ -50,15 +50,15 @@ export default function MemberDirectoryPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-red-400 transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
             </Link>
             
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-white/5 rounded-lg">
-                        <Users className="w-5 h-5 text-zinc-200" />
+                    <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/10">
+                        <Users className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Members Directory</h1>
@@ -110,7 +110,7 @@ export default function MemberDirectoryPage() {
                         >
                             {/* Avatar/Initials */}
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center text-white font-bold text-lg">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500/20 to-zinc-500/20 border border-white/10 flex items-center justify-center text-white font-bold text-lg">
                                     {(member.name || '?').charAt(0).toUpperCase()}
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -144,7 +144,9 @@ export default function MemberDirectoryPage() {
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group/item"
                                     >
-                                        <Twitter className="w-4 h-4 text-zinc-600 group-hover/item:text-blue-400 transition-colors" />
+                                        <svg className="w-4 h-4 text-zinc-600 group-hover/item:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                        </svg>
                                         <span>{member.xHandle}</span>
                                     </a>
                                 )}
