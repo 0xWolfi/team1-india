@@ -4,9 +4,19 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 
 export async function GET(req: NextRequest) {
+    // CRITICAL SECURITY FIX: Require authentication for internal API
+    // Public announcements should use /api/public/announcements if needed
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     try {
         const { searchParams } = new URL(req.url);
         const audience = searchParams.get('audience')?.toUpperCase(); // PUBLIC, MEMBER, ALL
+
+        // @ts-ignore
+        const role = session.user.role;
 
         let whereClause: any = {};
 
@@ -26,8 +36,14 @@ export async function GET(req: NextRequest) {
                 { expiresAt: null },
                 { expiresAt: { gt: new Date() } }
             ];
+        } else {
+            // If no audience specified, filter based on role
+            // CORE can see all, MEMBER can only see MEMBER/PUBLIC
+            if (role === 'MEMBER') {
+                whereClause.audience = { in: ['MEMBER', 'ALL'] };
+            }
+            // CORE can see all (no additional filter)
         }
-        // If no audience specified or ALL, return everything (Admin view)
         
         const announcements = await prisma.announcement.findMany({
             where: whereClause,
@@ -37,7 +53,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(announcements);
     } catch (error) {
         console.error("GET /api/announcements error:", error);
-        return NextResponse.json({ error: "Failed to fetch announcements", details: String(error) }, { status: 500 });
+        return NextResponse.json({ error: "Failed to fetch announcements" }, { status: 500 });
     }
 }
 

@@ -3,10 +3,19 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
+import { checkCoreAccess } from "@/lib/permissions";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    // CRITICAL SECURITY FIX: Require authentication
+    const session = await getServerSession(authOptions);
+    const access = checkCoreAccess(session);
+    if (!access.authorized) return access.response!;
+
     try {
         const { id } = await params;
+
+        // @ts-ignore
+        const role = session.user.role;
 
         const playbook = await prisma.playbook.findUnique({
             where: { id },
@@ -16,9 +25,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             }
         });
 
-        if (!playbook) {
-            console.warn(`[API] GET /api/playbooks/${id} - Not Found`);
+        if (!playbook || playbook.deletedAt) {
             return new NextResponse("Not found", { status: 404 });
+        }
+
+        // Security: Check visibility based on user role
+        if (role === 'MEMBER' && playbook.visibility !== 'MEMBER' && playbook.visibility !== 'PUBLIC') {
+            return new NextResponse("Forbidden", { status: 403 });
         }
 
         return NextResponse.json(playbook);

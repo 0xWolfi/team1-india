@@ -28,19 +28,38 @@ const CreateGuideSchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
+  // CRITICAL SECURITY FIX: Require authentication
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type");
     const visibility = searchParams.get("visibility");
 
+    // @ts-ignore
+    const role = session.user.role;
+
     const where: any = { deletedAt: null };
     if (type) where.type = type.toUpperCase();
-    if (visibility) where.visibility = visibility.toUpperCase();
+    
+    // Security: Filter by visibility based on user role
+    if (visibility) {
+      where.visibility = visibility.toUpperCase();
+    } else {
+      // If no visibility specified, filter based on role
+      if (role === 'MEMBER') {
+        where.visibility = { in: ['MEMBER', 'PUBLIC'] };
+      }
+      // CORE can see all (no additional filter)
+    }
 
     const guides = await prisma.guide.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      include: { createdBy: true }
+      include: { createdBy: { select: { email: true, id: true, name: true } } }
     });
 
     return NextResponse.json(guides);

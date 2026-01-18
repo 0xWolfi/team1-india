@@ -1,8 +1,14 @@
 import { NextRequest } from "next/server";
 
 /**
- * Simple in-memory rate limiter
- * For production, use a distributed rate limiter like @upstash/ratelimit or Redis
+ * WARNING: This is an in-memory rate limiter that does NOT work in serverless environments.
+ * On Vercel, each request may hit a different Lambda instance with empty memory.
+ * 
+ * CRITICAL: This provides NO protection against brute-force or DoS attacks.
+ * 
+ * TODO: Replace with @upstash/ratelimit or Vercel KV for distributed rate limiting.
+ * 
+ * For now, this is a placeholder that logs the limitation.
  */
 interface RateLimitStore {
     [key: string]: {
