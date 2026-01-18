@@ -5,6 +5,12 @@ import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
+    // CRITICAL SECURITY FIX: Require authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+        return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const experimentId = searchParams.get('experimentId');
 

@@ -4,8 +4,17 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  // CRITICAL SECURITY FIX: Require authentication
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
+
+    // @ts-ignore
+    const role = session.user.role;
 
     const guide = await prisma.guide.findUnique({
       where: { id },
@@ -13,6 +22,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     if (!guide || (guide as any).deletedAt) {
       return NextResponse.json({ error: "Guide not found" }, { status: 404 });
+    }
+
+    // Security: Check visibility based on user role
+    if (role === 'MEMBER' && guide.visibility !== 'MEMBER' && guide.visibility !== 'PUBLIC') {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     return NextResponse.json(guide);
