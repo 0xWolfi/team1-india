@@ -85,17 +85,24 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
             const res = await fetch('/api/applications', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    guideId: null, // General membership application (no specific program/event)
+                    data: formData
+                })
             });
 
-            if (!res.ok) throw new Error('Failed to submit application');
+            const responseData = await res.json();
+
+            if (!res.ok) {
+                throw new Error(responseData.error || responseData.message || 'Failed to submit application');
+            }
             
             setStep('success');
             // Reset form after delay or on close?
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             setStep('error');
-            setError('Something went wrong. Please try again.');
+            setError(err.message || 'Something went wrong. Please try again.');
         }
     };
 
