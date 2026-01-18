@@ -71,10 +71,9 @@ export function MemberHeader({ user }: MemberHeaderProps) {
             <div className="hidden md:flex items-center gap-6">
                 <button
                     onClick={() => setIsContributionModalOpen(true)}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20"
+                    className="px-4 py-2 bg-white text-black rounded-lg text-sm font-bold tracking-wide hover:bg-zinc-200 border border-white/10 shadow-lg shadow-white/5 hover:scale-[1.02] transition-all flex items-center gap-2"
                 >
-                    <Plus className="w-4 h-4" />
-                    Submit your contributions
+                    submit your contributions
                 </button>
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
                     {user?.image ? (

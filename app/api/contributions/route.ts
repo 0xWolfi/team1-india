@@ -7,13 +7,13 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.email) {
-        return new NextResponse("Unauthorized", { status: 401 });
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // @ts-ignore
     const role = session.user.role;
     if (role !== 'MEMBER' && role !== 'CORE') {
-        return new NextResponse("Forbidden", { status: 403 });
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     try {
@@ -21,20 +21,20 @@ export async function POST(request: NextRequest) {
         const { type, name, email, eventDate, eventLocation, contentUrl, programId, internalWorksDescription } = body;
 
         if (!type || !name || !email) {
-            return new NextResponse("Missing required fields", { status: 400 });
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
         // Validate type-specific fields
         if (type === "event-host" && (!eventDate || !eventLocation)) {
-            return new NextResponse("Event date and location are required", { status: 400 });
+            return NextResponse.json({ error: "Event date and location are required" }, { status: 400 });
         }
         if (type === "content" && !contentUrl) {
-            return new NextResponse("Content URL is required", { status: 400 });
+            return NextResponse.json({ error: "Content URL is required" }, { status: 400 });
         }
 
         // Verify email matches session
         if (email !== session.user.email) {
-            return new NextResponse("Email mismatch", { status: 403 });
+            return NextResponse.json({ error: "Email mismatch" }, { status: 403 });
         }
 
         // Store contribution data
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true, id: contribution.id });
     } catch (error) {
         console.error("Contribution Submission Error", error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     }
 }
 
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.email) {
-        return new NextResponse("Unauthorized", { status: 401 });
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // @ts-ignore
@@ -78,15 +78,20 @@ export async function GET(request: NextRequest) {
     
     // Only CORE users (superadmins) can view all contributions
     if (role !== 'CORE') {
-        // Members can only view their own contributions
-        const contributions = await prisma.contribution.findMany({
-            where: {
-                email: session.user.email,
-                deletedAt: null
-            },
-            orderBy: { submittedAt: 'desc' }
-        });
-        return NextResponse.json(contributions);
+        try {
+            // Members can only view their own contributions
+            const contributions = await prisma.contribution.findMany({
+                where: {
+                    email: session.user.email,
+                    deletedAt: null
+                },
+                orderBy: { submittedAt: 'desc' }
+            });
+            return NextResponse.json(contributions);
+        } catch (error) {
+            console.error("Contributions Fetch Error (Member)", error);
+            return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+        }
     }
 
     // @ts-ignore
@@ -94,7 +99,7 @@ export async function GET(request: NextRequest) {
     const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
 
     if (!isSuperAdmin) {
-        return new NextResponse("Only Superadmins can view all contributions", { status: 403 });
+        return NextResponse.json({ error: "Only Superadmins can view all contributions" }, { status: 403 });
     }
 
     try {
@@ -123,6 +128,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(contributionsWithPrograms);
     } catch (error) {
         console.error("Contributions Fetch Error", error);
-        return new NextResponse("Internal Error", { status: 500 });
+        return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     }
 }

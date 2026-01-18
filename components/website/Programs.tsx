@@ -1,8 +1,8 @@
 import React from "react";
 import { Users, Code2, Rocket, Trophy, HeartHandshake, Globe } from "lucide-react";
+import { FeatureGrid, FeatureItem } from "@/components/ui/FeatureGrid";
 
-
-const programs = [
+const programs: FeatureItem[] = [
     {
         title: "Student Lead",
         desc: "Lead the tech revolution at your campus. Organize events, build communities, and empower peers.",
@@ -23,7 +23,7 @@ const programs = [
         desc: "Compete in our national hackathon circuit. Win prizes and get recognized.",
         icon: <Trophy className="w-6 h-6 text-zinc-400" />
     },
-     {
+    {
         title: "Mentorship",
         desc: "1:1 guidance from industry veterans to help you navigate your career path.",
         icon: <HeartHandshake className="w-6 h-6 text-zinc-400" />
@@ -44,22 +44,7 @@ export function Programs() {
             <p className="text-zinc-400 text-lg">Whether you are a student, a builder, or a founder, we have a place for you.</p>
         </div>
         
-        {/* 6-Item Grid Layout - Matches WhatWeDo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 max-w-7xl mx-auto border-t border-l border-white/10 relative">
-
-
-            {programs.map((program, idx) => (
-                <div key={idx} className="group p-8 border-b border-r border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 transition-colors relative">
-                    <div className="flex items-center gap-4 mb-3 relative z-10">
-                        {program.icon}
-                        <h3 className="text-xl font-bold text-white">{program.title}</h3>
-                    </div>
-                    <p className="text-sm text-zinc-500 leading-relaxed relative z-10">
-                        {program.desc}
-                    </p>
-                </div>
-            ))}
-        </div>
+        <FeatureGrid items={programs} />
       </div>
     </section>
   );

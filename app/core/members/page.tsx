@@ -128,7 +128,7 @@ export default function CommunityMembersPage() {
     };
 
     return (
-        <div className="md:pt-4">
+        <>
              <CorePageHeader
                 title="Community Members"
                 description="Manage the broader community roster. (CommunityMember Table)"
@@ -259,6 +259,6 @@ export default function CommunityMembersPage() {
                     isSubmitting={isSubmitting}
                 />
              )}
-        </div>
+        </>
     );
 }

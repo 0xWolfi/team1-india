@@ -75,10 +75,10 @@ export const HeroScroll = () => {
   return (
     <div
       id="hero"
-      className="h-[100svh] md:h-[200vh] relative"
+      className="min-h-[100svh] md:h-[200vh] relative"
       ref={containerRef}
     >
-      <div className="sticky top-0 h-[100svh] md:h-screen flex items-center justify-center py-6 md:py-20 overflow-hidden">
+      <div className="sticky top-0 min-h-[100svh] md:h-screen flex items-center justify-center py-6 md:py-20 overflow-hidden">
         <div
           className="w-full relative z-10 flex flex-col items-center justify-center md:justify-start h-full"
           style={{
@@ -116,6 +116,7 @@ export const Header = ({ scale, translate, isDesktop }: { scale: MotionValue<num
 
 
 
+// Card scale/translate logic remains, but we add max-h to prevent it from eating all vertical space
 export const Card = ({
   rotate,
   scale,
@@ -135,11 +136,9 @@ export const Card = ({
         rotateX: rotate,
         scale,
       }}
-      className="max-w-5xl mx-auto aspect-video w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-white/5 backdrop-blur-xl border-white/20 rounded-[30px] shadow-2xl"
+      className="max-w-5xl mx-auto aspect-video w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-white/5 backdrop-blur-xl border-white/20 rounded-[30px] shadow-2xl max-h-[50vh] object-contain"
     >
       <div className="h-full w-full overflow-hidden rounded-2xl bg-transparent relative">
-        {/* Custom HTML5 Video */}
-          {/* pointer-events-none when inactive ensures clicks go through to nothing (or background) and video isn't interactive */}
           <div className="absolute inset-0 flex items-center justify-center bg-transparent">
               <Image 
                  src="/hero-cover.jpg" 
@@ -164,37 +163,20 @@ export const Card = ({
 import { Instagram, Linkedin, Send } from "lucide-react";
 import { signIn } from "next-auth/react";
 
-// Custom X Icon since it might not be in all versions or purely preference
-const XIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M4 4l11.733 16h4.67l-12.28-16.75L2.4 4h1.6zm10.7 0l5.3 7.3L22 4h-2l-3.3 4.5-2-4.5h-2.3z" fill="currentColor" stroke="none"/>
-    {/* Simple X shape if SVG above is too complex or broken in prev context, but standard path usually:
-        M18 6L6 18M6 6l12 12
-        The above path is a close approximation of the X logo.
-        Let's use the standard "X" from lucide if available (it is in recent versions), but fallback to code if not.
-        Actually, 'X' is available in lucide-react imports usually as 'X'. 
-        Let's try importing it. If it fails build, we can revert.
-    */}
-     <path d="M18 6 6 18" />
-     <path d="m6 6 12 12" />
-  </svg>
-);
-
-import { X } from "lucide-react";
-
 export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<number>; isDesktop: boolean }) => {
   return (
     <motion.div 
       style={isDesktop ? { translateY: translate } : {}}
-      className="flex flex-col md:flex-row items-center justify-center gap-6 mt-8 md:-mt-9 w-full"
+      className="flex flex-col md:flex-row items-center justify-center gap-6 mt-4 md:-mt-6 w-full pb-24 md:pb-12 relative z-50 pointer-events-auto"
     >
+       {/* Ensure z-50 and pointer-events-auto to stay on top */}
         <div className="flex items-center gap-4">
-            <Link href="/public" className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+            <Link href="/public" className="px-6 py-3 rounded-xl bg-white/10 hover:bg-brand-600/90 border border-white/20 hover:border-brand-500/50 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-lg hover:shadow-brand-500/20">
                 Guidebook
             </Link>
             <button 
                 onClick={() => signIn('google', { callbackUrl: '/access-check' })}
-                className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                className="px-6 py-3 rounded-xl bg-white/10 hover:bg-brand-600/90 border border-white/20 hover:border-brand-500/50 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-lg hover:shadow-brand-500/20"
             >
                 Members
             </button>
@@ -203,18 +185,18 @@ export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<n
         <div className="w-px h-8 bg-white/10 hidden md:block"></div>
 
         <div className="flex items-center gap-4">
-            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
                 <Instagram className="w-5 h-5" />
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
                 <Linkedin className="w-5 h-5" />
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
                 <Send className="w-5 h-5" /> {/* Telegram */}
             </a>
         </div>

@@ -13,8 +13,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Team1 India",
-  description: "Official Team1 India Platform",
+  title: "Team1 India | Built for impact. Designed for builders.",
+  description: "From idea to scale, Team1India provides the infrastructure, network, and resources you need to build the future.",
+  keywords: ["Team1 India", "Startup Accelerator", "Developer Community", "Hackathons", "Mentorship", "India Tech"],
+  openGraph: {
+    title: "Team1 India | Built for impact. Designed for builders.",
+    description: "From idea to scale, Team1India provides the infrastructure, network, and resources you need to build the future.",
+    url: "https://team1india.com",
+    siteName: "Team1 India",
+    images: [
+      {
+        url: "/og-image.png", // Assuming an image will exist or user will add one
+        width: 1200,
+        height: 630,
+        alt: "Team1 India Community",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Team1 India",
+    description: "Built for impact. Designed for builders.",
+    creator: "@Team1India", // Placeholder
+  },
 };
 
 import { ThemeProvider } from "./providers";

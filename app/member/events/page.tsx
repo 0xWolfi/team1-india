@@ -39,15 +39,15 @@ export default function MemberEventGuidesPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-red-400 transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
             </Link>
             
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-white/5 rounded-lg">
-                        <Calendar className="w-5 h-5 text-zinc-200" />
+                    <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/10">
+                        <Calendar className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Event Guidelines</h1>

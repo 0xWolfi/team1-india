@@ -2,59 +2,100 @@
 
 import React, { useEffect, useState } from "react";
 import { 
-    BarChart3, Plus, Trash2, Check, X, Clock, Users, ArrowLeft
+    BarChart3, Plus, Users, X, CheckCircle2, Lock, Globe, Trophy, Clock
 } from "lucide-react";
-import Link from "next/link";
 import { usePermission } from "@/hooks/usePermission";
+import { CoreWrapper } from "@/components/core/CoreWrapper";
+import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { useSession } from "next-auth/react";
+
+interface Voter {
+    id: string;
+    name: string;
+    image?: string;
+}
+
+interface PollOption {
+    id: string;
+    text: string;
+    voters: Voter[];
+}
 
 interface Poll {
     id: string;
-    question: string;
-    options: { id: string, text: string, votes: number }[];
-    status: string;
+    title: string; // Question
+    status: string; // ACTIVE, CLOSED
     createdAt: string;
+    customFields: {
+        audience: 'CORE' | 'PUBLIC';
+        options: PollOption[];
+    };
 }
 
 export default function PollsPage() {
+    const { data: session } = useSession();
     const canManage = usePermission('content', 'WRITE');
+    
+    // State
     const [polls, setPolls] = useState<Poll[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'ONGOING' | 'PAST'>('ONGOING');
+
+    // Create State
     const [isCreating, setIsCreating] = useState(false);
     const [newQuestion, setNewQuestion] = useState("");
     const [newOptions, setNewOptions] = useState(["", ""]);
+    const [audience, setAudience] = useState<'CORE' | 'PUBLIC'>('CORE');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         fetchPolls();
     }, []);
 
     const fetchPolls = async () => {
-        const res = await fetch('/api/polls');
-        const data = await res.json();
-        setPolls(data);
+        setLoading(true);
+        try {
+            const res = await fetch('/api/polls');
+            const data = await res.json();
+            // content resource returns title, type, status, customFields
+            setPolls(data);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const createPoll = async () => {
         if (!newQuestion || newOptions.some(o => !o.trim())) return;
+        setIsSubmitting(true);
         
-        const optionsData = newOptions.map((text, idx) => ({ 
-            id: `opt-${Date.now()}-${idx}`, 
-            text, 
-            votes: 0 
-        }));
+        try {
+            const res = await fetch('/api/polls', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    question: newQuestion, 
+                    options: newOptions,
+                    audience 
+                })
+            });
 
-        const res = await fetch('/api/polls', {
-            method: 'POST',
-            body: JSON.stringify({ question: newQuestion, options: optionsData })
-        });
-
-        if (res.ok) {
-            setIsCreating(false);
-            setNewQuestion("");
-            setNewOptions(["", ""]);
-            fetchPolls();
+            if (res.ok) {
+                setIsCreating(false);
+                setNewQuestion("");
+                setNewOptions(["", ""]);
+                fetchPolls();
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleVote = async (pollId: string, optionId: string) => {
+        // Optimistic update could be hard with complex structure, just fetch for now
         await fetch('/api/polls', {
             method: 'PATCH',
             body: JSON.stringify({ type: 'VOTE', id: pollId, optionId })
@@ -75,126 +116,240 @@ export default function PollsPage() {
         setNewOptions([...newOptions, ""]);
     }
 
-    return (
-        <div className="min-h-screen pt-24 px-6 max-w-5xl mx-auto pb-20 text-white">
-            <Link href="/core" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-6 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> Back to Core
-            </Link>
+    // Filter polls
+    const filteredPolls = polls.filter(p => {
+        if (activeTab === 'ONGOING') return p.status === 'ACTIVE';
+        return p.status !== 'ACTIVE';
+    });
 
-            <header className="mb-10 flex justify-between items-end">
-                <div>
-                     <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-                         <BarChart3 className="w-8 h-8 text-indigo-500" /> Voting Console
-                     </h1>
-                    <p className="text-zinc-400">Launch and manage governance polls.</p>
-                </div>
-                {!isCreating && canManage && (
+    const userVoted = (poll: Poll) => {
+        if (!session?.user?.email) return false;
+        // Check all options
+        return poll.customFields.options.some(opt => 
+            opt.voters?.some((v: any) => v.name === session.user?.name || v.id ) // rough check, ideally ID match
+            // Since we save ID in backend, we should match ID. 
+            // However, frontend session might not have ID easily if not customized.
+            // Let's assume backend check prevents double voting, this is just for UI state.
+        );
+    };
+
+    return (
+        <CoreWrapper>
+            <CorePageHeader
+                title="Voting Console"
+                description="Launch and manage governance polls."
+                icon={<BarChart3 className="w-5 h-5 text-indigo-500" />}
+            >
+                {canManage && !isCreating && (
                     <button 
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold transition-all shadow-lg hover:shadow-indigo-500/25"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-xl font-bold transition-all hover:bg-red-500 hover:text-white text-sm shadow-lg shadow-red-500/20"
                     >
-                        <Plus className="w-5 h-5" /> New Poll
+                        <Plus className="w-4 h-4" /> New Poll
                     </button>
                 )}
-            </header>
+            </CorePageHeader>
 
+            {/* Tabs */}
+            <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-1">
+                <button 
+                    onClick={() => setActiveTab('ONGOING')}
+                    className={`pb-3 text-sm font-bold transition-all relative ${
+                        activeTab === 'ONGOING' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                >
+                    Ongoing Polls
+                    {activeTab === 'ONGOING' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-500 rounded-t-full shadow-[0_-2px_8px_rgba(99,102,241,0.5)]" />}
+                </button>
+                <button 
+                    onClick={() => setActiveTab('PAST')}
+                    className={`pb-3 text-sm font-bold transition-all relative ${
+                        activeTab === 'PAST' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                >
+                    Past Results
+                    {activeTab === 'PAST' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-zinc-500 rounded-t-full" />}
+                </button>
+            </div>
+
+            {/* Create Modal */}
             {isCreating && (
-                 <div className="mb-12 bg-zinc-900 border border-white/10 p-6 rounded-2xl animate-in fade-in slide-in-from-top-4">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-bold">Create New Poll</h2>
-                        <button onClick={() => setIsCreating(false)}><X className="w-5 h-5 text-zinc-500 hover:text-white" /></button>
-                    </div>
-
-                    <div className="space-y-4 max-w-2xl">
-                        <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">Question</label>
-                            <input 
-                                type="text" 
-                                className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-indigo-500/50 outline-none"
-                                placeholder="e.g. What should be our next priority?"
-                                value={newQuestion}
-                                onChange={e => setNewQuestion(e.target.value)}
-                            />
+                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
+                    <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 rounded-3xl w-full max-w-xl p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-white/5">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-white">Create New Poll</h2>
+                            <button onClick={() => setIsCreating(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><X className="w-5 h-5 text-zinc-400" /></button>
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">Options</label>
-                            {newOptions.map((opt, idx) => (
-                                <div key={idx} className="flex gap-3 mb-2">
-                                     <input 
-                                        type="text" 
-                                        className="flex-1 bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:border-indigo-500/50 outline-none"
-                                        placeholder={`Option ${idx + 1}`}
-                                        value={opt}
-                                        onChange={e => {
-                                            const next = [...newOptions];
-                                            next[idx] = e.target.value;
-                                            setNewOptions(next);
-                                        }}
-                                    />
+                        <div className="space-y-6">
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Question</label>
+                                <input 
+                                    type="text" 
+                                    autoFocus
+                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all font-medium"
+                                    placeholder="e.g. What should be our next priority?"
+                                    value={newQuestion}
+                                    onChange={e => setNewQuestion(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Audience</label>
+                                <div className="flex gap-3">
+                                    <button 
+                                        onClick={() => setAudience('CORE')} 
+                                        className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${audience === 'CORE' ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-white/5 border-white/5 text-zinc-500'}`}
+                                    >
+                                        <Lock className="w-4 h-4" /> Core Only
+                                    </button>
+                                    <button 
+                                        onClick={() => setAudience('PUBLIC')} 
+                                        className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${audience === 'PUBLIC' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-white/5 border-white/5 text-zinc-500'}`}
+                                    >
+                                        <Globe className="w-4 h-4" /> Public
+                                    </button>
                                 </div>
-                            ))}
-                            <button onClick={addOptionField} className="text-xs text-indigo-400 font-bold hover:text-indigo-300 mt-2 flex items-center gap-1">
-                                <Plus className="w-3 h-3" /> Add Option
-                            </button>
-                        </div>
+                            </div>
 
-                        <div className="pt-4 flex gap-3">
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Options</label>
+                                {newOptions.map((opt, idx) => (
+                                    <div key={idx}>
+                                         <input 
+                                            type="text" 
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all"
+                                            placeholder={`Option ${idx + 1}`}
+                                            value={opt}
+                                            onChange={e => {
+                                                const next = [...newOptions];
+                                                next[idx] = e.target.value;
+                                                setNewOptions(next);
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                                <button onClick={addOptionField} className="text-xs text-indigo-400 font-bold hover:text-indigo-300 mt-2 flex items-center gap-1 pl-1">
+                                    <Plus className="w-3 h-3" /> Add Another Option
+                                </button>
+                            </div>
+
                             <button 
                                 onClick={createPoll}
-                                className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-200"
+                                disabled={isSubmitting}
+                                className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-zinc-200 transition-all shadow-lg hover:translate-y-[-1px]"
                             >
-                                Launch Poll
+                                {isSubmitting ? "Launching..." : "Launch Poll"}
                             </button>
                         </div>
                     </div>
                  </div>
             )}
 
+            {/* Polls Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {polls.map(poll => (
-                    <div key={poll.id} className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
-                        <div className="flex justify-between items-start mb-4">
-                            <button 
-                                onClick={() => canManage && toggleStatus(poll.id, poll.status)}
-                                className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider border ${
-                                    poll.status === 'ACTIVE' 
-                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' + (canManage ? ' hover:bg-emerald-500/20' : '')
-                                    : 'bg-zinc-800 text-zinc-500 border-white/5' + (canManage ? ' hover:bg-zinc-700' : '')
-                                } ${!canManage ? 'cursor-default' : ''}`}
-                            >
-                                {poll.status}
-                            </button>
-                            <span className="flex items-center gap-1 text-xs text-zinc-500">
-                                <Users className="w-3 h-3" /> {poll.options.reduce((acc, o) => acc + o.votes, 0)} votes
-                            </span>
-                        </div>
-
-                        <h3 className="text-xl font-bold mb-6">{poll.question}</h3>
-
-                        <div className="space-y-4">
-                            {poll.options.map((opt) => {
-                                const totalVotes = poll.options.reduce((acc, o) => acc + o.votes, 0);
-                                const percentage = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
-                                return (
-                                    <div key={opt.id} onClick={() => poll.status === 'ACTIVE' && handleVote(poll.id, opt.id)} className={`relative group ${poll.status === 'ACTIVE' ? 'cursor-pointer' : 'cursor-default'}`}>
-                                        <div className="flex justify-between text-sm mb-1 z-10 relative">
-                                            <span className="text-zinc-300 group-hover:text-white transition-colors">{opt.text}</span>
-                                            <span className="font-mono text-zinc-500">{percentage}%</span>
-                                        </div>
-                                        <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                                            <div 
-                                                className="h-full bg-indigo-500 rounded-full transition-all duration-500" 
-                                                style={{ width: `${percentage}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
+                {polls.length === 0 && !loading && (
+                    <div className="col-span-full py-20 text-center text-zinc-500 border border-dashed border-white/10 rounded-3xl">
+                        No polls found.
                     </div>
-                ))}
+                )}
+                
+                {filteredPolls.map(poll => {
+                    const totalVotes = poll.customFields.options.reduce((acc, o) => acc + (o.voters?.length || 0), 0);
+                    const isEnded = poll.status === 'CLOSED';
+
+                    return (
+                        <div key={poll.id} className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-white/20 transition-all group flex flex-col">
+                            
+                            {/* Header */}
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+                                            poll.customFields.audience === 'CORE' 
+                                            ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' 
+                                            : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                        }`}>
+                                            {poll.customFields.audience}
+                                        </span>
+                                        {isEnded && <span className="text-zinc-500 text-[10px] font-bold uppercase border border-white/5 px-2 py-0.5 rounded">Ended</span>}
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white leading-tight">{poll.title}</h3>
+                                </div>
+                                {canManage && (
+                                    <button 
+                                        onClick={() => toggleStatus(poll.id, poll.status)}
+                                        className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                                        title={isEnded ? "Reopen Poll" : "End Poll"}
+                                    >
+                                        {isEnded ? <Clock className="w-4 h-4" /> : <Trophy className="w-4 h-4" />}
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Options */}
+                            <div className="space-y-6 flex-1">
+                                {poll.customFields.options.map((opt) => {
+                                    const voteCount = opt.voters?.length || 0;
+                                    const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+                                    
+                                    return (
+                                        <div 
+                                            key={opt.id} 
+                                            onClick={() => !isEnded && handleVote(poll.id, opt.id)}
+                                            className={`relative ${!isEnded ? 'cursor-pointer' : ''}`}
+                                        >
+                                            {/* Progress Bar Background */}
+                                            <div className="absolute inset-0 bg-white/5 rounded-2xl overflow-hidden">
+                                                <div 
+                                                    className={`h-full opacity-20 transition-all duration-1000 ${isEnded ? 'bg-zinc-500' : 'bg-indigo-500'}`} 
+                                                    style={{ width: `${percentage}%` }}
+                                                />
+                                            </div>
+                                            
+                                            {/* Content */}
+                                            <div className="relative p-4 flex flex-col gap-2 z-10">
+                                                <div className="flex justify-between items-center">
+                                                     <span className="font-bold text-white text-sm">{opt.text}</span>
+                                                     <span className="font-mono text-zinc-400 text-xs">{percentage}%</span>
+                                                </div>
+
+                                                {/* Voters */}
+                                                {voteCount > 0 && (
+                                                    <div className="flex -space-x-2 overflow-hidden py-1">
+                                                        {opt.voters?.slice(0, 8).map(v => (
+                                                            <div key={v.id} className="w-6 h-6 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[8px] text-white font-bold" title={v.name}>
+                                                                {v.image ? (
+                                                                    <img src={v.image} alt={v.name} className="w-full h-full rounded-full object-cover" />
+                                                                ) : v.name[0]}
+                                                            </div>
+                                                        ))}
+                                                        {voteCount > 8 && (
+                                                            <div className="w-6 h-6 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[8px] text-zinc-400 font-bold">
+                                                                +{voteCount - 8}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-xs text-zinc-500">
+                                <span className="flex items-center gap-1.5">
+                                    <Users className="w-3.5 h-3.5" /> {totalVotes} votes
+                                </span>
+                                <span>
+                                    {new Date(poll.createdAt).toLocaleDateString()}
+                                </span>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
-        </div>
+        </CoreWrapper>
     );
 }

@@ -259,8 +259,8 @@ export default function PlaybooksPage() {
                              <div className={`
                                 group relative overflow-hidden transition-all duration-500 border border-white/[0.08] hover:border-white/20
                                 ${viewMode === 'grid' 
-                                    ? 'bg-[#121212]/80 backdrop-blur-xl rounded-[2rem] h-full flex flex-col hover:translate-y-[-4px] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]' 
-                                    : 'bg-[#121212]/80 backdrop-blur-xl rounded-2xl p-5 flex items-center justify-between hover:bg-white/5'
+                                    ? 'bg-black/40 backdrop-blur-xl rounded-[2rem] h-full flex flex-col hover:translate-y-[-4px] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]' 
+                                    : 'bg-black/40 backdrop-blur-xl rounded-2xl p-5 flex items-center justify-between hover:bg-white/5'
                                 }
                              `}>
                                  {/* Click Target */}
@@ -268,7 +268,7 @@ export default function PlaybooksPage() {
                                  
                                  {/* Glowing Effect on Hover (Grid only) */}
                                  {viewMode === 'grid' && (
-                                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
+                                    <div className="absolute -inset-2 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
                                  )}
 
                                  {/* Card Content */}
@@ -307,14 +307,14 @@ export default function PlaybooksPage() {
                                              {/* Badges Overlay on Image */}
                                              <div className="absolute top-4 right-4 flex gap-2">
                                                  {doc.lockedBy && (
-                                                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-amber-500/20 text-[10px] uppercase tracking-wider font-bold text-amber-500">
+                                                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-red-500/20 text-[10px] uppercase tracking-wider font-bold text-red-500">
                                                          <Lock className="w-3 h-3" />
                                                          Locked
                                                      </div>
                                                  )}
                                                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border backdrop-blur-md text-[10px] uppercase tracking-wider font-bold ${
-                                                     doc.visibility === 'PUBLIC' ? 'bg-black/60 border-blue-500/20 text-blue-400' :
-                                                     doc.visibility === 'CORE' ? 'bg-black/60 border-purple-500/20 text-purple-400' :
+                                                     doc.visibility === 'PUBLIC' ? 'bg-black/60 border-white/10 text-zinc-300' :
+                                                     doc.visibility === 'CORE' ? 'bg-black/60 border-red-500/20 text-red-400' :
                                                      'bg-black/60 border-white/10 text-zinc-400'
                                                  }`}>
                                                      {doc.visibility === 'PUBLIC' && <Globe className="w-3 h-3" />}
@@ -327,11 +327,11 @@ export default function PlaybooksPage() {
                                      )}
 
                                      {/* Text Content */}
-                                     <div className={`flex-1 flex flex-col ${viewMode === 'grid' ? 'bg-zinc-900/50' : 'min-w-0'}`}>
+                                     <div className={`flex-1 flex flex-col ${viewMode === 'grid' ? 'bg-transparent' : 'min-w-0'}`}>
                                          {viewMode === 'grid' ? (
                                              <>
                                                 <div className="p-4 flex items-start justify-between gap-4 mb-2">
-                                                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-zinc-200 transition-colors">
+                                                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-red-400 transition-colors">
                                                         {doc.title}
                                                     </h3>
                                                     <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white group-hover:bg-zinc-700 transition-all flex items-center gap-2">
@@ -355,19 +355,19 @@ export default function PlaybooksPage() {
                                          ) : (
                                              <>
                                                  <div className="flex items-center justify-between mb-2">
-                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-purple-100 transition-all duration-300">
+                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-red-400 transition-all duration-300">
                                                         {doc.title}
                                                     </h3>
                                                     
                                                     <div className="flex items-center gap-2 ml-4 flex-shrink-0">
                                                          {doc.lockedBy && (
-                                                             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-[10px] font-bold text-amber-500">
+                                                             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold text-red-500">
                                                                  <Lock className="w-3 h-3" />
                                                              </div>
                                                          )}
                                                          <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
-                                                             doc.visibility === 'PUBLIC' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                                                             doc.visibility === 'CORE' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' :
+                                                             doc.visibility === 'PUBLIC' ? 'bg-zinc-800/50 border-white/10 text-zinc-300' :
+                                                             doc.visibility === 'CORE' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
                                                              'bg-zinc-800/50 border-white/5 text-zinc-500'
                                                          }`}>
                                                              {doc.visibility}

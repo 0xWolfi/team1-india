@@ -61,15 +61,15 @@ export default function MemberPlaybooksPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-red-400 transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
             </Link>
             
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-white/5 rounded-lg">
-                        <BookOpen className="w-5 h-5 text-zinc-200" />
+                    <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/10">
+                        <BookOpen className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Playbooks</h1>
@@ -161,7 +161,7 @@ export default function MemberPlaybooksPage() {
                                 <Link href={`/member/playbooks/${doc.id}`} className="absolute inset-0 z-20" />
 
                                 {viewMode === 'grid' && (
-                                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
+                                    <div className="absolute -inset-2 bg-gradient-to-r from-red-500/0 via-red-500/10 to-red-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
                                 )}
 
                                 <div className={`relative z-10 w-full ${viewMode === 'list' ? 'flex flex-row items-center justify-between p-6 gap-8' : 'flex flex-col h-full'}`}>
@@ -195,8 +195,8 @@ export default function MemberPlaybooksPage() {
 
                                             <div className="absolute top-4 right-4">
                                                 <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border backdrop-blur-md text-[10px] uppercase tracking-wider font-bold ${
-                                                    doc.visibility === 'PUBLIC' ? 'bg-black/60 border-blue-500/20 text-blue-400' :
-                                                    'bg-black/60 border-purple-500/20 text-purple-400'
+                                                    doc.visibility === 'PUBLIC' ? 'bg-black/60 border-white/10 text-zinc-300' :
+                                                    'bg-black/60 border-red-500/20 text-red-400'
                                                 }`}>
                                                     {doc.visibility === 'PUBLIC' ? <Globe className="w-3 h-3" /> : <Cpu className="w-3 h-3" />}
                                                     <span>{doc.visibility}</span>
@@ -233,13 +233,13 @@ export default function MemberPlaybooksPage() {
                                         ) : (
                                             <>
                                                 <div className="flex items-center justify-between mb-2">
-                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-purple-100 transition-all duration-300">
+                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-red-400 transition-all duration-300">
                                                         {doc.title}
                                                     </h3>
 
                                                     <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ml-4 ${
-                                                        doc.visibility === 'PUBLIC' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                                                        'bg-purple-500/10 border-purple-500/20 text-purple-400'
+                                                        doc.visibility === 'PUBLIC' ? 'bg-zinc-800/10 border-white/10 text-zinc-400' :
+                                                        'bg-red-500/10 border-red-500/20 text-red-400'
                                                     }`}>
                                                         {doc.visibility}
                                                     </div>
