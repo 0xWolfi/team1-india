@@ -149,9 +149,10 @@ export const Card = ({
                />
                <video 
                   ref={videoRef}
-                  src="/hero-video.mp4"
+                  src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/hero-video.mp4"}
                   loop
                   playsInline
+                  preload="auto"
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isVideoPlaying ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
                />
           </div>
