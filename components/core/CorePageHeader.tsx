@@ -36,17 +36,17 @@ export const CorePageHeader: React.FC<CorePageHeaderProps> = ({
             <div className="flex flex-col md:flex-row justify-between items-end gap-6 pb-2">
                  <div className="relative">
                     <div className="flex items-center gap-3 mb-2">
-                         <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20 flex items-center justify-center text-red-500 shadow-[0_0_15px_-3px_rgba(239,68,68,0.2)]">
+                         <div className="p-2 bg-white/5 rounded-lg border border-white/5 flex items-center justify-center text-zinc-300 shadow-none">
                              {React.isValidElement(icon) 
-                                ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: "w-5 h-5 text-red-500" })
+                                ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: "w-5 h-5 text-zinc-200" })
                                 : icon}
                          </div>
-                         <h1 className="text-2xl font-bold tracking-tight text-red-500">
+                         <h1 className="text-2xl font-bold tracking-tight text-white">
                              {title}
                          </h1>
                     </div>
                     {description && (
-                         <p className="text-red-400 text-sm max-w-lg font-medium">
+                         <p className="text-zinc-400 text-sm max-w-lg font-medium">
                             {description}
                          </p>
                     )}

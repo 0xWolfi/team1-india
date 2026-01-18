@@ -66,7 +66,7 @@ export default function MemberExperimentsPage() {
             <CorePageHeader
                 title="Experiments Lab"
                 description="The innovation engine. Propose new ideas, debate implementations, and govern the roadmap."
-                icon={<Beaker className="w-5 h-5 text-red-400" />}
+                icon={<Beaker className="w-5 h-5 text-zinc-200" />}
                 backLink="/member"
             >
                 <div className="flex items-center gap-3">

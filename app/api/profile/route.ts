@@ -69,13 +69,22 @@ export async function PATCH(request: NextRequest) {
             });
         } else {
             // Community Member
-            await prisma.communityMember.update({
+            // Community Member
+            await prisma.communityMember.upsert({
                 where: { email: session.user.email },
-                data: {
+                update: {
                     ...(name !== undefined && { name }),
                     ...(xHandle !== undefined && { xHandle }),
                     ...(telegram !== undefined && { telegram }),
                     ...(customFields && { customFields }),
+                },
+                create: {
+                    email: session.user.email,
+                    name: name || session.user.name,
+                    xHandle: xHandle,
+                    telegram: telegram,
+                    customFields: customFields,
+                    status: 'active'
                 }
             });
         }
