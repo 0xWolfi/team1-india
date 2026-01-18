@@ -2,13 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
+import { z } from "zod";
+import { log } from "@/lib/logger";
+
+// Zod validation schema for profile updates
+const ProfileUpdateSchema = z.object({
+    name: z.string().min(1).max(200).optional(),
+    xHandle: z.string().max(100).optional().nullable(),
+    telegram: z.string().max(100).optional().nullable(),
+    customFields: z.record(z.string(), z.any()).optional(),
+});
 
 export async function GET(request: NextRequest) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
 
         // @ts-ignore
         const role = session.user.role;
@@ -39,20 +50,37 @@ export async function GET(request: NextRequest) {
             bio: customFields.bio || ''
         });
     } catch (error) {
-        console.error("[PROFILE_GET]", error);
+        log("ERROR", "Failed to fetch profile", "PROFILE", { 
+            email: session.user.email 
+        }, error instanceof Error ? error : new Error(String(error)));
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 
 export async function PATCH(request: NextRequest) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.email) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
 
         const body = await request.json();
-        const { customFields, name, xHandle, telegram } = body;
+        
+        // Validate input with Zod
+        const validationResult = ProfileUpdateSchema.safeParse(body);
+        if (!validationResult.success) {
+            log("WARN", "Invalid profile update request", "PROFILE", { 
+                email: session.user.email,
+                errors: validationResult.error.flatten()
+            });
+            return NextResponse.json({ 
+                error: "Invalid input", 
+                details: validationResult.error.flatten() 
+            }, { status: 400 });
+        }
+
+        const { customFields, name, xHandle, telegram } = validationResult.data;
 
         // Determine if user is Core or Community based on Role
         // @ts-ignore
@@ -101,9 +129,16 @@ export async function PATCH(request: NextRequest) {
             }
         });
 
+        log("INFO", "Profile updated", "PROFILE", { 
+            email: session.user.email,
+            role 
+        });
+
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error("[PROFILE_UPDATE]", error);
+        log("ERROR", "Failed to update profile", "PROFILE", { 
+            email: session?.user?.email || "unknown"
+        }, error instanceof Error ? error : new Error(String(error)));
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

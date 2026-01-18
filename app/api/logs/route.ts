@@ -6,8 +6,14 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // @ts-ignore
+    const role = session.user.role;
+    if (role !== 'CORE') {
+      return NextResponse.json({ error: "Forbidden. Core access required." }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { log } from "./logger";
 
 export type AuditAction = 
     | 'CREATE' 
@@ -43,7 +44,11 @@ export async function logAudit(params: AuditLogParams) {
             }
         });
     } catch (error) {
-        console.error("Failed to write audit log:", error);
+        log("ERROR", "Failed to write audit log", "AUDIT", {
+            action: params.action,
+            resource: params.resource,
+            resourceId: params.resourceId
+        }, error instanceof Error ? error : new Error(String(error)));
         // Fail silent to not crash the main request
     }
 }

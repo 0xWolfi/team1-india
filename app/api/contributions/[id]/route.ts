@@ -4,6 +4,13 @@ import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { checkCoreAccess } from "@/lib/permissions";
 import { sendEmail, getContributionApprovalEmailTemplate, getContributionRejectionEmailTemplate } from "@/lib/email";
+import { log } from "@/lib/logger";
+import { z } from "zod";
+
+// Zod validation schema
+const ContributionStatusSchema = z.object({
+    status: z.enum(["approved", "rejected", "pending"])
+});
 
 export async function PATCH(
     request: NextRequest,
@@ -24,11 +31,19 @@ export async function PATCH(
     try {
         const { id } = await params;
         const body = await request.json();
-        const { status } = body;
-
-        if (!status || (status !== 'approved' && status !== 'rejected' && status !== 'pending')) {
+        
+        // Validate input with Zod
+        const validationResult = ContributionStatusSchema.safeParse(body);
+        if (!validationResult.success) {
+            log("WARN", "Invalid contribution status update", "CONTRIBUTIONS", { 
+                contributionId: id,
+                email: session?.user?.email || "unknown",
+                errors: validationResult.error.flatten()
+            });
             return new NextResponse("Invalid status. Must be 'approved', 'rejected', or 'pending'", { status: 400 });
         }
+
+        const { status } = validationResult.data;
 
         // Get contribution details before updating
         const contribution = await prisma.contribution.findUnique({
@@ -90,15 +105,33 @@ export async function PATCH(
                     subject: emailSubject,
                     html: emailHtml
                 });
+                log("INFO", "Contribution status email sent", "CONTRIBUTIONS", { 
+                    contributionId: id,
+                    status,
+                    recipientEmail: contribution.email
+                });
             }
         } catch (emailError) {
-            console.error("Failed to send contribution status email:", emailError);
+            log("ERROR", "Failed to send contribution status email", "CONTRIBUTIONS", { 
+                contributionId: id,
+                recipientEmail: contribution.email
+            }, emailError instanceof Error ? emailError : new Error(String(emailError)));
             // Don't fail the request if email fails
         }
 
+        log("INFO", "Contribution status updated", "CONTRIBUTIONS", { 
+            contributionId: id,
+            status,
+            updatedBy: session?.user?.email || "unknown"
+        });
+
         return NextResponse.json(updatedContribution);
     } catch (error) {
-        console.error("Contribution Update Error", error);
+        const contributionId = (await params).id;
+        log("ERROR", "Contribution update failed", "CONTRIBUTIONS", { 
+            contributionId,
+            email: session?.user?.email || "unknown"
+        }, error instanceof Error ? error : new Error(String(error)));
         return new NextResponse("Internal Error", { status: 500 });
     }
 }

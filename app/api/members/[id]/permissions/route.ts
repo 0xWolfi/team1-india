@@ -3,6 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options"; 
 import { prisma } from "@/lib/prisma";
 import { logActivity } from "@/lib/logger";
+import { z } from "zod";
+
+// Strict validation schema to prevent permission injection attacks
+const PermissionsSchema = z.record(z.string(), z.enum(["READ", "WRITE", "FULL_ACCESS", "DENY"]));
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session = await getServerSession(authOptions);
@@ -23,12 +27,18 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     try {
         const { id } = await params;
-        const { permissions } = await request.json();
+        const body = await request.json();
         
-        // Basic validation: ensure it's an object
-        if (typeof permissions !== 'object') {
-            return new NextResponse("Invalid permissions format", { status: 400 });
+        // Strict validation with Zod to prevent mass assignment and injection
+        const validationResult = PermissionsSchema.safeParse(body.permissions);
+        if (!validationResult.success) {
+            return new NextResponse(
+                JSON.stringify({ error: "Invalid permissions format", details: validationResult.error.flatten() }), 
+                { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
         }
+        
+        const permissions = validationResult.data;
 
         const updatedMember = await prisma.member.update({
             where: { id },

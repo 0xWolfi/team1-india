@@ -284,17 +284,25 @@ export default function PlaybooksPage() {
                                                     className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                                                     style={{ objectFit: 'cover', objectPosition: 'center' }}
                                                     onError={(e) => {
-                                                        // Fallback if image fails to load
+                                                        // Fallback if image fails to load - safe rendering without innerHTML
                                                         const target = e.target as HTMLImageElement;
                                                         target.style.display = 'none';
-                                                        if (target.parentElement) {
-                                                            target.parentElement.innerHTML = `
-                                                                <div class="w-full h-full flex items-center justify-center bg-zinc-800/50">
-                                                                    <svg class="w-12 h-12 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                                    </svg>
-                                                                </div>
-                                                            `;
+                                                        if (target.parentElement && !target.parentElement.querySelector('.image-fallback')) {
+                                                            const fallback = document.createElement('div');
+                                                            fallback.className = 'w-full h-full flex items-center justify-center bg-zinc-800/50 image-fallback';
+                                                            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                                            svg.setAttribute('class', 'w-12 h-12 text-zinc-700');
+                                                            svg.setAttribute('fill', 'none');
+                                                            svg.setAttribute('stroke', 'currentColor');
+                                                            svg.setAttribute('viewBox', '0 0 24 24');
+                                                            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                                            path.setAttribute('stroke-linecap', 'round');
+                                                            path.setAttribute('stroke-linejoin', 'round');
+                                                            path.setAttribute('stroke-width', '2');
+                                                            path.setAttribute('d', 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z');
+                                                            svg.appendChild(path);
+                                                            fallback.appendChild(svg);
+                                                            target.parentElement.appendChild(fallback);
                                                         }
                                                     }}
                                                 />

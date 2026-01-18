@@ -5,6 +5,19 @@ import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { checkCoreAccess, hasPermission, PERMISSIONS } from "@/lib/permissions";
 import { sendEmail, getWelcomeEmailTemplate, getMemberRemovalEmailTemplate } from "@/lib/email";
+import { z } from "zod";
+
+// Input validation schema to prevent mass assignment attacks
+const CreateMemberSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  tags: z.array(z.string()).optional().default([]),
+  permissions: z.record(z.string(), z.enum(["READ", "WRITE", "FULL_ACCESS"])).optional().default({ default: "READ" })
+});
+
+const UpdateMemberSchema = z.object({
+  permissions: z.record(z.string(), z.enum(["READ", "WRITE", "FULL_ACCESS"])).optional(),
+  tags: z.array(z.string()).optional(),
+});
 
 export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
@@ -52,9 +65,18 @@ export async function POST(request: Request) {
     }
 
     try {
-        const { email, permissions, tags } = await request.json();
-
-        if (!email) return new NextResponse("Email is required", { status: 400 });
+        const body = await request.json();
+        
+        // Validate input with Zod to prevent mass assignment attacks
+        const validationResult = CreateMemberSchema.safeParse(body);
+        if (!validationResult.success) {
+            return new NextResponse(
+                JSON.stringify({ error: "Invalid input", details: validationResult.error.flatten() }), 
+                { status: 400, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+        
+        const { email, permissions, tags } = validationResult.data;
 
         // CROSS-CHECK: Ensure not in Community (CommunityMember table)
         const existingCommunityMember = await prisma.communityMember.findUnique({ where: { email } });

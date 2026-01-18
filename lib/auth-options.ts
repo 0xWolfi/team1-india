@@ -39,9 +39,12 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Reject unauthorized users
+        // Note: Using console.log here is acceptable for auth flow logging
+        // eslint-disable-next-line no-console
         console.log(`Access Denied: User ${user.email} is not a member.`);
         return "/public?error=not_member"; 
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("SignIn Error:", error);
         return "/public?error=server_error"; 
       }
@@ -82,6 +85,7 @@ export const authOptions: NextAuthOptions = {
             }
 
             // 3. No valid membership found - should not reach here due to signIn check
+            // eslint-disable-next-line no-console
             console.error(`User ${user.email} authenticated but has no valid role. This should not happen.`);
             token.role = 'GUEST'; // Fallback, but signIn callback should have blocked this
             token.permissions = {};
@@ -89,6 +93,7 @@ export const authOptions: NextAuthOptions = {
             return token;
 
         } catch (e) {
+            // eslint-disable-next-line no-console
             console.error(e);
         }
       }
@@ -112,5 +117,41 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' 
+        ? `__Secure-next-auth.session-token`
+        : `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    callbackUrl: {
+      name: process.env.NODE_ENV === 'production'
+        ? `__Secure-next-auth.callback-url`
+        : `next-auth.callback-url`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    csrfToken: {
+      name: process.env.NODE_ENV === 'production'
+        ? `__Host-next-auth.csrf-token`
+        : `next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
   },
 };

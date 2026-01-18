@@ -60,17 +60,46 @@ export function DashboardCard({
                             onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = "none";
-                                if (target.parentElement) {
-                                    target.parentElement.innerHTML = `
-                                        <div class="w-full h-full flex items-center justify-center bg-zinc-800/50">
-                                            <div class="text-zinc-600 group-hover:text-zinc-200 transition-colors">
-                                                ${type === 'EVENT' ? '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>' : ''}
-                                                ${type === 'PROGRAM' ? '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>' : ''}
-                                                ${type === 'CONTENT' ? '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>' : ''}
-                                                ${type === 'PLAYBOOK' ? '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z"></path></svg>' : ''}
-                                            </div>
-                                        </div>
-                                    `;
+                                // Safe fallback - no innerHTML to prevent XSS
+                                if (target.parentElement && !target.parentElement.querySelector('.image-fallback')) {
+                                    const fallback = document.createElement('div');
+                                    fallback.className = 'w-full h-full flex items-center justify-center bg-zinc-800/50 image-fallback';
+                                    const icon = document.createElement('div');
+                                    icon.className = 'text-zinc-600 group-hover:text-zinc-200 transition-colors';
+                                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                    svg.setAttribute('class', 'w-8 h-8');
+                                    svg.setAttribute('fill', 'none');
+                                    svg.setAttribute('stroke', 'currentColor');
+                                    svg.setAttribute('viewBox', '0 0 24 24');
+                                    
+                                    if (type === 'EVENT') {
+                                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                                        rect.setAttribute('width', '18');
+                                        rect.setAttribute('height', '18');
+                                        rect.setAttribute('x', '3');
+                                        rect.setAttribute('y', '4');
+                                        rect.setAttribute('rx', '2');
+                                        rect.setAttribute('ry', '2');
+                                        svg.appendChild(rect);
+                                    } else if (type === 'PROGRAM') {
+                                        const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                        path1.setAttribute('d', 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2');
+                                        svg.appendChild(path1);
+                                    } else if (type === 'CONTENT') {
+                                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                        path.setAttribute('d', 'M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z');
+                                        svg.appendChild(path);
+                                    } else if (type === 'PLAYBOOK') {
+                                        const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                        path1.setAttribute('d', 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z');
+                                        svg.appendChild(path1);
+                                        const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                        path2.setAttribute('d', 'M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z');
+                                        svg.appendChild(path2);
+                                    }
+                                    icon.appendChild(svg);
+                                    fallback.appendChild(icon);
+                                    target.parentElement.appendChild(fallback);
                                 }
                             }}
                         />

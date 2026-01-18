@@ -15,9 +15,26 @@ export function hasPermission(
     const userLevel = userPermissions[resource] || userPermissions['*'];
     
     if (!userLevel) return false;
+    
+    // Check for explicit DENY (defense in depth)
+    if (userLevel === 'DENY' || userLevel === 'deny') return false;
+    
     if (userLevel === 'FULL_ACCESS') return true;
-    if (requiredLevel === 'READ') return true; // Any permission implies READ
-    if (requiredLevel === 'WRITE' && userLevel === 'WRITE') return true;
+    
+    // READ access: user must have at least READ permission
+    if (requiredLevel === 'READ') {
+        return userLevel === 'READ' || userLevel === 'WRITE' || userLevel === 'FULL_ACCESS';
+    }
+    
+    // WRITE access: user must have WRITE or FULL_ACCESS
+    if (requiredLevel === 'WRITE') {
+        return userLevel === 'WRITE' || userLevel === 'FULL_ACCESS';
+    }
+    
+    // FULL_ACCESS required: user must have exactly FULL_ACCESS
+    if (requiredLevel === 'FULL_ACCESS') {
+        return userLevel === 'FULL_ACCESS';
+    }
 
     return false;
 }
