@@ -57,6 +57,7 @@ export function PlaybookShell({
     const [cropperSrc, setCropperSrc] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    const [coverImageError, setCoverImageError] = useState(false);
 
     // Premium UI States (Scroll & Sticky)
     const { scrollYProgress, scrollY } = useScroll();
@@ -206,9 +207,13 @@ export function PlaybookShell({
                         
                         {/* 1. Editable Cover Area */}
                         <div className="relative w-full group">
-                            {playbook.coverImage ? (
+                            {playbook.coverImage && !coverImageError ? (
                                 <div className="relative w-full rounded-2xl overflow-hidden h-[400px] border border-white/10 bg-zinc-900/50 shadow-2xl transition-all hover:border-white/20">
-                                    <img src={playbook.coverImage} className={`w-full h-full object-cover transition-opacity duration-300 ${isUploading ? 'opacity-50' : 'opacity-100'}`} />
+                                    <img 
+                                        src={playbook.coverImage} 
+                                        className={`w-full h-full object-cover transition-opacity duration-300 ${isUploading ? 'opacity-50' : 'opacity-100'}`}
+                                        onError={() => setCoverImageError(true)}
+                                    />
                                     
                                     {/* Uploading Spinner */}
                                     {isUploading && (
@@ -220,7 +225,10 @@ export function PlaybookShell({
                                     {/* Remove Cover Button */}
                                     {!isUploading && (
                                     <button 
-                                        onClick={() => onCoverImageChange?.(undefined)}
+                                        onClick={() => {
+                                            setCoverImageError(false);
+                                            onCoverImageChange?.(undefined);
+                                        }}
                                         className="absolute top-4 right-4 w-9 h-9 bg-black/60 hover:bg-red-500/90 rounded-xl text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10 z-30 shadow-lg"
                                         title="Remove Cover"
                                     >
@@ -228,6 +236,32 @@ export function PlaybookShell({
                                     </button>
                                     )}
                                     {/* Back Button */}
+                                    <div className="absolute top-4 left-4 z-20">
+                                        <Link 
+                                            href={backLink} 
+                                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/40 text-white hover:bg-black/60 transition-all border border-white/10 backdrop-blur-md"
+                                            title={backLabel}
+                                        >
+                                            <ArrowLeft className="w-4 h-4" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            ) : playbook.coverImage && coverImageError ? (
+                                /* Fallback when image fails to load */
+                                <div className="relative w-full rounded-2xl overflow-hidden h-[400px] border border-white/10 bg-zinc-900/50 shadow-2xl flex items-center justify-center">
+                                    <div className="text-center">
+                                        <ImageIcon className="w-16 h-16 text-zinc-700 mx-auto mb-3" />
+                                        <p className="text-sm text-zinc-500 mb-4">Image failed to load</p>
+                                        <button 
+                                            onClick={() => {
+                                                setCoverImageError(false);
+                                                onCoverImageChange?.(undefined);
+                                            }}
+                                            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-white text-sm transition-all border border-white/10"
+                                        >
+                                            Remove Cover
+                                        </button>
+                                    </div>
                                     <div className="absolute top-4 left-4 z-20">
                                         <Link 
                                             href={backLink} 
@@ -300,9 +334,13 @@ export function PlaybookShell({
                     <div className="max-w-5xl mx-auto space-y-8 mb-16 animate-in fade-in duration-500 pt-0">
                         
                          {/* 1. Feature Image (Top - No Padding above) */}
-                        {playbook.coverImage && (
+                        {playbook.coverImage && !coverImageError ? (
                             <div className="relative w-full rounded-2xl overflow-hidden aspect-[2.4/1] bg-zinc-900 shadow-2xl group mb-8">
-                                <img src={playbook.coverImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                <img 
+                                    src={playbook.coverImage} 
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    onError={() => setCoverImageError(true)}
+                                />
                                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
                                 
                                 {/* Back Button Inside Banner */}
@@ -316,7 +354,20 @@ export function PlaybookShell({
                                     </Link>
                                 </div>
                             </div>
-                        )}
+                        ) : playbook.coverImage && coverImageError ? (
+                            <div className="relative w-full rounded-2xl overflow-hidden aspect-[2.4/1] bg-zinc-900 shadow-2xl mb-8 flex items-center justify-center">
+                                <ImageIcon className="w-20 h-20 text-zinc-700" />
+                                <div className="absolute top-4 left-4 z-20">
+                                    <Link 
+                                        href={backLink} 
+                                        className="w-10 h-10 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 transition-all backdrop-blur-md border border-white/10"
+                                        title={backLabel}
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                            </div>
+                        ) : null}
 
                         {!playbook.coverImage && (
                              <div className="mb-8 pt-8">

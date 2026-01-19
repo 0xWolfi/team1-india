@@ -38,6 +38,7 @@ interface GuideDetailProps {
 export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => {
     const router = useRouter();
     const { data: session } = useSession();
+    const [coverImageError, setCoverImageError] = useState(false);
     // Use dynamic permission based on guide type (EVENT -> 'event', PROGRAM -> 'program', CONTENT -> 'content')
     const canEdit = usePermission(guide.type.toLowerCase(), 'WRITE');
     
@@ -225,15 +226,20 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
 
             {/* Header with Cover Image */}
             <div className="mb-8">
-                {guide.coverImage && (
-                    <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-white/10">
+                {guide.coverImage && !coverImageError ? (
+                    <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-white/10 bg-zinc-900/50">
                         <img
                             src={guide.coverImage}
                             alt={guide.title}
                             className="w-full h-full object-cover"
+                            onError={() => setCoverImageError(true)}
                         />
                     </div>
-                )}
+                ) : guide.coverImage && coverImageError ? (
+                    <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-white/10 bg-zinc-900/50 flex items-center justify-center">
+                        <FileText className="w-16 h-16 text-zinc-700" />
+                    </div>
+                ) : null}
                 <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">{guide.title}</h1>
                 <div className="flex items-center gap-3">
                     <span className="px-3 py-1.5 bg-zinc-800 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider text-zinc-400">

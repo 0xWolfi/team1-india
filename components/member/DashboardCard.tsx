@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Calendar, Users, FileText, BookOpen, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ export function DashboardCard({
     visibility,
     className
 }: DashboardCardProps) {
+    const [imageError, setImageError] = useState(false);
 
     // Icon Selection based on Type
     const getIcon = () => {
@@ -51,55 +52,18 @@ export function DashboardCard({
         >
             {/* Image Container */}
             <div className="mb-4 relative shrink-0">
-                {coverImage ? (
+                {coverImage && !imageError ? (
                     <div className="relative w-full aspect-[2/1] rounded-lg overflow-hidden bg-zinc-800 border border-white/5">
                         <img
                             src={coverImage}
                             alt={title}
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                            onError={(e) => {
+                            onError={() => setImageError(true)}
+                            onLoad={(e) => {
+                                // Reset error state if image loads successfully
                                 const target = e.target as HTMLImageElement;
-                                target.style.display = "none";
-                                // Safe fallback - no innerHTML to prevent XSS
-                                if (target.parentElement && !target.parentElement.querySelector('.image-fallback')) {
-                                    const fallback = document.createElement('div');
-                                    fallback.className = 'w-full h-full flex items-center justify-center bg-zinc-800/50 image-fallback';
-                                    const icon = document.createElement('div');
-                                    icon.className = 'text-zinc-600 group-hover:text-zinc-200 transition-colors';
-                                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                                    svg.setAttribute('class', 'w-8 h-8');
-                                    svg.setAttribute('fill', 'none');
-                                    svg.setAttribute('stroke', 'currentColor');
-                                    svg.setAttribute('viewBox', '0 0 24 24');
-                                    
-                                    if (type === 'EVENT') {
-                                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                                        rect.setAttribute('width', '18');
-                                        rect.setAttribute('height', '18');
-                                        rect.setAttribute('x', '3');
-                                        rect.setAttribute('y', '4');
-                                        rect.setAttribute('rx', '2');
-                                        rect.setAttribute('ry', '2');
-                                        svg.appendChild(rect);
-                                    } else if (type === 'PROGRAM') {
-                                        const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                        path1.setAttribute('d', 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2');
-                                        svg.appendChild(path1);
-                                    } else if (type === 'CONTENT') {
-                                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                        path.setAttribute('d', 'M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z');
-                                        svg.appendChild(path);
-                                    } else if (type === 'PLAYBOOK') {
-                                        const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                        path1.setAttribute('d', 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z');
-                                        svg.appendChild(path1);
-                                        const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                                        path2.setAttribute('d', 'M22 3h-6a4 4 0 0 1-4 4v14a3 3 0 0 0 3-3h7z');
-                                        svg.appendChild(path2);
-                                    }
-                                    icon.appendChild(svg);
-                                    fallback.appendChild(icon);
-                                    target.parentElement.appendChild(fallback);
+                                if (target.complete && target.naturalHeight !== 0) {
+                                    setImageError(false);
                                 }
                             }}
                         />
@@ -119,10 +83,23 @@ export function DashboardCard({
                     </div>
                 ) : (
                     /* Fallback Icon Box */
-                    <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center mb-3 group-hover:bg-zinc-700 group-hover:text-white transition-colors border border-white/5">
-                        <div className="text-zinc-500 group-hover:text-white transition-colors">
+                    <div className="relative w-full aspect-[2/1] rounded-lg overflow-hidden bg-zinc-800/50 border border-white/5 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
+                        <div className="text-zinc-600 group-hover:text-zinc-200 transition-colors">
                             {getIcon()}
                         </div>
+                        {/* Visibility Badge (Inset top-right) */}
+                        {visibility && (
+                            <div className="absolute top-2 right-2 z-10">
+                                <span className={cn(
+                                    "px-2 py-0.5 rounded text-[10px] font-bold uppercase border backdrop-blur-md shadow-lg",
+                                    visibility === 'MEMBER' 
+                                        ? "bg-white/10 text-white border-white/20" 
+                                        : "bg-emerald-500/20 text-emerald-300 border-emerald-500/20"
+                                )}>
+                                    {visibility}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
