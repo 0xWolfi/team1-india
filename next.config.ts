@@ -86,4 +86,132 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withPWA = require("@ducanh2912/next-pwa").default({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  skipWaiting: false,  // ✅ Wait for user consent via PWAUpdatePrompt
+  cacheOnFrontEndNav: true,
+  reloadOnOnline: true,
+  fallbacks: {
+    document: "/offline",  // ✅ Offline fallback page
+  },
+  runtimeCaching: [
+    // Public API - NetworkFirst with 1hr TTL
+    {
+      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/api\/public\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'public-api-cache',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 60, // 1 hour
+        },
+        networkTimeoutSeconds: 10,
+        plugins: [
+          {
+            // Explicit header validation - never cache sensitive headers
+            cacheWillUpdate: async ({ response }: { response: Response }) => {
+              const headers = response.headers;
+              
+              // Never cache if auth headers present
+              if (headers.get('Authorization') || headers.get('Set-Cookie')) {
+                console.warn('Blocked caching response with auth headers');
+                return null;  // Don't cache
+              }
+              
+              // Only cache successful responses
+              if (!response.ok && response.status !== 304) {
+                return null;
+              }
+              
+              return response;
+            },
+          },
+          {
+            // Cache quota monitoring
+            cacheDidUpdate: async () => {
+              if (typeof navigator !== 'undefined' && navigator.storage && navigator.storage.estimate) {
+                const { usage, quota } = await navigator.storage.estimate();
+                if (usage && quota && usage / quota > 0.9) {
+                  console.warn(`⚠️ Cache quota at ${((usage / quota) * 100).toFixed(1)}%`);
+                }
+              }
+            },
+          },
+        ],
+      },
+    },
+    // Core/Member API - NetworkOnly (never cache authenticated data)
+    {
+      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/api\/(core|member|auth)\/.*/i,
+      handler: 'NetworkOnly',
+    },
+    // Images - CacheFirst with 30 days
+    {
+      urlPattern: /\.(png|jpg|jpeg|svg|gif|webp)$/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'image-cache',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+        },
+      },
+    },
+    // Static JS/CSS - StaleWhileRevalidate
+    {
+      urlPattern: /\.(js|css)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-assets',
+        expiration: {
+          maxEntries: 60,
+          maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+        },
+      },
+    },
+    // Route-Based Caching: Core Dashboard (Fresh data required)
+    {
+      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/core.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'core-pages',
+        expiration: {
+          maxEntries: 20,
+          maxAgeSeconds: 5 * 60, // 5 minutes - shorter TTL for dashboard
+        },
+        networkTimeoutSeconds: 5, // Fast timeout for dashboard
+      },
+    },
+    // Route-Based Caching: Public Pages (Stale acceptable)
+    {
+      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/public.*/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'public-pages',
+        expiration: {
+          maxEntries: 30,
+          maxAgeSeconds: 60 * 60, // 1 hour
+        },
+      },
+    },
+    // Route-Based Caching: Playbooks (Longer cache for static content)
+    {
+      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/(public\/playbooks|playbooks).*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'playbooks-cache',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+        },
+      },
+    },
+  ],
+  workboxOptions: {
+    importScripts: ['/push-sw.js'],
+  },
+});
+
+export default withPWA(nextConfig);

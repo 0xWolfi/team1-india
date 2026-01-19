@@ -108,6 +108,67 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
         console.log(`[API] Updated playbook ${id} - visibility: ${updated.visibility}, updatedAt: ${updated.updatedAt}`);
 
+        // Send Push Notification (Fire and Forget)
+        (async () => {
+             // Only notify if visible to members/public
+             if (updated.visibility === 'MEMBER' || updated.visibility === 'PUBLIC') {
+                 // Determine audience: if PUBLIC -> All, if MEMBER -> Members only
+                 // For now, simplify to notifying active members about playbook updates
+                 try {
+                     const { notificationManager } = await import("@/lib/notificationManager");
+                     const { prisma } = await import("@/lib/prisma");
+
+                     // Fetch recipients based on visibility
+                     let recipients: { id: string }[] = [];
+
+                     // MEMBER Visibility -> ONLY CommunityMembers
+                     if (updated.visibility === 'MEMBER') {
+                         const communityMembers = await prisma.communityMember.findMany({
+                             where: { status: 'active' },
+                             select: { id: true }
+                         });
+                         recipients = [...recipients, ...communityMembers];
+                     }
+
+                     // PUBLIC Visibility -> Everyone (Community + Core)
+                     if (updated.visibility === 'PUBLIC') {
+                         const communityMembers = await prisma.communityMember.findMany({
+                             where: { status: 'active' },
+                             select: { id: true }
+                         });
+                         const coreMembers = await prisma.member.findMany({
+                             where: { status: 'active' },
+                             select: { id: true }
+                         });
+                         recipients = [...recipients, ...communityMembers, ...coreMembers];
+                     }
+
+                     // Optimization: In a real app, use a queue. Here, batch send.
+                     // Deduplicate
+                     const uniqueIds = Array.from(new Set(recipients.map(r => r.id)));
+                     const batchSize = 10;
+                     for (let i = 0; i < uniqueIds.length; i += batchSize) {
+                         const batch = uniqueIds.slice(i, i + batchSize);
+                         await Promise.all(batch.map(userId => 
+                             notificationManager.send({
+                                 userId,
+                                 event: 'playbook_update',
+                                 title: 'Playbook Updated 📚',
+                                 body: `"${updated.title}" has been updated.`,
+                                 data: {
+                                     url: `/member/playbooks/${updated.id}`,
+                                     id: updated.id
+                                 }
+                             })
+                         ));
+                     }
+                     console.log(`Push notification sent for playbook ${id} to ${uniqueIds.length} users`);
+                 } catch (err) {
+                     console.error("Failed to broadcast playbook push:", err);
+                 }
+             }
+        })();
+
         const { logAudit } = await import('@/lib/audit');
         await logAudit({
             action: 'UPDATE',

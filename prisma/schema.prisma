@@ -17,6 +17,7 @@ model Member {
   tags         String[]  @default([])
   status       String // applied, approved, active, paused
   customFields Json?     @default("{}")
+  notificationPreferences Json?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   deletedAt    DateTime?
@@ -52,6 +53,7 @@ model CommunityMember {
   tags         String?   @default("member") // e.g. "Founder", "Investor"
   status       String    @default("active")
   customFields Json?     @default("{}")
+  notificationPreferences Json?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   deletedAt    DateTime?
@@ -448,4 +450,18 @@ model RateLimit {
   count     Int      @default(0)
   resetAt   BigInt
   deletedAt DateTime?
+}
+
+// Added for Push Notifications
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  endpoint  String   @unique
+  keys      Json
+  userAgent String?
+  createdAt DateTime @default(now())
+  lastUsed  DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId])
 }

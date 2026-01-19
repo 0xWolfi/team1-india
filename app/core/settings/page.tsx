@@ -5,6 +5,7 @@ import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { Settings, ToggleLeft, ToggleRight, Loader2, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { NotificationPreferences } from "@/components/NotificationPreferences";
 
 export default function SettingsPage() {
     const [settings, setSettings] = useState<Record<string, string>>({});
@@ -97,6 +98,10 @@ export default function SettingsPage() {
                             disabled={isSaving}
                         />
                     </div>
+                </div>
+
+                <div className="p-6 bg-zinc-900 border border-white/5 rounded-2xl">
+                    <NotificationPreferences />
                 </div>
 
                  <div className="p-6 bg-zinc-900 border border-white/5 rounded-2xl opacity-50 pointer-events-none">

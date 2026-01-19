@@ -45,7 +45,7 @@ export async function getUpcomingEvents(): Promise<LumaEventData[]> {
           accept: "application/json",
           "x-luma-api-key": apiKey,
         },
-        next: { revalidate: 0 } // Disable cache for immediate updates
+        next: { revalidate: 3600 } // Cache for 1 hour to prevent build errors and improve performance
       });
 
       if (!res.ok) {

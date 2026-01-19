@@ -2,6 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { redirect } from "next/navigation";
 import { ReactNode } from "react";
+import { NotificationPermissionPrompt } from "@/components/NotificationPermissionPrompt";
+import PwaUpdatePrompt from "@/components/PWAUpdatePrompt";
 
 export default async function CoreLayout({ children }: { children: ReactNode }) {
     const session = await getServerSession(authOptions);
@@ -21,5 +23,11 @@ export default async function CoreLayout({ children }: { children: ReactNode }) 
     }
 
     // User is authenticated and has CORE role, render children
-    return <>{children}</>;
+    return (
+        <>
+            {children}
+            <NotificationPermissionPrompt userId={session.user?.id} />
+            <PwaUpdatePrompt />
+        </>
+    );
 }

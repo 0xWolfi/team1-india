@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
+import { notificationManager } from "@/lib/notificationManager";
 
 export async function GET(req: NextRequest) {
     // CRITICAL SECURITY FIX: Require authentication for internal API
@@ -111,6 +112,67 @@ export async function POST(req: NextRequest) {
                 expiresAt: expiresAt ? new Date(expiresAt) : null
             }
         });
+
+        // Send Push Notifications (Fire and Forget)
+        (async () => {
+             try {
+                // Broadcast Logic
+                let recipients: { id: string }[] = [];
+
+                // 1. Audience 'MEMBER' -> ONLY CommunityMembers
+                if (targetAudience === 'MEMBER') {
+                     // @ts-ignore
+                     const communityMembers = await prisma.communityMember.findMany({
+                         where: { status: 'active' },
+                         select: { id: true }
+                     });
+                     recipients = [...recipients, ...communityMembers];
+                }
+
+                // 2. Audience 'ALL' or 'PUBLIC' -> CommunityMembers + CoreMembers
+                if (targetAudience === 'ALL' || targetAudience === 'PUBLIC') {
+                     // @ts-ignore
+                     const communityMembers = await prisma.communityMember.findMany({
+                         where: { status: 'active' },
+                         select: { id: true }
+                     });
+                     
+                     const coreMembers = await prisma.member.findMany({
+                         where: { status: 'active' },
+                         select: { id: true }
+                     });
+
+                     recipients = [...recipients, ...communityMembers, ...coreMembers];
+                }
+
+                if (recipients.length > 0) {
+                    console.log(`Broadcasting announcement to ${recipients.length} users`);
+
+                    // Deduplicate IDs just in case
+                    const uniqueIds = Array.from(new Set(recipients.map(r => r.id)));
+
+                    // Send in parallel batches
+                    const batchSize = 10;
+                    for (let i = 0; i < uniqueIds.length; i += batchSize) {
+                        const batch = uniqueIds.slice(i, i + batchSize);
+                        await Promise.all(batch.map(userId => 
+                             notificationManager.send({
+                                userId,
+                                event: 'admin_announcement',
+                                title: 'New Announcement',
+                                body: title,
+                                data: {
+                                    url: link || '/member/announcements',
+                                    id: announcement.id
+                                }
+                            })
+                        ));
+                    }
+                }
+             } catch (err) {
+                 console.error("Failed to broadcast announcement push:", err);
+             }
+        })();
 
         return NextResponse.json(announcement);
     } catch (error) {
