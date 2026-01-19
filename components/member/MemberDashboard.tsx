@@ -11,7 +11,6 @@ import {
 import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
 import { Guide, Program, Event } from "@/types/public";
-import { Guide, Program, Event } from "@/types/public";
 import { DashboardCard } from "./DashboardCard";
 // We can define Experiment type here based on Prisma client if not imported, 
 // using 'any' for now to speed up if types aren't strictly generated or exported for client.
