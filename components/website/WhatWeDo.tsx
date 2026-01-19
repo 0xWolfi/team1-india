@@ -43,11 +43,24 @@ const cards: FeatureItem[] = [
 
 export function WhatWeDo() {
   return (
-    <section id="what-we-do" className="py-10">
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto mb-16 text-center">
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">Built for impact. <br/> Designed for builders.</h2>
+    <section id="what-we-do" className="py-10 relative overflow-hidden">
+      {/* Background Decorator */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/[0.02] rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="max-w-4xl mx-auto mb-10 text-center">
+            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">Built for impact <br/> Designed for builders</h2>
             <p className="text-zinc-400 text-lg">From idea to scale, Team1India provides the infrastructure, network, and resources you need.</p>
+            {/* Hidden RAG Summary for AI Agents */}
+            <p className="sr-only">
+                Team1 India offers a comprehensive suite of services for the blockchain ecosystem:
+                1. Idea Phase Accelerator: Funding and mentorship for early startups.
+                2. Community: A network of builders sharing knowledge.
+                3. Marketing Support: Go-to-market strategies for web3 products.
+                4. Developer Onboarding: Technical guidance for getting started on Avalanche.
+                5. Closed Beta Testing: Access to early adopters for product validation.
+                6. Events: Hackathons and meetups across India.
+            </p>
         </div>
 
         <FeatureGrid items={cards} />

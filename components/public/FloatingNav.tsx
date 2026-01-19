@@ -7,6 +7,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { User, X, LogOut, LayoutDashboard, LogIn, Menu } from "lucide-react";
+import { useDrag } from "@use-gesture/react";
 
 const navItems = [
     { label: "Playbooks", href: "#playbooks" },
@@ -50,6 +51,13 @@ export function FloatingNav() {
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+
+    const bind = useDrag(({ swipe: [swipeX, swipeY] }) => {
+        // Swipe Down (swipeY=1) or Swipe Right (swipeX=1) closes menu
+        if (swipeY === 1 || swipeX === 1) {
+             setIsMobileMenuOpen(false);
+        }
+    });
 
     return (
         <>
@@ -139,9 +147,15 @@ export function FloatingNav() {
                 </div>
             </div>
 
+
+
+
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-xl animate-in fade-in duration-200 md:hidden">
+                <div 
+                    {...bind()} 
+                    className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-xl animate-in fade-in duration-200 md:hidden touch-none"
+                >
                     <div className="flex flex-col h-full p-6">
                         <div className="flex justify-end mb-8">
                             <button 
@@ -265,7 +279,7 @@ export function FloatingNav() {
             {/* User Menu Modal */}
             {showUserMenu && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="relative w-full max-w-sm bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl p-6 animate-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-sm bg-zinc-900/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-6 animate-in zoom-in-95 duration-200">
                          <button 
                             onClick={() => setShowUserMenu(false)}
                             className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
@@ -299,17 +313,19 @@ export function FloatingNav() {
                             {((session?.user as any)?.role === 'CORE' || (session?.user as any)?.role === 'MEMBER') && (
                                 <Link
                                     href={(session?.user as any)?.role === 'CORE' ? '/core' : '/member'}
-                                    className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                                    className="group w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <LayoutDashboard className="w-4 h-4" /> Go to Dashboard
+                                    <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                    <span className="transition-transform duration-200 group-hover:scale-105">Go to Dashboard</span>
                                 </Link>
                             )}
 
                             <button 
                                 onClick={() => signOut()}
-                                className="w-full py-3 bg-white/5 text-zinc-400 font-bold rounded-xl hover:bg-white/10 border border-white/5 transition-colors flex items-center justify-center gap-2"
+                                className="group w-full py-3 bg-white/5 text-zinc-400 font-bold rounded-xl hover:bg-red-500/10 hover:text-red-500 border border-white/5 hover:border-red-500/20 transition-all flex items-center justify-center gap-2"
                             >
-                                <LogOut className="w-4 h-4" /> Sign Out
+                                <LogOut className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                <span>Sign Out</span>
                             </button>
                         </div>
                     </div>

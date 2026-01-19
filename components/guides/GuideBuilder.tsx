@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Save, GripVertical, CheckCircle2, Upload, ImageIcon, X } from 'lucide-react';
+import { Plus, Trash2, Save, GripVertical, CheckCircle2, Upload as UploadIcon, ImageIcon, X } from 'lucide-react';
+import { upload } from '@vercel/blob/client';
 import { FormBuilder } from '../form-builder/FormBuilder';
 import Image from 'next/image';
 
@@ -71,25 +72,26 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
     };
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files || e.target.files.length === 0) return;
+        if (!e.target.files?.[0]) return;
         
         setIsUploading(true);
         const file = e.target.files[0];
-        const formData = new FormData();
-        formData.append('file', file);
 
         try {
-            const res = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
+            const newBlob = await upload(file.name, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload/token',
             });
-            
-            if (res.ok) {
-                const data = await res.json();
-                setCoverImage(data.url);
+
+            if (coverImage) {
+               // Optional: Trigger delete of old image via API if needed
+               // For now, we just replace the link
             }
+
+            setCoverImage(newBlob.url);
         } catch (error) {
             console.error("Upload failed", error);
+            alert("Upload failed");
         } finally {
             setIsUploading(false);
         }
@@ -120,7 +122,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                                          <Trash2 className="w-4 h-4" /> Remove
                                      </button>
                                      <label className="px-4 py-2 bg-white/10 text-white rounded-xl font-medium hover:bg-white/20 transition-colors flex items-center gap-2 cursor-pointer">
-                                        <Upload className="w-4 h-4" /> Change
+                                        <UploadIcon className="w-4 h-4" /> Change
                                         <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isUploading} />
                                      </label>
                                 </div>

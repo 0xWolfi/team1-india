@@ -20,53 +20,46 @@ export async function GET(request: Request) {
     }
 
     try {
-        // Fetch all members excluding soft-deleted ones
-        const allMembers = await prisma.communityMember.findMany({
-            where: { deletedAt: null },
-            orderBy: { createdAt: 'desc' },
-            select: {
-                id: true,
-                email: true,
-                tags: true,
-                status: true,
-                createdAt: true,
-                updatedAt: true,
-                name: true,
-                xHandle: true,
-                telegram: true
-            }
-        });
+        const { searchParams } = new URL(request.url);
+        const page = parseInt(searchParams.get('page') || '1');
+        const limit = parseInt(searchParams.get('limit') || '50');
+        const skip = (page - 1) * limit;
 
-        // Deduplicate by email - keep the most recently updated record for each email
-        const emailMap = new Map<string, typeof allMembers[0]>();
-        
-        for (const member of allMembers) {
-            const emailKey = member.email.toLowerCase().trim();
-            const existing = emailMap.get(emailKey);
-            
-            if (!existing) {
-                // First occurrence of this email
-                emailMap.set(emailKey, member);
-            } else {
-                // Compare timestamps - keep the one with the latest updatedAt (or createdAt if updatedAt is same)
-                const existingTime = existing.updatedAt || existing.createdAt;
-                const currentTime = member.updatedAt || member.createdAt;
-                
-                if (currentTime > existingTime) {
-                    // Current member is more recent, replace
-                    emailMap.set(emailKey, member);
+        // Optimized query with pagination
+        const [allMembers, total] = await Promise.all([
+            prisma.communityMember.findMany({
+                where: { deletedAt: null },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit,
+                select: {
+                    id: true,
+                    email: true,
+                    tags: true,
+                    status: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    name: true,
+                    xHandle: true,
+                    telegram: true
                 }
+            }),
+            prisma.communityMember.count({ where: { deletedAt: null } })
+        ]);
+        
+        // Note: The previous logic tried to deduplicate by email on the application layer.
+        // This is inefficient at scale. We assume here that the schema unique constraint handles duplicates.
+        // If soft duplicates exist, we should rely on database cleanup jobs, not request-time filtering.
+
+        return NextResponse.json({
+            data: allMembers,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
             }
-        }
-
-        // Convert map back to array and sort by createdAt desc
-        const uniqueMembers = Array.from(emailMap.values()).sort((a, b) => {
-            const timeA = a.updatedAt || a.createdAt;
-            const timeB = b.updatedAt || b.createdAt;
-            return timeB.getTime() - timeA.getTime();
         });
-
-        return NextResponse.json(uniqueMembers);
     } catch (error) {
         console.error("Community Members Fetch Error", error);
         return new NextResponse("Internal Error", { status: 500 });

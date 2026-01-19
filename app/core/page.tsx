@@ -195,7 +195,7 @@ export default function CorePage() {
     ];
 
     return (
-    <div className="min-h-screen pt-24 px-6 md:px-12 container mx-auto text-white pb-20">
+    <div className="min-h-[100svh] pt-24 px-6 md:px-12 container mx-auto text-white pb-20">
         
         {/* Header */}
         <header className="mb-12 border-b border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">

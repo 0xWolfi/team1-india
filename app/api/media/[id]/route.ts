@@ -71,14 +71,19 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             where: { id },
             include: {
                 createdBy: { select: { id: true, email: true } },
-                posts: true,
+                posts: {
+                     take: 10,
+                     orderBy: { postedAt: 'desc' }
+                },
                 comments: {
+                    take: 20, // Limit to recent 20 comments
                     include: {
                         author: { select: { id: true, email: true } }
                     },
-                    orderBy: { createdAt: 'asc' }
+                    orderBy: { createdAt: 'desc' } // Newest first
                 },
                 auditLogs: {
+                    take: 10, // Limit audit usage
                     include: {
                         actor: { select: { id: true, email: true } }
                     },
@@ -88,6 +93,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         });
 
         if (!item) return new NextResponse("Not Found", { status: 404 });
+        
+        // Reverse comments for UI if needed or handle client-side
+        // For now, returning newest first is safer for memory.
         return NextResponse.json(item);
     } catch (error) {
         console.error(error);

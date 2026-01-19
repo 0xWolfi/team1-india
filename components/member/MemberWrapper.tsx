@@ -88,7 +88,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
     }
 
     return (
-        <div className="min-h-screen text-white relative font-sans selection:bg-white/20 flex flex-col">
+        <div className="min-h-[100svh] text-white relative font-sans selection:bg-white/20 flex flex-col">
             {/* Background Effects */}
             <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-black/80 via-black/50 to-transparent pointer-events-none z-0" />
             <div className="fixed -top-[200px] right-0 w-[600px] h-[600px] bg-zinc-900/05 blur-[120px] rounded-full pointer-events-none -z-10" />

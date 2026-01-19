@@ -73,13 +73,15 @@ export const HeroScroll = () => {
   }, []);
 
   return (
-    <div
+    <header
       id="hero"
       className="min-h-[100svh] md:h-[200vh] relative"
       ref={containerRef}
+      role="banner"
+      aria-label="Team1 India Hero Section"
     >
       <div className="sticky top-0 min-h-[100svh] md:h-screen flex items-center justify-center py-6 md:py-20 overflow-hidden">
-        <div
+        <section
           className="w-full relative z-10 flex flex-col items-center justify-center md:justify-start h-full"
           style={{
             perspective: "1000px",
@@ -92,9 +94,9 @@ export const HeroScroll = () => {
             )}
           </div>
           <HeroActions translate={translate} isDesktop={isDesktop} />
-        </div>
+        </section>
       </div>
-    </div>
+    </header>
   );
 };
 
@@ -103,13 +105,16 @@ export const Header = ({ scale, translate, isDesktop }: { scale: MotionValue<num
     <motion.div 
       style={isDesktop ? { scale, translateY: translate } : {}}
       className="max-w-5xl mx-auto text-center px-4 md:px-8 mt-0 md:mt-4 mb-6 md:mb-4 origin-center"
+      role="presentation"
     >
-      <h1 className="text-4xl sm:text-5xl md:text-8xl font-bold text-white tracking-tighter mb-4 md:mb-2">
-        Team1 India
-      </h1>
-      <p className="text-base sm:text-lg md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed md:leading-tight px-2">
-        building communities, onboarding developers, and empowering founders to scale within the avalanche ecosystem.
-      </p>
+      <hgroup>
+        <h1 className="text-4xl sm:text-5xl md:text-8xl font-bold text-white tracking-tighter mb-4 md:mb-2 text-balance">
+          Team1 India
+        </h1>
+        <p className="text-base sm:text-lg md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed md:leading-tight px-2 text-balance">
+          The premier builder community and accelerator for the <strong>Avalanche Ecosystem</strong> in India.
+        </p>
+      </hgroup>
     </motion.div>
   );
 };
@@ -145,11 +150,12 @@ export const Card = ({
                  alt="Video Thumbnail" 
                  fill
                  priority
+                 sizes="(max-width: 768px) 100vw, 80vw"
                  className="absolute inset-0 object-cover object-bottom"
                />
                <video 
                   ref={videoRef}
-                  src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/hero-video.mp4"}
+                  src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/hero-video.webm"}
                   loop
                   playsInline
                   preload="auto"
