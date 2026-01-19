@@ -55,18 +55,18 @@ export function Announcements({ audience = "PUBLIC" }: AnnouncementsProps) {
                     key={announcement.id}
                     href={announcement.link || "/core/announcements"}
                     target={announcement.link?.startsWith('http') ? "_blank" : "_self"}
-                    className="group flex items-center gap-3 px-4 py-2 bg-zinc-900/60 hover:bg-zinc-800/80 border border-white/10 backdrop-blur-2xl rounded-full transition-all duration-300 shadow-xl hover:shadow-brand-500/10 w-full md:w-auto"
+                    className="group flex items-center gap-3 px-4 py-2 bg-zinc-900/60 hover:bg-zinc-800/80 border border-white/10 backdrop-blur-2xl rounded-full transition-all duration-300 shadow-xl hover:shadow-white/5 w-full md:w-auto"
                 >
                     <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-                        <span className="text-brand-400 text-[10px] font-bold uppercase tracking-wider min-w-fit">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        <span className="text-zinc-200 text-[10px] font-bold uppercase tracking-wider min-w-fit">
                             New
                         </span>
                     </div>
                     <span className="text-sm text-zinc-300 group-hover:text-white transition-colors truncate">
                         {announcement.title}
                     </span>
-                    <ArrowRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-brand-400 group-hover:translate-x-1 transition-all ml-auto min-w-fit" />
+                    <ArrowRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white group-hover:translate-x-1 transition-all ml-auto min-w-fit" />
                 </Link>
             ))}
         </div>

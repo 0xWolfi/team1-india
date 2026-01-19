@@ -172,32 +172,32 @@ export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<n
     >
        {/* Ensure z-50 and pointer-events-auto to stay on top */}
         <div className="flex items-center gap-4">
-            <Link href="/public" className="px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black">
-                Guidebook
+            <Link href="/public" className="group px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black">
+                <span className="block transition-transform duration-200 group-hover:scale-110">Guidebook</span>
             </Link>
             <button 
                 onClick={() => signIn('google', { callbackUrl: '/access-check' })}
-                className="px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black"
+                className="group px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black"
             >
-                Members
+                <span className="block transition-transform duration-200 group-hover:scale-110">Members</span>
             </button>
         </div>
 
         <div className="w-px h-8 bg-white/10 hidden md:block"></div>
 
         <div className="flex items-center gap-4">
-            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <Instagram className="w-5 h-5" />
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <Linkedin className="w-5 h-5" />
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <Send className="w-5 h-5" /> {/* Telegram */}
             </a>
         </div>

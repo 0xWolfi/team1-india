@@ -228,7 +228,7 @@ export default function CorePage() {
                         </div>
                     )}
                     <Link 
-                        href="/member/profile"
+                        href="/core/profile"
                         className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
                         title="My Profile"
                     >
@@ -236,7 +236,7 @@ export default function CorePage() {
                     </Link>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}
-                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
+                        className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center text-red-500 hover:text-red-400"
                         title="Logout"
                     >
                         <LogOut className="w-4 h-4" />
@@ -358,9 +358,9 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-[2px] rounded-2xl border border-white/5">
                     <div className="flex flex-col items-center gap-3 animate-in zoom-in duration-300">
                         <div className="p-4 rounded-full bg-black/50 border border-white/10 shadow-2xl">
-                            <Lock className="w-6 h-6 text-zinc-400" />
+                            <Lock className="w-6 h-6 text-zinc-500" />
                         </div>
-                        <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest bg-black/80 px-3 py-1 rounded border border-white/5">
+                        <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest bg-black/80 px-3 py-1 rounded border border-white/10">
                             Access Denied
                         </span>
                     </div>

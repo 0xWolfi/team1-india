@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
 import { Guide, Program, Event } from "@/types/public";
-import { Footer } from "@/components/website/Footer";
+import { Guide, Program, Event } from "@/types/public";
 import { DashboardCard } from "./DashboardCard";
 // We can define Experiment type here based on Prisma client if not imported, 
 // using 'any' for now to speed up if types aren't strictly generated or exported for client.
@@ -112,18 +112,18 @@ export function MemberDashboard({
             {!isProfileComplete && (
                 <Link
                     href="/member/profile"
-                    className="mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between gap-4 hover:bg-amber-500/20 transition-colors group"
+                    className="mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-between gap-4 hover:bg-amber-500/20 transition-colors group backdrop-blur-md"
                 >
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-amber-500/20 rounded-lg">
-                            <Users className="w-5 h-5 text-amber-400" />
+                        <div className="p-2 bg-amber-500/10 rounded-lg">
+                            <Users className="w-5 h-5 text-amber-500" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-amber-200">Complete Your Profile</h3>
-                            <p className="text-sm text-amber-400/70">Please fill in your name, X handle, telegram, and wallet address to complete your profile.</p>
+                            <h3 className="font-bold text-white">Complete Your Profile</h3>
+                            <p className="text-sm text-zinc-400">Please fill in your name, X handle, telegram, and wallet address to complete your profile.</p>
                         </div>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-5 h-5 text-amber-500 group-hover:translate-x-1 transition-transform" />
                 </Link>
             )}
 
@@ -265,49 +265,50 @@ export function MemberDashboard({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
 
                 {/* New Proposals */}
-                <div className={cn("rounded-3xl p-6 md:p-8 relative overflow-hidden", glassClass)}>
+                <Link href="/member/experiments" className={cn("rounded-3xl p-6 md:p-8 relative overflow-hidden group flex flex-col", glassClass)}>
                      
                      <div className="flex items-center justify-between mb-8 relative z-10">
                         <div className="flex items-center gap-3">
                              <div className="p-2 bg-white/5 rounded-lg text-zinc-300 border border-white/5">
-                                <Vote className="w-5 h-5" />
+                                <Vote className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
                              </div>
                              <div>
-                                <h2 className="text-xl font-bold">New Proposals</h2>
+                                <h2 className="text-xl font-bold group-hover:text-white transition-colors">New Proposals</h2>
                                 <p className="text-xs text-zinc-500 mt-1">Vote on upcoming ideas</p>
                              </div>
                         </div>
-                        <Link href="/member/experiments" className="p-2 hover:bg-white/5 rounded-lg transition-colors">
-                             <ArrowRight className="w-4 h-4 text-zinc-500" />
-                        </Link>
+                        <div className="p-2 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors">
+                             <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
+                        </div>
                     </div>
 
-                    <div className="space-y-4 relative z-10">
-                        {proposals.length > 0 ? proposals.slice(0, 3).map((prop) => (
-                            <Link
-                                key={prop.id}
-                                href={`/member/experiments/${prop.id}`}
-                                className="block p-4 bg-zinc-800/30 border border-white/5 rounded-xl hover:border-white/20 transition-all group hover:bg-zinc-800/50"
-                            >
-                                <div className="flex items-start justify-between gap-4">
-                                    <div>
-                                        <h4 className="font-bold text-sm text-zinc-200 group-hover:text-white transition-colors mb-1">{prop.title}</h4>
-                                        <p className="text-xs text-zinc-500 line-clamp-1">{prop.description}</p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="flex items-center gap-1 text-[10px] text-zinc-500 group-hover:text-zinc-300">
-                                            <Vote className="w-3 h-3" /> {prop.upvotes}
-                                        </span>
-                                    </div>
+                    <div className="relative z-10 flex-1 flex flex-col justify-center p-5 bg-zinc-800/30 border border-white/5 rounded-xl group-hover:bg-zinc-800/50 transition-colors">
+                        {proposals.length > 0 ? (
+                            <>
+                                <h4 className="font-bold text-sm text-zinc-200 group-hover:text-white transition-colors mb-2">
+                                    {proposals.length} Active Proposal{proposals.length !== 1 && 's'}
+                                </h4>
+                                <div className="space-y-2">
+                                    {proposals.slice(0, 2).map((prop) => (
+                                         <div key={prop.id} className="flex items-center gap-2 text-xs text-zinc-500">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-white/50" />
+                                            <span className="truncate">{prop.title}</span>
+                                         </div>
+                                    ))}
+                                    {proposals.length > 2 && (
+                                        <div className="text-[10px] text-zinc-600 pl-3.5">
+                                            +{proposals.length - 2} more
+                                        </div>
+                                    )}
                                 </div>
-                            </Link>
-                        )) : (
-                            <div className="w-full h-32 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center border-dashed">
-                                <p className="text-zinc-500 font-medium text-xs">No active proposals.</p>
-                            </div>
+                            </>
+                        ) : (
+                            <p className="text-sm text-zinc-400 leading-relaxed text-center">
+                                No active proposals at the moment. Check back later or start a new discussion.
+                            </p>
                         )}
                     </div>
-                </div>
+                </Link>
 
                 {/* Member Details */}
                 <Link href="/member/directory" className={cn("rounded-3xl p-6 md:p-8 relative overflow-hidden group flex flex-col", glassClass)}>
@@ -336,7 +337,6 @@ export function MemberDashboard({
 
             </div>
             
-            <Footer />
         </div>
     );
 }

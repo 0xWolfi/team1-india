@@ -241,7 +241,7 @@ export default function MemberPlaybooksPage() {
                                         ) : (
                                             <>
                                                 <div className="flex items-center justify-between mb-2">
-                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-red-400 transition-all duration-300">
+                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-white transition-all duration-300">
                                                         {doc.title}
                                                     </h3>
 

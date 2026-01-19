@@ -116,7 +116,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                                         onClose();
                                         router.push(`/core/members/${memberData.id}`);
                                     }}
-                                    className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-medium hover:bg-indigo-700 transition-colors flex items-center gap-1.5"
+                                    className="px-3 py-1.5 bg-white text-black rounded-lg text-xs font-medium hover:bg-zinc-200 transition-colors flex items-center gap-1.5"
                                     title="View Full Details"
                                 >
                                     <ExternalLink className="w-3 h-3" />
@@ -157,7 +157,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                             <button
                                 onClick={handleRoleChange}
                                 disabled={isChangingRole || selectedRole === memberData.tags}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 {isChangingRole ? (
                                     <>
@@ -263,7 +263,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                     <button 
                         onClick={() => onDelete(memberData)}
                         disabled={isSubmitting}
-                        className="px-4 py-2 rounded-lg text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition-colors flex items-center gap-2 disabled:opacity-50"
+                        className="px-4 py-2 rounded-lg text-sm font-bold bg-zinc-800 text-zinc-400 border border-white/5 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
                     >
                         {isSubmitting ? (
                             <>

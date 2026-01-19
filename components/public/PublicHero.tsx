@@ -47,8 +47,10 @@ export default function PublicHero({ heroItem }: { heroItem?: HeroItem }) {
                                     <Zap className="w-5 h-5 fill-black" /> Apply for Membership
                                 </span>
                             </button>
-                            <Link href="#playbooks" className="px-8 py-4 bg-white/10 border border-white/20 hover:bg-brand-600/90 hover:border-brand-500/50 text-white font-medium rounded-xl transition-all flex items-center gap-2 text-lg shadow-lg hover:shadow-brand-500/20 backdrop-blur-md">
-                                <LayoutGrid className="w-5 h-5" /> Browse Resources
+                            <Link href="#playbooks" className="group px-8 py-4 bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/40 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:shadow-white/10 backdrop-blur-md">
+                                <span className="flex items-center gap-2 transition-transform duration-200 group-hover:scale-110">
+                                    <LayoutGrid className="w-5 h-5" /> Browse Resources
+                                </span>
                             </Link>
                         </div>
                     </div>

@@ -17,18 +17,18 @@ export function FeatureGrid({ items }: FeatureGridProps) {
       {items.map((item, idx) => (
         <div 
           key={idx} 
-          className={`p-8 border-b border-r border-white/10 relative group ${item.colSpan || ''} bg-white/5 backdrop-blur-md hover:bg-brand-500/[0.02] transition-all duration-300 cursor-default`}
+          className={`p-8 border-b border-r border-white/10 relative group ${item.colSpan || ''} bg-white/5 backdrop-blur-md hover:bg-white/[0.02] transition-all duration-300 cursor-default`}
         >
           <div className="flex items-center gap-4 mb-3 relative z-10">
-            <div className="text-zinc-400 group-hover:text-brand-500 transition-colors duration-300">
+            <div className="text-zinc-400 group-hover:text-white transition-colors duration-300">
                 {/* Ensure icon inherits or sets classes */}
                 {React.isValidElement(item.icon) && React.cloneElement(item.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" })}
             </div>
-            <h3 className="text-xl font-bold text-white group-hover:text-brand-400 transition-colors duration-300">
+            <h3 className="text-xl font-bold text-white group-hover:text-zinc-200 transition-colors duration-300">
               {item.title}
             </h3>
           </div>
-          <p className="text-zinc-500 text-base leading-relaxed relative z-10 group-hover:text-brand-400/80 transition-colors duration-300">
+          <p className="text-zinc-500 text-base leading-relaxed relative z-10 group-hover:text-zinc-400 transition-colors duration-300">
             {item.desc}
           </p>
         </div>

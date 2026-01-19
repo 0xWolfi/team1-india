@@ -108,7 +108,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                 {/* Cover Image */}
                 <div>
                      <label className="block text-xs font-bold text-zinc-500 uppercase mb-3">Cover Image</label>
-                     <div className="relative group w-full h-64 bg-zinc-900/50 border border-dashed border-white/10 rounded-2xl overflow-hidden flex flex-col items-center justify-center hover:border-indigo-500/50 hover:bg-zinc-900/80 transition-all cursor-pointer">
+                     <div className="relative group w-full h-64 bg-zinc-900/50 border border-dashed border-white/10 rounded-2xl overflow-hidden flex flex-col items-center justify-center hover:border-white/30 hover:bg-zinc-900/80 transition-all cursor-pointer">
                         {coverImage ? (
                             <>
                                 <Image src={coverImage} alt="Cover" fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -127,11 +127,11 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                             </>
                         ) : (
                             <label className="cursor-pointer flex flex-col items-center gap-4 w-full h-full justify-center">
-                                <div className="p-4 bg-zinc-800/50 rounded-full group-hover:bg-indigo-500/20 group-hover:scale-110 transition-all duration-300">
+                                <div className="p-4 bg-zinc-800/50 rounded-full group-hover:bg-zinc-800 group-hover:scale-110 transition-all duration-300">
                                     {isUploading ? (
-                                         <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+                                         <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                                     ) : (
-                                        <ImageIcon className="w-8 h-8 text-zinc-500 group-hover:text-indigo-400" />
+                                        <ImageIcon className="w-8 h-8 text-zinc-500 group-hover:text-zinc-300" />
                                     )}
                                 </div>
                                 <div className="text-center space-y-1">
@@ -155,7 +155,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             placeholder={`e.g., ${type === 'EVENT' ? 'Meetup' : type === 'PROGRAM' ? 'Mentorship' : 'Blog Post'} Guide`}
-                            className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500/50 transition-all shadow-inner shadow-black/20"
+                            className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all shadow-inner shadow-black/20"
                         />
                     </div>
                     <div className="col-span-1 md:col-span-2">
@@ -165,7 +165,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                             onChange={e => setDescription(e.target.value)}
                             placeholder="Describe the purpose of this guide..."
                             rows={3}
-                            className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500/50 transition-all shadow-inner shadow-black/20 resize-none"
+                            className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all shadow-inner shadow-black/20 resize-none"
                         />
                     </div>
                 </div>
@@ -178,7 +178,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                                 onClick={() => setVisibility(tag as any)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors ${
                                     visibility === tag 
-                                        ? 'bg-indigo-500 text-white border-indigo-500' 
+                                        ? 'bg-white text-black border-white' 
                                         : 'bg-zinc-900 text-zinc-400 border-white/10 hover:bg-zinc-800'
                                 }`}
                              >
@@ -229,7 +229,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                                     className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500"
                                 />
                             </div>
-                            <button onClick={() => setKpis(kpis.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-lg self-end mb-0.5 transition-colors">
+                            <button onClick={() => setKpis(kpis.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-white hover:bg-zinc-800 p-2 rounded-lg self-end mb-0.5 transition-colors">
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </div>
@@ -276,7 +276,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                                     className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500"
                                 />
                             </div>
-                            <button onClick={() => setTimeline(timeline.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors">
+                            <button onClick={() => setTimeline(timeline.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-white hover:bg-zinc-800 p-2 rounded-lg transition-colors">
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </div>
@@ -314,9 +314,9 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
                              <input 
                                 value={rule} onChange={e => { const n = [...rules]; n[idx] = e.target.value; setRules(n); }}
                                 placeholder="Rule description..."
-                                className="flex-1 bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500"
+                                className="flex-1 bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-white/20"
                             />
-                             <button onClick={() => setRules(rules.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-lg transition-colors">
+                             <button onClick={() => setRules(rules.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-white hover:bg-zinc-800 p-2 rounded-lg transition-colors">
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </div>
@@ -333,8 +333,8 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
 
             {/* Form Builder */}
             <section className="bg-zinc-900/30 border border-white/10 rounded-2xl p-6">
-                 <div className="mb-6 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-start gap-3">
-                    <div className="text-indigo-400">
+                 <div className="mb-6 p-4 bg-zinc-800/30 border border-white/10 rounded-xl flex items-start gap-3">
+                    <div className="text-zinc-400">
                         <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div>

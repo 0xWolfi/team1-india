@@ -194,7 +194,7 @@ export default function CommunityMembersPage() {
                                 </td>
                                 <td className="p-4">
                                      {member.telegram ? (
-                                        <span className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
+                                        <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
                                     ) : (
                                         <span className="text-zinc-700">-</span>
                                     )}
@@ -210,7 +210,7 @@ export default function CommunityMembersPage() {
                                         {isSuperAdmin && (
                                             <button 
                                                 onClick={() => setViewingMember(member)}
-                                                className="p-1.5 rounded-md hover:bg-indigo-500/10 text-zinc-600 hover:text-indigo-400 transition-colors"
+                                                className="p-1.5 rounded-md hover:bg-white/10 text-zinc-600 hover:text-white transition-colors"
                                                 title="View Member Details"
                                             >
                                                 <Eye className="w-4 h-4" />

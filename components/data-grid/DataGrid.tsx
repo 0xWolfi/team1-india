@@ -463,7 +463,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
              </div>
 
              {/* Grid */}
-             <div className="bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden shadow-xl overflow-x-auto">
+             <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden shadow-xl overflow-x-auto">
                  <table className="w-full text-left text-sm border-collapse">
                     <thead className="bg-zinc-800/80 text-zinc-400 font-medium uppercase text-xs sticky top-0 z-10">
                         <tr>
@@ -473,7 +473,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                                         {col.label}
                                         {col.id.startsWith('custom_') && (
                                             <Trash2 
-                                                className="w-3 h-3 text-zinc-600 hover:text-red-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                                                className="w-3 h-3 text-zinc-600 hover:text-white cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                                                 onClick={() => handleDeleteColumn(col.id)}
                                             />
                                         )}
@@ -498,7 +498,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
 
                                         
                                         return (
-                                            <td key={`${row.id}_${col.id}`} className="p-0 border-r border-white/5 relative focus-within:ring-1 focus-within:ring-indigo-500 z-0">
+                                            <td key={`${row.id}_${col.id}`} className="p-0 border-r border-white/5 relative focus-within:ring-1 focus-within:ring-white/20 z-0">
                                                 {col.type === 'select' && col.options ? (
                                                     <select
                                                         className="w-full h-full p-3 bg-transparent text-white focus:outline-none appearance-none cursor-pointer"
@@ -532,7 +532,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                                             </button>
                                          )}
                                         <button 
-                                            className="p-2 text-zinc-600 hover:text-red-400 transition-colors"
+                                            className="p-2 text-zinc-600 hover:text-white transition-colors"
                                             onClick={() => handleDeleteRow(row.id)}
                                             title="Delete Row"
                                         >
@@ -571,7 +571,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                                      }
                                  }} 
                                  disabled={feedbackModal.isLoading}
-                                 className={`px-4 py-2 rounded-lg font-bold flex items-center gap-2 ${feedbackModal.type === 'confirm' ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-white hover:bg-zinc-200 text-black'}`}
+                                 className={`px-4 py-2 rounded-lg font-bold flex items-center gap-2 ${feedbackModal.type === 'confirm' ? 'bg-zinc-800 border border-white/10 hover:bg-zinc-700 text-white' : 'bg-white hover:bg-zinc-200 text-black'}`}
                              >
                                  {feedbackModal.isLoading && <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                  {feedbackModal.type === 'confirm' ? 'Confirm' : 'OK'}
@@ -590,7 +590,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                             <div>
                                 <label className="block text-xs uppercase font-bold text-zinc-500 mb-2">Column Name</label>
                                 <input 
-                                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/20"
                                     value={newColData.label}
                                     onChange={e => setNewColData({...newColData, label: e.target.value})}
                                     placeholder="e.g. Phone Number"
@@ -600,7 +600,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                             <div>
                                 <label className="block text-xs uppercase font-bold text-zinc-500 mb-2">Data Type</label>
                                 <select
-                                     className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 appearance-none"
+                                     className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-1 focus:ring-white/20 appearance-none"
                                      value={newColData.type}
                                      onChange={e => setNewColData({...newColData, type: e.target.value})}
                                 >
@@ -630,7 +630,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                             <div>
                                 <label className="block text-xs uppercase font-bold text-zinc-500 mb-2">Name</label>
                                 <input 
-                                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-white/20"
                                     value={rowFormData.name}
                                     onChange={e => setRowFormData({...rowFormData, name: e.target.value})}
                                     placeholder="Full Name"
@@ -640,7 +640,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                             <div>
                                 <label className="block text-xs uppercase font-bold text-zinc-500 mb-2">Email</label>
                                 <input 
-                                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-white/20"
                                     value={rowFormData.email}
                                     onChange={e => setRowFormData({...rowFormData, email: e.target.value})}
                                     placeholder="member@example.com"
@@ -651,7 +651,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                              <div>
                                 <label className="block text-xs uppercase font-bold text-zinc-500 mb-2">Role</label>
                                 <select
-                                     className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 appearance-none"
+                                     className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-1 focus:ring-white/20 appearance-none"
                                      value={rowFormData.tags}
                                      onChange={e => setRowFormData({...rowFormData, tags: e.target.value})}
                                 >

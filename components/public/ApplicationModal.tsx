@@ -321,7 +321,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                                     {tags.map(tag => (
                                         <span key={tag} className="bg-white/10 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
                                             {tag}
-                                            <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-400"><XCircle className="w-3 h-3" /></button>
+                                            <button type="button" onClick={() => removeTag(tag)} className="hover:text-white"><XCircle className="w-3 h-3" /></button>
                                         </span>
                                     ))}
                                     <input 
