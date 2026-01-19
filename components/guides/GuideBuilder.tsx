@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, Save, GripVertical, CheckCircle2, Upload as UploadIcon, ImageIcon, X } from 'lucide-react';
+import { Plus, Trash2, Save, GripVertical, CheckCircle2, Upload as UploadIcon, ImageIcon, X, Eye, Code } from 'lucide-react';
 import { upload } from '@vercel/blob/client';
 import { FormBuilder } from '../form-builder/FormBuilder';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
 
 interface GuideBuilderProps {
     initialData?: any;
@@ -20,10 +21,9 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
     const [coverImage, setCoverImage] = useState(initialData?.coverImage || '');
     const [visibility, setVisibility] = useState<'CORE' | 'MEMBER' | 'PUBLIC'>(initialData?.visibility || 'CORE');
     
-    // Dynamic Sections
-    const [kpis, setKpis] = useState<{ label: string; value: string }[]>(initialData?.body?.kpis || []);
-    const [timeline, setTimeline] = useState<{ step: string; duration: string }[]>(initialData?.body?.timeline || []);
-    const [rules, setRules] = useState<string[]>(initialData?.body?.rules || []);
+    // Markdown Content
+    const [markdownContent, setMarkdownContent] = useState<string>(initialData?.body?.markdown || '');
+    const [markdownViewMode, setMarkdownViewMode] = useState<'edit' | 'preview'>('edit');
     
     // Default fields that are always present and cannot be removed
     const defaultFields = [
@@ -53,9 +53,7 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
     const handleSave = () => {
         const body = {
             description,
-            kpis,
-            timeline,
-            rules
+            markdown: markdownContent
         };
 
         // Save the full rich field objects directly
@@ -198,137 +196,62 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
 
                 <div className="h-px bg-white/5 my-8" />
 
-            {/* KPIs */}
+            {/* Markdown Content */}
             <section className="bg-zinc-900/30 border border-white/5 rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-lg font-bold text-white">Success Metrics (KPIs)</h3>
-                         <p className="text-xs text-zinc-500 mt-1">Define key performance indicators for this initiative.</p>
+                        <h3 className="text-lg font-bold text-white">Content</h3>
+                        <p className="text-xs text-zinc-500 mt-1">Write your content in Markdown format.</p>
                     </div>
-                    <button 
-                        onClick={() => setKpis([...kpis, { label: '', value: '' }])}
-                        className="text-xs font-bold bg-white/5 hover:bg-white/10 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 transition-colors border border-white/5"
-                    >
-                        <Plus className="w-3 h-3" /> Add KPI
-                    </button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {kpis.map((kpi, idx) => (
-                        <div key={idx} className="flex gap-2 bg-black/20 p-2 rounded-xl border border-white/5">
-                            <div className="flex-1 space-y-1">
-                                <label className="text-[10px] uppercase font-bold text-zinc-600 px-1">Label</label>
-                                <input 
-                                    value={kpi.label} onChange={e => { const n = [...kpis]; n[idx].label = e.target.value; setKpis(n); }}
-                                    placeholder="e.g. Attendance"
-                                    className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500"
-                                />
-                            </div>
-                            <div className="flex-1 space-y-1">
-                                <label className="text-[10px] uppercase font-bold text-zinc-600 px-1">Target</label>
-                                <input 
-                                    value={kpi.value} onChange={e => { const n = [...kpis]; n[idx].value = e.target.value; setKpis(n); }}
-                                    placeholder="e.g. 50+"
-                                    className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500"
-                                />
-                            </div>
-                            <button onClick={() => setKpis(kpis.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-white hover:bg-zinc-800 p-2 rounded-lg self-end mb-0.5 transition-colors">
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        </div>
-                    ))}
-                    {kpis.length === 0 && (
-                        <div className="col-span-full py-8 text-center text-zinc-600 bg-white/[0.02] rounded-xl border border-dashed border-white/5">
-                            No KPIs added yet.
-                        </div>
-                    )}
-                </div>
-            </section>
-
-            {/* Timeline */}
-            <section className="bg-zinc-900/30 border border-white/5 rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h3 className="text-lg font-bold text-white">Approval Timeline</h3>
-                        <p className="text-xs text-zinc-500 mt-1">Set the expected duration for each step of the process.</p>
+                    <div className="flex gap-2 bg-zinc-800/50 border border-white/10 rounded-lg p-1">
+                        <button
+                            onClick={() => setMarkdownViewMode('edit')}
+                            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-2 ${
+                                markdownViewMode === 'edit'
+                                    ? 'bg-white/10 text-white'
+                                    : 'text-zinc-400 hover:text-white'
+                            }`}
+                        >
+                            <Code className="w-3 h-3" /> Edit
+                        </button>
+                        <button
+                            onClick={() => setMarkdownViewMode('preview')}
+                            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-2 ${
+                                markdownViewMode === 'preview'
+                                    ? 'bg-white/10 text-white'
+                                    : 'text-zinc-400 hover:text-white'
+                            }`}
+                        >
+                            <Eye className="w-3 h-3" /> Preview
+                        </button>
                     </div>
-                    <button 
-                        onClick={() => setTimeline([...timeline, { step: '', duration: '' }])}
-                        className="text-xs font-bold bg-white/5 hover:bg-white/10 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 transition-colors border border-white/5"
-                    >
-                        <Plus className="w-3 h-3" /> Add Step
-                    </button>
                 </div>
-                <div className="space-y-3">
-                    {timeline.map((item, idx) => (
-                        <div key={idx} className="flex gap-2 items-center bg-black/20 p-2 rounded-xl border border-white/5">
-                            <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-[10px] font-bold text-zinc-500 border border-white/5 shrink-0 ml-1">
-                                {idx + 1}
+                
+                {markdownViewMode === 'edit' ? (
+                    <textarea
+                        value={markdownContent}
+                        onChange={(e) => {
+                            setMarkdownContent(e.target.value);
+                            e.target.style.height = 'auto';
+                            e.target.style.height = e.target.scrollHeight + 'px';
+                        }}
+                        placeholder="# Write your markdown content here...&#10;&#10;You can use:&#10;- Headers (# ## ###)&#10;- Lists (- or 1.)&#10;- **Bold** and *italic* text&#10;- Links and images&#10;- Code blocks&#10;- And more!"
+                        className="w-full min-h-[400px] bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all font-mono text-sm leading-relaxed resize-none"
+                        style={{ minHeight: '400px' }}
+                    />
+                ) : (
+                    <div className="min-h-[400px] bg-zinc-900/50 border border-white/10 rounded-xl px-6 py-4 overflow-y-auto">
+                        {markdownContent ? (
+                            <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-p:text-zinc-300 prose-a:text-blue-400 prose-strong:text-white prose-code:text-red-300 prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl prose-ul:text-zinc-300 prose-ol:text-zinc-300 prose-li:text-zinc-300">
+                                <ReactMarkdown>{markdownContent}</ReactMarkdown>
                             </div>
-                            <div className="flex-1">
-                                <input 
-                                    value={item.step} onChange={e => { const n = [...timeline]; n[idx].step = e.target.value; setTimeline(n); }}
-                                    placeholder="Step Name (e.g. Initial Review)"
-                                    className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500"
-                                />
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-zinc-600 text-sm">
+                                No content yet. Switch to Edit mode to add markdown content.
                             </div>
-                            <div className="w-32">
-                                <input 
-                                    value={item.duration} onChange={e => { const n = [...timeline]; n[idx].duration = e.target.value; setTimeline(n); }}
-                                    placeholder="Duration"
-                                    className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500"
-                                />
-                            </div>
-                            <button onClick={() => setTimeline(timeline.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-white hover:bg-zinc-800 p-2 rounded-lg transition-colors">
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        </div>
-                    ))}
-                    {timeline.length === 0 && (
-                        <div className="py-8 text-center text-zinc-600 bg-white/[0.02] rounded-xl border border-dashed border-white/5">
-                            No timeline steps defined.
-                        </div>
-                    )}
-                </div>
-            </section>
-            
-            <div className="h-px bg-white/5 my-8" />
-
-            {/* Rules */}
-            <section className="bg-zinc-900/30 border border-white/5 rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h3 className="text-lg font-bold text-white">Guidelines & Rules</h3>
-                        <p className="text-xs text-zinc-500 mt-1">Important rules users must follow.</p>
+                        )}
                     </div>
-                    <button 
-                        onClick={() => setRules([...rules, ''])}
-                        className="text-xs font-bold bg-white/5 hover:bg-white/10 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 transition-colors border border-white/5"
-                    >
-                        <Plus className="w-3 h-3" /> Add Rule
-                    </button>
-                </div>
-                <div className="space-y-3">
-                    {rules.map((rule, idx) => (
-                        <div key={idx} className="flex gap-3 bg-black/20 p-2 rounded-xl border border-white/5 items-center">
-                             <div className="pl-3 pr-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-zinc-700" />
-                             </div>
-                             <input 
-                                value={rule} onChange={e => { const n = [...rules]; n[idx] = e.target.value; setRules(n); }}
-                                placeholder="Rule description..."
-                                className="flex-1 bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-white/20"
-                            />
-                             <button onClick={() => setRules(rules.filter((_, i) => i !== idx))} className="text-zinc-600 hover:text-white hover:bg-zinc-800 p-2 rounded-lg transition-colors">
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        </div>
-                    ))}
-                     {rules.length === 0 && (
-                        <div className="py-8 text-center text-zinc-600 bg-white/[0.02] rounded-xl border border-dashed border-white/5">
-                            No rules defined.
-                        </div>
-                     )}
-                </div>
+                )}
             </section>
 
              <div className="h-px bg-white/5" />

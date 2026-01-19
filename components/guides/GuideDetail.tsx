@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { usePermission } from "@/hooks/usePermission";
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import ReactMarkdown from 'react-markdown';
 
 interface FormField {
     id: string;
@@ -357,17 +358,28 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                     <div className="lg:col-span-2 space-y-12">
                         
                         {/* Description */}
-                        <section>
-                            <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                 Overview
-                            </h2>
-                            <p className="text-zinc-400 leading-relaxed text-base whitespace-pre-wrap">
-                                {guide.body.description}
-                            </p>
-                        </section>
+                        {guide.body.description && (
+                            <section>
+                                <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                     Overview
+                                </h2>
+                                <p className="text-zinc-400 leading-relaxed text-base whitespace-pre-wrap">
+                                    {guide.body.description}
+                                </p>
+                            </section>
+                        )}
 
-                        {/* KPIs */}
-                        {guide.body.kpis && guide.body.kpis.length > 0 && (
+                        {/* Markdown Content */}
+                        {guide.body.markdown && (
+                            <section>
+                                <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-p:text-zinc-300 prose-a:text-blue-400 prose-strong:text-white prose-code:text-red-300 prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl prose-ul:text-zinc-300 prose-ol:text-zinc-300 prose-li:text-zinc-300 prose-blockquote:border-l-blue-500 prose-blockquote:text-zinc-400">
+                                    <ReactMarkdown>{guide.body.markdown}</ReactMarkdown>
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Legacy KPIs - kept for backward compatibility */}
+                        {!guide.body.markdown && guide.body.kpis && guide.body.kpis.length > 0 && (
                             <section>
                                 <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                                     Success Metrics
@@ -383,8 +395,8 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                             </section>
                         )}
 
-                        {/* Timeline */}
-                        {guide.body.timeline && guide.body.timeline.length > 0 && (
+                        {/* Legacy Timeline - kept for backward compatibility */}
+                        {!guide.body.markdown && guide.body.timeline && guide.body.timeline.length > 0 && (
                             <section>
                                 <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                                     Approval Timeline
@@ -405,8 +417,8 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                             </section>
                         )}
 
-                        {/* Rules */}
-                         {guide.body.rules && guide.body.rules.length > 0 && (
+                        {/* Legacy Rules - kept for backward compatibility */}
+                         {!guide.body.markdown && guide.body.rules && guide.body.rules.length > 0 && (
                             <section>
                                 <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                     Guidelines & Usage

@@ -18,9 +18,25 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const guide = await prisma.guide.findUnique({
       where: { id },
+      select: {
+        id: true,
+        type: true,
+        title: true,
+        coverImage: true,
+        body: true,
+        audience: true,
+        formSchema: true,
+        visibility: true,
+        maxSubmissionsPublic: true,
+        maxSubmissionsMember: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        createdById: true,
+      }
     });
 
-    if (!guide || (guide as any).deletedAt) {
+    if (!guide || guide.deletedAt) {
       return NextResponse.json({ error: "Guide not found" }, { status: 404 });
     }
 
