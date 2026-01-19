@@ -43,6 +43,16 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
     const [coverImageError, setCoverImageError] = useState(false);
     // Use dynamic permission based on guide type (EVENT -> 'event', PROGRAM -> 'program', CONTENT -> 'content')
     const canEdit = usePermission(guide.type.toLowerCase(), 'WRITE');
+
+    // Cache-buster for blob URLs
+    const getImageUrl = (url: string | null | undefined): string | undefined => {
+        if (!url) return undefined;
+        if (url.includes('.public.blob.vercel-storage.com')) {
+            const separator = url.includes('?') ? '&' : '?';
+            return `${url}${separator}t=${Date.now()}`;
+        }
+        return url;
+    };
     
     // Determine dashboard path based on current URL or basePath prop
     const getDashboardPath = () => {
@@ -231,10 +241,21 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                 {guide.coverImage && !coverImageError ? (
                     <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-white/10 bg-zinc-900/50">
                         <img
-                            src={guide.coverImage}
+                            src={getImageUrl(guide.coverImage) || guide.coverImage}
                             alt={guide.title}
                             className="w-full h-full object-cover"
-                            onError={() => setCoverImageError(true)}
+                            onError={(e) => {
+                                console.error('[GuideDetail] Cover image load failed:', {
+                                    originalUrl: guide.coverImage,
+                                    actualUrl: getImageUrl(guide.coverImage),
+                                    title: guide.title,
+                                    error: e
+                                });
+                                setCoverImageError(true);
+                            }}
+                            onLoad={() => {
+                                console.log('[GuideDetail] Cover image loaded:', guide.coverImage);
+                            }}
                         />
                     </div>
                 ) : guide.coverImage && coverImageError ? (

@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
     const response = await handleUpload({
       request,
       body,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
       onBeforeGenerateToken: async (pathname) => {
         return {
           allowedContentTypes: [
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Upload token error:", error);
     return NextResponse.json(
-      { error: "Failed to generate upload token" },
+      { error: "Failed to generate upload token", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

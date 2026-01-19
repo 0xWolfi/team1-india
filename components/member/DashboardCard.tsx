@@ -29,9 +29,6 @@ export function DashboardCard({
     className
 }: DashboardCardProps) {
     const [imageError, setImageError] = useState(false);
-    
-    // Check if coverImage is valid (not null, undefined, or empty string)
-    const hasValidImage = coverImage && coverImage.trim() !== '' && !imageError;
 
     // Icon Selection based on Type
     const getIcon = () => {
@@ -42,6 +39,17 @@ export function DashboardCard({
             case 'PLAYBOOK': return <BookOpen className="w-5 h-5" />;
             default: return <BookOpen className="w-5 h-5" />;
         }
+    };
+
+    // Add cache-buster for blob URLs to prevent SW cache issues
+    const getImageUrl = (url: string | null | undefined): string | undefined => {
+        if (!url) return undefined;
+        // Add timestamp only for vercel blob URLs to force fresh load
+        if (url.includes('.public.blob.vercel-storage.com')) {
+            const separator = url.includes('?') ? '&' : '?';
+            return `${url}${separator}t=${Date.now()}`;
+        }
+        return url;
     };
 
     return (
@@ -55,18 +63,23 @@ export function DashboardCard({
         >
             {/* Image Container */}
             <div className="mb-4 relative shrink-0">
-                {hasValidImage ? (
+                {coverImage && !imageError ? (
                     <div className="relative w-full aspect-[2/1] rounded-lg overflow-hidden bg-zinc-800 border border-white/5">
                         <img
-                            key={coverImage} // Force re-render when coverImage changes
-                            src={coverImage!}
+                            src={getImageUrl(coverImage)}
                             alt={title}
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                            onError={() => {
+                            onError={(e) => {
+                                console.error('[DashboardCard] Image load failed:', {
+                                    originalUrl: coverImage,
+                                    actualUrl: getImageUrl(coverImage),
+                                    title,
+                                    error: e
+                                });
                                 setImageError(true);
                             }}
                             onLoad={() => {
-                                setImageError(false);
+                                console.log('[DashboardCard] Image loaded successfully:', coverImage);
                             }}
                         />
                          {/* Visibility Badge (Inset top-right) */}
