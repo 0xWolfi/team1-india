@@ -68,6 +68,7 @@ import { DynamicBackground } from "@/components/ui/DynamicBackground";
 
 import { Analytics } from "@vercel/analytics/react";
 import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 
 export default function RootLayout({
   children,
@@ -173,6 +174,7 @@ export default function RootLayout({
             </div>
             <Analytics />
             <PWAUpdatePrompt />
+            <PWAInstallPrompt />
         </ThemeProvider>
       </body>
     </html>
