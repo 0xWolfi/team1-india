@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   },
   description: "From idea to scale, Team1India provides the infrastructure, network, and resources you need to build the future.",
   keywords: ["Team1 India", "Startup Accelerator", "Developer Community", "Hackathons", "Mentorship", "India Tech"],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Team1 India",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: "Team1 India | Built for impact. Designed for builders.",
     description: "From idea to scale, Team1India provides the infrastructure, network, and resources you need to build the future.",
@@ -29,7 +38,7 @@ export const metadata: Metadata = {
     siteName: "Team1 India",
     images: [
       {
-        url: "/og-image.png", // Assuming an image will exist or user will add one
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Team1 India Community",
@@ -42,14 +51,23 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Team1 India",
     description: "Built for impact. Designed for builders.",
-    creator: "@Team1India", // Placeholder
+    creator: "@Team1India",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,  // ✅ Allow zoom for accessibility
+  userScalable: true,  // ✅ Required for WCAG AA compliance
 };
 
 import { ThemeProvider } from "./providers";
 import { DynamicBackground } from "@/components/ui/DynamicBackground";
 
 import { Analytics } from "@vercel/analytics/react";
+import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
 
 export default function RootLayout({
   children,
@@ -154,6 +172,7 @@ export default function RootLayout({
                 </div>
             </div>
             <Analytics />
+            <PWAUpdatePrompt />
         </ThemeProvider>
       </body>
     </html>

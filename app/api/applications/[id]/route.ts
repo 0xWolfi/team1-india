@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { sendEmail, getApprovalEmailTemplate, getRejectionEmailTemplate } from "@/lib/email";
+import { notificationManager } from "@/lib/notificationManager";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -47,6 +48,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       const programTitle = existingApplication.guide?.title || 'our program';
 
       if (applicantEmail) {
+        // 1. Send Email
         if (status === 'APPROVED') {
           const emailHtml = getApprovalEmailTemplate(applicantName, programTitle);
 
@@ -66,6 +68,38 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         }
 
         console.log(`Email sent to ${applicantEmail} for status: ${status}`);
+
+        // 2. Send Push Notification
+        try {
+          // Find member by email to get ID
+          const member = await prisma.member.findUnique({
+            where: { email: applicantEmail },
+            select: { id: true }
+          });
+
+          if (member) {
+            const event = status === 'APPROVED' ? 'application_approved' : 'application_rejected';
+            const title = status === 'APPROVED' ? 'Application Approved! 🎉' : 'Application Update';
+            const body = status === 'APPROVED' 
+              ? `Congratulations! Your application for ${programTitle} has been approved.`
+              : `There is an update on your application for ${programTitle}. Check your email for details.`;
+
+            await notificationManager.send({
+              userId: member.id,
+              event,
+              title,
+              body,
+              data: {
+                id: application.id,
+                url: `/member/programs/${existingApplication.guideId || ''}` // Redirect to program page
+              }
+            });
+            console.log(`Push notification sent to ${member.id}`);
+          }
+        } catch (pushError) {
+          console.error("Failed to send push notification:", pushError);
+          // Don't block response
+        }
       }
     }
 

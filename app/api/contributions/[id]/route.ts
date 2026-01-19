@@ -119,6 +119,59 @@ export async function PATCH(
             // Don't fail the request if email fails
         }
 
+        // Send Push Notification
+        try {
+             // Find member by email to get ID
+             const member = await prisma.member.findUnique({
+                where: { email: contribution.email },
+                select: { id: true }
+             });
+             
+             // If not in Member, check CommunityMember
+             let userId = member?.id;
+             if (!userId) {
+                 // @ts-ignore
+                 const communityMember = await prisma.communityMember.findUnique({
+                     where: { email: contribution.email },
+                     select: { id: true }
+                 });
+                 userId = communityMember?.id;
+             }
+
+             if (userId) {
+                 const event = 'contribution_milestone';
+                 let title = '';
+                 let body = '';
+
+                 if (status === 'approved') {
+                     title = 'Contribution Approved! 🎉';
+                     body = `Your ${contribution.type} contribution has been approved.`;
+                 } else if (status === 'rejected') {
+                     title = 'Contribution Update';
+                     body = `There is an update on your ${contribution.type} contribution.`;
+                 }
+
+                 if (title) {
+                     // Lazy load notificationManager to avoid circular deps if any
+                     const { notificationManager } = await import("@/lib/notificationManager");
+                     
+                     await notificationManager.send({
+                         userId,
+                         event,
+                         title,
+                         body,
+                         data: {
+                             id: contribution.id,
+                             url: '/member/profile?tab=contributions'
+                         }
+                     });
+                     log("INFO", "Push notification sent for contribution", "CONTRIBUTIONS", { userId, status });
+                 }
+             }
+        } catch (pushError) {
+             console.error("Failed to send push notification:", pushError);
+        }
+
         log("INFO", "Contribution status updated", "CONTRIBUTIONS", { 
             contributionId: id,
             status,

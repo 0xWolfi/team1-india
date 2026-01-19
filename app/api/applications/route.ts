@@ -146,6 +146,53 @@ export async function POST(req: NextRequest) {
             }
         }
 
+        // Send Push Notification to Core Admins (Fire and Forget)
+        (async () => {
+             try {
+                 const { notificationManager } = await import("@/lib/notificationManager");
+                 const { prisma } = await import("@/lib/prisma");
+
+                 // Fetch active core members
+                 const admins = await prisma.member.findMany({
+                     where: { status: 'active' }, // Or filter by role/permission if needed
+                     select: { id: true }
+                 });
+
+                 const programTitle = body.guideId ? 'a program' : 'membership'; // Fetch real title if needed but keep it simple for now or use the one fetched above if guideId exists
+                 
+                 // Reuse title if available from email block
+                 let displayTitle = 'New Application Received 📝';
+                 let displayBody = `New application for ${programTitle} from ${userName || applicantEmail}`;
+                 
+                 if (guideId) {
+                      // We fetched guide above in email block, but variable scope is limited. 
+                      // Redoing fetch or structure code better would be ideal, but for now let's just use generic or async fetch if critical.
+                      // Actually, let's keep it generic to avoid double DB hit if possible, or just re-fetch for safety in async block.
+                 }
+
+                 console.log(`Notifying ${admins.length} admins about new application`);
+
+                 const batchSize = 10;
+                 for (let i = 0; i < admins.length; i += batchSize) {
+                     const batch = admins.slice(i, i + batchSize);
+                     await Promise.all(batch.map(admin => 
+                         notificationManager.send({
+                             userId: admin.id,
+                             event: 'application_submitted', // New event type
+                             title: displayTitle,
+                             body: displayBody,
+                             data: {
+                                 url: '/core/applications',
+                                 id: application.id
+                             }
+                         })
+                     ));
+                 }
+             } catch (err) {
+                 console.error("Failed to notify admins of new application:", err);
+             }
+        })();
+
         return NextResponse.json({ success: true, id: application.id });
     } catch (error) {
         console.error("Application Submit Error:", error);

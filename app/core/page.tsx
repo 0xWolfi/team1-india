@@ -250,54 +250,54 @@ export default function CorePage() {
              <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                  <ZapIcon className="w-4 h-4" /> Quick Actions
              </h2>
-             <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:gap-4">
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:gap-4 gap-3">
                  {/* Applications */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <ClipboardList className="w-5 h-5" />
+                 <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
+                     <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                        <ClipboardList className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-white">Applications</span>
+                     <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Applications</span>
                  </button>
 
                  {/* Announcements */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <Megaphone className="w-5 h-5" />
+                 <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
+                     <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                        <Megaphone className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-white">Announcements</span>
+                     <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Announcements</span>
                  </button>
 
                  {/* Attendance */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <Users className="w-5 h-5" />
+                 <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
+                     <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                        <Users className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-white">Attendance</span>
+                     <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Attendance</span>
                  </button>
 
                  {/* Meeting Notes */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <FileText className="w-5 h-5" />
+                 <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
+                     <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                        <FileText className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-white">Meeting Notes</span>
+                     <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Meeting Notes</span>
                  </button>
 
                  {/* New Poll */}
-                 <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
-                     <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <BarChart3 className="w-5 h-5" />
+                 <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
+                     <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                        <BarChart3 className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
-                     <span className="text-sm font-bold text-zinc-400 group-hover:text-white">Vote / Polls</span>
+                     <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Vote / Polls</span>
                  </button>
 
                  {/* Manage Team */}
                  {isSuperAdmin && (
-                     <button className="lg:flex-1 group flex items-center gap-3 p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
-                         <div className="p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                            <Settings className="w-5 h-5" />
+                     <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
+                         <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
+                            <Settings className="w-4 h-4 md:w-5 md:h-5" />
                          </div>
-                         <span className="text-sm font-bold text-zinc-400 group-hover:text-white">Manage Team</span>
+                         <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Manage Team</span>
                      </button>
                  )}
              </div>

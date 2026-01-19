@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import * as z from "zod";
+import { notificationManager } from "@/lib/notificationManager";
 
 const commentSchema = z.object({
   body: z.string().min(1, "Comment cannot be empty"),
@@ -67,13 +68,44 @@ export async function POST(
 
     // If author is null (CommunityMember), add their info manually
     if (!comment.author && communityMember) {
-        return NextResponse.json({
+        // Return response early but continue processing notifications
+        NextResponse.json({
             ...comment,
-            author: {
-                name: communityMember.name,
-                image: null
-            }
+            author: { name: communityMember.name, image: null }
         });
+    }
+
+    // Send Notifications (Fire and Forget)
+    (async () => {
+      try {
+        const experiment = await prisma.experiment.findUnique({
+             where: { id },
+             select: { title: true, createdById: true }
+        });
+
+        // 1. Notify Experiment Creator (if it's not the commenter)
+        if (experiment?.createdById && experiment.createdById !== userId) {
+             const commenterName = coreMember?.name || communityMember?.name || 'Someone';
+             
+             await notificationManager.send({
+                 userId: experiment.createdById,
+                 event: 'experiment_comment',
+                 title: 'New Comment on Experiment',
+                 body: `${commenterName} commented on "${experiment.title}"`,
+                 data: {
+                     url: `/core/experiments/${id}`,
+                     id: comment.id
+                 }
+             });
+        }
+      } catch (err) {
+         console.error("Failed to send comment notification:", err);
+      }
+    })();
+
+    if (!comment.author && communityMember) {
+         // Already handled response above if community member
+         return; // Logic flow adjustment needed or just return standard response if not early return
     }
 
     return NextResponse.json(comment);
