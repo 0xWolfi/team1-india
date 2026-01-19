@@ -62,14 +62,12 @@ export function DashboardCard({
                             src={coverImage!}
                             alt={title}
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                            onError={(e) => {
-                                console.error('Image failed to load:', coverImage);
+                            onError={() => {
                                 setImageError(true);
                             }}
                             onLoad={() => {
                                 setImageError(false);
                             }}
-                            crossOrigin="anonymous"
                         />
                          {/* Visibility Badge (Inset top-right) */}
                         {visibility && (
