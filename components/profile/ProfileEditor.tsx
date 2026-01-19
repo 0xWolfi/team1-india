@@ -119,6 +119,7 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [showToast, setShowToast] = useState(false);
+    const [profileImageError, setProfileImageError] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         xHandle: "",
@@ -128,6 +129,16 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
         discord: "",
         bio: ""
     });
+
+    // Cache-buster for blob URLs
+    const getImageUrl = (url: string | null | undefined): string | undefined => {
+        if (!url) return undefined;
+        if (url.includes('.public.blob.vercel-storage.com')) {
+            const separator = url.includes('?') ? '&' : '?';
+            return `${url}${separator}t=${Date.now()}`;
+        }
+        return url;
+    };
 
     const [selectedState, setSelectedState] = useState("");
     const [selectedCity, setSelectedCity] = useState("");
@@ -248,8 +259,23 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                         {/* Avatar with Glow */}
                         <div className="relative mb-5 group-hover:scale-105 transition-transform duration-500">
                              <div className="absolute inset-0 bg-white/10 blur-2xl rounded-full scale-110" />
-                             {session?.user?.image ? (
-                                <img src={session.user.image} alt="Profile" className="relative w-28 h-28 rounded-full border-4 border-zinc-900 ring-1 ring-white/20 shadow-2xl object-cover" />
+                             {session?.user?.image && !profileImageError ? (
+                                <img 
+                                    src={getImageUrl(session.user.image) || session.user.image} 
+                                    alt="Profile" 
+                                    className="relative w-28 h-28 rounded-full border-4 border-zinc-900 ring-1 ring-white/20 shadow-2xl object-cover" 
+                                    onError={(e) => {
+                                        console.error('[ProfileEditor] Image load failed:', {
+                                            originalUrl: session.user.image,
+                                            actualUrl: getImageUrl(session.user.image),
+                                            error: e
+                                        });
+                                        setProfileImageError(true);
+                                    }}
+                                    onLoad={() => {
+                                        console.log('[ProfileEditor] Image loaded successfully:', session.user.image);
+                                    }}
+                                />
                             ) : (
                                 <div className="relative w-28 h-28 rounded-full bg-zinc-800 flex items-center justify-center border-4 border-zinc-900 ring-1 ring-white/20 shadow-2xl">
                                     <User className="w-10 h-10 text-zinc-500" />

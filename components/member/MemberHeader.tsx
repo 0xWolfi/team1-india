@@ -20,6 +20,16 @@ export function MemberHeader({ user }: MemberHeaderProps) {
     const [profileImageError, setProfileImageError] = useState(false);
     const [mobileProfileImageError, setMobileProfileImageError] = useState(false);
 
+    // Cache-buster for blob URLs
+    const getImageUrl = (url: string | null | undefined): string | undefined => {
+        if (!url) return undefined;
+        if (url.includes('.public.blob.vercel-storage.com')) {
+            const separator = url.includes('?') ? '&' : '?';
+            return `${url}${separator}t=${Date.now()}`;
+        }
+        return url;
+    };
+
     return (
         <>
         <header className="mb-6 md:mb-8 border-b border-white/5 pb-6 md:pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
@@ -49,7 +59,7 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                          {user?.image && !mobileProfileImageError ? (
                             <div className="relative w-8 h-8 rounded-full ring-1 ring-white/10 overflow-hidden">
                                 <Image 
-                                    src={user.image} 
+                                    src={getImageUrl(user.image) || user.image} 
                                     alt="Profile" 
                                     fill
                                     className="object-cover"
@@ -91,7 +101,7 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                     {user?.image && !profileImageError ? (
                         <div className="relative w-10 h-10 rounded-full ring-2 ring-white/10 overflow-hidden">
                             <Image 
-                                src={user.image} 
+                                src={getImageUrl(user.image) || user.image} 
                                 alt="Profile" 
                                 fill
                                 className="object-cover"
