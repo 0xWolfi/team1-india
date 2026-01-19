@@ -1,10 +1,16 @@
 import { ImageResponse } from 'next/og';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // Maskable icons need safe zone padding (at least 10% on each side)
 // Content should be within the center 80% of the icon
 export async function GET() {
+  const logoPath = join(process.cwd(), 'public', 't1-logo.png');
+  const logoData = readFileSync(logoPath);
+  const logoBase64 = logoData.toString('base64');
+
   return new ImageResponse(
     (
       <div
@@ -14,42 +20,27 @@ export async function GET() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #000000 0%, #1a1a2e 100%)',
+          background: '#000000',
         }}
       >
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            // Keep content in safe zone (center 80%)
             width: '80%',
             height: '80%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          <span
+          <img
+            src={`data:image/png;base64,${logoBase64}`}
+            alt="Team1 India"
             style={{
-              fontSize: '160px',
-              fontWeight: 'bold',
-              color: '#ffffff',
-              fontFamily: 'system-ui, sans-serif',
-              letterSpacing: '-4px',
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
             }}
-          >
-            T1
-          </span>
-          <span
-            style={{
-              fontSize: '40px',
-              fontWeight: '600',
-              color: '#818cf8',
-              fontFamily: 'system-ui, sans-serif',
-              marginTop: '-16px',
-            }}
-          >
-            INDIA
-          </span>
+          />
         </div>
       </div>
     ),

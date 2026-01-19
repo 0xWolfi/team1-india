@@ -14,10 +14,14 @@ const bucketGuides = (guides: any[]) => {
     const content: Guide[] = [];
 
     guides.forEach((g) => {
+        const body = g.body as any;
+        const normalizedCoverImage =
+            g.coverImage || body?.coverImage || body?.customFields?.coverImage || null;
+
         const item = {
              id: g.id,
              title: g.title,
-             coverImage: g.coverImage,
+             coverImage: normalizedCoverImage,
              createdAt: g.createdAt,
              updatedAt: g.updatedAt || g.createdAt,
              visibility: g.visibility,

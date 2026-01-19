@@ -174,12 +174,29 @@ export function usePushSubscription(userId?: string) {
   const [isSupported, setIsSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [subscription, setSubscription] = useState<PushSubscriptionData | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const detectMobile = () => {
+    if (typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    const uaMobile = (navigator as any).userAgentData?.mobile;
+    return Boolean(
+      uaMobile ||
+      /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
+    );
+  };
 
   useEffect(() => {
     // Check support
     if (typeof window !== 'undefined' && 'Notification' in window && 'serviceWorker' in navigator) {
-        setIsSupported(true);
-        setPermission(Notification.permission);
+        const mobile = detectMobile();
+        setIsMobile(mobile);
+        if (mobile) {
+          setIsSupported(true);
+          setPermission(Notification.permission);
+        } else {
+          setIsSupported(false);
+        }
     }
   }, []);
 
@@ -205,6 +222,10 @@ export function usePushSubscription(userId?: string) {
         console.error('UserId is required to subscribe');
         return false;
     }
+    if (!isSupported || !isMobile) {
+        console.warn('Push notifications are disabled on desktop.');
+        return false;
+    }
     const result = await pushSubscription.subscribe(userId);
     if (result) {
       setIsSubscribed(true);
@@ -227,6 +248,7 @@ export function usePushSubscription(userId?: string) {
     loading,
     isSupported,
     permission,
+    isMobile,
     subscribe,
     unsubscribe,
     refresh: checkSubscription,

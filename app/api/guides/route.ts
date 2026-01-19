@@ -80,7 +80,18 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    return NextResponse.json(guides);
+    const normalizedGuides = guides.map((guide) => {
+      const body = guide.body as any;
+      const normalizedCoverImage =
+        guide.coverImage || body?.coverImage || body?.customFields?.coverImage || null;
+
+      return {
+        ...guide,
+        coverImage: normalizedCoverImage,
+      };
+    });
+
+    return NextResponse.json(normalizedGuides);
   } catch (error) {
     console.error("Failed to fetch guides:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

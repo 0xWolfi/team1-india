@@ -1,8 +1,14 @@
 import { ImageResponse } from 'next/og';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function GET() {
+  const logoPath = join(process.cwd(), 'public', 't1-logo.png');
+  const logoData = readFileSync(logoPath);
+  const logoBase64 = logoData.toString('base64');
+
   return new ImageResponse(
     (
       <div
@@ -12,41 +18,19 @@ export async function GET() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #000000 0%, #1a1a2e 100%)',
+          background: '#000000',
           borderRadius: '24px',
         }}
       >
-        <div
+        <img
+          src={`data:image/png;base64,${logoBase64}`}
+          alt="Team1 India"
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
+            width: '128px',
+            height: '128px',
+            objectFit: 'contain',
           }}
-        >
-          <span
-            style={{
-              fontSize: '72px',
-              fontWeight: 'bold',
-              color: '#ffffff',
-              fontFamily: 'system-ui, sans-serif',
-              letterSpacing: '-2px',
-            }}
-          >
-            T1
-          </span>
-          <span
-            style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              color: '#818cf8',
-              fontFamily: 'system-ui, sans-serif',
-              marginTop: '-8px',
-            }}
-          >
-            INDIA
-          </span>
-        </div>
+        />
       </div>
     ),
     {
