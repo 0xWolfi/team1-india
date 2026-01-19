@@ -13,6 +13,8 @@ const CreateGuideSchema = z.object({
   audience: z.array(z.string()).optional(),
   body: z.object({
     description: z.string().optional(),
+    markdown: z.string().optional(),
+    // Legacy fields kept for backward compatibility
     kpis: z.array(z.object({
         label: z.string(),
         value: z.string(),
@@ -59,7 +61,23 @@ export async function GET(req: NextRequest) {
     const guides = await prisma.guide.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      include: { createdBy: { select: { email: true, id: true, name: true } } }
+      select: {
+        id: true,
+        type: true,
+        title: true,
+        coverImage: true,
+        body: true,
+        audience: true,
+        formSchema: true,
+        visibility: true,
+        maxSubmissionsPublic: true,
+        maxSubmissionsMember: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        createdById: true,
+        createdBy: { select: { email: true, id: true, name: true } }
+      }
     });
 
     return NextResponse.json(guides);

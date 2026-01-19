@@ -69,6 +69,16 @@ export default async function MemberPage() {
                 deletedAt: null
             },
             orderBy: { createdAt: "desc" },
+            select: {
+                id: true,
+                title: true,
+                coverImage: true,
+                type: true,
+                visibility: true,
+                body: true,
+                createdAt: true,
+                updatedAt: true,
+            }
         }),
         prisma.experiment.findMany({
             where: { deletedAt: null },
