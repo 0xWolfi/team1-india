@@ -45,7 +45,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    return NextResponse.json(guide);
+    const body = guide.body as any;
+    const normalizedCoverImage =
+      guide.coverImage || body?.coverImage || body?.customFields?.coverImage || null;
+
+    return NextResponse.json({
+      ...guide,
+      coverImage: normalizedCoverImage,
+    });
   } catch (error) {
     console.error("Failed to fetch guide:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

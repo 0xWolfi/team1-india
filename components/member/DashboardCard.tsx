@@ -29,6 +29,9 @@ export function DashboardCard({
     className
 }: DashboardCardProps) {
     const [imageError, setImageError] = useState(false);
+    
+    // Check if coverImage is valid (not null, undefined, or empty string)
+    const hasValidImage = coverImage && coverImage.trim() !== '' && !imageError;
 
     // Icon Selection based on Type
     const getIcon = () => {
@@ -52,20 +55,21 @@ export function DashboardCard({
         >
             {/* Image Container */}
             <div className="mb-4 relative shrink-0">
-                {coverImage && !imageError ? (
+                {hasValidImage ? (
                     <div className="relative w-full aspect-[2/1] rounded-lg overflow-hidden bg-zinc-800 border border-white/5">
                         <img
-                            src={coverImage}
+                            key={coverImage} // Force re-render when coverImage changes
+                            src={coverImage!}
                             alt={title}
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                            onError={() => setImageError(true)}
-                            onLoad={(e) => {
-                                // Reset error state if image loads successfully
-                                const target = e.target as HTMLImageElement;
-                                if (target.complete && target.naturalHeight !== 0) {
-                                    setImageError(false);
-                                }
+                            onError={(e) => {
+                                console.error('Image failed to load:', coverImage);
+                                setImageError(true);
                             }}
+                            onLoad={() => {
+                                setImageError(false);
+                            }}
+                            crossOrigin="anonymous"
                         />
                          {/* Visibility Badge (Inset top-right) */}
                         {visibility && (

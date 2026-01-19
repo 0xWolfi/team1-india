@@ -6,13 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell } from 'lucide-react';
 
 export const NotificationPermissionPrompt = ({ userId }: { userId?: string }) => {
-  const { isSupported, permission, subscribe, loading } = usePushSubscription(userId);
+  const { isSupported, permission, subscribe, loading, isMobile } = usePushSubscription(userId);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Show prompt if supported, usually not granted/denied yet (default),
     // and hasn't been dismissed recently (can check local storage)
-    if (isSupported && permission === 'default') {
+    if (isSupported && isMobile && permission === 'default') {
       const dismissedAt = localStorage.getItem('notification-prompt-dismissed');
       if (!dismissedAt || Date.now() - parseInt(dismissedAt) > 7 * 24 * 60 * 60 * 1000) {
         // Show after a delay
@@ -20,7 +20,7 @@ export const NotificationPermissionPrompt = ({ userId }: { userId?: string }) =>
         return () => clearTimeout(timer);
       }
     }
-  }, [isSupported, permission]);
+  }, [isSupported, isMobile, permission]);
 
   const handleSubscribe = async () => {
     await subscribe();
@@ -32,7 +32,7 @@ export const NotificationPermissionPrompt = ({ userId }: { userId?: string }) =>
     localStorage.setItem('notification-prompt-dismissed', Date.now().toString());
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || !isMobile) return null;
 
   return (
     <AnimatePresence>
