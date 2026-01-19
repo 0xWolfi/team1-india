@@ -14,28 +14,65 @@ export async function GET(request: Request) {
     if (!access.authorized) return access.response!;
 
     try {
+        const { searchParams } = new URL(request.url);
+        const page = parseInt(searchParams.get('page') || '1');
+        const limit = parseInt(searchParams.get('limit') || '50');
+        const search = searchParams.get('search') || '';
+        const visibility = searchParams.get('visibility') || 'ALL';
+        const offset = (page - 1) * limit;
+
         // @ts-ignore
         const role = session.user.role;
         
         // Filter playbooks based on user role and visibility
-        const whereClause: any = { deletedAt: null };
+        const whereClause: any = { 
+            deletedAt: null,
+            ...(search && {
+                OR: [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { description: { contains: search, mode: 'insensitive' } }
+                ]
+            })
+        };
         
         // Members can only see MEMBER and PUBLIC playbooks
         // CORE can see all playbooks
         if (role === 'MEMBER') {
             whereClause.visibility = { in: ['MEMBER', 'PUBLIC'] };
         }
-        // CORE users can see all (no additional filter)
 
-        const playbooks = await prisma.playbook.findMany({
-            where: whereClause,
-            orderBy: { updatedAt: 'desc' },
-            include: {
-                createdBy: { select: { email: true, id: true } },
-                lockedBy: { select: { email: true, id: true } }
+        // Apply Visibility Filter if requested (and allowed)
+        if (visibility !== 'ALL') {
+             if (role === 'MEMBER' && visibility === 'CORE') {
+                 // Member asking for CORE -> Deny/Empty
+                 return NextResponse.json({ data: [], pagination: { total: 0, page, limit, totalPages: 0 } });
+             }
+             whereClause.visibility = visibility;
+        }
+
+        const [playbooks, total] = await Promise.all([
+            prisma.playbook.findMany({
+                where: whereClause,
+                orderBy: { updatedAt: 'desc' },
+                take: limit,
+                skip: offset,
+                include: {
+                    createdBy: { select: { email: true, id: true } },
+                    lockedBy: { select: { email: true, id: true } }
+                }
+            }),
+            prisma.playbook.count({ where: whereClause })
+        ]);
+
+        return NextResponse.json({
+            data: playbooks,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
             }
         });
-        return NextResponse.json(playbooks);
     } catch (error) {
         log("ERROR", "Failed to fetch playbooks", "PLAYBOOKS", {
             email: session?.user?.email || "unknown"

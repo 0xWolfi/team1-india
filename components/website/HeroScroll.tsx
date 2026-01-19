@@ -73,13 +73,15 @@ export const HeroScroll = () => {
   }, []);
 
   return (
-    <div
+    <header
       id="hero"
       className="min-h-[100svh] md:h-[200vh] relative"
       ref={containerRef}
+      role="banner"
+      aria-label="Team1 India Hero Section"
     >
       <div className="sticky top-0 min-h-[100svh] md:h-screen flex items-center justify-center py-6 md:py-20 overflow-hidden">
-        <div
+        <section
           className="w-full relative z-10 flex flex-col items-center justify-center md:justify-start h-full"
           style={{
             perspective: "1000px",
@@ -92,9 +94,9 @@ export const HeroScroll = () => {
             )}
           </div>
           <HeroActions translate={translate} isDesktop={isDesktop} />
-        </div>
+        </section>
       </div>
-    </div>
+    </header>
   );
 };
 
@@ -103,13 +105,16 @@ export const Header = ({ scale, translate, isDesktop }: { scale: MotionValue<num
     <motion.div 
       style={isDesktop ? { scale, translateY: translate } : {}}
       className="max-w-5xl mx-auto text-center px-4 md:px-8 mt-0 md:mt-4 mb-6 md:mb-4 origin-center"
+      role="presentation"
     >
-      <h1 className="text-4xl sm:text-5xl md:text-8xl font-bold text-white tracking-tighter mb-4 md:mb-2">
-        Team1 India
-      </h1>
-      <p className="text-base sm:text-lg md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed md:leading-tight px-2">
-        building communities, onboarding developers, and empowering founders to scale within the avalanche ecosystem.
-      </p>
+      <hgroup>
+        <h1 className="text-4xl sm:text-5xl md:text-8xl font-bold text-white tracking-tighter mb-4 md:mb-2 text-balance">
+          Team1 India
+        </h1>
+        <p className="text-base sm:text-lg md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed md:leading-tight px-2 text-balance">
+          The premier builder community and accelerator for the <strong>Avalanche Ecosystem</strong> in India.
+        </p>
+      </hgroup>
     </motion.div>
   );
 };
@@ -145,11 +150,12 @@ export const Card = ({
                  alt="Video Thumbnail" 
                  fill
                  priority
+                 sizes="(max-width: 768px) 100vw, 80vw"
                  className="absolute inset-0 object-cover object-bottom"
                />
                <video 
                   ref={videoRef}
-                  src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/hero-video.mp4"}
+                  src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/hero-video.webm"}
                   loop
                   playsInline
                   preload="auto"
@@ -172,32 +178,32 @@ export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<n
     >
        {/* Ensure z-50 and pointer-events-auto to stay on top */}
         <div className="flex items-center gap-4">
-            <Link href="/public" className="px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black">
-                Guidebook
+            <Link href="/public" className="group px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black">
+                <span className="block transition-transform duration-200 group-hover:scale-110">Guidebook</span>
             </Link>
             <button 
                 onClick={() => signIn('google', { callbackUrl: '/access-check' })}
-                className="px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black"
+                className="group px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black"
             >
-                Members
+                <span className="block transition-transform duration-200 group-hover:scale-110">Members</span>
             </button>
         </div>
 
         <div className="w-px h-8 bg-white/10 hidden md:block"></div>
 
         <div className="flex items-center gap-4">
-            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <Instagram className="w-5 h-5" />
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <Linkedin className="w-5 h-5" />
             </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-brand-500 transition-colors hover:scale-110 transform duration-200">
+            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <Send className="w-5 h-5" /> {/* Telegram */}
             </a>
         </div>

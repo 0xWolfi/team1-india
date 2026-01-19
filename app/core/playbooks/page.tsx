@@ -36,6 +36,10 @@ export default function PlaybooksPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [visibilityFilter, setVisibilityFilter] = useState<'ALL' | 'CORE' | 'MEMBER' | 'PUBLIC'>('ALL');
     const [showFilterMenu, setShowFilterMenu] = useState(false);
+    
+    // Pagination State
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -47,12 +51,27 @@ export default function PlaybooksPage() {
         return () => window.removeEventListener('click', handleClickOutside);
     }, []);
 
-    const fetchPlaybooks = () => {
+    const fetchPlaybooks = (targetPage = 1) => {
         setIsLoading(true);
-        fetch('/api/playbooks')
+        const params = new URLSearchParams({
+            page: targetPage.toString(),
+            limit: '50',
+            search: searchTerm,
+            visibility: visibilityFilter
+        });
+
+        fetch(`/api/playbooks?${params.toString()}`)
             .then(res => res.json())
             .then(data => {
-                setPlaybooks(data);
+                if (data.data) {
+                    setPlaybooks(data.data);
+                    setTotalPages(data.pagination.totalPages);
+                    setPage(data.pagination.page);
+                } else {
+                    // Fallback for unexpected format (legacy array)
+                    setPlaybooks(Array.isArray(data) ? data : []);
+                    setTotalPages(1);
+                }
                 setIsLoading(false);
             })
             .catch(err => {
@@ -61,9 +80,14 @@ export default function PlaybooksPage() {
             });
     };
 
+    // Debounce search and refetch on filter change
     useEffect(() => {
-        fetchPlaybooks();
-    }, []);
+        const timer = setTimeout(() => {
+            fetchPlaybooks(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchTerm, visibilityFilter]);
+
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [newTitle, setNewTitle] = useState("");
@@ -115,11 +139,7 @@ export default function PlaybooksPage() {
         setDeleteId(null);
     };
 
-    const filtered = playbooks.filter(p => {
-        const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFilter = visibilityFilter === 'ALL' || p.visibility === visibilityFilter;
-        return matchesSearch && matchesFilter;
-    });
+    const filtered = playbooks; // Server-side filtering is now active
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const userPerms = (session?.user as any)?.permissions || {};
@@ -464,6 +484,31 @@ export default function PlaybooksPage() {
                          </div>
                      ))}
              </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-8 px-2 border-t border-white/5 pt-4 mb-20">
+                    <div className="text-xs text-zinc-500">
+                        Page {page} of {totalPages}
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            disabled={page <= 1 || isLoading}
+                            onClick={() => fetchPlaybooks(page - 1)}
+                            className="px-4 py-2 rounded-lg bg-zinc-900 border border-white/10 text-xs font-bold hover:bg-zinc-800 disabled:opacity-50 transition-colors text-white"
+                        >
+                            Previous
+                        </button>
+                        <button
+                            disabled={page >= totalPages || isLoading}
+                            onClick={() => fetchPlaybooks(page + 1)}
+                            className="px-4 py-2 rounded-lg bg-zinc-900 border border-white/10 text-xs font-bold hover:bg-zinc-800 disabled:opacity-50 transition-colors text-white"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
 
              </div>
 

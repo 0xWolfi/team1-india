@@ -50,9 +50,9 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                                     <User className="w-3.5 h-3.5 text-zinc-400" />
                             </div>
                         )}
-                         <button 
+                        <button 
                             onClick={() => signOut({ callbackUrl: '/public' })}
-                            className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/10 flex items-center justify-center text-red-400"
+                            className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 hover:text-red-400 transition-colors hover:bg-red-500/20"
                         >
                             <LogOut className="w-3.5 h-3.5" />
                         </button>
@@ -92,7 +92,7 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                     </Link>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}
-                        className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 hover:border-red-500/30 transition-all flex items-center justify-center text-red-400 hover:text-red-300"
+                        className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center text-red-500 hover:text-red-400"
                         title="Logout"
                     >
                         <LogOut className="w-4 h-4" />

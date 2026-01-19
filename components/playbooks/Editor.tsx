@@ -8,6 +8,7 @@ import { BlockNoteView } from "@blocknote/mantine";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { Block } from "@blocknote/core";
 import { Eye, Code } from "lucide-react";
+import { upload } from "@vercel/blob/client";
 import { cn } from "@/lib/utils";
 
 interface EditorProps {
@@ -40,16 +41,14 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
         })(),
         uploadFile: async (file: File) => {
             try {
-                const formData = new FormData();
-                formData.append('file', file);
-                const response = await fetch('/api/upload', { method: 'POST', body: formData });
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.url;
-                }
-                return "https://via.placeholder.com/1000x400?text=Upload+Failed";
+                const newBlob = await upload(file.name, file, {
+                    access: 'public',
+                    handleUploadUrl: '/api/upload/token',
+                });
+                return newBlob.url;
             } catch (error) {
-                return "https://via.placeholder.com/1000x400?text=Error";
+                console.error("Upload failed", error);
+                return "https://via.placeholder.com/1000x400?text=Upload+Failed";
             }
         }
     });
@@ -129,21 +128,18 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                 setMarkdownContent(newTextWithPlaceholder);
 
                 // Upload
+                // Upload
                 try {
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                    const newBlob = await upload(file.name, file, {
+                        access: 'public',
+                        handleUploadUrl: '/api/upload/token',
+                    });
                     
-                    if (res.ok) {
-                        const data = await res.json();
-                        const finalImageMarkdown = `![${file.name}](${data.url})`;
-                        setMarkdownContent(prev => prev.replace(placeholder, finalImageMarkdown));
-                    } else {
-                         setMarkdownContent(prev => prev.replace(placeholder, `[Upload Failed]`));
-                    }
+                    const finalImageMarkdown = `![${file.name}](${newBlob.url})`;
+                    setMarkdownContent(prev => prev.replace(placeholder, finalImageMarkdown));
                 } catch (err) {
                     console.error(err);
-                    setMarkdownContent(prev => prev.replace(placeholder, `[Upload Error]`));
+                    setMarkdownContent(prev => prev.replace(placeholder, `[Upload Failed]`));
                 }
             }
         }

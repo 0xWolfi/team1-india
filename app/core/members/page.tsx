@@ -32,12 +32,23 @@ export default function CommunityMembersPage() {
     const userPermissions = (session?.user as any)?.permissions || {};
     const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
 
-    const refreshMembers = () => {
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const refreshMembers = (targetPage = 1) => {
         setIsLoading(true);
-        fetch('/api/community-members')
+        fetch(`/api/community-members?page=${targetPage}&limit=50`)
             .then(res => res.json())
             .then(data => {
-                setMembers(data);
+                // Determine structure: paginated or legacy array
+                if (Array.isArray(data)) {
+                    setMembers(data); // Fallback for legacy
+                    setTotalPages(1);
+                } else {
+                    setMembers(data.data);
+                    setTotalPages(data.pagination.totalPages);
+                    setPage(data.pagination.page);
+                }
                 setIsLoading(false);
             })
             .catch(err => {
@@ -194,7 +205,7 @@ export default function CommunityMembersPage() {
                                 </td>
                                 <td className="p-4">
                                      {member.telegram ? (
-                                        <span className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
+                                        <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
                                     ) : (
                                         <span className="text-zinc-700">-</span>
                                     )}
@@ -210,7 +221,7 @@ export default function CommunityMembersPage() {
                                         {isSuperAdmin && (
                                             <button 
                                                 onClick={() => setViewingMember(member)}
-                                                className="p-1.5 rounded-md hover:bg-indigo-500/10 text-zinc-600 hover:text-indigo-400 transition-colors"
+                                                className="p-1.5 rounded-md hover:bg-white/10 text-zinc-600 hover:text-white transition-colors"
                                                 title="View Member Details"
                                             >
                                                 <Eye className="w-4 h-4" />
@@ -229,6 +240,29 @@ export default function CommunityMembersPage() {
                         ))}
                     </tbody>
                 </table>
+             </div>
+             
+             {/* Pagination Controls */}
+             <div className="flex items-center justify-between mt-4 px-2">
+                 <div className="text-xs text-zinc-500">
+                     Page {page} of {totalPages}
+                 </div>
+                 <div className="flex gap-2">
+                     <button
+                         disabled={page <= 1 || isLoading}
+                         onClick={() => refreshMembers(page - 1)}
+                         className="px-3 py-1 rounded bg-zinc-900 border border-white/10 text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition-colors"
+                     >
+                         Previous
+                     </button>
+                     <button
+                         disabled={page >= totalPages || isLoading}
+                         onClick={() => refreshMembers(page + 1)}
+                         className="px-3 py-1 rounded bg-zinc-900 border border-white/10 text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition-colors"
+                     >
+                         Next
+                     </button>
+                 </div>
              </div>
 
              <AddCommunityMemberModal 

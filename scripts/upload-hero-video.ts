@@ -13,14 +13,14 @@ import { join } from "path";
 
 async function uploadHeroVideo() {
     try {
-        const videoPath = join(process.cwd(), "public", "hero-video.mp4");
+        const videoPath = join(process.cwd(), "public", "hero-video.webm");
         
         console.log("Reading video file...");
         const videoBuffer = readFileSync(videoPath);
-        const videoFile = new File([videoBuffer], "hero-video.mp4", { type: "video/mp4" });
+        const videoFile = new File([videoBuffer], "hero-video.webm", { type: "video/webm" });
 
         console.log("Uploading to Vercel Blob Storage...");
-        const blob = await put("hero-video.mp4", videoFile, {
+        const blob = await put("hero-video.webm", videoFile, {
             access: 'public',
             addRandomSuffix: false,
             cacheControlMaxAge: 31536000, // Cache for 1 year

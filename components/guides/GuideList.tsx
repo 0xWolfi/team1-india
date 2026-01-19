@@ -196,7 +196,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                 
                                 {/* Glowing Effect on Hover (Grid only) */}
                                 {viewMode === "grid" && (
-                                    <div className="absolute -inset-2 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
+                                    <div className="absolute -inset-2 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
                                 )}
 
                                 {/* Card Content */}
@@ -222,14 +222,14 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                             {/* Badges Overlay on Image */}
                                             <div className="absolute top-4 right-4 flex gap-2">
                                                 {doc.lockedBy && (
-                                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-red-500/20 text-[10px] uppercase tracking-wider font-bold text-red-500">
+                                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] uppercase tracking-wider font-bold text-zinc-400">
                                                         <Lock className="w-3 h-3" />
                                                         Locked
                                                     </div>
                                                 )}
                                                 <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border backdrop-blur-md text-[10px] uppercase tracking-wider font-bold ${
                                                     doc.visibility === "PUBLIC" ? "bg-black/60 border-white/10 text-zinc-300" :
-                                                    doc.visibility === "CORE" ? "bg-black/60 border-red-500/20 text-red-400" :
+                                                    doc.visibility === "CORE" ? "bg-black/60 border-white/10 text-white" :
                                                     "bg-black/60 border-white/10 text-zinc-400"
                                                 }`}>
                                                     {doc.visibility === "PUBLIC" && <Globe className="w-3 h-3" />}
@@ -246,7 +246,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                         {viewMode === "grid" ? (
                                             <>
                                                 <div className="p-4 flex items-start justify-between gap-4 mb-2">
-                                                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-red-400 transition-colors">
+                                                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-zinc-200 transition-colors">
                                                         {doc.title}
                                                     </h3>
                                                     <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white group-hover:bg-zinc-700 transition-all flex items-center gap-2">
@@ -270,7 +270,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                         ) : (
                                             <>
                                                 <div className="flex items-center justify-between mb-2">
-                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-red-400 transition-all duration-300">
+                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-zinc-200 transition-all duration-300">
                                                         {doc.title}
                                                     </h3>
                                                     
@@ -282,7 +282,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                                         )}
                                                         <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
                                                             doc.visibility === "PUBLIC" ? "bg-zinc-800/50 border-white/10 text-zinc-300" :
-                                                            doc.visibility === "CORE" ? "bg-red-500/10 border-red-500/20 text-red-400" :
+                                                            doc.visibility === "CORE" ? "bg-zinc-800/50 border-white/20 text-white" :
                                                             "bg-zinc-800/50 border-white/5 text-zinc-500"
                                                         }`}>
                                                             {doc.visibility}

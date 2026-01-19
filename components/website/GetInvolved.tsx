@@ -5,7 +5,7 @@ export function GetInvolved() {
   return (
     <section id="involved" className="py-10 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10 flex justify-center">
-        <div className="max-w-4xl w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
+        <div className="max-w-5xl w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 md:p-12 text-center shadow-2xl">
             <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">
             Ready to Make an Impact?
             </h2>
@@ -13,11 +13,11 @@ export function GetInvolved() {
             Join a community of builders, innovators, and change-makers. Whether you are a student, professional, or partner, there is a place for you.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/public" className="px-8 py-4 bg-white text-black text-lg font-bold rounded-xl hover:bg-brand-500 hover:text-white transition-all w-full sm:w-auto shadow-lg shadow-white/10 hover:shadow-brand-500/20">
-                    Guidebook
+                <Link href="/public" className="group px-8 py-4 bg-white text-black text-lg font-bold rounded-xl hover:bg-zinc-200 hover:text-black transition-transform w-full sm:w-auto shadow-lg shadow-white/10 hover:shadow-white/20">
+                    <span className="block transition-transform duration-200 group-hover:scale-110">Guidebook</span>
                 </Link>
-                <Link href="#contact" className="px-8 py-4 bg-transparent border border-white/20 text-white text-lg font-bold rounded-xl hover:border-brand-500/50 hover:text-brand-400 transition-all w-full sm:w-auto">
-                    Contact Us
+                <Link href="mailto:hello@team1india.com" className="group px-8 py-4 bg-transparent border border-white/20 text-white text-lg font-bold rounded-xl hover:border-white/50 hover:text-zinc-200 transition-transform w-full sm:w-auto">
+                    <span className="block transition-transform duration-200 group-hover:scale-110">Contact Us</span>
                 </Link>
             </div>
         </div>

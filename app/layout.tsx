@@ -5,15 +5,21 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: 'swap',
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: "Team1 India | Built for impact. Designed for builders.",
+  metadataBase: new URL('https://team1india.com'),
+  title: {
+    default: "Team1 India | Built for impact. Designed for builders.",
+    template: "%s | Team1 India"
+  },
   description: "From idea to scale, Team1India provides the infrastructure, network, and resources you need to build the future.",
   keywords: ["Team1 India", "Startup Accelerator", "Developer Community", "Hackathons", "Mentorship", "India Tech"],
   openGraph: {
@@ -41,7 +47,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "./providers";
-import { Component as EtheralBackground } from "@/components/ui/etheral-shadow";
+import { DynamicBackground } from "@/components/ui/DynamicBackground";
 
 import { Analytics } from "@vercel/analytics/react";
 
@@ -61,16 +67,88 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            <div className="relative text-white min-h-screen">
+            <div className="relative text-white min-h-[100svh]">
                 <div className="fixed inset-0 z-0 pointer-events-none">
-                    <EtheralBackground
-                        color="rgba(128, 128, 128, 0.5)" // Slightly transparent gray
-                        animation={{ scale: 100, speed: 90 }}
-                        noise={{ opacity: 0.2, scale: 1.2 }} // Reduced noise opacity for background
-                        sizing="fill"
-                    />
-
+                    <DynamicBackground />
                 </div>
+                {/* JSON-LD Structured Data */}
+                {/* JSON-LD Structured Data for Knowledge Graph & AI Agents */}
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            "@context": "https://schema.org",
+                            "@graph": [
+                                {
+                                    "@type": "Organization",
+                                    "@id": "https://team1india.com/#organization",
+                                    "name": "Team1 India",
+                                    "url": "https://team1india.com",
+                                    "logo": {
+                                        "@type": "ImageObject",
+                                        "url": "https://team1india.com/logo.png",
+                                        "width": 512,
+                                        "height": 512
+                                    },
+                                    "sameAs": [
+                                        "https://twitter.com/Team1India",
+                                        "https://www.linkedin.com/company/team1india",
+                                        "https://github.com/Team1India",
+                                        "https://t.me/Team1India"
+                                    ],
+                                    "description": "The premier builder community and accelerator for the Avalanche Blockchain ecosystem in India.",
+                                    "knowsAbout": [
+                                        "Avalanche Blockchain",
+                                        "Web3 Development",
+                                        "Startup Acceleration",
+                                        "Venture Capital",
+                                        "Hackathons"
+                                    ],
+                                    "areaServed": {
+                                        "@type": "Country",
+                                        "name": "India"
+                                    },
+                                    "memberOf": {
+                                        "@type": "Organization",
+                                        "name": "Avalanche Ecosystem",
+                                        "url": "https://www.avax.network"
+                                    },
+                                    "contactPoint": {
+                                        "@type": "ContactPoint",
+                                        "contactType": "partnerships",
+                                        "email": "hello@team1india.com"
+                                    }
+                                },
+                                {
+                                    "@type": "WebSite",
+                                    "@id": "https://team1india.com/#website",
+                                    "url": "https://team1india.com",
+                                    "name": "Team1 India Platform",
+                                    "description": "Built for impact. Designed for builders.",
+                                    "publisher": {
+                                        "@id": "https://team1india.com/#organization"
+                                    },
+                                    "inLanguage": "en-US"
+                                },
+                                {
+                                    "@type": "SoftwareApplication",
+                                    "name": "Team1 India Dashboard",
+                                    "applicationCategory": "DeveloperApplication",
+                                    "operatingSystem": "Web",
+                                    "offers": {
+                                        "@type": "Offer",
+                                        "price": "0",
+                                        "priceCurrency": "USD"
+                                    },
+                                    "description": "Platform for developers to find teammates, grants, and mentorship.",
+                                    "author": {
+                                        "@id": "https://team1india.com/#organization"
+                                    }
+                                }
+                            ]
+                        })
+                    }}
+                />
                 <div className="relative z-10">
                     {children}
                 </div>

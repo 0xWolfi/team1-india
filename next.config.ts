@@ -47,6 +47,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       {
         protocol: 'https',
@@ -60,7 +61,20 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'jvribvzirutackel.public.blob.vercel-storage.com',
+      },
     ],
+  },
+  experimental: {
+    staleTimes: {
+      dynamic: 30, // Cache dynamic routes for 30s client-side
+      static: 180, // Cache static routes for 3m client-side
+    },
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
   async headers() {
     return [

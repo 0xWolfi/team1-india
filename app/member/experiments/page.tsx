@@ -202,10 +202,10 @@ function ExperimentCard({ exp }: { exp: Experiment }) {
 
 function ExperimentRow({ exp }: { exp: Experiment }) {
     const stageColors: Record<string, string> = {
-        PROPOSED: "bg-zinc-800 text-zinc-300 border-zinc-700",
-        DISCUSSION: "bg-zinc-100 text-black border-zinc-200",
-        APPROVED: "bg-white text-black border-white",
-        REJECTED: "bg-zinc-900 text-zinc-500 border-zinc-800 line-through",
+        PROPOSED: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+        DISCUSSION: "bg-blue-500/10 border-blue-500/20 text-blue-400",
+        APPROVED: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+        REJECTED: "bg-red-500/10 text-red-500 border-red-500/20 line-through",
     };
 
     return (

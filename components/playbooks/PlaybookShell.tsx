@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, X, Image as ImageIcon, Loader2, Copy, Check } from "lucide-react";
+import { upload } from "@vercel/blob/client";
 import { HelpfulWidget } from "./HelpfulWidget";
 import { Footer } from "@/components/website/Footer";
 import { cn } from "@/lib/utils";
@@ -110,16 +111,11 @@ export function PlaybookShell({
         if (!onCoverImageChange) return;
 
         try {
-            const formData = new FormData();
-            formData.append('file', croppedBlob, 'cover.jpg'); 
-            
-            const res = await fetch('/api/upload', { method: 'POST', body: formData });
-            if (res.ok) {
-                const data = await res.json();
-                onCoverImageChange(data.url);
-            } else {
-                alert("Upload failed");
-            }
+            const newBlob = await upload('cover.jpg', croppedBlob, {
+                access: 'public',
+                handleUploadUrl: '/api/upload/token',
+            });
+            onCoverImageChange(newBlob.url);
         } catch (err) {
             console.error(err);
             alert("Upload error");

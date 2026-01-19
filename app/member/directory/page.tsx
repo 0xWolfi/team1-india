@@ -132,7 +132,7 @@ export default function MemberDirectoryPage() {
                                         href={`mailto:${member.email}`}
                                         className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group/item"
                                     >
-                                        <Mail className="w-4 h-4 text-zinc-600 group-hover/item:text-blue-400 transition-colors" />
+                                        <Mail className="w-4 h-4 text-zinc-600 group-hover/item:text-white transition-colors" />
                                         <span className="truncate">{member.email}</span>
                                     </a>
                                 )}
@@ -158,7 +158,7 @@ export default function MemberDirectoryPage() {
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group/item"
                                     >
-                                        <Send className="w-4 h-4 text-zinc-600 group-hover/item:text-blue-400 transition-colors" />
+                                        <Send className="w-4 h-4 text-zinc-600 group-hover/item:text-white transition-colors" />
                                         <span>{member.telegram}</span>
                                     </a>
                                 )}

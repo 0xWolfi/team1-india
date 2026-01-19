@@ -83,7 +83,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                             onClick={() => addField(ft.type)}
                             className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-900/50 border border-white/5 rounded-xl hover:bg-zinc-800 hover:border-white/20 transition-all group"
                         >
-                            <div className="p-2 rounded-full bg-white/5 group-hover:bg-indigo-500/20 group-hover:text-indigo-400 transition-colors text-zinc-400">
+                            <div className="p-2 rounded-full bg-white/5 group-hover:bg-zinc-800 group-hover:text-white transition-colors text-zinc-400">
                                 {ft.icon}
                             </div>
                             <span className="text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">{ft.label}</span>
@@ -99,9 +99,9 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                 {fields.map((field, index) => {
                     const isDefault = (field as any).isDefault || field.key === 'name' || field.key === 'email';
                     return (
-                    <div key={field.id} className={`group relative bg-zinc-900/60 border ${isDefault ? 'border-indigo-500/30' : 'border-white/5'} rounded-xl p-4 transition-all hover:bg-zinc-900 hover:border-white/10`}>
+                    <div key={field.id} className={`group relative bg-zinc-900/60 border ${isDefault ? 'border-white/10' : 'border-white/5'} rounded-xl p-4 transition-all hover:bg-zinc-900 hover:border-white/10`}>
                         {isDefault && (
-                            <div className="absolute top-2 right-2 px-2 py-1 bg-indigo-500/20 border border-indigo-500/30 rounded text-[10px] font-bold text-indigo-400 uppercase">
+                            <div className="absolute top-2 right-2 px-2 py-1 bg-zinc-800 border border-white/10 rounded text-[10px] font-bold text-zinc-500 uppercase">
                                 Default
                             </div>
                         )}
@@ -136,7 +136,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                             }}
                                             placeholder="e.g. What is your experience?"
                                             readOnly={isDefault}
-                                            className={`w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500 transition-colors ${isDefault ? 'cursor-not-allowed opacity-70' : ''}`}
+                                            className={`w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-white/20 transition-colors ${isDefault ? 'cursor-not-allowed opacity-70' : ''}`}
                                         />
                                         <p className="text-[9px] text-zinc-600 mt-1">The actual question the applicant will see.</p>
                                     </div>
@@ -161,7 +161,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                                 value={field.options?.join(', ') || ''}
                                                 onChange={(e) => updateField(index, { options: e.target.value.split(',').map(s => s.trim()) })}
                                                 placeholder="Option 1, Option 2, Option 3"
-                                                className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-indigo-500 transition-colors"
+                                                className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-white/20 transition-colors"
                                             />
                                         </div>
                                     )}
@@ -173,7 +173,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                                 checked={field.required}
                                                 onChange={(e) => !isDefault && updateField(index, { required: e.target.checked })}
                                                 disabled={isDefault}
-                                                className="w-4 h-4 rounded bg-black/40 border-white/10 text-indigo-600 focus:ring-indigo-500"
+                                                className="w-4 h-4 rounded bg-black/40 border-white/10 text-white focus:ring-white/20"
                                             />
                                             <span className={`text-xs ${isDefault ? 'text-zinc-600' : 'text-zinc-400'} group-hover/check:text-white transition-colors`}>
                                                 Required Field {isDefault && '(Always Required)'}
@@ -186,7 +186,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                     {!isDefault && (
                                         <button 
                                             onClick={() => removeField(index)}
-                                            className="p-2 text-zinc-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors h-fit"
+                                            className="p-2 text-zinc-600 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors h-fit"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>

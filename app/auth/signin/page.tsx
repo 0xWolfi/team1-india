@@ -22,7 +22,7 @@ function SignInContent() {
     };
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+        <div className="relative min-h-[100svh] w-full flex items-center justify-center overflow-hidden">
              {/* Default background from layout.tsx will show through */}
 
             <motion.div 
