@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { User, LogOut, Settings, Plus } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 import { ContributionModal } from "./ContributionModal";
 
 interface MemberHeaderProps {
@@ -16,6 +17,8 @@ interface MemberHeaderProps {
 
 export function MemberHeader({ user }: MemberHeaderProps) {
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+    const [profileImageError, setProfileImageError] = useState(false);
+    const [mobileProfileImageError, setMobileProfileImageError] = useState(false);
 
     return (
         <>
@@ -43,8 +46,17 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                         >
                             <Settings className="w-3.5 h-3.5" />
                         </Link>
-                         {user?.image ? (
-                            <img src={user.image} alt="Profile" className="w-8 h-8 rounded-full ring-1 ring-white/10" />
+                         {user?.image && !mobileProfileImageError ? (
+                            <div className="relative w-8 h-8 rounded-full ring-1 ring-white/10 overflow-hidden">
+                                <Image 
+                                    src={user.image} 
+                                    alt="Profile" 
+                                    fill
+                                    className="object-cover"
+                                    onError={() => setMobileProfileImageError(true)}
+                                    unoptimized={user.image.startsWith('data:') || user.image.startsWith('blob:')}
+                                />
+                            </div>
                         ) : (
                             <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
                                     <User className="w-3.5 h-3.5 text-zinc-400" />
@@ -76,8 +88,17 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                     submit your contributions
                 </button>
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
-                    {user?.image ? (
-                        <img src={user.image} alt="Profile" className="w-10 h-10 rounded-full ring-2 ring-white/10" />
+                    {user?.image && !profileImageError ? (
+                        <div className="relative w-10 h-10 rounded-full ring-2 ring-white/10 overflow-hidden">
+                            <Image 
+                                src={user.image} 
+                                alt="Profile" 
+                                fill
+                                className="object-cover"
+                                onError={() => setProfileImageError(true)}
+                                unoptimized={user.image.startsWith('data:') || user.image.startsWith('blob:')}
+                            />
+                        </div>
                     ) : (
                         <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center ring-2 ring-white/10">
                                 <User className="w-5 h-5 text-zinc-400" />
