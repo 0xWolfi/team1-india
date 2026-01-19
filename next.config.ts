@@ -147,6 +147,11 @@ const withPWA = require("@ducanh2912/next-pwa").default({
       urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/api\/(core|member|auth)\/.*/i,
       handler: 'NetworkOnly',
     },
+    // Vercel Blob images - always fetch fresh (avoid opaque cached responses)
+    {
+      urlPattern: /^https:\/\/.*\.public\.blob\.vercel-storage\.com\/.*\.(png|jpg|jpeg|svg|gif|webp)$/i,
+      handler: 'NetworkOnly',
+    },
     // Images - CacheFirst with 30 days
     {
       urlPattern: /\.(png|jpg|jpeg|svg|gif|webp)$/i,
