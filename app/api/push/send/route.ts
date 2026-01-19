@@ -3,15 +3,37 @@ import webpush from 'web-push';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 
-// Configure web-push
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT || 'mailto:admin@team1india.com',
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
+// Lazy initialization of VAPID details
+let vapidConfigured = false;
+
+function ensureVapidConfigured() {
+  if (vapidConfigured) return true;
+
+  const publicKey = process.env.VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+
+  if (!publicKey || !privateKey) {
+    return false;
+  }
+
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT || 'mailto:admin@team1india.com',
+    publicKey,
+    privateKey
+  );
+  vapidConfigured = true;
+  return true;
+}
 
 export async function POST(request: NextRequest) {
   try {
+    if (!ensureVapidConfigured()) {
+      return Response.json(
+        { error: 'Push notifications not configured' },
+        { status: 503 }
+      );
+    }
+
     const session = await getServerSession();
     if (!session?.user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
