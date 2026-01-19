@@ -27,6 +27,7 @@ interface GuideDetailProps {
         coverImage?: string;
         body: {
             description: string;
+            markdown?: string;
             kpis?: { label: string; value: string; color?: string }[];
             timeline?: { step: string; duration: string }[];
             rules?: string[];
