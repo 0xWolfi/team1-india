@@ -12,6 +12,13 @@ export default function PWAInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const detectMobile = () => {
+    const ua = navigator.userAgent || "";
+    const uaMobile = (navigator as any).userAgentData?.mobile;
+    return Boolean(uaMobile || /Android|iPhone|iPad|iPod|Mobile/i.test(ua));
+  };
 
   useEffect(() => {
     // Check if already installed (standalone mode)
@@ -20,6 +27,10 @@ export default function PWAInstallPrompt() {
     setIsStandalone(standalone);
 
     if (standalone) return;
+
+    const mobile = detectMobile();
+    setIsMobile(mobile);
+    if (!mobile) return;
 
     // Detect iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -82,7 +93,7 @@ export default function PWAInstallPrompt() {
   };
 
   // Don't show if already installed or prompt shouldn't be shown
-  if (isStandalone || !showPrompt) return null;
+  if (isStandalone || !showPrompt || !isMobile) return null;
 
   // iOS-specific prompt with instructions
   if (isIOS) {
