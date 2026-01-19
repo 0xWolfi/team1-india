@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Team1 India',
     short_name: 'Team1',
     description: 'Community of builders, innovators, and change-makers.',
-    start_url: '/public',  // ✅ Public-first entry point
+    start_url: '/public',
     scope: '/',
     display: 'standalone',
     background_color: '#000000',
@@ -14,23 +14,23 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['productivity', 'business', 'social'],
     icons: [
       {
-        src: '/icons/android-chrome-192x192.png',
+        src: '/pwa-icons/icon-192',
         sizes: '192x192',
         type: 'image/png',
-        purpose: 'any',  // ✅ Standard icon without padding
+        purpose: 'any',
       },
       {
-        src: '/icons/android-chrome-512x512.png',
+        src: '/pwa-icons/icon-512',
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
       },
       {
-        src: '/t1-logo.png',
-        sizes: 'any',
+        src: '/pwa-icons/icon-maskable',
+        sizes: '512x512',
         type: 'image/png',
-        purpose: 'any',
-      }
+        purpose: 'maskable',
+      },
     ],
     shortcuts: [
       {
@@ -45,12 +45,13 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
     screenshots: [
-        {
-            src: "/og-image.png",
-            sizes: "1200x630",
-            type: "image/png",
-            label: "Team1 India Dashboard"
-        }
+      {
+        src: "/pwa-icons/screenshot-narrow",
+        sizes: "1080x1920",
+        type: "image/png",
+        form_factor: "narrow",
+        label: "Team1 India Mobile App"
+      },
     ]
   };
 }
