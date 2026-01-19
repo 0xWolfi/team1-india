@@ -188,7 +188,17 @@ export function MemberDashboard({
 
                 {activeItems.length > 0 ? (
                     <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
-                        {activeItems.slice(0, 6).map((item: any) => (
+                        {activeItems.slice(0, 6).map((item: any) => {
+                            // Debug log for first item
+                            if (activeItems.indexOf(item) === 0) {
+                                console.log('[MemberDashboard] First item data:', {
+                                    id: item.id,
+                                    title: item.title,
+                                    coverImage: item.coverImage,
+                                    type: activeTab
+                                });
+                            }
+                            return (
                             <DashboardCard
                                 key={item.id}
                                 id={item.id}
@@ -199,7 +209,8 @@ export function MemberDashboard({
                                 type={activeTab === 'EVENTS' ? 'EVENT' : activeTab === 'PROGRAMS' ? 'PROGRAM' : 'CONTENT'}
                                 visibility={item.visibility}
                             />
-                        ))}
+                        );
+                        })}
                     </div>
                 ) : (
                     <div className="w-full h-40 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center border-dashed">
