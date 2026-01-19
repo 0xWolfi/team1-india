@@ -23,6 +23,7 @@ export interface TimelineItem {
 
 export interface GuideBody {
     description: string;
+    markdown?: string;
     kpis?: KPI[];
     timeline?: TimelineItem[];
     rules?: string[];
