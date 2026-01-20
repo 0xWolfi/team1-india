@@ -54,7 +54,7 @@ const useInstanceId = (): string => {
     return instanceId;
 };
 
-export function Component({
+export const Component = React.memo(function Component({
     sizing = 'fill',
     color = 'rgba(128, 128, 128, 1)',
     animation,
@@ -107,6 +107,7 @@ export function Component({
                 position: "relative",
                 width: "100%",
                 height: "100%",
+                isolation: "isolate", // Creates a new stacking context
                 ...style
             }}
         >
@@ -114,11 +115,17 @@ export function Component({
                 style={{
                     position: "absolute",
                     inset: -displacementScale,
-                    filter: animationEnabled ? `url(#${id}) blur(4px)` : "none"
+                    filter: animationEnabled ? `url(#${id}) blur(4px)` : "none",
+                    willChange: "filter" // Hint to browser to optimize for filter changes
                 }}
             >
                 {animationEnabled && (
-                    <svg style={{ position: "absolute" }}>
+                    <svg style={{ 
+                        position: "absolute", 
+                        width: 0, 
+                        height: 0, 
+                        pointerEvents: 'none' // Ensure it doesn't block interactions or take up space
+                    }}>
                         <defs>
                             <filter id={id}>
                                 <feTurbulence
@@ -159,7 +166,7 @@ export function Component({
                 <div
                     style={{
                         backgroundColor: color,
-                        maskImage: `url('https://framerusercontent.com/images/ceBGguIpUU8luwByxuQz79t7To.png')`,
+                        maskImage: `url('/assets/background/mask.png')`,
                         maskSize: sizing === "stretch" ? "100% 100%" : "cover",
                         maskRepeat: "no-repeat",
                         maskPosition: "center",
@@ -176,7 +183,7 @@ export function Component({
                     style={{
                         position: "absolute",
                         inset: 0,
-                        backgroundImage: `url("https://framerusercontent.com/images/g0QcWrxr87K0ufOxIUFBakwYA8.png")`,
+                        backgroundImage: `url("/assets/background/noise.png")`,
                         backgroundSize: noise.scale * 200,
                         backgroundRepeat: "repeat",
                         opacity: noise.opacity / 2
@@ -185,4 +192,4 @@ export function Component({
             )}
         </div>
     );
-}
+});
