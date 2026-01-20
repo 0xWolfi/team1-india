@@ -29,9 +29,11 @@ export default function MemberDirectoryPage() {
         try {
             const res = await fetch('/api/community-members');
             if (res.ok) {
-                const data = await res.json();
+                const response = await res.json();
+                // API returns { data: [...], pagination: {...} }
+                const membersData = response.data || response;
                 // Filter to show only active members
-                const activeMembers = data.filter((m: CommunityMember) =>
+                const activeMembers = membersData.filter((m: CommunityMember) =>
                     m.status === 'active'
                 );
                 setMembers(activeMembers);

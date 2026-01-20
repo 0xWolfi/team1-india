@@ -60,7 +60,7 @@ export function getWelcomeEmailTemplate(name: string) {
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            To get started, please complete your profile on our platform:
+            To get started, please complete your profile on our platform within 7 days or your account will be removed from the system:
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
