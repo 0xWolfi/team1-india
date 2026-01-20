@@ -62,11 +62,11 @@ export default function PwaUpdatePrompt() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4">
-      <div className="bg-slate-950/90 backdrop-blur-md border border-slate-800 text-slate-50 p-4 rounded-xl shadow-2xl max-w-sm ring-1 ring-white/10">
+      <div className="bg-white/50 backdrop-blur-xl border border-zinc-200/50 text-zinc-900 p-4 rounded-xl shadow-2xl max-w-sm ring-1 ring-black/5">
         <div className="flex gap-4">
-          <div className="p-2 bg-indigo-500/10 rounded-lg h-fit">
+          <div className="p-2 bg-zinc-100 rounded-lg h-fit">
             <svg 
-              className="w-5 h-5 text-indigo-400" 
+              className="w-5 h-5 text-zinc-900" 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
@@ -75,8 +75,8 @@ export default function PwaUpdatePrompt() {
             </svg>
           </div>
           <div className="flex-1 space-y-1">
-            <h3 className="font-semibold text-sm text-slate-100">Update Available</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h3 className="font-semibold text-sm text-zinc-900">Update Available</h3>
+            <p className="text-xs text-zinc-500 leading-relaxed">
               A new version of the app is ready. Refresh to update.
             </p>
           </div>
@@ -85,14 +85,14 @@ export default function PwaUpdatePrompt() {
         <div className="flex gap-2 mt-4 pl-11">
           <button
             onClick={() => setShowPrompt(false)}
-            className="flex-1 px-3 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors rounded-lg hover:bg-slate-800/50"
+            className="flex-1 px-3 py-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors rounded-lg hover:bg-zinc-100"
             aria-label="Dismiss update notification"
           >
             Dismiss
           </button>
           <button
             onClick={handleUpdate}
-            className="flex-1 px-3 py-2 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-sm shadow-indigo-900/20 transition-all hover:shadow-indigo-900/40"
+            className="flex-1 px-3 py-2 text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg shadow-sm shadow-zinc-900/20 transition-all hover:shadow-zinc-900/40"
           >
             Refresh App
           </button>

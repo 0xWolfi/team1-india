@@ -26,8 +26,8 @@ export async function GET() {
           src={`data:image/png;base64,${logoBase64}`}
           alt="Team1 India"
           style={{
-            width: '128px',
-            height: '128px',
+            width: '80%',
+            height: '80%',
             objectFit: 'contain',
           }}
         />

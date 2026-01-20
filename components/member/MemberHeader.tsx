@@ -1,24 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, LogOut, Settings, Plus } from "lucide-react";
+import { User, LogOut, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { ContributionModal } from "./ContributionModal";
 
-interface MemberHeaderProps {
-    user?: {
-        name?: string | null;
-        image?: string | null;
-        email?: string | null;
-    } | null;
-}
 
-export function MemberHeader({ user }: MemberHeaderProps) {
-    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+
+export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenContribution: () => void }) {
     const [profileImageError, setProfileImageError] = useState(false);
-    const [mobileProfileImageError, setMobileProfileImageError] = useState(false);
 
     // Cache-buster for blob URLs
     const getImageUrl = (url: string | null | undefined): string | undefined => {
@@ -31,7 +22,6 @@ export function MemberHeader({ user }: MemberHeaderProps) {
     };
 
     return (
-        <>
         <header className="mb-6 md:mb-8 border-b border-white/5 pb-6 md:pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
             <div className="flex-1">
                  {/* Mobile Top Row: Title + Actions */}
@@ -41,44 +31,7 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                          <span className="text-[10px] md:text-xs font-mono text-zinc-500 tracking-widest uppercase">Member Portal</span>
                     </div>
 
-                    {/* Mobile Actions (Visible only on mobile) */}
-                    <div className="flex md:hidden items-center gap-2">
-                        <button
-                            onClick={() => setIsContributionModalOpen(true)}
-                            className="px-3 py-1.5 bg-white text-black rounded-lg text-xs font-semibold hover:bg-zinc-200 transition-all flex items-center gap-1.5 shadow-lg shadow-white/5"
-                        >
-                            <Plus className="w-3 h-3" />
-                            Submit
-                        </button>
-                        <Link 
-                            href="/member/profile"
-                            className="w-8 h-8 rounded-full bg-zinc-800/50 border border-white/5 flex items-center justify-center text-zinc-400"
-                        >
-                            <Settings className="w-3.5 h-3.5" />
-                        </Link>
-                         {user?.image && !mobileProfileImageError ? (
-                            <div className="relative w-8 h-8 rounded-full ring-1 ring-white/10 overflow-hidden">
-                                <Image 
-                                    src={getImageUrl(user.image) || user.image} 
-                                    alt="Profile" 
-                                    fill
-                                    className="object-cover"
-                                    onError={() => setMobileProfileImageError(true)}
-                                    unoptimized={user.image.startsWith('data:') || user.image.startsWith('blob:')}
-                                />
-                            </div>
-                        ) : (
-                            <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
-                                    <User className="w-3.5 h-3.5 text-zinc-400" />
-                            </div>
-                        )}
-                        <button 
-                            onClick={() => signOut({ callbackUrl: '/public' })}
-                            className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 hover:text-red-400 transition-colors hover:bg-red-500/20"
-                        >
-                            <LogOut className="w-3.5 h-3.5" />
-                        </button>
-                    </div>
+                    {/* Mobile Actions: HIDDEN (Moved to sticky nav) */}
                  </div>
 
                 <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500">
@@ -92,7 +45,7 @@ export function MemberHeader({ user }: MemberHeaderProps) {
             {/* Desktop Actions (Hidden on mobile) */}
             <div className="hidden md:flex items-center gap-6">
                 <button
-                    onClick={() => setIsContributionModalOpen(true)}
+                    onClick={onOpenContribution}
                     className="px-4 py-2 bg-white text-black rounded-lg text-sm font-bold tracking-wide hover:bg-zinc-200 border border-white/10 shadow-lg shadow-white/5 hover:scale-[1.02] transition-all flex items-center gap-2"
                 >
                     submit your contributions
@@ -131,12 +84,5 @@ export function MemberHeader({ user }: MemberHeaderProps) {
                 </div>
             </div>
         </header>
-
-        <ContributionModal
-            isOpen={isContributionModalOpen}
-            onClose={() => setIsContributionModalOpen(false)}
-            user={user}
-        />
-        </>
     );
 }

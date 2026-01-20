@@ -40,17 +40,16 @@ export const NotificationPermissionPrompt = ({ userId }: { userId?: string }) =>
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 50 }}
-        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-[#111] border border-white/10 rounded-xl shadow-2xl p-4 z-50 overflow-hidden"
+        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-zinc-900/90 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl p-4 z-50 overflow-hidden ring-1 ring-white/10"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 pointer-events-none" />
         
         <div className="flex items-start gap-4 relative">
-          <div className="p-2 bg-primary/20 rounded-lg text-primary">
+          <div className="p-3 bg-white/10 rounded-xl text-white">
             <Bell size={20} />
           </div>
           <div className="flex-1">
-            <h4 className="text-sm font-semibold text-white">Enable Notifications</h4>
-            <p className="text-xs text-white/60 mt-1">
+            <h4 className="text-sm font-bold text-white">Enable Notifications</h4>
+            <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
               Stay updated on your application status, experiments, and community announcements.
             </p>
             
@@ -58,13 +57,13 @@ export const NotificationPermissionPrompt = ({ userId }: { userId?: string }) =>
               <button
                 onClick={handleSubscribe}
                 disabled={loading}
-                className="text-xs font-medium bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-primary/90 transition-colors"
+                className="text-xs font-bold bg-white text-black px-4 py-2 rounded-lg hover:bg-zinc-200 transition-colors"
               >
                 {loading ? 'Enabling...' : 'Enable'}
               </button>
               <button
                 onClick={handleDismiss}
-                className="text-xs font-medium text-white/60 hover:text-white transition-colors"
+                className="text-xs font-bold text-zinc-500 hover:text-white transition-colors"
               >
                 Later
               </button>
@@ -72,7 +71,7 @@ export const NotificationPermissionPrompt = ({ userId }: { userId?: string }) =>
           </div>
           <button 
              onClick={handleDismiss}
-             className="text-white/40 hover:text-white transition-colors"
+             className="text-zinc-500 hover:text-white transition-colors absolute top-0 right-0 p-1"
           >
             ×
           </button>
