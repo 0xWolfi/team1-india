@@ -151,17 +151,23 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
 
             if (res.ok) {
                 setSubmitted(true);
-                setSubmissionMessage('Application submitted successfully! You can apply again after 7 days.');
+                // Different message for EVENT vs other types
+                if (guide.type === 'EVENT') {
+                    setSubmissionMessage('Application submitted successfully!');
+                } else {
+                    setSubmissionMessage('Application submitted successfully! You can apply again after 7 days.');
+                }
                 // Reset form data but keep name and email
                 setFormData({
                     name: userName,
                     email: userEmail
                 });
-                // Reset submitted state after 10 seconds
+                // Reset submitted state - 3 seconds for EVENT, 10 seconds for others
+                const resetTimeout = guide.type === 'EVENT' ? 3000 : 10000;
                 setTimeout(() => {
                     setSubmitted(false);
                     setSubmissionMessage('');
-                }, 10000);
+                }, resetTimeout);
             } else {
                 // Handle 7-day restriction or other errors
                 if (res.status === 429 && data.message) {
@@ -463,7 +469,11 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                         <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                                     </div>
                                     <h4 className="text-white font-bold mb-1">Application Submitted!</h4>
-                                    <p className="text-emerald-400 text-xs">{submissionMessage || 'Your application has been received successfully. You can apply again after 7 days.'}</p>
+                                    <p className="text-emerald-400 text-xs">
+                                        {submissionMessage || (guide.type === 'EVENT' 
+                                            ? 'Your application has been received successfully.' 
+                                            : 'Your application has been received successfully. You can apply again after 7 days.')}
+                                    </p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-4">

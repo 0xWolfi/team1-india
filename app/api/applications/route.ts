@@ -121,7 +121,8 @@ export async function POST(req: NextRequest) {
                             // ⚠️ ADD YOUR 2 EMAIL ADDRESSES HERE ⚠️
                             const NOTIFICATION_EMAILS = [
                                 'sarnavo@team1.network', // Replace with first email
-                                //'email2@example.com'  // Replace with second email
+                                'shriyash.pandey@avalabs.org',
+                                'saranavoss.dev@gmail.com'  // Replace with second email
                             ];
                             
                             // Format submission date
