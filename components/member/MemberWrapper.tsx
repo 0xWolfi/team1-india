@@ -4,6 +4,9 @@ import React from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { Footer } from "@/components/website/Footer";
+import { Team1Logo } from "@/components/Team1Logo";
+import Image from "next/image";
+import { Settings, LogOut } from "lucide-react";
 
 interface MemberWrapperProps {
     children: React.ReactNode;
@@ -93,8 +96,45 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
             <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-black/80 via-black/50 to-transparent pointer-events-none z-0" />
             <div className="fixed -top-[200px] right-0 w-[600px] h-[600px] bg-zinc-900/05 blur-[120px] rounded-full pointer-events-none -z-10" />
 
+            {/* Mobile Sticky Nav (Core-like) */}
+            <div className="md:hidden sticky top-0 z-50 w-full px-6 py-3 bg-black/20 backdrop-blur-xl border-b border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                         <Team1Logo className="w-4 h-4" />
+                     <span className="font-bold text-lg tracking-tight text-white">Team1</span>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                     {session?.user?.image ? (
+                            <div className="relative w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10">
+                                 <Image 
+                                    src={session.user.image} 
+                                    alt="Profile" 
+                                    fill 
+                                    className="object-cover"
+                                 />
+                            </div>
+                        ) : (
+                            <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
+                                 <LogOut className="w-4 h-4 text-zinc-400" /> {/* Fallback icon */}
+                            </div>
+                        )}
+                    <button 
+                        onClick={() => router.push('/member/profile')}
+                        className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400"
+                    >
+                        <Settings className="w-4 h-4" />
+                    </button>
+                    <button 
+                        onClick={() => signOut({ callbackUrl: '/public' })}
+                        className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500"
+                    >
+                        <LogOut className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+
             {/* Content Container */}
-            <main className="relative z-10 animate-in fade-in duration-500 flex-1 pt-24 px-6 md:px-12 container mx-auto">
+            <main className="relative z-10 animate-in fade-in duration-500 flex-1 pt-8 md:pt-24 px-6 md:px-12 container mx-auto">
                 {children}
             </main>
 

@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Team1Logo } from "@/components/Team1Logo";
 
 // Types
 interface ResourceItem {
@@ -195,8 +196,42 @@ export default function CorePage() {
     ];
 
     return (
-    <div className="min-h-[100svh] pt-24 px-6 md:px-12 container mx-auto text-white pb-20">
+    <div className="min-h-[100svh] text-white pb-20">
         
+        {/* Mobile Sticky Nav */}
+        <div className="md:hidden sticky top-0 z-50 w-full px-6 py-3 bg-black/20 backdrop-blur-xl border-b border-white/5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+                     <Team1Logo className="w-4 h-4" />
+                 <span className="font-bold text-lg tracking-tight text-white">Team1</span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+                 {session?.user?.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <div className="relative w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10">
+                             <Image src={session.user.image} alt="Profile" fill className="object-cover" />
+                        </div>
+                    ) : (
+                        <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
+                             <UserIcon className="w-4 h-4 text-zinc-400" />
+                        </div>
+                    )}
+                <Link 
+                    href="/core/profile"
+                    className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400"
+                >
+                    <Settings className="w-4 h-4" />
+                </Link>
+                <button 
+                    onClick={() => signOut({ callbackUrl: '/public' })}
+                    className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500"
+                >
+                    <LogOut className="w-4 h-4" />
+                </button>
+            </div>
+        </div>
+
+        <main className="container mx-auto px-6 md:px-12 md:pt-24 pt-8">
         {/* Header */}
         <header className="mb-12 border-b border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
@@ -212,7 +247,7 @@ export default function CorePage() {
                 </p>
             </div>
             
-            <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6">
                  <div className="hidden md:block">
                      <WorldClock />
                  </div>
@@ -316,6 +351,7 @@ export default function CorePage() {
                 );
             })}
         </div>
+        </main>
     </div>
   );
 }
