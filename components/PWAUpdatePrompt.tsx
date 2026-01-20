@@ -62,7 +62,7 @@ export default function PwaUpdatePrompt() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4">
-      <div className="bg-white/80 backdrop-blur-md border border-zinc-200 text-zinc-900 p-4 rounded-xl shadow-2xl max-w-sm ring-1 ring-black/5">
+      <div className="bg-white/50 backdrop-blur-xl border border-zinc-200/50 text-zinc-900 p-4 rounded-xl shadow-2xl max-w-sm ring-1 ring-black/5">
         <div className="flex gap-4">
           <div className="p-2 bg-zinc-100 rounded-lg h-fit">
             <svg 

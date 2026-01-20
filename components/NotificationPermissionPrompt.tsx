@@ -40,7 +40,7 @@ export const NotificationPermissionPrompt = ({ userId }: { userId?: string }) =>
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 50 }}
-        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white/80 backdrop-blur-md border border-zinc-200 rounded-xl shadow-2xl p-4 z-50 overflow-hidden ring-1 ring-black/5"
+        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white/50 backdrop-blur-xl border border-zinc-200/50 rounded-xl shadow-2xl p-4 z-50 overflow-hidden ring-1 ring-black/5"
       >
         
         <div className="flex items-start gap-4 relative">

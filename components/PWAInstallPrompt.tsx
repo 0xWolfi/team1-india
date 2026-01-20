@@ -109,7 +109,7 @@ export default function PWAInstallPrompt() {
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-sm text-zinc-900">Install Team1 India</h3>
               <p className="text-xs text-zinc-500 mt-1 leading-relaxed">
-                Install this app on your iPhone for quick access and offline support.
+                Install this app on your phone for quick access and offline support.
               </p>
               <div className="mt-3 p-3 bg-zinc-50/50 rounded-lg border border-zinc-100">
                 <p className="text-xs text-zinc-600 flex items-center gap-2">
@@ -151,7 +151,7 @@ export default function PWAInstallPrompt() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in fade-in slide-in-from-bottom-4">
-      <div className="bg-white/80 backdrop-blur-md border border-zinc-200 text-zinc-900 p-4 rounded-xl shadow-2xl max-w-md mx-auto ring-1 ring-black/5">
+      <div className="bg-white/50 backdrop-blur-xl border border-zinc-200/50 text-zinc-900 p-4 rounded-xl shadow-2xl max-w-md mx-auto ring-1 ring-black/5">
         <div className="flex items-start gap-3">
           <div className="p-2 bg-zinc-100 rounded-lg shrink-0">
             <svg className="w-6 h-6 text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
