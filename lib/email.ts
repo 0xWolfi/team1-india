@@ -34,6 +34,42 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
     }
 }
 
+// Event application notification template
+export function getEventApplicationEmailTemplate(
+    recipientName: string,
+    applicantName: string,
+    eventTitle: string,
+    formData: Record<string, any>,
+    submittedAt: string
+) {
+    // Format form fields professionally
+    const formFieldsHtml = Object.entries(formData)
+        .map(([key, value]) => {
+            // Skip internal fields
+            if (key === 'submittedAt') return '';
+            
+            // Capitalize field names properly
+            const label = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+            
+            return `${label}: ${value}`;
+        })
+        .filter(Boolean)
+        .join('\n');
+
+    return `Hey ${recipientName},
+
+${applicantName} has submitted an application for the ${eventTitle} event.
+
+Here are the details:
+
+${formFieldsHtml}
+
+Submitted on: ${submittedAt}
+
+---
+This is an automated notification from Team1 India.`;
+}
+
 // Welcome email template (when superadmin adds a member)
 export function getWelcomeEmailTemplate(name: string) {
     return `
