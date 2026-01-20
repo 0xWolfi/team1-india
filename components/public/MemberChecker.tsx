@@ -37,7 +37,6 @@ export default function MemberChecker() {
                 setStatus('IDLE'); // Reset or show error
             }
         } catch (error) {
-            console.error(error);
             setStatus('IDLE');
         }
     };
