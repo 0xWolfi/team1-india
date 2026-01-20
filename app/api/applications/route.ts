@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
             try {
                 const guide = await prisma.guide.findUnique({
                     where: { id: guideId },
-                    select: { title: true }
+                    select: { title: true, type: true }
                 });
                 const programTitle = guide?.title || 'the program';
                 const applicantName = userName || applicantEmail.split('@')[0];
@@ -111,6 +111,53 @@ export async function POST(req: NextRequest) {
                     subject: `Your ${programTitle} Application Is Under Discussion`,
                     html: emailHtml
                 });
+
+                // Send EVENT application notification to specific emails (Fire and Forget)
+                if (guide?.type === 'EVENT') {
+                    (async () => {
+                        try {
+                            const { getEventApplicationEmailTemplate } = await import("@/lib/email");
+                            
+                            // ⚠️ ADD YOUR 2 EMAIL ADDRESSES HERE ⚠️
+                            const NOTIFICATION_EMAILS = [
+                                'sarnavo@team1.network', // Replace with first email
+                                //'email2@example.com'  // Replace with second email
+                            ];
+                            
+                            // Format submission date
+                            const submittedDate = new Date().toLocaleDateString('en-IN', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                            
+                            // Send to each recipient
+                            for (const email of NOTIFICATION_EMAILS) {
+                                // Extract name from email (before @)
+                                const recipientName = email.split('@')[0].charAt(0).toUpperCase() + 
+                                                     email.split('@')[0].slice(1).replace(/[._-]/g, ' ');
+                                
+                                const emailBody = getEventApplicationEmailTemplate(
+                                    recipientName,
+                                    applicantName,
+                                    programTitle,
+                                    application.data as Record<string, any>,
+                                    submittedDate
+                                );
+                                
+                                await sendEmail({
+                                    to: email,
+                                    subject: `New Event Application: ${programTitle}`,
+                                    html: emailBody.replace(/\n/g, '<br>')
+                                });
+                            }
+                        } catch (error) {
+                            console.error("Failed to send event notification emails:", error);
+                        }
+                    })();
+                }
             } catch (emailError) {
                 console.error("Failed to send discussion email:", emailError);
                 // Don't fail the request if email fails
