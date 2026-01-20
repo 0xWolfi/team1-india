@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Team1Logo } from "@/components/Team1Logo";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { User, X, LogOut, LayoutDashboard, LogIn, Menu } from "lucide-react";
 import { useDrag } from "@use-gesture/react";
@@ -62,21 +63,22 @@ export function FloatingNav() {
     return (
         <>
             <div className={cn(
-                "fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95vw] md:w-fit max-w-[95vw] transition-all duration-300 ease-out",
-                isScrolled ? "scale-90 translate-y-[-10px]" : "scale-100"
+                "fixed z-50 transition-all duration-300 ease-out",
+                // Base (Mobile): Full width, top 0, transparent
+                "top-0 left-0 w-full border-b border-white/5 bg-black/20 backdrop-blur-xl",
+                // Desktop overrides: Floating pill, centered
+                "md:top-6 md:left-1/2 md:-translate-x-1/2 md:w-fit md:max-w-[95vw] md:bg-transparent md:border-none md:backdrop-filter-none", 
+                isScrolled && "md:scale-90 md:translate-y-[-10px]"
             )}>
-                <div className="flex items-center justify-between md:justify-start w-full gap-1 p-1.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] supports-[backdrop-filter]:bg-black/20">
+                <div className="flex items-center justify-between md:justify-start w-full gap-1 px-6 py-3 md:p-1.5 md:rounded-2xl md:bg-black/40 md:backdrop-blur-md md:border md:border-white/10 md:shadow-[0_8px_32px_rgba(0,0,0,0.5)] md:supports-[backdrop-filter]:bg-black/20">
                     
                     {/* Logo / Home */}
                     <Link 
                         href="/"
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all group"
+                        className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"
                     >
-                        <div className="relative w-5 h-5 flex items-center justify-center">
-
-                            <Image src="/t1-logo.png" alt="T1" width={14} height={14} className="object-contain relative z-10" />
-                        </div>
-                        <span className="font-bold text-sm text-zinc-300 group-hover:text-white hidden md:block tracking-tight transition-colors">Team1</span>
+                        <Team1Logo className="w-4 h-4 relative z-10" />
+                        <span className="font-bold text-lg md:text-sm text-zinc-300 group-hover:text-white tracking-tight transition-colors">Team1</span>
                     </Link>
 
                     {/* Divider */}
@@ -111,9 +113,9 @@ export function FloatingNav() {
                         {session?.user ? (
                             <button 
                                 onClick={() => setShowUserMenu(true)}
-                                className="p-1 pl-2 pr-2 flex items-center gap-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+                                className="flex items-center gap-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all md:p-1 md:pl-2 md:pr-2"
                             >
-                                <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-black overflow-hidden relative">
+                                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white text-xs font-bold ring-1 ring-white/10 overflow-hidden relative">
                                     {session.user.image ? (
                                         <Image 
                                             src={session.user.image} 
@@ -129,7 +131,7 @@ export function FloatingNav() {
                         ) : (
                             <button 
                                 onClick={() => setShowLoginModal(true)}
-                                className="p-2 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                                className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white transition-colors md:p-2 md:w-auto md:h-auto"
                                 title="Member Access"
                             >
                                 <User className="w-5 h-5" />
@@ -139,7 +141,7 @@ export function FloatingNav() {
                         {/* Mobile Menu Button */}
                         <button
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="md:hidden p-2 text-zinc-400 hover:text-white transition-colors"
+                            className="md:hidden w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
                         >
                             <Menu className="w-5 h-5" />
                         </button>

@@ -3,15 +3,18 @@
 import React, { useState } from "react";
 // NOTE: We intentionally use <img> for cover images here because Next/Image can
 // break for unconfigured remote hosts in some deployments (shows a broken placeholder).
+import { ContributionModal } from "./ContributionModal";
 import Link from "next/link";
+import Image from "next/image";
 import {
     Calendar, Users, FileText, BookOpen, Vote,
-    ArrowRight, Filter, Search
+    ArrowRight, Filter, Search, User, Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MemberHeader } from "./MemberHeader";
 import { Guide, Program, Event } from "@/types/public";
 import { DashboardCard } from "./DashboardCard";
+import { signOut } from "next-auth/react";
 // We can define Experiment type here based on Prisma client if not imported, 
 // using 'any' for now to speed up if types aren't strictly generated or exported for client.
 // Better to define an interface matching the data passed.
@@ -65,6 +68,19 @@ export function MemberDashboard({
     const [viewFilter, setViewFilter] = useState<ViewFilter>("ALL");
     const [searchQuery, setSearchQuery] = useState("");
     const [playbookSearch, setPlaybookSearch] = useState("");
+    
+    // Contribution Modal State
+    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+    
+    // Helper for profile image cache busting
+    const getImageUrl = (url: string | null | undefined): string | undefined => {
+        if (!url) return undefined;
+        if (url.includes('.public.blob.vercel-storage.com')) {
+            const separator = url.includes('?') ? '&' : '?';
+            return `${url}${separator}t=${Date.now()}`;
+        }
+        return url;
+    };
 
     // Filter Logic
     const filterByView = (items: any[]) => {
@@ -105,7 +121,14 @@ export function MemberDashboard({
 
     return (
         <div className="min-h-screen text-white">
-            <MemberHeader user={user} />
+            
+            <MemberHeader user={user} onOpenContribution={() => setIsContributionModalOpen(true)} />
+
+            <ContributionModal
+                isOpen={isContributionModalOpen}
+                onClose={() => setIsContributionModalOpen(false)}
+                user={user}
+            />
 
             {/* Profile Incomplete Notification */}
             {!isProfileComplete && (
@@ -129,21 +152,33 @@ export function MemberDashboard({
             {/* Controls & Tabs */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 {/* Tabs - Sleek Segmented Control */}
-                <div className={cn("flex p-1 rounded-lg w-full md:w-fit", glassClass)}>
-                    {(["EVENTS", "PROGRAMS", "CONTENT"] as Tab[]).map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={cn(
-                                "flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all text-center",
-                                activeTab === tab 
-                                    ? "bg-white/10 text-white shadow-sm ring-1 ring-white/20" 
-                                    : "text-zinc-500 hover:text-white hover:bg-white/5"
-                            )}
-                        >
-                            {tab}
-                        </button>
-                    ))}
+                
+                <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                    {/* Submit Contribution Button (Mobile Prominent) */}
+                    <button
+                        onClick={() => setIsContributionModalOpen(true)}
+                        className="md:hidden w-full py-2.5 bg-white text-black rounded-lg text-sm font-bold tracking-wide hover:bg-zinc-200 border border-white/10 shadow-lg shadow-white/5 flex items-center justify-center gap-2 mb-2"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Submit Contribution
+                    </button>
+
+                    <div className={cn("flex p-1 rounded-lg w-full md:w-fit", glassClass)}>
+                        {(["EVENTS", "PROGRAMS", "CONTENT"] as Tab[]).map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={cn(
+                                    "flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all text-center",
+                                    activeTab === tab 
+                                        ? "bg-white/10 text-white shadow-sm ring-1 ring-white/20" 
+                                        : "text-zinc-500 hover:text-white hover:bg-white/5"
+                                )}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Filter & Search */}
