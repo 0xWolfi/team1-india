@@ -244,18 +244,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                             src={getImageUrl(guide.coverImage) || guide.coverImage}
                             alt={guide.title}
                             className="w-full h-full object-cover"
-                            onError={(e) => {
-                                console.error('[GuideDetail] Cover image load failed:', {
-                                    originalUrl: guide.coverImage,
-                                    actualUrl: getImageUrl(guide.coverImage),
-                                    title: guide.title,
-                                    error: e
-                                });
-                                setCoverImageError(true);
-                            }}
-                            onLoad={() => {
-                                console.log('[GuideDetail] Cover image loaded:', guide.coverImage);
-                            }}
+                            onError={() => setCoverImageError(true)}
                         />
                     </div>
                 ) : guide.coverImage && coverImageError ? (

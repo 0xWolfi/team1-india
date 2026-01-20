@@ -37,8 +37,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                     router.push('/public?error=account_removed');
                 }
             } catch (error) {
-                console.error("Failed to check user validity:", error);
-                // Don't logout on network errors, just log
+                // Don't logout on network errors, silent fail
             }
         };
 

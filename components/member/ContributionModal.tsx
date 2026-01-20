@@ -95,7 +95,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                 alert(`Error: ${error}`);
             }
         } catch (error) {
-            console.error("Submission error:", error);
             alert("Failed to submit contribution. Please try again.");
         } finally {
             setIsSubmitting(false);

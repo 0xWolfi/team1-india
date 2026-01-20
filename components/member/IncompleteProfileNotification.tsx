@@ -20,7 +20,7 @@ export function IncompleteProfileNotification() {
                 setIsVisible(isIncomplete);
             }
         } catch (error) {
-            console.error("Failed to check profile:", error);
+            // Silent fail
         } finally {
             setIsLoading(false);
         }

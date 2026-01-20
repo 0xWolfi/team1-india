@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
-import { log } from "@/lib/logger";
 
 // Zod validation schema
 const CheckMemberSchema = z.object({
@@ -15,8 +14,8 @@ const CheckMemberSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // Rate limiting: 5 requests per hour per IP
-  const rateLimitResponse = await withRateLimit(5, 60 * 60 * 1000)(req);
+  // Rate limiting: 30 requests per hour per IP
+  const rateLimitResponse = await withRateLimit(30, 60 * 60 * 1000)(req);
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
@@ -27,9 +26,6 @@ export async function POST(req: NextRequest) {
     // Validate input with Zod
     const validationResult = CheckMemberSchema.safeParse(body);
     if (!validationResult.success) {
-        log("WARN", "Invalid check-member request", "CHECK_MEMBER", { 
-            errors: validationResult.error.flatten()
-        });
         return NextResponse.json({ 
             error: "Invalid input", 
             details: validationResult.error.flatten() 
@@ -60,11 +56,6 @@ export async function POST(req: NextRequest) {
     });
 
     if (coreMember) {
-        log("INFO", "Core member found", "CHECK_MEMBER", { 
-            found: true,
-            hasEmail: !!cleanEmail,
-            hasXHandle: !!cleanX
-        });
         return NextResponse.json({
             isMember: true,
             name: coreMember.name || "Member",
@@ -86,12 +77,6 @@ export async function POST(req: NextRequest) {
     });
 
     if (communityMember) {
-        log("INFO", "Community member found", "CHECK_MEMBER", { 
-            found: true,
-            hasEmail: !!cleanEmail,
-            hasXHandle: !!cleanX,
-            hasTelegram: !!cleanTelegram
-        });
         return NextResponse.json({
             isMember: true,
             name: communityMember.name || "Community Member",
@@ -112,10 +97,6 @@ export async function POST(req: NextRequest) {
         });
 
         if (memberByDiscord) {
-            log("INFO", "Community member found by discord", "CHECK_MEMBER", { 
-                found: true,
-                hasDiscord: true
-            });
             return NextResponse.json({
                 isMember: true,
                 name: memberByDiscord.name || "Community Member",
@@ -124,18 +105,9 @@ export async function POST(req: NextRequest) {
         }
     }
 
-    log("INFO", "No member found", "CHECK_MEMBER", { 
-        found: false,
-        hasEmail: !!cleanEmail,
-        hasXHandle: !!cleanX,
-        hasTelegram: !!cleanTelegram,
-        hasDiscord: !!cleanDiscord
-    });
     return NextResponse.json({ isMember: false });
 
   } catch (error) {
-    log("ERROR", "Check member request failed", "CHECK_MEMBER", {}, 
-        error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

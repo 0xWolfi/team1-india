@@ -116,14 +116,6 @@ export default async function MemberPage() {
 
     const { programs, events, content } = bucketGuides(rawGuides);
 
-    // Debug: Log coverImage data for first program/event/content
-    if (programs.length > 0) {
-        console.log('[Member Page] First program coverImage:', programs[0].coverImage);
-    }
-    if (events.length > 0) {
-        console.log('[Member Page] First event coverImage:', events[0].coverImage);
-    }
-
     // Check if profile is complete
     const customFields = (userProfile?.customFields as any) || {};
     const isProfileComplete = Boolean(

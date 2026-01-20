@@ -88,7 +88,6 @@ export const GuideBuilder: React.FC<GuideBuilderProps> = ({ initialData, type, o
 
             setCoverImage(newBlob.url);
         } catch (error) {
-            console.error("Upload failed", error);
             alert("Upload failed");
         } finally {
             setIsUploading(false);
