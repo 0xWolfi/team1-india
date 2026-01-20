@@ -9,8 +9,9 @@ const CheckMemberSchema = z.object({
     email: z.string().email().optional(),
     xHandle: z.string().max(100).optional(),
     telegram: z.string().max(100).optional(),
-}).refine((data) => data.email || data.xHandle || data.telegram, {
-    message: "At least one identifier (email, xHandle, or telegram) is required"
+    discord: z.string().max(100).optional(),
+}).refine((data) => data.email || data.xHandle || data.telegram || data.discord, {
+    message: "At least one identifier (email, xHandle, telegram, or discord) is required"
 });
 
 export async function POST(req: NextRequest) {
@@ -35,15 +36,16 @@ export async function POST(req: NextRequest) {
         }, { status: 400 });
     }
 
-    const { email, xHandle, telegram } = validationResult.data;
+    const { email, xHandle, telegram, discord } = validationResult.data;
 
-    if (!email && !xHandle && !telegram) {
-      return NextResponse.json({ error: "Please provide an email, X handle, or Telegram handle." }, { status: 400 });
+    if (!email && !xHandle && !telegram && !discord) {
+      return NextResponse.json({ error: "Please provide an email, X handle, Telegram handle, or Discord ID." }, { status: 400 });
     }
 
     // Clean up handles
     const cleanX = xHandle ? xHandle.trim().replace(/^@/, '').replace(/https?:\/\/(www\.)?(twitter|x)\.com\//, '') : undefined;
     const cleanTelegram = telegram ? telegram.trim().replace(/^@/, '').replace(/https?:\/\/(www\.)?t\.me\//, '') : undefined;
+    const cleanDiscord = discord ? discord.trim().replace(/^@/, '') : undefined;
     const cleanEmail = email ? email.trim().toLowerCase() : undefined;
 
     // 1. Check Core Members (Member table doesn't have telegram field, only email and xHandle)
@@ -71,7 +73,7 @@ export async function POST(req: NextRequest) {
         });
     }
 
-    // 2. Check Community Members (includes telegram field)
+    // 2. Check Community Members (includes telegram field, discord is in customFields)
     const communityMember = await prisma.communityMember.findFirst({
         where: {
             OR: [
@@ -80,7 +82,7 @@ export async function POST(req: NextRequest) {
                 ...(cleanTelegram ? [{ telegram: { equals: cleanTelegram, mode: 'insensitive' } as any }] : [])
             ]
         },
-        select: { name: true, tags: true }
+        select: { name: true, tags: true, customFields: true }
     });
 
     if (communityMember) {
@@ -97,11 +99,37 @@ export async function POST(req: NextRequest) {
         });
     }
 
+    // 3. Check for Discord in customFields (if discord was provided)
+    if (cleanDiscord) {
+        const memberByDiscord = await prisma.communityMember.findFirst({
+            where: {
+                customFields: {
+                    path: ['discord'],
+                    string_contains: cleanDiscord
+                }
+            },
+            select: { name: true, tags: true }
+        });
+
+        if (memberByDiscord) {
+            log("INFO", "Community member found by discord", "CHECK_MEMBER", { 
+                found: true,
+                hasDiscord: true
+            });
+            return NextResponse.json({
+                isMember: true,
+                name: memberByDiscord.name || "Community Member",
+                role: memberByDiscord.tags || "Contributor",
+            });
+        }
+    }
+
     log("INFO", "No member found", "CHECK_MEMBER", { 
         found: false,
         hasEmail: !!cleanEmail,
         hasXHandle: !!cleanX,
-        hasTelegram: !!cleanTelegram
+        hasTelegram: !!cleanTelegram,
+        hasDiscord: !!cleanDiscord
     });
     return NextResponse.json({ isMember: false });
 
