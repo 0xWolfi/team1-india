@@ -62,37 +62,8 @@ export async function POST(req: NextRequest) {
             userName = session.user.name || '';
         }
 
-        // Check for existing submission within last 7 days (only if guideId is provided)
-        if (guideId) {
-            const sevenDaysAgo = new Date();
-            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-            const existingApplication = await prisma.application.findFirst({
-                where: {
-                    guideId: guideId,
-                    applicantEmail: applicantEmail,
-                    submittedAt: {
-                        gte: sevenDaysAgo
-                    },
-                    deletedAt: null
-                },
-                orderBy: { submittedAt: 'desc' }
-            });
-
-            if (existingApplication) {
-                const daysSinceSubmission = Math.floor(
-                    (Date.now() - new Date(existingApplication.submittedAt).getTime()) / (1000 * 60 * 60 * 24)
-                );
-                const daysRemaining = 7 - daysSinceSubmission;
-
-                return NextResponse.json({
-                    error: "You have already submitted an application for this event",
-                    message: `You can submit again in ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}`,
-                    canReapplyAt: new Date(new Date(existingApplication.submittedAt).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString()
-                }, { status: 429 });
-            }
-        } else {
-            // For general membership applications, check if user already has a pending application
+        // For general membership applications (no guideId), check if user already has a pending application
+        if (!guideId) {
             const existingMembershipApplication = await prisma.application.findFirst({
                 where: {
                     guideId: null,
