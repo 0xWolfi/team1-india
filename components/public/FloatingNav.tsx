@@ -243,21 +243,20 @@ export function FloatingNav() {
                             <User className="w-8 h-8 text-zinc-400" />
                         </div>
 
-                        <h3 className="text-xl font-bold text-white mb-2">Member Access</h3>
+                        <h3 className="text-xl font-bold text-white mb-2">Sign In to Apply</h3>
                         <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-                            This portal is accessible only to verified Team1 members. <br/>
-                            To submit applications, you can login as a Guest.
+                            Login with your Google account to submit applications and access programs.
                         </p>
 
                         <div className="flex flex-col gap-3">
                             <button
                                 onClick={() => {
                                     setShowLoginModal(false);
-                                    signIn('google', { callbackUrl: '/access-check' });
+                                    signIn('google', { callbackUrl: window.location.pathname });
                                 }}
                                 className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
                             >
-                                <LogIn className="w-4 h-4" /> Member Login
+                                <LogIn className="w-4 h-4" /> Sign In with Google
                             </button>
 
                             <div className="flex items-center gap-4 my-2">

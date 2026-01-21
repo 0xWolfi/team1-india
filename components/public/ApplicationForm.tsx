@@ -24,18 +24,21 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
 
   const { data: session, status: sessionStatus } = useSession();
 
-  // Fetch user name and email from database
+  // Fetch user name and email from database or use session data
   useEffect(() => {
     if (session?.user?.email) {
+      // Try to fetch from database first
       fetch('/api/profile')
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error('Profile not found');
+          return res.json();
+        })
         .then(data => {
           if (data.name) setUserName(data.name);
           if (data.email) setUserEmail(data.email);
         })
-        .catch(err => {
-          console.error("Error fetching user profile:", err);
-          // Fallback to session data
+        .catch(() => {
+          // Fallback to session data (for non-members/public users)
           setUserName(session.user?.name || "");
           setUserEmail(session.user?.email || "");
         });
