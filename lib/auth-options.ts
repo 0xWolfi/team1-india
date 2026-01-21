@@ -38,11 +38,10 @@ export const authOptions: NextAuthOptions = {
              return true;
         }
 
-        // Reject unauthorized users
-        // Note: Using console.log here is acceptable for auth flow logging
+        // Allow non-members to login (they can fill public forms)
         // eslint-disable-next-line no-console
-        console.log(`Access Denied: User ${user.email} is not a member.`);
-        return "/public?error=not_member"; 
+        console.log(`Public user login: ${user.email}`);
+        return true; 
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error("SignIn Error:", error);
@@ -84,10 +83,10 @@ export const authOptions: NextAuthOptions = {
                 return token;
             }
 
-            // 3. No valid membership found - should not reach here due to signIn check
+            // 3. No valid membership found - assign PUBLIC role
             // eslint-disable-next-line no-console
-            console.error(`User ${user.email} authenticated but has no valid role. This should not happen.`);
-            token.role = 'GUEST'; // Fallback, but signIn callback should have blocked this
+            console.log(`Public user authenticated: ${user.email}`);
+            token.role = 'PUBLIC';
             token.permissions = {};
             token.tags = [];
             return token;

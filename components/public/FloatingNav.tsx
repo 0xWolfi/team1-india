@@ -305,7 +305,7 @@ export function FloatingNav() {
                                 <div className="font-bold text-white text-lg">{session?.user?.name || "User"}</div>
                                 <div className="text-xs text-zinc-500">{session?.user?.email}</div>
                                 <div className="mt-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[10px] font-bold uppercase text-zinc-400 w-fit">
-                                    {(session?.user as any)?.role || "Guest"}
+                                    {(session?.user as any)?.role === 'PUBLIC' ? 'Guest' : (session?.user as any)?.role || "Guest"}
                                 </div>
                             </div>
                         </div>
