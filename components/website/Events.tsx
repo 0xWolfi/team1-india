@@ -1,18 +1,26 @@
 import React from "react";
-import { getUpcomingEvents } from "@/lib/luma";
+import { getUpcomingEvents, getAllEvents } from "@/lib/luma";
 import { EventGrid } from "./EventGrid";
+import { EventCalendar } from "@/components/calendar/EventCalendar";
 
 export async function Events() {
-  const events = await getUpcomingEvents();
+  const upcomingEvents = await getUpcomingEvents();
+  const allEvents = await getAllEvents();
 
   return (
     <section id="events" className="py-20 relative z-10">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl md:text-6xl font-bold text-white mb-12 text-center tracking-tighter">
-          Upcoming Events
+          Events
         </h2>
         
-        <EventGrid initialEvents={events} />
+        {/* Calendar View - Shows all events (past + future) */}
+        <div className="mb-16">
+          <EventCalendar events={allEvents} />
+        </div>
+        
+        {/* Event Grid - Shows only upcoming events */}
+        <EventGrid initialEvents={upcomingEvents} />
       </div>
     </section>
   );

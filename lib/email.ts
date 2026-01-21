@@ -251,6 +251,62 @@ export function getRejectionEmailTemplate(applicantName: string, programTitle: s
 }
 
 // Email template for application under discussion (sent when user submits form)
+// Simple confirmation email for application submission
+export function getApplicationSubmittedEmailTemplate(applicantName: string, programTitle: string) {
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; color: #000000;">
+    <div style="padding: 40px 20px; max-width: 600px; margin: 0 auto;">
+        <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Application Submitted Successfully ✓</h1>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Hi ${applicantName},
+        </p>
+
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Thank you for submitting your application for <strong>${programTitle}</strong> with Team1 India.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            We have successfully received your application and it has been submitted to our team.
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Our team may reach out to you via Telegram using the ID you provided if needed. Please keep an eye on your Telegram messages.
+        </p>
+        
+        <p style="margin: 24px 0 16px; font-size: 16px; line-height: 1.6; font-weight: bold;">
+            🔐 Verification Notice:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            If anyone contacts you claiming to represent Team1 India, you can verify official members and representatives through our Member Verification section:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+        </p>
+        
+        <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
+            Thank you for your interest in Team1 India.
+        </p>
+        
+        <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.6;">
+            Sarnavo<br>
+            Team1 India Team
+        </p>
+    </div>
+</body>
+</html>
+    `;
+}
+
+// Discussion email template (for experiments/proposals)
 export function getDiscussionEmailTemplate(applicantName: string, programTitle: string) {
     return `
 <!DOCTYPE html>
@@ -261,14 +317,14 @@ export function getDiscussionEmailTemplate(applicantName: string, programTitle: 
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; color: #000000;">
     <div style="padding: 40px 20px; max-width: 600px; margin: 0 auto;">
-        <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Your ${programTitle} Application Is Under Discussion</h1>
+        <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Your ${programTitle} Proposal Is Under Discussion</h1>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-                                Hi ${applicantName},
-                            </p>
+            Hi ${applicantName},
+        </p>
 
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            Thank you for submitting your application for ${programTitle} with Team1 India.
+            Thank you for submitting your proposal for ${programTitle} with Team1 India.
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
@@ -298,8 +354,8 @@ export function getDiscussionEmailTemplate(applicantName: string, programTitle: 
         <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.6;">
             Sarnavo<br>
             Team1 India Team
-                                </p>
-                            </div>
+        </p>
+    </div>
 </body>
 </html>
     `;

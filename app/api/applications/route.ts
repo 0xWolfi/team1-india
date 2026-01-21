@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
-import { sendEmail, getDiscussionEmailTemplate } from "@/lib/email";
+import { sendEmail, getApplicationSubmittedEmailTemplate } from "@/lib/email";
 import { withRateLimit } from "@/lib/rate-limit";
 import { NextRequest } from "next/server";
 
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
             }
         });
 
-        // Send discussion email to applicant (only if guideId is provided)
+        // Send simple confirmation email to applicant (only if guideId is provided)
         if (guideId) {
             try {
                 const guide = await prisma.guide.findUnique({
@@ -105,10 +105,10 @@ export async function POST(req: NextRequest) {
                 });
                 const programTitle = guide?.title || 'the program';
                 const applicantName = userName || applicantEmail.split('@')[0];
-                const emailHtml = getDiscussionEmailTemplate(applicantName, programTitle);
+                const emailHtml = getApplicationSubmittedEmailTemplate(applicantName, programTitle);
                 await sendEmail({
                     to: applicantEmail,
-                    subject: `Your ${programTitle} Application Is Under Discussion`,
+                    subject: `Application Submitted: ${programTitle}`,
                     html: emailHtml
                 });
 

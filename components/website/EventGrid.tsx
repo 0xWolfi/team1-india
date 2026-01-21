@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { LumaEventData } from "@/lib/luma";
-import { Calendar } from "lucide-react";
 import Image from "next/image";
 
 interface EventGridProps {
@@ -10,164 +9,13 @@ interface EventGridProps {
 }
 
 export function EventGrid({ initialEvents }: EventGridProps) {
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedCity, setSelectedCity] = useState<string>("");
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-  
-  // Date Popover State
-  const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
-  const datePopoverRef = React.useRef<HTMLDivElement>(null);
-
-  // Close popover on click outside
-  React.useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (datePopoverRef.current && !datePopoverRef.current.contains(event.target as Node)) {
-        setIsDatePopoverOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Extract unique cities for the filter dropdown
-  const cities = useMemo(() => {
-    const allCities = initialEvents
-      .map((e) => e.event.geo_address_json?.city)
-      .filter((city): city is string => !!city); // Filter out undefined/null
-    return Array.from(new Set(allCities)).sort();
-  }, [initialEvents]);
-
-  // Filter logic
-  const filteredEvents = useMemo(() => {
-    return initialEvents.filter((e) => {
-      const eventDate = new Date(e.event.start_at);
-      const eventCity = e.event.geo_address_json?.city || "";
-      const eventName = e.event.name || "";
-
-      // Search Filter
-      if (searchQuery && !eventName.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
-      }
-
-      // City Filter
-      if (selectedCity && eventCity !== selectedCity) return false;
-
-      // Date Range Filter
-      if (startDate) {
-        const start = new Date(startDate);
-        if (eventDate < start) return false;
-      }
-      if (endDate) {
-        const end = new Date(endDate);
-        // Set end date to end of day to include events on that day
-        end.setHours(23, 59, 59, 999);
-        if (eventDate > end) return false;
-      }
-
-      return true;
-    });
-  }, [initialEvents, searchQuery, selectedCity, startDate, endDate]);
-
   // Pagination State
   const [visibleCount, setVisibleCount] = useState(6);
 
-  // Reset pagination when filters change
-  React.useEffect(() => {
-    setVisibleCount(6);
-  }, [searchQuery, selectedCity, startDate, endDate]);
-
-  const displayedEvents = filteredEvents.slice(0, visibleCount);
+  const displayedEvents = initialEvents.slice(0, visibleCount);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-12">
-      {/* Sleek Filters */}
-      <div className="relative z-20 flex flex-col md:flex-row gap-2 items-center justify-center bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] p-1.5 rounded-xl w-full max-w-[90%] md:w-fit mx-auto shadow-2xl shadow-black/50 transition-all hover:border-white/20">
-        <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search events..."
-            autoComplete="off"
-            className="bg-white/5 border border-transparent rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:bg-white/10 focus:ring-1 focus:ring-white/20 w-full md:w-64 placeholder:text-zinc-500 transition-all"
-        />
-
-        <div className="h-6 w-px bg-white/10 hidden md:block" />
-
-        <div className="grid grid-cols-2 md:flex items-center gap-2 w-full md:w-auto text-center md:text-left">
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-white/5 border border-transparent rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:bg-white/10 focus:ring-1 focus:ring-white/20 cursor-pointer transition-all w-full md:w-auto min-w-[120px]"
-            >
-              <option value="">All Cities</option>
-              {cities.map((city) => (
-                <option key={city} value={city} className="bg-zinc-900">
-                  {city}
-                </option>
-              ))}
-            </select>
-
-            <div className="h-6 w-px bg-white/10 hidden md:block" />
-
-            {/* Date Range Popover */}
-            <div className="relative w-full md:w-auto" ref={datePopoverRef}>
-                <button
-                    onClick={() => setIsDatePopoverOpen(!isDatePopoverOpen)}
-                    className={`flex items-center gap-2 text-sm bg-white/5 rounded-lg px-3 py-1.5 border transition-all w-full md:w-auto min-w-[140px] justify-between ${isDatePopoverOpen ? 'bg-white/10 ring-1 ring-white/20 border-white/20 text-white' : 'border-transparent text-zinc-400 hover:text-zinc-300'}`}
-                >
-                    <div className="flex items-center gap-2 overflow-hidden">
-                        <Calendar className="w-4 h-4 flex-shrink-0" />
-                        <span className="truncate">
-                            {startDate || endDate ? (
-                                <span className="text-white">
-                                    {startDate ? new Date(startDate).toLocaleDateString(undefined, {month:'short', day:'numeric'}) : 'Start'} 
-                                    {'-'}
-                                    {endDate ? new Date(endDate).toLocaleDateString(undefined, {month:'short', day:'numeric'}) : 'End'}
-                                </span>
-                            ) : (
-                                "Select Dates"
-                            )}
-                        </span>
-                    </div>
-                </button>
-
-                {/* Popover Content */}
-                {isDatePopoverOpen && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 md:left-auto md:right-0 md:translate-x-0 mt-2 p-4 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl z-50 flex flex-col gap-4 w-[280px] backdrop-blur-xl">
-                        <div className="flex flex-col gap-1 text-left">
-                            <label className="text-xs text-zinc-500 font-medium uppercase tracking-wider">Start Date</label>
-                            <input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:bg-white/10 focus:ring-1 focus:ring-white/20 w-full placeholder:text-zinc-600"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1 text-left">
-                            <label className="text-xs text-zinc-500 font-medium uppercase tracking-wider">End Date</label>
-                            <input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:bg-white/10 focus:ring-1 focus:ring-white/20 w-full placeholder:text-zinc-600"
-                            />
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
-        
-        {(searchQuery || selectedCity || startDate || endDate) && (
-            <button 
-                onClick={() => { setSearchQuery(""); setSelectedCity(""); setStartDate(""); setEndDate(""); }}
-                className="px-3 text-xs text-zinc-400 hover:text-white transition-colors font-medium hover:underline"
-            >
-                Reset
-            </button>
-        )}
-      </div>
-
       {/* Centered Flex Layout */}
       {displayedEvents.length > 0 ? (
         <div className="flex flex-col items-center gap-10">
@@ -211,7 +59,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
               })}
             </div>
             
-            {visibleCount < filteredEvents.length && (
+            {visibleCount < initialEvents.length && (
                 <button
                     onClick={() => setVisibleCount((prev) => prev + 6)}
                     className="px-6 py-2 rounded-full border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-white/10 hover:border-white/50 hover:text-white transition-all"
@@ -220,26 +68,24 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                 </button>
             )}
         </div>
-      ) : (
-        <div className="text-center py-20 bg-white/5 rounded-2xl border border-white/10 border-dashed max-w-3xl mx-auto">
-          <p className="text-zinc-500">No events found matching your filters.</p>
+      ) : null}
+
+      {/* See All Button - Only show if there are events */}
+      {initialEvents.length > 0 && (
+        <div className="flex justify-center pt-8">
+          <a 
+            href="https://lu.ma/Team1India" 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 hover:text-black transition-all shadow-lg shadow-white/10 hover:shadow-white/20"
+          >
+   <span className="block transition-transform duration-200 group-hover:scale-110">See All Events</span>
+            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
         </div>
       )}
-
-      {/* See All Button */}
-      <div className="flex justify-center pt-8">
-        <a 
-          href="https://lu.ma/Team1India" 
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 hover:text-black transition-all shadow-lg shadow-white/10 hover:shadow-white/20"
-        >
- <span className="block transition-transform duration-200 group-hover:scale-110">See All Events</span>
-          <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </a>
-      </div>
     </div>
   );
 }

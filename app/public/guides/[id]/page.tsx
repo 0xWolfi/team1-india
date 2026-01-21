@@ -7,7 +7,7 @@ import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText, Globe } from "lu
 import { formatDistanceToNow } from "date-fns";
 import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
-
+import ReactMarkdown from 'react-markdown';
 
 import { Guide, FormField } from "@/types/public";
 
@@ -17,6 +17,29 @@ export default function PublicGuidePage() {
     const [guide, setGuide] = useState<Guide | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
+    
+    // Fetch guide data
+    useEffect(() => {
+        if (!id) return;
+        
+        const fetchGuide = async () => {
+            try {
+                const res = await fetch(`/api/public/guides/${id}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setGuide(data);
+                } else {
+                    setError('Guide not found or not accessible');
+                }
+            } catch (err) {
+                setError('Failed to load guide');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        fetchGuide();
+    }, [id]);
     
     // Normalize form schema
     const formFields: FormField[] = useMemo(() => {
@@ -93,14 +116,20 @@ export default function PublicGuidePage() {
                                 )}
                             </div>
                             
-                            {/* Description */}
+                            {/* Description and Markdown Content */}
                             <section>
                                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                                      Overview
                                 </h2>
-                                <p className="text-zinc-400 leading-relaxed text-lg whitespace-pre-wrap">
-                                    {guide.body?.description || "No description provided."}
-                                </p>
+                                {guide.body?.markdown ? (
+                                    <div className="prose prose-invert prose-zinc max-w-none">
+                                        <ReactMarkdown>{guide.body.markdown}</ReactMarkdown>
+                                    </div>
+                                ) : (
+                                    <p className="text-zinc-400 leading-relaxed text-lg whitespace-pre-wrap">
+                                        {guide.body?.description || "No description provided."}
+                                    </p>
+                                )}
                             </section>
 
                             {/* KPIs */}
