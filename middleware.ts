@@ -12,7 +12,7 @@ export default withAuth(
         return NextResponse.next();
     }
     // Allow Public API routes
-    if (path.startsWith("/api/public") || path.startsWith("/api/webhooks")) {
+    if (path.startsWith("/api/public") || path.startsWith("/api/webhooks") || path.startsWith("/api/luma-events")) {
         return NextResponse.next();
     }
     // Allow public seed routes in DEV only (optional, but good practice)

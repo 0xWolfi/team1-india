@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Users, Calendar, Clock, Globe } from "lucide-react";
 import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
+import ReactMarkdown from 'react-markdown';
 
 import { Program, GuideBody } from "@/types/public";
 
@@ -97,19 +98,29 @@ export default async function ProgramDetailPage({ params }: Props) {
                     </div>
                 </div>
 
-                <div className="prose prose-invert prose-zinc max-w-none">
-                    <h3>About the Program</h3>
-                    <p>
-                        This program is designed to provide you with the resources, mentorship, and network needed to accelerate your growth. 
-                        Whether you are just starting out or looking to scale, our curriculum and community support are tailored to meet your needs.
-                    </p>
-                    <ul>
-                        <li>Weekly mentorship sessions with industry experts</li>
-                        <li>Access to exclusive resources and tools</li>
-                        <li>Community of like-minded builders</li>
-                        <li>Opportunity for grants and funding</li>
-                    </ul>
-                </div>
+                {/* Render actual program body content */}
+                {program.body?.markdown && (
+                    <div className="prose prose-invert prose-zinc max-w-none">
+                        <ReactMarkdown>{program.body.markdown}</ReactMarkdown>
+                    </div>
+                )}
+                
+                {/* Fallback content if no markdown */}
+                {!program.body?.markdown && (
+                    <div className="prose prose-invert prose-zinc max-w-none">
+                        <h3>About the Program</h3>
+                        <p>
+                            This program is designed to provide you with the resources, mentorship, and network needed to accelerate your growth. 
+                            Whether you are just starting out or looking to scale, our curriculum and community support are tailored to meet your needs.
+                        </p>
+                        <ul>
+                            <li>Weekly mentorship sessions with industry experts</li>
+                            <li>Access to exclusive resources and tools</li>
+                            <li>Community of like-minded builders</li>
+                            <li>Opportunity for grants and funding</li>
+                        </ul>
+                    </div>
+                )}
             </div>
 
             {/* Right: Application Form */}

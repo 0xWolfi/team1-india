@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ArrowLeft, MapPin, Calendar, Clock, Share2, ExternalLink } from "lucide-react";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";
+import ReactMarkdown from 'react-markdown';
 
 import { Event, GuideBody } from "@/types/public";
 
@@ -88,9 +89,17 @@ export default async function PublicEventDetailPage({ params }: Props) {
             <div className="lg:col-span-2 space-y-12">
                 <section>
                     <h2 className="text-xl font-bold text-white mb-4">About Event</h2>
-                    <div className="prose prose-invert max-w-none text-zinc-400 leading-relaxed whitespace-pre-wrap">
-                        {event.description || "No description provided."}
-                    </div>
+                    
+                    {/* Render actual event body content */}
+                    {event.body?.markdown ? (
+                        <div className="prose prose-invert prose-zinc max-w-none">
+                            <ReactMarkdown>{event.body.markdown}</ReactMarkdown>
+                        </div>
+                    ) : (
+                        <div className="prose prose-invert max-w-none text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                            {event.description || "No description provided."}
+                        </div>
+                    )}
                 </section>
             </div>
 

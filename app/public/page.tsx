@@ -12,6 +12,7 @@ import PublicContactSection from "@/components/public/PublicContactSection";
 import { Program, Event, Guide } from "@/types/public";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";
+import { PublicEventCalendar } from "@/components/calendar/PublicEventCalendar";
 
 type PublicHomePayload = {
     playbooks: any[];
@@ -47,7 +48,6 @@ export default function PublicPage() {
                     setData({ playbooks: [], programs: [], guides: [], events: [], mediaItems: [] });
                     setIsLoading(false);
                 }
-                console.error(e);
             }
         })();
         return () => {
@@ -63,13 +63,20 @@ export default function PublicPage() {
             
             <div className="pt-24 px-4 md:px-8 max-w-7xl mx-auto space-y-8">
                 {/* Added pb-32 to push hero up slightly when centered */}
-                <div className="min-h-[85vh] flex flex-col justify-center pb-32">
+                <div className="min-h-[85vh] flex flex-col justify-center pb-16">
                     <PublicHero />
                     <div className="relative z-10 -mt-12 md:-mt-32">
                          <Announcements />
                     </div>
                 </div>
 
+                {/* Event Calendar */}
+                <section className="py-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 text-center tracking-tight">
+                        Event Calendar
+                    </h2>
+                    <PublicEventCalendar />
+                </section>
 
                 {/* Playbooks */}
                 <SectionCarousel 
