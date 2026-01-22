@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Image from "next/image";
 import { LumaEventData } from "@/lib/luma";
 import { ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
 
@@ -213,10 +214,12 @@ export function EventCalendar({ events }: EventCalendarProps) {
                   {/* Event Banner */}
                   {eventData.event.cover_url && (
                     <div className="relative w-full aspect-[16/9] overflow-hidden">
-                      <img
+                      <Image
                         src={eventData.event.cover_url}
                         alt={eventData.event.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        unoptimized
                       />
                     </div>
                   )}

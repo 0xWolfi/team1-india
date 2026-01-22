@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText, Eye, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -76,6 +76,8 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userName, setUserName] = useState<string>('');
     const [userEmail, setUserEmail] = useState<string>('');
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState<any>(null);
 
     // Fetch user name and email from database
     useEffect(() => {
@@ -242,6 +244,107 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                 isDestructive={true}
             />
 
+            {/* Application Detail Modal */}
+            {showDetailModal && selectedApplication && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="relative w-full max-w-3xl bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-white/10 flex-shrink-0">
+                            <div>
+                                <h3 className="text-xl font-bold text-white">Application Details</h3>
+                                <p className="text-xs text-zinc-500 mt-1">
+                                    Submitted on {new Date(selectedApplication.submittedAt).toLocaleDateString('en-US', { 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setShowDetailModal(false);
+                                    setSelectedApplication(null);
+                                }}
+                                className="text-zinc-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Content - Scrollable */}
+                        <div className="overflow-y-auto p-6 space-y-6">
+                            {/* Status Badge */}
+                            <div className="flex items-center gap-3">
+                                <span className="text-xs font-bold uppercase text-zinc-500">Status:</span>
+                                <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                                    selectedApplication.status === 'APPROVED' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30' :
+                                    selectedApplication.status === 'REJECTED' ? 'text-red-400 bg-red-500/10 border border-red-500/30' :
+                                    'text-amber-400 bg-amber-500/10 border border-amber-500/30'
+                                }`}>
+                                    {selectedApplication.status}
+                                </span>
+                            </div>
+
+                            {/* Form Data */}
+                            <div className="space-y-4">
+                                <h4 className="text-sm font-bold uppercase tracking-wider text-zinc-400 border-b border-white/5 pb-2">
+                                    Form Responses
+                                </h4>
+                                <div className="grid grid-cols-1 gap-4">
+                                    {formFields.map((field) => {
+                                        const value = selectedApplication.data?.[field.key] || selectedApplication.data?.[field.label] || '-';
+                                        return (
+                                            <div key={field.key || field.id} className="bg-zinc-900/50 border border-white/5 rounded-xl p-4">
+                                                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                                                    {field.label}
+                                                </label>
+                                                <div className="text-sm text-white whitespace-pre-wrap break-words">
+                                                    {value.toString()}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Additional Application Info */}
+                            {selectedApplication.authorEmail && (
+                                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                                        Submission Information
+                                    </h4>
+                                    <div className="space-y-2 text-sm">
+                                        <div className="flex justify-between">
+                                            <span className="text-zinc-400">Submitted by:</span>
+                                            <span className="text-white font-mono">{selectedApplication.authorEmail}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-zinc-400">Application ID:</span>
+                                            <span className="text-white font-mono text-xs">{selectedApplication.id}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer with Close Button */}
+                        <div className="flex justify-end gap-3 p-6 border-t border-white/10 flex-shrink-0">
+                            <button
+                                onClick={() => {
+                                    setShowDetailModal(false);
+                                    setSelectedApplication(null);
+                                }}
+                                className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-bold text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header with Cover Image */}
             <div className="mb-8">
                 {guide.coverImage && !coverImageError ? (
@@ -318,6 +421,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                     ))}
                                     <th className="px-6 py-4 whitespace-nowrap">Submitted</th>
                                     <th className="px-6 py-4 whitespace-nowrap">Status</th>
+                                    <th className="px-6 py-4 whitespace-nowrap">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -351,11 +455,24 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                                 <option value="REJECTED" className="bg-zinc-900 text-red-400">Rejected</option>
                                             </select>
                                         </td>
+                                        
+                                        <td className="px-6 py-4">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedApplication(app);
+                                                    setShowDetailModal(true);
+                                                }}
+                                                className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs font-bold text-zinc-400 hover:text-white hover:bg-white/10 transition-all group"
+                                            >
+                                                <Eye className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                                                View Detail
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 {applications.length === 0 && (
                                     <tr>
-                                        <td colSpan={formFields.length + 2} className="px-6 py-20 text-center">
+                                        <td colSpan={formFields.length + 3} className="px-6 py-20 text-center">
                                             <div className="flex flex-col items-center justify-center">
                                                  <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
                                                     <FileText className="w-5 h-5 text-zinc-600" />

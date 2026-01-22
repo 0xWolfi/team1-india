@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Users, Calendar, Clock, Globe } from "lucide-react";
@@ -61,14 +62,23 @@ export default async function ProgramDetailPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
       
-      {/* Hero Section with Backdrop */}
-      <div className="relative pt-32 pb-20 px-6 overflow-hidden">
-         {coverImage && (
-             <div className="absolute inset-0 opacity-20">
-                 <img src={coverImage} alt="" className="w-full h-full object-cover blur-3xl scale-110" />
-                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-             </div>
-         )}
+      {/* Cover Image Section */}
+      {coverImage && (
+        <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden">
+          <Image
+            src={coverImage}
+            alt={program.title}
+            fill
+            className="object-cover"
+            priority
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+        </div>
+      )}
+
+      {/* Hero Section with Content */}
+      <div className="relative pb-20 px-6 overflow-hidden" style={{ marginTop: coverImage ? '-10vh' : '8rem' }}>
          
          <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
             
