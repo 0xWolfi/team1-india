@@ -42,7 +42,10 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
     const { data: session } = useSession();
     const [coverImageError, setCoverImageError] = useState(false);
     // Use dynamic permission based on guide type (EVENT -> 'event', PROGRAM -> 'program', CONTENT -> 'content')
-    const canEdit = usePermission(guide.type.toLowerCase(), 'WRITE');
+    const hasWritePermission = usePermission(guide.type.toLowerCase(), 'WRITE');
+    // Check if user is CORE (all CORE users can see applications, not just superadmins)
+    const isCoreUser = (session?.user as any)?.role === 'CORE';
+    const canEdit = hasWritePermission || isCoreUser;
 
     // Cache-buster for blob URLs
     const getImageUrl = (url: string | null | undefined): string | undefined => {
