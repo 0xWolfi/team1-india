@@ -46,6 +46,9 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
     // Check if user is CORE (all CORE users can see applications, not just superadmins)
     const isCoreUser = (session?.user as any)?.role === 'CORE';
     const canEdit = hasWritePermission || isCoreUser;
+    // Check if user is superadmin (for budget breakdown visibility)
+    const userPermissions = (session?.user as any)?.permissions || {};
+    const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
 
     // Cache-buster for blob URLs
     const getImageUrl = (url: string | null | undefined): string | undefined => {
@@ -137,6 +140,25 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
         const customFieldsFiltered = customFields.filter(f => f.key !== 'name' && f.key !== 'email');
         return [...defaultFields, ...customFieldsFiltered];
     }, [guide.formSchema]);
+
+    // Filter out budget fields for non-superadmin CORE users viewing EVENT applications
+    const visibleFormFields: FormField[] = React.useMemo(() => {
+        // If not viewing applications in core, or if superadmin, show all fields
+        if (!dashboardPath.startsWith('/core') || isSuperAdmin) {
+            return formFields;
+        }
+        
+        // For EVENT type only: hide budget-related fields from regular CORE users
+        if (guide.type === 'EVENT' && !isSuperAdmin) {
+            return formFields.filter(field => {
+                const key = (field.key || '').toLowerCase();
+                const label = (field.label || '').toLowerCase();
+                return !key.includes('budget') && !label.includes('budget');
+            });
+        }
+        
+        return formFields;
+    }, [formFields, isSuperAdmin, guide.type, dashboardPath]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -296,7 +318,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                     Form Responses
                                 </h4>
                                 <div className="grid grid-cols-1 gap-4">
-                                    {formFields.map((field) => {
+                                    {visibleFormFields.map((field) => {
                                         const value = selectedApplication.data?.[field.key] || selectedApplication.data?.[field.label] || '-';
                                         return (
                                             <div key={field.key || field.id} className="bg-zinc-900/50 border border-white/5 rounded-xl p-4">
@@ -417,7 +439,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                             <thead className="bg-white/5 font-bold text-white uppercase text-[10px] tracking-wider border-b border-white/5">
                                 <tr>
                                     {/* Dynamic Columns from Form Schema */}
-                                    {formFields.map(field => (
+                                    {visibleFormFields.map(field => (
                                         <th key={field.key || field.id} className="px-6 py-4 whitespace-nowrap">
                                             {field.label}
                                         </th>
@@ -431,7 +453,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                 {applications.map((app) => (
                                     <tr key={app.id} className="group hover:bg-white/[0.02] transition-colors">
                                         {/* Dynamic Data Cells */}
-                                        {formFields.map(field => (
+                                        {visibleFormFields.map(field => (
                                             <td key={field.key || field.id} className="px-6 py-4 text-white">
                                                 <span className="line-clamp-2" title={(app.data?.[field.key] || app.data?.[field.label] || '').toString()}>
                                                     {(app.data?.[field.key] || app.data?.[field.label] || '-').toString()}
@@ -475,7 +497,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                 ))}
                                 {applications.length === 0 && (
                                     <tr>
-                                        <td colSpan={formFields.length + 3} className="px-6 py-20 text-center">
+                                        <td colSpan={visibleFormFields.length + 3} className="px-6 py-20 text-center">
                                             <div className="flex flex-col items-center justify-center">
                                                  <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
                                                     <FileText className="w-5 h-5 text-zinc-600" />
