@@ -1,6 +1,7 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { ArrowLeft, MapPin, Calendar, Clock, Share2, ExternalLink } from "lucide-react";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
@@ -64,13 +65,20 @@ export default async function PublicEventDetailPage({ params }: Props) {
        {/* Hero Image / Header */}
        <div className="relative h-[50vh] w-full bg-zinc-900">
            {coverImage ? (
-               <img src={coverImage as string} alt={event.title || "Event"} className="w-full h-full object-cover opacity-60" />
+               <Image 
+                   src={coverImage as string} 
+                   alt={event.title || "Event"} 
+                   fill
+                   className="object-cover" 
+                   priority
+                   unoptimized
+               />
            ) : (
                 <div className="w-full h-full flex items-center justify-center bg-zinc-900 pattern-grid-lg">
                     <Calendar className="w-20 h-20 text-zinc-800" />
                 </div>
            )}
-           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
            
            <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 max-w-7xl mx-auto">
                <Link href="/public/events" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 transition-colors text-sm font-medium backdrop-blur-md bg-black/30 px-3 py-1.5 rounded-lg border border-white/5">
