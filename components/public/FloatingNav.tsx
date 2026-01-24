@@ -11,6 +11,7 @@ import { User, X, LogOut, LayoutDashboard, LogIn, Menu } from "lucide-react";
 import { useDrag } from "@use-gesture/react";
 
 const navItems = [
+    { label: "Attend", href: "#upcoming-events" },
     { label: "Playbooks", href: "#playbooks" },
     { label: "Programs", href: "#programs" },
     { label: "Content", href: "#content" },

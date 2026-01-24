@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { getUpcomingEvents } from "@/lib/luma";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withRateLimit } from "@/lib/rate-limit";
-import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [playbooks, publicGuides, resources] = await Promise.all([
+    const [playbooks, publicGuides, resources, lumaEvents] = await Promise.all([
       prisma.playbook.findMany({
         where: { visibility: "PUBLIC", deletedAt: null },
         orderBy: { createdAt: "desc" },
@@ -38,7 +38,6 @@ export async function GET(req: NextRequest) {
           visibility: true,
         },
       }),
-      // @ts-ignore
       prisma.contentResource.findMany({
         where: {
           type: { in: ["BRAND_ASSET", "FILE", "BIO"] },
@@ -54,6 +53,7 @@ export async function GET(req: NextRequest) {
           customFields: true, // We'll filter sensitive data in the mapping below
         },
       }),
+      getUpcomingEvents(),
     ]);
 
     // Bucket guides by type (keep same shape as /app/public/page.tsx expects)
@@ -118,7 +118,7 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { playbooks, programs, guides, events, mediaItems },
+      { playbooks, programs, guides, events, upcomingEvents: lumaEvents, mediaItems },
       {
         headers: {
           "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",

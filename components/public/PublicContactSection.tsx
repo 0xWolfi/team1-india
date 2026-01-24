@@ -26,7 +26,7 @@ export default function PublicContactSection({ mediaItems = [] }: { mediaItems?:
                     
                     {/* Verify Membership (Top) */}
                     <div id="verify" className="bg-zinc-900/30 border border-white/5 rounded-3xl p-8 hover:bg-zinc-900/50 transition-colors scroll-mt-32">
-                        <h3 className="text-2xl font-bold text-white mb-6">Verify Membership</h3>
+                        <h3 className="text-2xl font-bold text-white mb-6 text-center">Verify Membership</h3>
                         <MemberChecker />
                     </div>
 
