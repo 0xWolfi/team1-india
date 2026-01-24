@@ -7,7 +7,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Team1Logo } from "@/components/Team1Logo";
 import { useSession, signOut, signIn } from "next-auth/react";
-import { User, X, LogOut, LayoutDashboard, LogIn, Ticket, Book, Rocket, Trophy, Calendar, AppWindow, Mail } from "lucide-react";
+import { User, X, LogOut, LayoutDashboard, LogIn, Ticket, Book, Rocket, Trophy, Calendar, Mail, ShieldCheck } from "lucide-react";
 import { useDrag } from "@use-gesture/react";
 
 const navItems = [
@@ -16,8 +16,8 @@ const navItems = [
     { label: "Programs", href: "#programs", icon: Rocket },
     { label: "Content", href: "#content", icon: Trophy },
     { label: "Events", href: "#events", icon: Calendar },
-    { label: "Media", href: "#media", icon: AppWindow },
     { label: "Contact", href: "#contact", icon: Mail },
+    { label: "Verify", href: "#verify-desktop", icon: ShieldCheck },
 ];
 
 export function FloatingNav() {
@@ -48,7 +48,23 @@ export function FloatingNav() {
                         current = section;
                      }
                  }
+                 // Handle mobile verify overlap
+                 if (window.innerWidth < 768) {
+                     const mobileVerify = document.getElementById('verify-mobile');
+                     if (mobileVerify) {
+                         const rect = mobileVerify.getBoundingClientRect();
+                         if (rect.top < viewportCenter && rect.bottom >= viewportCenter) {
+                             current = "verify-mobile";
+                         }
+                     }
+                 }
              }
+             
+             // Map verify-mobile back to verify-desktop for active state if needed, 
+             // but since we separate them, we might need to handle the active check in the map loop.
+             // Actually, let's keep it simple. If current is verify-mobile, we want the Verify tab active.
+             if (current === 'verify-mobile') current = 'verify-desktop';
+             
              setActiveSection(current);
         };
 
@@ -270,10 +286,11 @@ export function FloatingNav() {
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = activeSection === item.href.substring(1);
+                    const href = item.label === "Verify" ? "#verify-mobile" : item.href;
                     return (
                         <Link 
                             key={item.label} 
-                            href={item.href}
+                            href={href}
                             className={cn(
                                 "flex flex-col items-center justify-center gap-1 transition-all duration-300 p-2 rounded-xl",
                                 isActive 
