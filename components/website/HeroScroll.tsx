@@ -122,6 +122,7 @@ export const Header = ({ scale, translate, isDesktop }: { scale: MotionValue<num
 
 
 // Card scale/translate logic remains, but we add max-h to prevent it from eating all vertical space
+// Card scale/translate logic remains, but we add max-h to prevent it from eating all vertical space
 export const Card = ({
   rotate,
   scale,
@@ -135,15 +136,49 @@ export const Card = ({
   isVideoPlaying: boolean;
   videoRef: React.RefObject<HTMLVideoElement | null>;
 }) => {
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const handleProgress = () => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      if (video.buffered.length > 0) {
+        const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+        const duration = video.duration;
+        if (duration > 0) {
+           const progress = (bufferedEnd / duration) * 100;
+           setLoadingProgress(Math.min(100, Math.round(progress)));
+        }
+      }
+    }
+  };
+
+  const handleCanPlay = () => {
+    setIsLoaded(true);
+  };
+
   return (
     <motion.div
       style={{
         rotateX: rotate,
         scale,
       }}
-      className="max-w-5xl mx-auto aspect-video w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-white/5 backdrop-blur-xl border-white/20 rounded-[30px] shadow-2xl max-h-[50vh] object-contain"
+      className="max-w-5xl mx-auto aspect-video w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-white/5 backdrop-blur-xl border-white/20 rounded-[30px] shadow-2xl max-h-[50vh] object-contain relative"
     >
       <div className="h-full w-full overflow-hidden rounded-2xl bg-transparent relative">
+          
+          {/* Loader Overlay */}
+          {!isLoaded && (
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-700 pointer-events-none">
+               <div className="flex flex-col items-center gap-3">
+                  <div className="w-12 h-12 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  <span className="text-white/80 font-mono text-sm tracking-wider">
+                    LOADING {loadingProgress}%
+                  </span>
+               </div>
+            </div>
+          )}
+
           <div className="absolute inset-0 flex items-center justify-center bg-transparent">
               <Image 
                  src="/hero-cover.jpg" 
@@ -159,6 +194,9 @@ export const Card = ({
                   loop
                   playsInline
                   preload="auto"
+                  onProgress={handleProgress}
+                  onCanPlayThrough={handleCanPlay}
+                  onCanPlay={handleCanPlay}
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isVideoPlaying ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
                />
           </div>

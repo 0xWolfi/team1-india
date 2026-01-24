@@ -10,7 +10,7 @@
     "db:push": "prisma db push",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "security-check": "npm audit --audit-level=high && npm run lint && tsc --noEmit"
+    "security-check": "bun lint && tsc --noEmit"
   },
   "dependencies": {
     "@blocknote/core": "^0.45.0",

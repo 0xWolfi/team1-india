@@ -7,16 +7,17 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Team1Logo } from "@/components/Team1Logo";
 import { useSession, signOut, signIn } from "next-auth/react";
-import { User, X, LogOut, LayoutDashboard, LogIn, Menu } from "lucide-react";
+import { User, X, LogOut, LayoutDashboard, LogIn, Ticket, Book, Rocket, Trophy, Calendar, AppWindow, Mail } from "lucide-react";
 import { useDrag } from "@use-gesture/react";
 
 const navItems = [
-    { label: "Playbooks", href: "#playbooks" },
-    { label: "Programs", href: "#programs" },
-    { label: "Content", href: "#content" },
-    { label: "Events", href: "#events" },
-    { label: "Media", href: "#media" },
-    { label: "Contact", href: "#contact" },
+    { label: "Attend", href: "#upcoming-events", icon: Ticket },
+    { label: "Playbooks", href: "#playbooks", icon: Book },
+    { label: "Programs", href: "#programs", icon: Rocket },
+    { label: "Content", href: "#content", icon: Trophy },
+    { label: "Events", href: "#events", icon: Calendar },
+    { label: "Media", href: "#media", icon: AppWindow },
+    { label: "Contact", href: "#contact", icon: Mail },
 ];
 
 export function FloatingNav() {
@@ -29,7 +30,11 @@ export function FloatingNav() {
 
     useEffect(() => {
         const handleScroll = () => {
-             setIsScrolled(window.scrollY > 20);
+             // Check both window and main for scroll position (mobile uses main for snap)
+             const main = document.querySelector('main');
+             const scrollY = window.scrollY || main?.scrollTop || 0;
+             setIsScrolled(scrollY > 20);
+
              const sections = navItems.map(item => item.href.substring(1));
              let current = "";
              const viewportCenter = window.innerHeight / 2;
@@ -38,6 +43,7 @@ export function FloatingNav() {
                  const element = document.getElementById(section);
                  if (element) {
                      const rect = element.getBoundingClientRect();
+                     // rect is always relative to viewport, so this logic stands
                      if (rect.top < viewportCenter && rect.bottom >= viewportCenter) {
                         current = section;
                      }
@@ -45,8 +51,15 @@ export function FloatingNav() {
              }
              setActiveSection(current);
         };
+
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        const main = document.querySelector('main');
+        if (main) main.addEventListener("scroll", handleScroll);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            if (main) main.removeEventListener("scroll", handleScroll);
+        };
     }, []);
 
     const scrollToTop = () => {
@@ -138,13 +151,7 @@ export function FloatingNav() {
                             </button>
                         )}
 
-                        {/* Mobile Menu Button */}
-                        <button
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            className="md:hidden w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-                        >
-                            <Menu className="w-5 h-5" />
-                        </button>
+
                     </div>
                 </div>
             </div>
@@ -152,81 +159,7 @@ export function FloatingNav() {
 
 
 
-            {/* Mobile Menu Overlay */}
-            {isMobileMenuOpen && (
-                <div 
-                    {...bind()} 
-                    className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-xl animate-in fade-in duration-200 md:hidden touch-none"
-                >
-                    <div className="flex flex-col h-full p-6">
-                        <div className="flex justify-end mb-8">
-                            <button 
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="p-2 text-zinc-400 hover:text-white transition-colors"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-                        
-                        <nav className="flex flex-col gap-6 items-center justify-center flex-1">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.label}
-                                    href={item.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className={cn(
-                                        "text-2xl font-bold uppercase tracking-widest transition-colors",
-                                        activeSection === item.href.substring(1)
-                                            ? "text-white"
-                                            : "text-zinc-500 hover:text-zinc-300"
-                                    )}
-                                >
-                                    {item.label}
-                                </Link>
-                            ))}
-                        </nav>
 
-                        <div className="mt-auto pt-8 border-t border-white/10 flex flex-col gap-4">
-                             {session?.user ? (
-                                <div className="flex items-center gap-4 bg-zinc-900/50 p-4 rounded-xl border border-white/5">
-                                    <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold overflow-hidden relative">
-                                        {session.user.image ? (
-                                            <Image 
-                                                src={session.user.image} 
-                                                alt={session.user.name || "User"} 
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        ) : (
-                                            <span>{session.user.name?.[0] || "U"}</span>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="text-white font-bold truncate">{session.user.name}</div>
-                                        <div className="text-zinc-500 text-xs truncate">{session.user.email}</div>
-                                    </div>
-                                    <button 
-                                        onClick={() => setShowUserMenu(true)} 
-                                        className="text-indigo-400 text-sm font-bold uppercase tracking-wider"
-                                    >
-                                        Menu
-                                    </button>
-                                </div>
-                             ) : (
-                                <button
-                                    onClick={() => {
-                                        setIsMobileMenuOpen(false);
-                                        setShowLoginModal(true);
-                                    }}
-                                    className="w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2"
-                                >
-                                    <User className="w-5 h-5" /> Member Login
-                                </button>
-                             )}
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* Login Modal */}
             {showLoginModal && (
@@ -332,6 +265,28 @@ export function FloatingNav() {
                     </div>
                 </div>
             )}
+            {/* Mobile Bottom Dock */}
+            <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-sm bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xl">
+                {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = activeSection === item.href.substring(1);
+                    return (
+                        <Link 
+                            key={item.label} 
+                            href={item.href}
+                            className={cn(
+                                "flex flex-col items-center justify-center gap-1 transition-all duration-300 p-2 rounded-xl",
+                                isActive 
+                                    ? "text-white bg-white/10" 
+                                    : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                            )}
+                            title={item.label}
+                        >
+                            <Icon className="w-5 h-5" />
+                        </Link>
+                    )
+                })}
+            </div>
         </>
     );
 }
