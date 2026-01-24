@@ -61,12 +61,15 @@ export default function PublicPage() {
     const { playbooks, programs, guides, events, upcomingEvents, mediaItems } = data;
 
     return (
-        <main className="min-h-screen text-white selection:bg-zinc-800 selection:text-zinc-200">
+        <main className="h-[100dvh] w-full overflow-y-scroll overflow-x-hidden snap-y snap-mandatory md:h-auto md:w-auto md:overflow-visible md:snap-none text-white selection:bg-zinc-800 selection:text-zinc-200 supports-[height:100svh]:h-[100svh]">
             <FloatingNav />
             
             <div className="pt-24 px-4 md:px-8 max-w-7xl mx-auto space-y-8">
                 {/* Added pb-32 to push hero up slightly when centered */}
-                <div className="min-h-[85vh] flex flex-col justify-center pb-16">
+                <div 
+                    className="min-h-[100dvh] snap-center flex flex-col justify-center items-center pb-[calc(8rem+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)] md:min-h-[85vh] md:items-stretch md:pb-16"
+                    style={{ scrollSnapStop: 'always' }}
+                >
                     <PublicHero />
                     <div className="relative z-10 -mt-12 md:-mt-32">
                          <Announcements />
@@ -75,10 +78,14 @@ export default function PublicPage() {
 
 
                 {/* Upcoming Events (Luma) Section */}
-                <section id="upcoming-events" className="py-8 relative scroll-mt-24">
-                    <div className="container mx-auto px-6 relative z-10">
+                <section 
+                    id="upcoming-events" 
+                    className="min-h-[100dvh] snap-center flex flex-col justify-center items-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-8"
+                    style={{ scrollSnapStop: 'always' }}
+                >
+                    <div className="container mx-auto px-6 relative z-10 w-full">
                         {/* Section Header */}
-                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+                        <div className="flex flex-col items-center text-center md:flex-row md:items-end md:text-left justify-between mb-8 gap-6">
                             <div className="max-w-2xl">
                                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
                                     Attend
@@ -101,18 +108,7 @@ export default function PublicPage() {
 
                         {/* Event Grid */}
                         <EventGrid initialEvents={upcomingEvents || []} />
-                        
-                        {/* Mobile See All Button (Bottom) */}
-                        <div className="md:hidden mt-8">
-                            <Link 
-                                href="https://lu.ma/Team1India"
-                                target="_blank"
-                                className="flex w-full justify-center items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-3 rounded-xl transition-all"
-                            >
-                                See All
-                                <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
+
                     </div>
                 </section>
 

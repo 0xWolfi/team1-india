@@ -136,21 +136,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         </div>
       )}
 
-      {/* See All Button */}
-      <div className="flex flex-col items-center gap-12 pt-4">
-        <a 
-            href="https://lu.ma/Team1India" 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 hover:text-black transition-all shadow-lg shadow-white/10 hover:shadow-white/20"
-        >
-            <span className="block transition-transform duration-200 group-hover:scale-110">See All Events</span>
-            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-        </a>
 
-      </div>
     </div>
   );
 }
