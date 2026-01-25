@@ -38,9 +38,45 @@ export const authOptions: NextAuthOptions = {
              return true;
         }
 
-        // Allow non-members to login (they can fill public forms)
+        // 3. Check Public User
+        const publicUser = await prisma.publicUser.findFirst({
+            where: { email: { equals: emailToFind, mode: 'insensitive' } }
+        });
+
+        if (publicUser) {
+             await prisma.publicUser.update({
+                 where: { id: publicUser.id },
+                 data: { 
+                     fullName: user.name,
+                     profileImage: user.image,
+                     signupIp: "next-auth-signin" // We can't easily get IP here without request context, setting placeholder or leaving as is
+                 }
+             });
+             return true;
+        }
+
+        // 4. Create New Public User
+        // Consent is now taken AFTER login via a separate modal.
+        // Initialize with false.
+        await prisma.publicUser.create({
+            data: {
+                email: emailToFind,
+                fullName: user.name,
+                profileImage: user.image,
+                providerId: user.id,
+                consentNewsletter: false,
+                consentLegal: false,
+                consentVersion: null,
+                consentTimestamp: null,
+                roles: [], 
+                interests: [],
+                preferredChains: [],
+                socialProfiles: {}
+            }
+        });
+
         // eslint-disable-next-line no-console
-        console.log(`Public user login: ${user.email}`);
+        console.log(`New Public user created (Pending Consent): ${user.email}`);
         return true; 
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -48,7 +84,12 @@ export const authOptions: NextAuthOptions = {
         return "/public?error=server_error"; 
       }
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      // Handle session update (e.g., client-side update({ consent: true }))
+      if (trigger === "update" && session?.consent) {
+          token.consent = session.consent;
+      }
+
       if (user) {
         try {
             const emailToFind = user.email ? user.email.trim() : "";
@@ -65,6 +106,7 @@ export const authOptions: NextAuthOptions = {
                 token.role = 'CORE';
                 token.permissions = (member.permissions as Record<string, string>) || { default: "READ" };
                 token.tags = member.tags || [];
+                token.consent = true; // Members implicitly consented
                 return token;
             }
 
@@ -80,15 +122,30 @@ export const authOptions: NextAuthOptions = {
                 token.role = 'MEMBER';
                 token.permissions = {};
                 token.tags = communityMember.tags ? [communityMember.tags] : [];
+                token.consent = true; // Members implicitly consented
                 return token;
             }
 
-            // 3. No valid membership found - assign PUBLIC role
-            // eslint-disable-next-line no-console
-            console.log(`Public user authenticated: ${user.email}`);
+            // 3. Check Public User
+            const publicUser = await prisma.publicUser.findFirst({
+                where: { email: { equals: emailToFind, mode: 'insensitive' } },
+                select: { id: true, consentLegal: true }
+            });
+
+            if (publicUser) {
+                token.id = publicUser.id;
+                token.role = 'PUBLIC';
+                token.permissions = {};
+                token.tags = [];
+                token.consent = publicUser.consentLegal;
+                return token;
+            }
+            
+            // Should not happen if signIn creates the user, but fallback:
             token.role = 'PUBLIC';
             token.permissions = {};
             token.tags = [];
+            token.consent = false;
             return token;
 
         } catch (e) {
@@ -106,6 +163,7 @@ export const authOptions: NextAuthOptions = {
         s.id = token.id;
         s.permissions = token.permissions;
         s.tags = token.tags;
+        s.consent = token.consent;
       }
       return session;
     },

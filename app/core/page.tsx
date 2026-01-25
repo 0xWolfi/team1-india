@@ -35,10 +35,11 @@ function WorldClock() {
     }, []);
 
     const zones = [
-        { label: 'NY', zone: 'America/New_York' },
-        { label: 'LDN', zone: 'Europe/London' },
         { label: 'IST', zone: 'Asia/Kolkata' },
-        { label: 'TYO', zone: 'Asia/Tokyo' },
+        { label: 'UTC', zone: 'UTC' },
+        { label: 'EST', zone: 'America/New_York' },
+        { label: 'PST', zone: 'America/Los_Angeles' },
+        { label: 'CET', zone: 'Europe/Paris' },
     ];
 
     if (!time) return null; // Or return a skeleton

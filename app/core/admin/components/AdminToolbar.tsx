@@ -10,7 +10,7 @@ interface AdminToolbarProps {
     isLoading: boolean;
 }
 
-export const AdminToolbar: React.FC<AdminToolbarProps> = ({ searchTerm, onSearchChange, onRefresh, isLoading }) => {
+export const AdminToolbar: React.FC<AdminToolbarProps & { children?: React.ReactNode }> = ({ searchTerm, onSearchChange, onRefresh, isLoading, children }) => {
     return (
         <div className="flex flex-col md:flex-row gap-4 mb-6 relative z-10">
             <div className="relative flex-1 group">
@@ -23,6 +23,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps> = ({ searchTerm, onSearch
                     className="w-full bg-black/40 backdrop-blur-md border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-700 focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all"
                 />
             </div>
+            {children}
             <div className="flex items-center gap-2">
                 <button onClick={onRefresh} className="p-2.5 rounded-xl bg-black/40 border border-white/5 hover:bg-white/5 text-zinc-500 hover:text-white transition-colors">
                     <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />

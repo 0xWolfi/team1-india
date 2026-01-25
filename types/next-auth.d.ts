@@ -10,6 +10,7 @@ declare module "next-auth" {
       role?: string; // keeping for backward compat
       permissions?: Record<string, string>;
       tags?: string[];
+      consent?: boolean;
     }
   }
 
@@ -17,6 +18,7 @@ declare module "next-auth" {
     role?: string;
     permissions?: Record<string, string>;
     tags?: string[];
+    consent?: boolean;
   }
 }
 
@@ -25,5 +27,6 @@ declare module "next-auth/jwt" {
     role?: string;
     permissions?: Record<string, string>;
     tags?: string[];
+    consent?: boolean;
   }
 }

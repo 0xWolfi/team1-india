@@ -108,20 +108,23 @@ export default function MemberChecker() {
                         </div>
                         <div>
                              <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">Discord ID</label>
-                            <input
-                                type="text"
-                                value={discord}
-                                onChange={(e) => {
-                                    setDiscord(e.target.value);
-                                    if (e.target.value) {
-                                        setEmail("");
-                                        setXHandle("");
-                                        setTelegram("");
-                                    }
-                                }}
-                                placeholder="username"
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
-                            />
+                            <div className="relative">
+                                <span className="absolute left-3 top-2.5 text-zinc-500 text-sm">@</span>
+                                <input
+                                    type="text"
+                                    value={discord}
+                                    onChange={(e) => {
+                                        setDiscord(e.target.value.replace('@', ''));
+                                        if (e.target.value) {
+                                            setEmail("");
+                                            setXHandle("");
+                                            setTelegram("");
+                                        }
+                                    }}
+                                    placeholder="username"
+                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                />
+                            </div>
                         </div>
                     </div>
 

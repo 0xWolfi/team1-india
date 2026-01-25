@@ -14,58 +14,157 @@ import { ViewMemberModal, type CommunityMember } from "./components/ViewMemberMo
 
 // Simplified Table for Community
 // We will create this inline for now or as simple component since columns differ
-import { MoreVertical, XCircle, CheckCircle, Eye } from "lucide-react";
+// Simplified Table for Community
+// We will create this inline for now or as simple component since columns differ
+import { MoreVertical, XCircle, CheckCircle, Eye, Globe, User } from "lucide-react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+type Tab = 'members' | 'public';
 
 export default function CommunityMembersPage() {
     const { data: session } = useSession();
-    const [members, setMembers] = useState<CommunityMember[]>([]);
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const initialTab = (searchParams.get('tab') as Tab) || 'members';
+    const initialSearch = searchParams.get('search') || '';
+    const initialPage = parseInt(searchParams.get('page') || '1');
+
+    const [activeTab, setActiveTab] = useState<Tab>(initialTab);
+    const [members, setMembers] = useState<any[]>([]); // Using any to support both types for now
     const [isLoading, setIsLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState(initialSearch);
+    
+    const [page, setPage] = useState(initialPage);
+    const [totalPages, setTotalPages] = useState(1);
+    const targetPageRef = React.useRef(initialPage);
+
+    // Sync URL with state
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        if (activeTab !== 'members') params.set('tab', activeTab);
+        else params.delete('tab');
+        
+        if (searchTerm) params.set('search', searchTerm);
+        else params.delete('search');
+
+        params.set('page', page.toString());
+        
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [activeTab, searchTerm, page, router, pathname]);
     
     const [isAddingMember, setIsAddingMember] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [deletingMember, setDeletingMember] = useState<CommunityMember | null>(null);
-    const [viewingMember, setViewingMember] = useState<CommunityMember | null>(null);
+    const [viewingMember, setViewingMember] = useState<any | null>(null);
 
     // Check if user is superadmin
     // @ts-ignore
     const userPermissions = (session?.user as any)?.permissions || {};
     const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
+    
+    // Simple cache: Key -> Data
+    const dataCache = React.useRef<Map<string, any>>(new Map());
 
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const getCacheKey = (tab: Tab, p: number, search: string) => `${tab}-${p}-${search}`;
 
-    const refreshMembers = (targetPage = 1) => {
-        setIsLoading(true);
-        fetch(`/api/community-members?page=${targetPage}&limit=50`)
-            .then(res => res.json())
-            .then(data => {
-                // Determine structure: paginated or legacy array
-                if (Array.isArray(data)) {
-                    setMembers(data); // Fallback for legacy
-                    setTotalPages(1);
-                } else {
-                    setMembers(data.data);
-                    setTotalPages(data.pagination.totalPages);
-                    setPage(data.pagination.page);
-                }
-                setIsLoading(false);
-            })
-            .catch(err => {
-                console.error("Failed to fetch community members", err);
-                setIsLoading(false);
-            });
+    const fetchData = async (tab: Tab, p: number, search: string): Promise<{ data: any[], pagination: any } | null> => {
+        const endpoint = tab === 'members' 
+            ? `/api/community-members?page=${p}&limit=25&search=${encodeURIComponent(search)}`
+            : `/api/admin/public-users?page=${p}&limit=25&search=${encodeURIComponent(search)}`;
+        
+        try {
+            const res = await fetch(endpoint);
+            const data = await res.json();
+            
+            // Normalize data structure
+            let normalizedData: any[] = [];
+            let normalizedPagination = { totalPages: 1, page: p };
+
+            if (Array.isArray(data)) {
+                normalizedData = data;
+            } else {
+                normalizedData = data.data;
+                normalizedPagination = data.pagination;
+            }
+
+            return { data: normalizedData, pagination: normalizedPagination };
+        } catch (err) {
+            console.error("Fetch error", err);
+            return null;
+        }
     };
 
-    useEffect(() => {
-        refreshMembers();
-    }, []);
+    const refreshMembers = async (targetPage = page) => {
+        const key = getCacheKey(activeTab, targetPage, searchTerm);
+        
+        // 1. Check Cache
+        if (dataCache.current.has(key)) {
+            const cached = dataCache.current.get(key);
+            setMembers(cached.data);
+            setTotalPages(cached.pagination.totalPages);
+            setPage(cached.pagination.page); // Ensure page state is synced
+            setIsLoading(false);
+            
+            // Trigger prefetch for next page if allowed
+            if (cached.pagination.page < cached.pagination.totalPages) {
+                prefetchPage(activeTab, cached.pagination.page + 1, searchTerm);
+            }
+            return;
+        }
 
-    const filteredMembers = members.filter(m => {
-        return m.email.toLowerCase().includes(searchTerm.toLowerCase()) || 
-               (m.tags && m.tags.toLowerCase().includes(searchTerm.toLowerCase())) ||
-               (m.name && m.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    });
+        // 2. Fetch if not in cache
+        setIsLoading(true);
+        const result = await fetchData(activeTab, targetPage, searchTerm);
+        
+        if (result) {
+            // Cache result
+            dataCache.current.set(key, result);
+            
+            setMembers(result.data);
+            setTotalPages(result.pagination.totalPages);
+            setPage(result.pagination.page);
+
+            // 3. Prefetch next page
+            if (result.pagination.page < result.pagination.totalPages) {
+                prefetchPage(activeTab, result.pagination.page + 1, searchTerm);
+            }
+        }
+        setIsLoading(false);
+    };
+
+    const prefetchPage = async (tab: Tab, p: number, search: string) => {
+        const key = getCacheKey(tab, p, search);
+        if (dataCache.current.has(key)) return; // Already cached
+
+        // console.log("Prefetching page", p);
+        const result = await fetchData(tab, p, search);
+        if (result) {
+            dataCache.current.set(key, result);
+        }
+    };
+
+    // Unified Effect for data fetching
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (page !== targetPageRef.current) {
+                targetPageRef.current = page;
+                refreshMembers(page);
+            } else {
+                 refreshMembers(page);
+            }
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm, activeTab, page]);
+
+
+    // Construct manual refresh
+    const handleManualRefresh = () => refreshMembers(page);
+
+
 
     const handleAddMember = async (data: { email: string, tags: string }) => {
         if (!data.email) return;
@@ -138,6 +237,13 @@ export default function CommunityMembersPage() {
         }
     };
 
+    const handleTabChange = (tab: Tab) => {
+        if (tab === activeTab) return;
+        setMembers([]); // Clear stale data
+        setIsLoading(true); // Show loader immediately
+        setActiveTab(tab);
+    };
+
     return (
         <>
              <CorePageHeader
@@ -156,81 +262,149 @@ export default function CommunityMembersPage() {
              <AdminToolbar 
                 searchTerm={searchTerm} 
                 onSearchChange={setSearchTerm} 
-                onRefresh={refreshMembers} 
+                onRefresh={handleManualRefresh} 
                 isLoading={isLoading} 
-             />
+             >
+                <div className="flex bg-black/40 backdrop-blur-md border border-white/5 p-1 rounded-xl">
+                    <button
+                        onClick={() => handleTabChange('members')}
+                        className={cn(
+                            "px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2",
+                            activeTab === 'members' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-white"
+                        )}
+                    >
+                        <Users className="w-3.5 h-3.5" /> Members
+                    </button>
+                    <button
+                        onClick={() => handleTabChange('public')}
+                        className={cn(
+                            "px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2",
+                            activeTab === 'public' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-white"
+                        )}
+                    >
+                        <Globe className="w-3.5 h-3.5" /> Public
+                    </button>
+                </div>
+             </AdminToolbar>
 
              {/* Table */}
-             <div className="bg-black/40 backdrop-blur-xl border border-white/5 rounded-xl shadow-2xl relative z-30 overflow-visible">
+             <div className="bg-black/40 backdrop-blur-xl border border-white/5 rounded-xl shadow-2xl relative z-30 overflow-visible min-h-[300px]">
+                {isLoading && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-xl transition-all duration-300">
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <div className="text-xs text-white font-medium animate-pulse">Loading...</div>
+                        </div>
+                    </div>
+                )}
                 <table className="w-full text-left text-sm">
                     <thead className="bg-white/[0.02] text-zinc-500 font-medium uppercase text-[10px] tracking-wider border-b border-white/5 rounded-t-xl">
                         <tr>
                             <th className="p-4 pl-6 font-semibold rounded-tl-xl w-[20%]">Name</th>
-                            <th className="p-4 font-semibold w-[10%]">Role</th>
-                            <th className="p-4 font-semibold w-[20%]">Email</th>
-                            <th className="p-4 font-semibold w-[10%]">X</th>
-                            <th className="p-4 font-semibold w-[10%]">Telegram</th>
-                            <th className="p-4 font-semibold w-[15%]">Tags</th>
+                            {activeTab === 'members' ? (
+                                <>
+                                    <th className="p-4 font-semibold w-[10%]">Role</th>
+                                    <th className="p-4 font-semibold w-[20%]">Email</th>
+                                    <th className="p-4 font-semibold w-[10%]">X</th>
+                                    <th className="p-4 font-semibold w-[10%]">Telegram</th>
+                                    <th className="p-4 font-semibold w-[15%]">Tags</th>
+                                </>
+                            ) : (
+                                <>
+                                    <th className="p-4 font-semibold w-[20%]">Email</th>
+                                    <th className="p-4 font-semibold w-[15%]">Location</th>
+                                    <th className="p-4 font-semibold w-[10%]">Consent</th>
+                                    <th className="p-4 font-semibold w-[20%]">Interests</th>
+                                </>
+                            )}
                             <th className="p-4 text-right pr-6 font-semibold rounded-tr-xl w-[15%]">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
                         {members.length === 0 && !isLoading && (
-                            <tr><td colSpan={7} className="p-12 text-center text-zinc-600">No community members found.</td></tr>
+                            <tr><td colSpan={7} className="p-12 text-center text-zinc-600">No records found.</td></tr>
                         )}
                         {members.map(member => (
                             <tr key={member.id} className="hover:bg-white/[0.02] transition-colors group">
                                 <td className="p-4 pl-6">
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-[10px] font-bold text-zinc-400">
-                                            {member.name ? member.name.charAt(0).toUpperCase() : member.email.charAt(0).toUpperCase()}
+                                            {member.name ? member.name.charAt(0).toUpperCase() : (member.fullName ? member.fullName.charAt(0).toUpperCase() : member.email?.charAt(0).toUpperCase())}
                                         </div>
-                                        <div className="font-medium text-zinc-200 text-sm">{member.name || "Unknown"}</div>
+                                        <div className="font-medium text-zinc-200 text-sm">{member.name || member.fullName || "Unknown"}</div>
                                     </div>
                                 </td>
-                                <td className="p-4">
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[10px] font-medium bg-zinc-900/50 text-zinc-400 border border-white/5 uppercase">
-                                        {member.tags || 'member'}
-                                    </span>
-                                </td>
-                                <td className="p-4">
-                                    <div className="text-[11px] text-zinc-500">{member.email}</div>
-                                </td>
-                                <td className="p-4">
-                                    {member.xHandle ? (
-                                        <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.xHandle.replace('@','')}</span>
-                                    ) : (
-                                        <span className="text-zinc-700">-</span>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                     {member.telegram ? (
-                                        <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
-                                    ) : (
-                                        <span className="text-zinc-700">-</span>
-                                    )}
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex gap-1">
-                                         {/* Future tags placeholder */}
-                                         <span className="text-zinc-700 text-xs">-</span>
-                                    </div>
-                                </td>
+                                
+                                {activeTab === 'members' ? (
+                                    <>
+                                        <td className="p-4">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[10px] font-medium bg-zinc-900/50 text-zinc-400 border border-white/5 uppercase">
+                                                {member.tags || 'member'}
+                                            </span>
+                                        </td>
+                                        <td className="p-4">
+                                            <div className="text-[11px] text-zinc-500">{member.email}</div>
+                                        </td>
+                                        <td className="p-4">
+                                            {member.xHandle ? (
+                                                <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.xHandle.replace('@','')}</span>
+                                            ) : (
+                                                <span className="text-zinc-700">-</span>
+                                            )}
+                                        </td>
+                                        <td className="p-4">
+                                            {member.telegram ? (
+                                                <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
+                                            ) : (
+                                                <span className="text-zinc-700">-</span>
+                                            )}
+                                        </td>
+                                        <td className="p-4">
+                                            <div className="flex gap-1">
+                                                <span className="text-zinc-700 text-xs">-</span>
+                                            </div>
+                                        </td>
+                                    </>
+                                ) : (
+                                    <>
+                                        <td className="p-4">
+                                            <div className="text-[11px] text-zinc-500">{member.email}</div>
+                                        </td>
+                                        <td className="p-4">
+                                            <div className="text-[11px] text-zinc-400">{member.location || '-'}</div>
+                                        </td>
+                                        <td className="p-4">
+                                             {member.consentLegal ? (
+                                                <CheckCircle className="w-4 h-4 text-emerald-500/50" />
+                                             ) : (
+                                                <XCircle className="w-4 h-4 text-zinc-800" />
+                                             )}
+                                        </td>
+                                        <td className="p-4">
+                                            <div className="flex flex-wrap gap-1">
+                                                {member.interests && Array.isArray(member.interests) && member.interests.slice(0, 2).map((i: string) => (
+                                                     <span key={i} className="text-[10px] bg-zinc-800 px-1 rounded text-zinc-400">{i}</span>
+                                                ))}
+                                            </div>
+                                        </td>
+                                    </>
+                                )}
+
                                 <td className="p-4 text-right pr-6">
                                     <div className="flex items-center justify-end gap-2">
                                         {isSuperAdmin && (
                                             <button 
-                                                onClick={() => setViewingMember(member)}
+                                                onClick={() => setViewingMember(member)} // Might need update for PublicUser
                                                 className="p-1.5 rounded-md hover:bg-white/10 text-zinc-600 hover:text-white transition-colors"
-                                                title="View Member Details"
+                                                title="View Details"
                                             >
                                                 <Eye className="w-4 h-4" />
                                             </button>
                                         )}
                                         <button 
-                                            onClick={() => setDeletingMember(member)}
+                                            // onClick={() => setDeletingMember(member)} // Disable delete for public for now or implement
                                             className="p-1.5 rounded-md hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-colors"
-                                            title="Remove Member"
+                                            title="Delete (Disabled for demo)"
                                         >
                                             <XCircle className="w-4 h-4" />
                                         </button>

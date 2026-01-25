@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Clock, Star, Zap, LayoutGrid } from 'lucide-react';
+import { ArrowRight, Clock, Star, Zap, LayoutGrid, LogIn, LayoutDashboard } from 'lucide-react';
 import ApplicationModal from './ApplicationModal';
 
 interface HeroItem {
@@ -15,7 +15,14 @@ interface HeroItem {
     createdAt?: string;
 }
 
-export default function PublicHero({ heroItem }: { heroItem?: HeroItem }) {
+interface PublicHeroProps {
+    heroItem?: HeroItem;
+    onLoginClick?: () => void;
+    userRole?: string;
+    isAuthenticated?: boolean;
+}
+
+export default function PublicHero({ heroItem, onLoginClick, userRole, isAuthenticated }: PublicHeroProps) {
     const [showApplication, setShowApplication] = useState(false);
 
     return (
@@ -42,11 +49,30 @@ export default function PublicHero({ heroItem }: { heroItem?: HeroItem }) {
                             Access our curated collection of guides, playbooks, and community resources. Built for transparency and collaboration.
                         </p>
                         <div className="flex flex-wrap justify-center gap-4 pt-4">
-                            <button onClick={() => setShowApplication(true)} className="group px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center text-lg overflow-hidden">
-                                <span className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-110">
-                                    <Zap className="w-5 h-5 fill-black" /> Apply for Membership
-                                </span>
-                            </button>
+                            {/* Conditional CTA */}
+                            {!isAuthenticated ? (
+                                <button onClick={onLoginClick} className="group px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center text-lg overflow-hidden">
+                                    <span className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-110">
+                                        <LogIn className="w-5 h-5" /> Login
+                                    </span>
+                                </button>
+                            ) : userRole === 'PUBLIC' ? (
+                                <button onClick={() => setShowApplication(true)} className="group px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center text-lg overflow-hidden">
+                                    <span className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-110">
+                                        <Zap className="w-5 h-5 fill-black" /> Apply for Membership
+                                    </span>
+                                </button>
+                            ) : (
+                                <Link 
+                                    href={userRole === 'CORE' ? '/core' : '/member'} 
+                                    className="group px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center text-lg overflow-hidden"
+                                >
+                                    <span className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-110">
+                                        <LayoutDashboard className="w-5 h-5" /> Go to Dashboard
+                                    </span>
+                                </Link>
+                            )}
+
                             <Link href="#playbooks" className="group px-8 py-4 bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/40 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:shadow-white/10 backdrop-blur-md">
                                 <span className="flex items-center gap-2 transition-transform duration-200 group-hover:scale-110">
                                     <LayoutGrid className="w-5 h-5" /> Browse Resources

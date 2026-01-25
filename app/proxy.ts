@@ -20,42 +20,56 @@ export default withAuth(
         return NextResponse.next();
     }
     
-    // --- AUTHENTICATION CHECK ---
-    // If we are here, the route assumes protection.
-    if (!token) {
-      return new NextResponse(
-          JSON.stringify({ error: "Unauthorized" }), 
-          { status: 401, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-      
-    // @ts-ignore
-    const role = token.role;
+    // --- UI ROUTE PROTECTION ---
+    // 1. Block Public Access to /member and /core -> 404
+    if (path.startsWith("/member") || path.startsWith("/core")) {
+        if (!token) {
+            return NextResponse.rewrite(new URL("/404", req.url));
+        }
 
-    // --- RBAC: MEMBER ROUTES ---
-    // Routes starting with /api/member require MEMBER or CORE role
-    if (path.startsWith("/api/member")) {
-        if (role !== 'MEMBER' && role !== 'CORE') {
-             return new NextResponse("Forbidden", { status: 403 });
+        // @ts-ignore
+        const role = token.role;
+
+        // 2. Block Non-CORE access to /core -> 404
+        if (path.startsWith("/core") && role !== 'CORE') {
+             return NextResponse.rewrite(new URL("/404", req.url));
+        }
+        
+        // Optional: Enforce role for /member too? 
+        // Assuming any authenticated user with MEMBER/CORE role can access /member.
+        // If you have other roles like "USER" that shouldn't access member, uncomment below:
+        // if (path.startsWith("/member") && role !== 'MEMBER' && role !== 'CORE') {
+        //      return NextResponse.rewrite(new URL("/404", req.url));
+        // }
+    }
+    
+    // --- AUTHENTICATION CHECK (API) ---
+    // If not handled by UI check above, check API
+    if (path.startsWith("/api/")) {
+        if (!token) {
+            return new NextResponse(
+                JSON.stringify({ error: "Unauthorized" }), 
+                { status: 401, headers: { 'Content-Type': 'application/json' } }
+            );
+        }
+        
+        // @ts-ignore
+        const role = token.role;
+
+        // --- RBAC: MEMBER ROUTES ---
+        if (path.startsWith("/api/member")) {
+            if (role !== 'MEMBER' && role !== 'CORE') {
+                return new NextResponse("Forbidden", { status: 403 });
+            }
+        }
+        
+        // --- RBAC: UPLOAD ---
+        if (path.startsWith("/api/upload")) {
+            if (role !== 'MEMBER' && role !== 'CORE') {
+                return new NextResponse("Forbidden", { status: 403 });
+            }
         }
     }
-      
-    // --- RBAC: UPLOAD ---
-    // Uploads require MEMBER or CORE
-    if (path.startsWith("/api/upload")) {
-        if (role !== 'MEMBER' && role !== 'CORE') {
-             return new NextResponse("Forbidden", { status: 403 });
-        }
-    }
-
-    // --- RBAC: CORE/ADMIN ROUTES ---
-    // Any other /api/* routes not explicitly handled above?
-    // If you have admin-only routes, add them here.
-    // For now, allow authenticated users to proceed to route handlers which do granular checks.
-    // OR enforce strict Core-only default:
-    // if (!path.startsWith("/api/member") && !path.startsWith("/api/upload") && role !== 'CORE') {
-    //    return new NextResponse("Forbidden. Core access required.", { status: 403 });
-    // }
 
     return NextResponse.next();
   },
