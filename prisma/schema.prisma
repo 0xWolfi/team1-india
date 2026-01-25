@@ -465,3 +465,38 @@ model PushSubscription {
 
   @@index([userId])
 }
+
+model PublicUser {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  fullName         String?
+  profileImage     String?
+  providerId       String?  // Google ID
+  
+  // Consent
+  consentNewsletter Boolean @default(false)
+  consentLegal      Boolean @default(false)
+  consentVersion    String?
+  consentTimestamp  DateTime?
+
+  // Profile Fields
+  bio               String?
+  location          String?
+  city              String?
+  country           String?
+  roles             Json?    // Array of strings: "Developer", "Marketing", etc.
+  interests         Json?    // Array of strings
+  preferredChains   Json?    // Array of strings
+  socialProfiles    Json?    // Array of { name: string, url: string }
+  skills            Json?    // Array of strings
+  currentProject    String?
+  availability      String?  // "Open to Hack", "Hiring", etc.
+
+  // Metadata
+  signupIp          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
+  deletedAt         DateTime?
+
+  @@index([email])
+}

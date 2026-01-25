@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Toast } from "@/components/ui/Toast";
-import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle, ChevronDown, Search, Check, Shield, Info } from "lucide-react";
+import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle, ChevronDown, Search, Check, Shield, Info, Upload as UploadIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { INDIAN_STATES } from "@/lib/data/indian-states";
@@ -118,8 +118,57 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
     const { data: session, update: updateSession } = useSession();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false); // New State
     const [showToast, setShowToast] = useState(false);
     const [profileImageError, setProfileImageError] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null); // New Ref
+    
+    // Image Upload Handler
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Size check (e.g. 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert("File is too large. Max 5MB.");
+            return;
+        }
+
+        setIsUploadingImage(true);
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Use the same public upload API or a member one
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!res.ok) throw new Error("Upload failed");
+
+            const data = await res.json();
+            
+            // Immediately update the user profile with the new image URL in the DB
+            // We reuse the existing patch endpoint or create a specific one. 
+            // Assuming the main PATCH endpoint handles 'image' or we add it safely.
+            // For now, let's update via the main profile patch to ensure it persists.
+            await fetch("/api/profile", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image: data.url }) // Backend must support 'image' update
+            });
+
+            await updateSession(); // Refresh session to show new image
+            
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("Failed to upload image.");
+        } finally {
+            setIsUploadingImage(false);
+        }
+    };
+
     const [formData, setFormData] = useState({
         name: "",
         xHandle: "",
@@ -256,21 +305,47 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                     <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
                     
                     <div className="relative z-10 p-6 flex flex-col items-center text-center pt-8">
-                        {/* Avatar with Glow */}
+                        {/* Avatar with Glow & Upload */}
                         <div className="relative mb-5 group-hover:scale-105 transition-transform duration-500">
                              <div className="absolute inset-0 bg-white/10 blur-2xl rounded-full scale-110" />
-                             {session?.user?.image && !profileImageError ? (
-                                <img 
-                                    src={getImageUrl(session.user.image) || session.user.image} 
-                                    alt="Profile" 
-                                    className="relative w-28 h-28 rounded-full border-4 border-zinc-900 ring-1 ring-white/20 shadow-2xl object-cover" 
-                                    onError={() => setProfileImageError(true)}
-                                />
-                            ) : (
-                                <div className="relative w-28 h-28 rounded-full bg-zinc-800 flex items-center justify-center border-4 border-zinc-900 ring-1 ring-white/20 shadow-2xl">
-                                    <User className="w-10 h-10 text-zinc-500" />
+                             
+                             <div className="relative group/edit">
+                                 {session?.user?.image && !profileImageError ? (
+                                    <img 
+                                        src={getImageUrl(session.user.image) || session.user.image} 
+                                        alt="Profile" 
+                                        className="relative w-28 h-28 rounded-full border-4 border-zinc-900 ring-1 ring-white/20 shadow-2xl object-cover" 
+                                        onError={() => setProfileImageError(true)}
+                                    />
+                                ) : (
+                                    <div className="relative w-28 h-28 rounded-full bg-zinc-800 flex items-center justify-center border-4 border-zinc-900 ring-1 ring-white/20 shadow-2xl">
+                                        <User className="w-10 h-10 text-zinc-500" />
+                                    </div>
+                                )}
+
+                                {/* Upload Overlay */}
+                                <div 
+                                    className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover/edit:opacity-100 transition-opacity cursor-pointer z-20"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {isUploadingImage ? (
+                                        <Loader2 className="w-6 h-6 text-white animate-spin" />
+                                    ) : (
+                                        <>
+                                            <UploadIcon className="w-6 h-6 text-white mb-1" />
+                                            <span className="text-[8px] uppercase font-bold text-zinc-300 tracking-wider">Change</span>
+                                        </>
+                                    )}
                                 </div>
-                            )}
+                             </div>
+                             
+                             <input 
+                                 type="file" 
+                                 ref={fileInputRef} 
+                                 className="hidden" 
+                                 accept="image/*"
+                                 onChange={handleImageUpload} 
+                             />
                         </div>
 
                         {/* Name & Email */}

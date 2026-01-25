@@ -24,7 +24,26 @@ type PublicHomePayload = {
     mediaItems: any[];
 };
 
+import { useSession } from "next-auth/react";
+import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
+import { PublicConsentModal } from "@/components/public/auth/PublicConsentModal";
+
 export default function PublicPage() {
+    const { data: session, status } = useSession();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    useEffect(() => {
+        // Show login modal on first visit if not logged in
+        if (status === "unauthenticated") {
+            // Optional: Check local storage if we already showed it to avoid annoyance? 
+            // Requirements say "When user opens /public... Display modal". 
+            // Stick to simple requirement for now: Show it.
+            // Maybe a small delay for better UX?
+            const timer = setTimeout(() => setShowLoginModal(true), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [status]);
+
     const [data, setData] = useState<PublicHomePayload>({
         playbooks: [],
         programs: [],
@@ -63,6 +82,10 @@ export default function PublicPage() {
     return (
         <main className="h-[100dvh] w-full overflow-y-scroll overflow-x-hidden snap-y snap-mandatory md:h-auto md:w-auto md:overflow-visible md:snap-none text-white selection:bg-zinc-800 selection:text-zinc-200 supports-[height:100svh]:h-[100svh]">
             <FloatingNav />
+            <PublicLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+            {session?.user?.role === 'PUBLIC' && session?.user?.consent === false && (
+                <PublicConsentModal />
+            )}
             
             <div className="pt-24 px-4 md:px-8 max-w-7xl mx-auto space-y-8">
                 {/* Added pb-32 to push hero up slightly when centered */}
@@ -70,7 +93,11 @@ export default function PublicPage() {
                     className="min-h-[100dvh] snap-center flex flex-col justify-center items-center pb-[calc(8rem+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)] md:min-h-[85vh] md:items-stretch md:pb-16"
                     style={{ scrollSnapStop: 'always' }}
                 >
-                    <PublicHero />
+                    <PublicHero 
+                        isAuthenticated={status === 'authenticated'}
+                        userRole={session?.user?.role}
+                        onLoginClick={() => setShowLoginModal(true)}
+                    />
                     <div className="relative z-10 -mt-12 md:-mt-32">
                          <Announcements />
                     </div>

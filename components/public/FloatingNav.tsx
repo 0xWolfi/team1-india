@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Team1Logo } from "@/components/Team1Logo";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { User, X, LogOut, LayoutDashboard, LogIn, Ticket, Book, Rocket, Trophy, Calendar, Mail, ShieldCheck } from "lucide-react";
+import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 import { useDrag } from "@use-gesture/react";
 
 const navItems = [
@@ -115,7 +116,7 @@ export function FloatingNav() {
 
                     {/* Center Nav (Desktop) */}
                     <nav className="hidden md:flex items-center gap-0.5">
-                        {navItems.map((item) => {
+                        {navItems.filter(item => item.label !== 'Verify').map((item) => {
                             const isActive = activeSection === item.href.substring(1);
                             return (
                                 <Link
@@ -177,54 +178,10 @@ export function FloatingNav() {
 
 
 
-            {/* Login Modal */}
-            {showLoginModal && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl p-6 animate-in zoom-in-95 duration-200 text-center">
-                        <button 
-                            onClick={() => setShowLoginModal(false)}
-                            className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                        
-                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5">
-                            <User className="w-8 h-8 text-zinc-400" />
-                        </div>
-
-                        <h3 className="text-xl font-bold text-white mb-2">Sign In to Apply</h3>
-                        <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-                            Login with your Google account to submit applications and access programs.
-                        </p>
-
-                        <div className="flex flex-col gap-3">
-                            <button
-                                onClick={() => {
-                                    setShowLoginModal(false);
-                                    signIn('google', { callbackUrl: window.location.pathname });
-                                }}
-                                className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
-                            >
-                                <LogIn className="w-4 h-4" /> Sign In with Google
-                            </button>
-
-                            <div className="flex items-center gap-4 my-2">
-                                <div className="h-px bg-white/10 flex-1" />
-                                <span className="text-zinc-500 text-xs uppercase tracking-widest">or</span>
-                                <div className="h-px bg-white/10 flex-1" />
-                            </div>
-
-                            <Link
-                                href="https://tally.so/r/w7Xj0A"
-                                target="_blank"
-                                className="w-full py-3 bg-white/5 text-zinc-400 font-bold rounded-xl hover:bg-white/10 border border-white/10 transition-colors flex items-center justify-center gap-2"
-                            >
-                                Apply for Membership
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <PublicLoginModal 
+                isOpen={showLoginModal} 
+                onClose={() => setShowLoginModal(false)}
+            />
 
             {/* User Menu Modal */}
             {showUserMenu && (
@@ -253,13 +210,14 @@ export function FloatingNav() {
                             <div>
                                 <div className="font-bold text-white text-lg">{session?.user?.name || "User"}</div>
                                 <div className="text-xs text-zinc-500">{session?.user?.email}</div>
-                                <div className="mt-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/5 text-[10px] font-bold uppercase text-zinc-400 w-fit">
-                                    {(session?.user as any)?.role === 'PUBLIC' ? 'Guest' : (session?.user as any)?.role || "Guest"}
+                                <div className="mt-1 px-2 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-[10px] font-bold uppercase text-yellow-500 w-fit">
+                                    {(session?.user as any)?.role === 'PUBLIC' ? 'Public Member' : (session?.user as any)?.role || "Guest"}
                                 </div>
                             </div>
                         </div>
 
                          <div className="space-y-3">
+                            {/* Core/Member Dashboard */}
                             {((session?.user as any)?.role === 'CORE' || (session?.user as any)?.role === 'MEMBER') && (
                                 <Link
                                     href={(session?.user as any)?.role === 'CORE' ? '/core' : '/member'}
@@ -267,6 +225,17 @@ export function FloatingNav() {
                                 >
                                     <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110" /> 
                                     <span className="transition-transform duration-200 group-hover:scale-105">Go to Dashboard</span>
+                                </Link>
+                            )}
+
+                             {/* Public Dashboard */}
+                             {(session?.user as any)?.role === 'PUBLIC' && (
+                                <Link
+                                    href="/public/profile"
+                                    className="group w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                    <span className="transition-transform duration-200 group-hover:scale-105">My Profile</span>
                                 </Link>
                             )}
 
