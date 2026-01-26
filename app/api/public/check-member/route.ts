@@ -4,11 +4,14 @@ import { withRateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 // Zod validation schema
+// Zod validation schema
+const emptyToUndefined = (val: unknown) => (val === "" ? undefined : val);
+
 const CheckMemberSchema = z.object({
-    email: z.string().email().optional(),
-    xHandle: z.string().max(100).optional(),
-    telegram: z.string().max(100).optional(),
-    discord: z.string().max(100).optional(),
+    email: z.preprocess(emptyToUndefined, z.string().email().optional()),
+    xHandle: z.preprocess(emptyToUndefined, z.string().max(100).optional()),
+    telegram: z.preprocess(emptyToUndefined, z.string().max(100).optional()),
+    discord: z.preprocess(emptyToUndefined, z.string().max(100).optional()),
 }).refine((data) => data.email || data.xHandle || data.telegram || data.discord, {
     message: "At least one identifier (email, xHandle, telegram, or discord) is required"
 });

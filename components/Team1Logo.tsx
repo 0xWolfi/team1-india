@@ -10,6 +10,7 @@ export function Team1Logo({ className = "w-8 h-8" }: { className?: string }) {
                 alt="Team1" 
                 fill
                 className="object-contain"
+                sizes="(max-width: 768px) 100px, 50px"
                 priority
             />
         </div>

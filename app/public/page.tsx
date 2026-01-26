@@ -13,21 +13,43 @@ import { Program, Event, Guide } from "@/types/public";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";
 import { PublicEventCalendar } from "@/components/calendar/PublicEventCalendar";
+import { EventGrid } from "@/components/website/EventGrid";
 
 type PublicHomePayload = {
     playbooks: any[];
     programs: Program[];
     guides: Guide[];
     events: Event[];
+    upcomingEvents: any[]; // Luma events
     mediaItems: any[];
 };
 
+import { useSession } from "next-auth/react";
+import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
+import { PublicConsentModal } from "@/components/public/auth/PublicConsentModal";
+
 export default function PublicPage() {
+    const { data: session, status } = useSession();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    useEffect(() => {
+        // Show login modal on first visit if not logged in
+        if (status === "unauthenticated") {
+            // Optional: Check local storage if we already showed it to avoid annoyance? 
+            // Requirements say "When user opens /public... Display modal". 
+            // Stick to simple requirement for now: Show it.
+            // Maybe a small delay for better UX?
+            const timer = setTimeout(() => setShowLoginModal(true), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [status]);
+
     const [data, setData] = useState<PublicHomePayload>({
         playbooks: [],
         programs: [],
         guides: [],
         events: [],
+        upcomingEvents: [],
         mediaItems: []
     });
     const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +67,7 @@ export default function PublicPage() {
                 }
             } catch (e) {
                 if (!cancelled) {
-                    setData({ playbooks: [], programs: [], guides: [], events: [], mediaItems: [] });
+                    setData({ playbooks: [], programs: [], guides: [], events: [], upcomingEvents: [], mediaItems: [] });
                     setIsLoading(false);
                 }
             }
@@ -55,28 +77,70 @@ export default function PublicPage() {
         };
     }, []);
 
-    const { playbooks, programs, guides, events, mediaItems } = data;
+    const { playbooks, programs, guides, events, upcomingEvents, mediaItems } = data;
 
     return (
-        <main className="min-h-screen text-white selection:bg-zinc-800 selection:text-zinc-200">
+        <main className="h-[100dvh] w-full overflow-y-scroll overflow-x-hidden snap-y snap-mandatory md:h-auto md:w-auto md:overflow-visible md:snap-none text-white selection:bg-zinc-800 selection:text-zinc-200 supports-[height:100svh]:h-[100svh]">
             <FloatingNav />
+            <PublicLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+            {session?.user?.role === 'PUBLIC' && session?.user?.consent === false && (
+                <PublicConsentModal />
+            )}
             
             <div className="pt-24 px-4 md:px-8 max-w-7xl mx-auto space-y-8">
                 {/* Added pb-32 to push hero up slightly when centered */}
-                <div className="min-h-[85vh] flex flex-col justify-center pb-16">
-                    <PublicHero />
+                <div 
+                    className="min-h-[100dvh] snap-center flex flex-col justify-center items-center pb-[calc(8rem+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)] md:min-h-[85vh] md:items-stretch md:pb-16"
+                    style={{ scrollSnapStop: 'always' }}
+                >
+                    <PublicHero 
+                        isAuthenticated={status === 'authenticated'}
+                        userRole={session?.user?.role}
+                        onLoginClick={() => setShowLoginModal(true)}
+                    />
                     <div className="relative z-10 -mt-12 md:-mt-32">
                          <Announcements />
                     </div>
                 </div>
 
-                {/* Event Calendar */}
-                <section className="py-4">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 text-center tracking-tight">
-                        Event Calendar
-                    </h2>
-                    <PublicEventCalendar />
+
+                {/* Upcoming Events (Luma) Section */}
+                <section 
+                    id="upcoming-events" 
+                    className="min-h-[100dvh] snap-center flex flex-col justify-center items-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-8"
+                    style={{ scrollSnapStop: 'always' }}
+                >
+                    <div className="container mx-auto px-6 relative z-10 w-full">
+                        {/* Section Header */}
+                        <div className="flex flex-col items-center text-center md:flex-row md:items-end md:text-left justify-between mb-8 gap-6">
+                            <div className="max-w-2xl">
+                                <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+                                    Attend
+                                </h2>
+                                <p className="text-zinc-400 text-lg leading-relaxed">
+                                    Upcoming meetups and hackathons.
+                                </p>
+                            </div>
+                            
+                            {/* Desktop See All Button */}
+                            <Link 
+                                href="https://lu.ma/Team1India" 
+                                target="_blank"
+                                className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-2 rounded-lg transition-all"
+                            >
+                                See All
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
+
+                        {/* Event Grid */}
+                        <EventGrid initialEvents={upcomingEvents || []} />
+
+                    </div>
                 </section>
+
+
+
 
                 {/* Playbooks */}
                 <SectionCarousel 
@@ -187,11 +251,14 @@ export default function PublicPage() {
                     )}
                 </SectionCarousel>
 
-                {/* Events */}
+
+
+
+                {/* Events (Internal/Legacy) */}
                 <SectionCarousel 
                     id="events"
                     title="Events" 
-                    description="Upcoming meetups and hackathons."
+                    description="Wanna host? 'Cause all things here are for people who can host."
                     seeAllLink="/public/events"
                     direction="right"
                     enableScroll={events.length > 3}
@@ -235,6 +302,8 @@ export default function PublicPage() {
                         </div>
                     )}
                 </SectionCarousel>
+
+
 
                 <PublicContactSection mediaItems={mediaItems} />
             </div>
