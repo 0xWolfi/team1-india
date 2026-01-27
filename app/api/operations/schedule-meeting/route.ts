@@ -112,9 +112,16 @@ export async function POST(req: NextRequest) {
             attendees: attendeeEmails
         });
 
-        // Get current user
+        // Get current user (session is guaranteed to exist after checkCoreAccess)
+        if (!session?.user?.email) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
         const user = await prisma.member.findUnique({
-            where: { email: session.user!.email! }
+            where: { email: session.user.email }
         });
 
         if (!user) {
