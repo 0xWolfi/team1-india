@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { LayoutDashboard, Calendar, Clock, Plus, CheckCircle2, ListTodo } from "lucide-react";
+import { LayoutDashboard, Calendar, Clock, Plus, CheckCircle2, ListTodo, Video } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
+import { ScheduleMeetingModal } from "@/components/core/ScheduleMeetingModal";
 
 // Types
 export interface Operation {
@@ -24,6 +25,7 @@ export default function OperationsPage() {
     const [view, setView] = useState<'board' | 'calendar' | 'time' | 'list'>('board');
     const [operations, setOperations] = useState<Operation[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
 
     const fetchOperations = async () => {
         setLoading(true);
@@ -105,7 +107,15 @@ export default function OperationsPage() {
                              <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
                                 <Calendar className="w-12 h-12 mb-4 opacity-50" />
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-300">Calendar View</h3>
-                                <p className="text-sm">Monthly schedule and deadlines.</p>
+                                <p className="text-sm mb-6">Monthly schedule and deadlines.</p>
+                                <button 
+                                    className="group relative inline-flex h-10 items-center justify-center overflow-hidden rounded-lg bg-white/10 hover:bg-white/20 px-6 font-medium text-white transition-all active:scale-95 text-sm border border-white/10"
+                                    onClick={() => setIsMeetingModalOpen(true)}
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <Video className="w-4 h-4" /> Schedule Google Meet
+                                    </span>
+                                </button>
                             </div>
                         )}
                         {view === 'list' && (
@@ -125,6 +135,15 @@ export default function OperationsPage() {
                     </div>
                 )}
             </div>
+
+            {/* Schedule Meeting Modal */}
+            <ScheduleMeetingModal
+                isOpen={isMeetingModalOpen}
+                onClose={() => setIsMeetingModalOpen(false)}
+                onSuccess={() => {
+                    fetchOperations();
+                }}
+            />
         </CoreWrapper>
     );
 }
