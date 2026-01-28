@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
-import { sendEmail, getApprovalEmailTemplate, getCustomApprovalEmailTemplate, getRejectionEmailTemplate } from "@/lib/email";
+import { sendEmail, getApprovalEmailTemplate, getCustomApprovalEmailTemplate, getRejectionEmailTemplate, getCustomRejectionEmailTemplate } from "@/lib/email";
 import { notificationManager } from "@/lib/notificationManager";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -77,13 +77,31 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             });
           }
         } else if (status === 'REJECTED') {
-          const emailHtml = getRejectionEmailTemplate(applicantName, programTitle);
+          // Event rejections: superadmin can send a custom body
+          const isSuperAdmin =
+            // @ts-ignore
+            (session.user?.permissions?.['*'] === 'FULL_ACCESS');
 
-          await sendEmail({
-            to: applicantEmail,
-            subject: `Update on Your ${programTitle} Application`,
-            html: emailHtml
-          });
+          const hasCustomBody = typeof customEmailBody === 'string' && customEmailBody.trim().length > 0;
+
+          if (guideType === 'event' && hasCustomBody) {
+            if (!isSuperAdmin) {
+              return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+            }
+            const emailHtml = getCustomRejectionEmailTemplate(applicantName, programTitle, customEmailBody);
+            await sendEmail({
+              to: applicantEmail,
+              subject: `Update on Your ${programTitle} Application`,
+              html: emailHtml
+            });
+          } else {
+            const emailHtml = getRejectionEmailTemplate(applicantName, programTitle);
+            await sendEmail({
+              to: applicantEmail,
+              subject: `Update on Your ${programTitle} Application`,
+              html: emailHtml
+            });
+          }
         }
 
         console.log(`Email sent to ${applicantEmail} for status: ${status}`);

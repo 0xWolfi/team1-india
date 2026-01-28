@@ -93,6 +93,13 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
     const [approveEmailLoading, setApproveEmailLoading] = useState(false);
     const [pendingApproveApp, setPendingApproveApp] = useState<any>(null);
 
+    // Superadmin custom-reject email (Event guides only, Core only)
+    const [isRejectEmailModalOpen, setIsRejectEmailModalOpen] = useState(false);
+    const [rejectEmailBody, setRejectEmailBody] = useState('');
+    const [rejectEmailError, setRejectEmailError] = useState('');
+    const [rejectEmailLoading, setRejectEmailLoading] = useState(false);
+    const [pendingRejectApp, setPendingRejectApp] = useState<any>(null);
+
     // Fetch user name and email from database
     useEffect(() => {
         if (session?.user?.email) {
@@ -371,6 +378,100 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                 </div>
             </Modal>
 
+            {/* Event rejection custom email modal (Superadmin only) */}
+            <Modal
+                isOpen={isRejectEmailModalOpen}
+                onClose={() => {
+                    if (rejectEmailLoading) return;
+                    setIsRejectEmailModalOpen(false);
+                    setRejectEmailBody('');
+                    setRejectEmailError('');
+                    setPendingRejectApp(null);
+                }}
+                title="Reject & Send Custom Email"
+            >
+                <div className="space-y-5">
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <div className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                            Recipient
+                        </div>
+                        <div className="text-sm text-white font-mono">
+                            {pendingRejectApp?.applicantEmail || pendingRejectApp?.data?.email || '—'}
+                        </div>
+                        <div className="text-[11px] text-zinc-500 mt-2">
+                            Subject and heading will remain the standard "Update on Your Application" template.
+                        </div>
+                    </div>
+
+                    {rejectEmailError && (
+                        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                            {rejectEmailError}
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500">
+                            Custom message body *
+                        </label>
+                        <textarea
+                            value={rejectEmailBody}
+                            onChange={(e) => setRejectEmailBody(e.target.value)}
+                            rows={8}
+                            placeholder="Write the rejection message you want the applicant to receive..."
+                            className="w-full bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all placeholder:text-zinc-600 resize-none"
+                        />
+                        <p className="text-[11px] text-zinc-500">
+                            Be respectful and clear. You can explain reasons, provide feedback, or encourage future applications.
+                        </p>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 pt-2">
+                        <button
+                            onClick={() => {
+                                if (rejectEmailLoading) return;
+                                setIsRejectEmailModalOpen(false);
+                                setRejectEmailBody('');
+                                setRejectEmailError('');
+                                setPendingRejectApp(null);
+                            }}
+                            className="px-4 py-2 text-sm font-semibold text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            disabled={rejectEmailLoading}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={async () => {
+                                setRejectEmailError('');
+                                const body = rejectEmailBody.trim();
+                                if (!pendingRejectApp?.id) {
+                                    setRejectEmailError('No application selected.');
+                                    return;
+                                }
+                                if (!body) {
+                                    setRejectEmailError('Please write the email body before rejecting.');
+                                    return;
+                                }
+                                setRejectEmailLoading(true);
+                                try {
+                                    await handleStatusUpdate(pendingRejectApp.id, 'REJECTED', body);
+                                    setIsRejectEmailModalOpen(false);
+                                    setRejectEmailBody('');
+                                    setPendingRejectApp(null);
+                                } catch (e) {
+                                    setRejectEmailError('Failed to reject. Please try again.');
+                                } finally {
+                                    setRejectEmailLoading(false);
+                                }
+                            }}
+                            className="px-4 py-2 text-sm font-bold bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg transition-colors disabled:opacity-50"
+                            disabled={rejectEmailLoading}
+                        >
+                            {rejectEmailLoading ? 'Sending…' : 'Reject & Send'}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
             {/* Application Detail Modal */}
             {showDetailModal && selectedApplication && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -575,12 +676,21 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                                     const isEventGuide = guide.type?.toLowerCase() === 'event';
                                                     const isCoreContext = dashboardPath.startsWith('/core');
                                                     const shouldCustomApprove = isCoreContext && isEventGuide && isSuperAdmin && nextStatus === 'APPROVED';
+                                                    const shouldCustomReject = isCoreContext && isEventGuide && isSuperAdmin && nextStatus === 'REJECTED';
 
                                                     if (shouldCustomApprove) {
                                                         setPendingApproveApp(app);
                                                         setApproveEmailBody('');
                                                         setApproveEmailError('');
                                                         setIsApproveEmailModalOpen(true);
+                                                        return;
+                                                    }
+
+                                                    if (shouldCustomReject) {
+                                                        setPendingRejectApp(app);
+                                                        setRejectEmailBody('');
+                                                        setRejectEmailError('');
+                                                        setIsRejectEmailModalOpen(true);
                                                         return;
                                                     }
 
