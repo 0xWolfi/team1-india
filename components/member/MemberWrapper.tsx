@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { Footer } from "@/components/website/Footer";
@@ -17,6 +17,49 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
     const { data: session, status } = useSession();
     const router = useRouter();
     const pathname = usePathname();
+    const [profileImage, setProfileImage] = useState<string | null>(null);
+    const [imageCacheBust, setImageCacheBust] = useState<number>(0);
+    const [profileImageError, setProfileImageError] = useState(false);
+
+    // Fetch latest profile image from API (not session, which can be stale)
+    const fetchProfileImage = async () => {
+        if (status !== "authenticated") return;
+        try {
+            const res = await fetch("/api/profile");
+            if (res.ok) {
+                const data = await res.json();
+                if (data.image) {
+                    setProfileImage(data.image);
+                    setImageCacheBust(Date.now());
+                    setProfileImageError(false);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch profile image:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchProfileImage();
+        // Listen for profile updates (triggered after saving profile)
+        const handleProfileUpdate = () => {
+            fetchProfileImage();
+        };
+        window.addEventListener("profileUpdated", handleProfileUpdate);
+        return () => window.removeEventListener("profileUpdated", handleProfileUpdate);
+    }, [status]);
+
+    const buildImageSrc = (url: string | null | undefined): string | undefined => {
+        if (!url) return undefined;
+        if (url.includes(".public.blob.vercel-storage.com") && imageCacheBust) {
+            const separator = url.includes("?") ? "&" : "?";
+            return `${url}${separator}t=${imageCacheBust}`;
+        }
+        return url;
+    };
+
+    // Use fetched image, fallback to session image
+    const displayImage = profileImage || session?.user?.image;
 
     // Check if user still exists (for auto-logout when deleted by superadmin)
     React.useEffect(() => {
@@ -103,13 +146,15 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                 </div>
                 
                 <div className="flex items-center gap-3">
-                     {session?.user?.image ? (
+                     {displayImage && !profileImageError ? (
                             <div className="relative w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10">
                                  <Image 
-                                    src={session.user.image} 
+                                    src={buildImageSrc(displayImage) || displayImage} 
                                     alt="Profile" 
                                     fill 
                                     className="object-cover"
+                                    onError={() => setProfileImageError(true)}
+                                    unoptimized={displayImage.startsWith('data:') || displayImage.startsWith('blob:')}
                                  />
                             </div>
                         ) : (

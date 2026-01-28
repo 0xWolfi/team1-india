@@ -57,10 +57,13 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
     const fetchMembers = async () => {
         setLoadingMembers(true);
         try {
-            const res = await fetch('/api/members');
+            // Use attendance API which returns both core members and community members
+            const res = await fetch('/api/attendance');
             if (res.ok) {
                 const data = await res.json();
-                setMembers(data.filter((m: any) => m.status === 'active'));
+                // The attendance API already returns all active members (core + community)
+                // No need to filter by status as it's already handled by the API
+                setMembers(data);
             }
         } catch (err) {
             console.error('Failed to fetch members:', err);

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { XCircle, Loader2, Tag, AtSign, ChevronDown } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { XCircle, Loader2, Tag, AtSign, ChevronDown, AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface AddCommunityMemberModalProps {
     isOpen: boolean;
@@ -13,11 +13,64 @@ interface AddCommunityMemberModalProps {
 export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = ({ isOpen, onClose, onAdd, isSubmitting }) => {
     const [email, setEmail] = useState("");
     const [tag, setTag] = useState<string>("member");
+    const [emailStatus, setEmailStatus] = useState<'idle' | 'checking' | 'exists' | 'available'>('idle');
+    const [emailMessage, setEmailMessage] = useState("");
+
+    // Reset email status when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            setEmail("");
+            setEmailStatus('idle');
+            setEmailMessage("");
+        }
+    }, [isOpen]);
+
+    // Real-time email validation
+    useEffect(() => {
+        if (!email || !isOpen) {
+            setEmailStatus('idle');
+            setEmailMessage("");
+            return;
+        }
+
+        // Basic email format check
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setEmailStatus('idle');
+            setEmailMessage("");
+            return;
+        }
+
+        // Debounce the API call
+        const timeoutId = setTimeout(async () => {
+            setEmailStatus('checking');
+            try {
+                const res = await fetch(`/api/members/check-email?email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+                
+                if (data.exists) {
+                    setEmailStatus('exists');
+                    setEmailMessage(data.message || "Email already exists");
+                } else {
+                    setEmailStatus('available');
+                    setEmailMessage("");
+                }
+            } catch (error) {
+                console.error("Email check error:", error);
+                setEmailStatus('idle');
+            }
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timeoutId);
+    }, [email, isOpen]);
 
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (emailStatus === 'exists') {
+            return; // Prevent submission if email exists
+        }
         onAdd({
             email,
             tags: tag
@@ -53,9 +106,32 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                                     placeholder="member@example.com"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-zinc-700"
+                                    className={`w-full bg-black/40 border rounded-lg pl-10 pr-10 py-3 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder:text-zinc-700 ${
+                                        emailStatus === 'exists' 
+                                            ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20' 
+                                            : emailStatus === 'available'
+                                            ? 'border-emerald-500/50 focus:border-emerald-500 focus:ring-emerald-500/20'
+                                            : 'border-white/10 focus:border-white/20 focus:ring-white/20'
+                                    }`}
                                 />
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                    {emailStatus === 'checking' && (
+                                        <Loader2 className="w-4 h-4 text-zinc-500 animate-spin" />
+                                    )}
+                                    {emailStatus === 'exists' && (
+                                        <AlertCircle className="w-4 h-4 text-red-500" />
+                                    )}
+                                    {emailStatus === 'available' && (
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                    )}
+                                </div>
                             </div>
+                            {emailStatus === 'exists' && emailMessage && (
+                                <p className="text-xs text-red-400 flex items-center gap-1 mt-1">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {emailMessage}
+                                </p>
+                            )}
                         </div>
                         
                         {/* Tags Dropdown */}
@@ -90,8 +166,8 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                             </button>
                             <button 
                                 type="submit"
-                                disabled={isSubmitting}
-                                className="flex-1 py-3 rounded-lg text-sm font-bold bg-white text-black hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                                disabled={isSubmitting || emailStatus === 'exists' || emailStatus === 'checking'}
+                                className="flex-1 py-3 rounded-lg text-sm font-bold bg-white text-black hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add Member"}
                             </button>
