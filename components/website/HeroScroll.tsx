@@ -42,6 +42,14 @@ export const HeroScroll = () => {
     }
   });
 
+  /* Effect to start loading video metadata when component mounts (lightweight) */
+  React.useEffect(() => {
+    if (videoRef.current) {
+      // Load metadata only - this is fast and doesn't download full video
+      videoRef.current.load();
+    }
+  }, []);
+
   /* Effect to manage video playback based on active state */
   React.useEffect(() => {
     if (videoRef.current) {
@@ -190,15 +198,21 @@ export const Card = ({
                />
                <video 
                   ref={videoRef}
-                  src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/hero-video.webm"}
                   loop
                   playsInline
-                  preload="auto"
+                  preload="metadata"
+                  poster="/hero-cover.jpg"
                   onProgress={handleProgress}
                   onCanPlayThrough={handleCanPlay}
                   onCanPlay={handleCanPlay}
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isVideoPlaying ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-               />
+               >
+                  {/* Multiple formats for better browser support and faster loading */}
+                  <source src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/hero-video.webm"} type="video/webm" />
+                  <source src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL_MP4 || "/hero-video.mp4"} type="video/mp4" />
+                  {/* Fallback for browsers that don't support video */}
+                  Your browser does not support the video tag.
+               </video>
           </div>
       </div>
     </motion.div>
