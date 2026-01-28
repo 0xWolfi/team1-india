@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { usePermission } from "@/hooks/usePermission";
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
+import { Modal } from '@/components/ui/Modal';
 import ReactMarkdown from 'react-markdown';
 
 interface FormField {
@@ -84,6 +85,13 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
     const [userEmail, setUserEmail] = useState<string>('');
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [selectedApplication, setSelectedApplication] = useState<any>(null);
+
+    // Superadmin custom-approve email (Event guides only, Core only)
+    const [isApproveEmailModalOpen, setIsApproveEmailModalOpen] = useState(false);
+    const [approveEmailBody, setApproveEmailBody] = useState('');
+    const [approveEmailError, setApproveEmailError] = useState('');
+    const [approveEmailLoading, setApproveEmailLoading] = useState(false);
+    const [pendingApproveApp, setPendingApproveApp] = useState<any>(null);
 
     // Fetch user name and email from database
     useEffect(() => {
@@ -233,12 +241,12 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
         }
     };
 
-    const handleStatusUpdate = async (appId: string, newStatus: string) => {
+    const handleStatusUpdate = async (appId: string, newStatus: string, customEmailBody?: string) => {
         try {
             const res = await fetch(`/api/applications/${appId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
+                body: JSON.stringify({ status: newStatus, customEmailBody })
             });
 
             if (res.ok) {
@@ -268,6 +276,100 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                 confirmText="Delete Guide"
                 isDestructive={true}
             />
+
+            {/* Event approval custom email modal (Superadmin only) */}
+            <Modal
+                isOpen={isApproveEmailModalOpen}
+                onClose={() => {
+                    if (approveEmailLoading) return;
+                    setIsApproveEmailModalOpen(false);
+                    setApproveEmailBody('');
+                    setApproveEmailError('');
+                    setPendingApproveApp(null);
+                }}
+                title="Approve & Send Custom Email"
+            >
+                <div className="space-y-5">
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                        <div className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
+                            Recipient
+                        </div>
+                        <div className="text-sm text-white font-mono">
+                            {pendingApproveApp?.applicantEmail || pendingApproveApp?.data?.email || '—'}
+                        </div>
+                        <div className="text-[11px] text-zinc-500 mt-2">
+                            Subject and heading will remain the standard “Approved” template.
+                        </div>
+                    </div>
+
+                    {approveEmailError && (
+                        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                            {approveEmailError}
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500">
+                            Custom message body *
+                        </label>
+                        <textarea
+                            value={approveEmailBody}
+                            onChange={(e) => setApproveEmailBody(e.target.value)}
+                            rows={8}
+                            placeholder="Write the message you want the applicant to receive..."
+                            className="w-full bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all placeholder:text-zinc-600 resize-none"
+                        />
+                        <p className="text-[11px] text-zinc-500">
+                            Keep it clear and actionable (next steps, timings, contact, etc.).
+                        </p>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 pt-2">
+                        <button
+                            onClick={() => {
+                                if (approveEmailLoading) return;
+                                setIsApproveEmailModalOpen(false);
+                                setApproveEmailBody('');
+                                setApproveEmailError('');
+                                setPendingApproveApp(null);
+                            }}
+                            className="px-4 py-2 text-sm font-semibold text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            disabled={approveEmailLoading}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={async () => {
+                                setApproveEmailError('');
+                                const body = approveEmailBody.trim();
+                                if (!pendingApproveApp?.id) {
+                                    setApproveEmailError('No application selected.');
+                                    return;
+                                }
+                                if (!body) {
+                                    setApproveEmailError('Please write the email body before approving.');
+                                    return;
+                                }
+                                setApproveEmailLoading(true);
+                                try {
+                                    await handleStatusUpdate(pendingApproveApp.id, 'APPROVED', body);
+                                    setIsApproveEmailModalOpen(false);
+                                    setApproveEmailBody('');
+                                    setPendingApproveApp(null);
+                                } catch (e) {
+                                    setApproveEmailError('Failed to approve. Please try again.');
+                                } finally {
+                                    setApproveEmailLoading(false);
+                                }
+                            }}
+                            className="px-4 py-2 text-sm font-bold bg-zinc-100 text-zinc-900 hover:bg-zinc-200 rounded-lg transition-colors disabled:opacity-50"
+                            disabled={approveEmailLoading}
+                        >
+                            {approveEmailLoading ? 'Sending…' : 'Approve & Send'}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
 
             {/* Application Detail Modal */}
             {showDetailModal && selectedApplication && (
@@ -468,7 +570,22 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                         <td className="px-6 py-4">
                                             <select
                                                 value={app.status}
-                                                onChange={(e) => handleStatusUpdate(app.id, e.target.value)}
+                                                onChange={(e) => {
+                                                    const nextStatus = e.target.value;
+                                                    const isEventGuide = guide.type?.toLowerCase() === 'event';
+                                                    const isCoreContext = dashboardPath.startsWith('/core');
+                                                    const shouldCustomApprove = isCoreContext && isEventGuide && isSuperAdmin && nextStatus === 'APPROVED';
+
+                                                    if (shouldCustomApprove) {
+                                                        setPendingApproveApp(app);
+                                                        setApproveEmailBody('');
+                                                        setApproveEmailError('');
+                                                        setIsApproveEmailModalOpen(true);
+                                                        return;
+                                                    }
+
+                                                    handleStatusUpdate(app.id, nextStatus);
+                                                }}
                                                 className={`pl-2 pr-1 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-transparent border cursor-pointer focus:outline-none focus:ring-1 focus:ring-white/20 ${
                                                     app.status === 'APPROVED' ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' :
                                                     app.status === 'REJECTED' ? 'text-red-400 border-red-500/30 bg-red-500/10' :

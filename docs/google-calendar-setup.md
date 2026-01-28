@@ -38,9 +38,14 @@ This guide will help you set up Google Calendar API credentials to enable Google
    - Click "Save and Continue"
    - Add scopes: `https://www.googleapis.com/auth/calendar`
    - Click "Save and Continue"
-   - Add test users (your email) if needed
+   - **IMPORTANT:** Add test users - Add the email address that will be used to generate the refresh token (e.g., `avaxteam1.india@gmail.com`)
+     - Click "Add Users"
+     - Enter the email address
+     - Click "Add"
    - Click "Save and Continue"
    - Review and click "Back to Dashboard"
+   
+   **Note:** If you see "Access blocked" errors later, make sure the email you're using to authorize is added as a test user here.
 
 4. Now create OAuth Client ID:
    - Application type: "Web application"
@@ -56,6 +61,17 @@ This guide will help you set up Google Calendar API credentials to enable Google
 You need to authorize your application once to get a refresh token. Here's how:
 
 #### Option A: Using OAuth 2.0 Playground (Recommended)
+
+**IMPORTANT:** Before starting, you must add OAuth Playground's redirect URI to your Google Cloud Console:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Navigate to **APIs & Services** → **Credentials**
+3. Click on your OAuth Client ID
+4. Under "Authorized redirect URIs", click "Add URI"
+5. Add: `https://developers.google.com/oauthplayground`
+6. Click "Save"
+
+Now proceed with getting the refresh token:
 
 1. Go to [OAuth 2.0 Playground](https://developers.google.com/oauthplayground/)
 2. Click the gear icon (⚙️) in the top right

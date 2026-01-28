@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
-import { sendEmail, getApprovalEmailTemplate, getRejectionEmailTemplate } from "@/lib/email";
+import { sendEmail, getApprovalEmailTemplate, getCustomApprovalEmailTemplate, getRejectionEmailTemplate } from "@/lib/email";
 import { notificationManager } from "@/lib/notificationManager";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -14,7 +14,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const { id } = await params;
-    const { status } = await req.json();
+    const { status, customEmailBody } = await req.json();
 
     if (!['PENDING', 'APPROVED', 'REJECTED'].includes(status)) {
         return NextResponse.json({ error: "Invalid status" }, { status: 400 });
@@ -46,17 +46,36 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       const applicantData = application.data as any;
       const applicantName = applicantData?.name || applicantData?.fullName || 'there';
       const programTitle = existingApplication.guide?.title || 'our program';
+      const guideType = (existingApplication.guide?.type || '').toLowerCase();
 
       if (applicantEmail) {
         // 1. Send Email
         if (status === 'APPROVED') {
-          const emailHtml = getApprovalEmailTemplate(applicantName, programTitle);
+          // Event approvals: superadmin can send a custom body
+          const isSuperAdmin =
+            // @ts-ignore
+            (session.user?.permissions?.['*'] === 'FULL_ACCESS');
 
-          await sendEmail({
-            to: applicantEmail,
-            subject: `Your ${programTitle} Application Has Been Approved`,
-            html: emailHtml
-          });
+          const hasCustomBody = typeof customEmailBody === 'string' && customEmailBody.trim().length > 0;
+
+          if (guideType === 'event' && hasCustomBody) {
+            if (!isSuperAdmin) {
+              return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+            }
+            const emailHtml = getCustomApprovalEmailTemplate(applicantName, programTitle, customEmailBody);
+            await sendEmail({
+              to: applicantEmail,
+              subject: `Your ${programTitle} Application Has Been Approved`,
+              html: emailHtml
+            });
+          } else {
+            const emailHtml = getApprovalEmailTemplate(applicantName, programTitle);
+            await sendEmail({
+              to: applicantEmail,
+              subject: `Your ${programTitle} Application Has Been Approved`,
+              html: emailHtml
+            });
+          }
         } else if (status === 'REJECTED') {
           const emailHtml = getRejectionEmailTemplate(applicantName, programTitle);
 

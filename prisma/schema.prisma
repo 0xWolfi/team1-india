@@ -37,6 +37,7 @@ model Member {
   createdProjects  Project[]
   createdPartners  Partner[]
   guides           Guide[]
+  extraProfile     MemberExtraProfile?  @relation("MemberExtraProfile")
 
   @@index([status])
   @@index([xHandle])
@@ -57,6 +58,8 @@ model CommunityMember {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now()) @updatedAt
   deletedAt    DateTime?
+
+  extraProfile MemberExtraProfile? @relation("CommunityMemberExtraProfile")
 
   @@index([status])
   @@index([xHandle])
@@ -499,4 +502,32 @@ model PublicUser {
   deletedAt         DateTime?
 
   @@index([email])
+}
+
+// Extra profile fields for CORE/MEMBER users (member profile page)
+model MemberExtraProfile {
+  id               String   @id @default(uuid())
+  memberId         String?  @unique
+  communityMemberId String? @unique
+
+  // Public-style profile fields
+  availability     String?
+  currentProject   String?
+  city             String?
+  country          String?
+  roles            Json?    // Array of strings (max 3 enforced in app)
+  interests        Json?    // Array of strings
+  skills           Json?    // Array of strings
+  socialProfiles   Json?    // Array of { name: string, url: string }
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+  deletedAt        DateTime?
+
+  member           Member?         @relation("MemberExtraProfile", fields: [memberId], references: [id])
+  communityMember  CommunityMember? @relation("CommunityMemberExtraProfile", fields: [communityMemberId], references: [id])
+
+  @@index([memberId])
+  @@index([communityMemberId])
+  @@index([deletedAt])
 }

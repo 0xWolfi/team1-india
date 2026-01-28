@@ -195,6 +195,59 @@ export function getApprovalEmailTemplate(applicantName: string, programTitle: st
     `;
 }
 
+// Event approval email template with custom body (superadmin-written)
+export function getCustomApprovalEmailTemplate(
+    applicantName: string,
+    programTitle: string,
+    customBody: string
+) {
+    const safeBody = (customBody || '').trim();
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; color: #000000;">
+    <div style="padding: 40px 20px; max-width: 600px; margin: 0 auto;">
+        <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Your ${programTitle} Application Has Been Approved</h1>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Hi ${applicantName},
+        </p>
+
+        <div style="margin: 0 0 16px; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">
+            ${safeBody || `We're pleased to inform you that your application for ${programTitle} with Team1 India has been approved.`}
+        </div>
+        
+        <p style="margin: 24px 0 16px; font-size: 16px; line-height: 1.6; font-weight: bold;">
+            🔐 Verification Notice:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            If anyone contacts you claiming to represent Team1 India, you can verify whether they are an official member or representative through our Member Verification section:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+        </p>
+        
+        <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
+            Thank you for your interest and engagement with Team1 India.
+        </p>
+        
+        <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.6;">
+            Sarnavo<br>
+            Team1 India Team
+        </p>
+    </div>
+</body>
+</html>
+    `;
+}
+
 // Email template for application rejection
 export function getRejectionEmailTemplate(applicantName: string, programTitle: string) {
     return `
