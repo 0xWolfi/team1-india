@@ -134,11 +134,12 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
     const { data: session, update: updateSession } = useSession();
     const router = useRouter();
     const isMemberContext = backHref.startsWith("/member");
+    const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [isUploadingImage, setIsUploadingImage] = useState(false); // New State
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [profileImageError, setProfileImageError] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null); // New Ref
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [profileImage, setProfileImage] = useState<string>("");
     
     // Image Upload Handler (use Vercel Blob like Public Profile)
@@ -282,6 +283,7 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
             await fetchProfile();
             if (isMemberContext) await fetchExtra();
             await updateSession();
+            setIsEditing(false);
             setShowToast(true);
         } catch (error) {
             console.error(error);
@@ -400,14 +402,52 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
             </Link>
             
             <div className="mb-8">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-white/5 rounded-lg">
-                        <User className="w-5 h-5 text-zinc-200" />
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-white/5 rounded-lg">
+                            <User className="w-5 h-5 text-zinc-200" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-bold text-white">My Profile</h1>
+                            <p className="text-sm text-zinc-400">Manage your public information and private details.</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-white">My Profile</h1>
-                        <p className="text-sm text-zinc-400">Manage your public information and private details.</p>
-                    </div>
+                    {!isEditing ? (
+                        <button
+                            type="button"
+                            onClick={() => setIsEditing(true)}
+                            className="px-4 py-2 bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors rounded-lg flex items-center gap-2"
+                        >
+                            <Edit2 className="w-4 h-4" />
+                            Edit Profile
+                        </button>
+                    ) : (
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    setIsEditing(false);
+                                    await fetchProfile();
+                                    if (isMemberContext) await fetchExtra();
+                                }}
+                                className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-bold text-zinc-300 hover:text-white transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSubmit(e as any);
+                                }}
+                                disabled={isLoading}
+                                className="px-4 py-2 bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors rounded-lg flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                Save Changes
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -437,20 +477,22 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                     </div>
                                 )}
 
-                                {/* Upload Overlay */}
-                                <div 
-                                    className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover/edit:opacity-100 transition-opacity cursor-pointer z-20"
-                                    onClick={() => fileInputRef.current?.click()}
-                                >
-                                    {isUploadingImage ? (
-                                        <Loader2 className="w-6 h-6 text-white animate-spin" />
-                                    ) : (
-                                        <>
-                                            <UploadIcon className="w-6 h-6 text-white mb-1" />
-                                            <span className="text-[8px] uppercase font-bold text-zinc-300 tracking-wider">Change</span>
-                                        </>
-                                    )}
-                                </div>
+                                {/* Upload Overlay - Only show when editing */}
+                                {isEditing && (
+                                    <div 
+                                        className="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover/edit:opacity-100 transition-opacity cursor-pointer z-20"
+                                        onClick={() => fileInputRef.current?.click()}
+                                    >
+                                        {isUploadingImage ? (
+                                            <Loader2 className="w-6 h-6 text-white animate-spin" />
+                                        ) : (
+                                            <>
+                                                <UploadIcon className="w-6 h-6 text-white mb-1" />
+                                                <span className="text-[8px] uppercase font-bold text-zinc-300 tracking-wider">Change</span>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
                              </div>
                              
                              <input 
@@ -503,7 +545,7 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                 {/* Edit Form */}
                 <div className="lg:col-span-2 p-6 bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl">
                     <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                        <SettingsIcon /> Edit Details
+                        <SettingsIcon /> {isEditing ? "Edit Details" : "Profile Details"}
                     </h3>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -514,6 +556,7 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                     <input 
                                         type="text" 
                                         required
+                                        disabled={!isEditing}
                                         value={formData.name}
                                         onChange={(e) => {
                                             const val = e.target.value;
@@ -521,7 +564,7 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                                 setFormData({...formData, name: val});
                                             }
                                         }}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="John Doe"
                                     />
                                 </div>
@@ -533,9 +576,10 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                     <input 
                                         type="text" 
                                         required
+                                        disabled={!isEditing}
                                         value={formData.xHandle}
                                         onChange={(e) => setFormData({...formData, xHandle: e.target.value})}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="@username"
                                     />
                                 </div>
@@ -547,9 +591,10 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                     <input 
                                         type="text" 
                                         required
+                                        disabled={!isEditing}
                                         value={formData.telegram}
                                         onChange={(e) => setFormData({...formData, telegram: e.target.value})}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="@username"
                                     />
                                 </div>
@@ -561,9 +606,10 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                     <input 
                                         type="text" 
                                         required
+                                        disabled={!isEditing}
                                         value={formData.wallet}
                                         onChange={(e) => setFormData({...formData, wallet: e.target.value})}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="0x..."
                                     />
                                 </div>
@@ -574,9 +620,10 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                     <MessageCircle className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
                                     <input 
                                         type="text" 
+                                        disabled={!isEditing}
                                         value={formData.discord}
                                         onChange={(e) => setFormData({...formData, discord: e.target.value})}
-                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                        className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="@username or username#1234"
                                     />
                                 </div>
@@ -592,6 +639,7 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                         value={selectedState}
                                         onChange={(val) => handleLocationChange(val, selectedCity)}
                                         isLoading={false}
+                                        disabled={!isEditing}
                                     />
 
                                     {/* City Input */}
@@ -599,9 +647,10 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                             <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
                                             <input 
                                             type="text" 
+                                            disabled={!isEditing}
                                             value={selectedCity}
                                             onChange={(e) => handleLocationChange(selectedState, e.target.value)}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                             placeholder="City Name"
                                         />
                                     </div>
@@ -612,37 +661,22 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-zinc-400 uppercase">Bio</label>
                             <textarea 
+                                disabled={!isEditing}
                                 value={formData.bio}
                                 onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 min-h-[100px]"
+                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 min-h-[100px] disabled:opacity-50 disabled:cursor-not-allowed"
                                 placeholder="Tell us about yourself..."
                             />
                         </div>
 
-                        <div className="pt-4 flex justify-end">
-                            <button 
-                                type="submit" 
-                                disabled={isLoading}
-                                className="flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded-lg font-bold text-sm hover:bg-zinc-200 transition-colors disabled:opacity-50"
-                            >
-                                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                Save Changes
-                            </button>
-                        </div>
                     </form>
 
                     {/* Extra public-style fields (member profile only) */}
                     {isMemberContext && (
                         <div className="mt-10 pt-8 border-t border-white/10">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-2">
-                                    <Briefcase className="w-4 h-4 text-zinc-400" />
-                                    <h4 className="text-sm font-bold text-white">Additional Profile</h4>
-                                    <span className="text-[10px] text-zinc-500">(stored separately)</span>
-                                </div>
-                                <div className="text-[11px] text-zinc-500">
-                                    Saved with the main <span className="text-zinc-300 font-semibold">Save Changes</span> button.
-                                </div>
+                            <div className="flex items-center gap-2 mb-6">
+                                <Briefcase className="w-4 h-4 text-zinc-400" />
+                                <h4 className="text-sm font-bold text-white">Additional Details</h4>
                             </div>
 
                             {extraError && (
@@ -665,9 +699,10 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                         <div>
                                             <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Availability</label>
                                             <select
+                                                disabled={!isEditing}
                                                 value={extra.availability}
                                                 onChange={(e) => setExtra(prev => ({ ...prev, availability: e.target.value }))}
-                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {AVAILABILITY_OPTIONS.map(opt => (
                                                     <option key={opt} value={opt} className="bg-zinc-900">{opt}</option>
@@ -677,9 +712,10 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                         <div>
                                             <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Current project</label>
                                             <input
+                                                disabled={!isEditing}
                                                 value={extra.currentProject}
                                                 onChange={(e) => setExtra(prev => ({ ...prev, currentProject: e.target.value }))}
-                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                                 placeholder="e.g. Building a consumer app"
                                             />
                                         </div>
@@ -687,18 +723,20 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                             <div>
                                                 <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Country</label>
                                                 <input
+                                                    disabled={!isEditing}
                                                     value={extra.country}
                                                     onChange={(e) => setExtra(prev => ({ ...prev, country: e.target.value }))}
-                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                                     placeholder="Select Country"
                                                 />
                                             </div>
                                             <div>
                                                 <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">City</label>
                                                 <input
+                                                    disabled={!isEditing}
                                                     value={extra.city}
                                                     onChange={(e) => setExtra(prev => ({ ...prev, city: e.target.value }))}
-                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                                     placeholder="e.g. Bengaluru"
                                                 />
                                             </div>
@@ -712,22 +750,25 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                     <div className="space-y-3">
                                         <div className="grid grid-cols-1 gap-2">
                                             <input
+                                                disabled={!isEditing}
                                                 value={newSocial.name}
                                                 onChange={(e) => setNewSocial(prev => ({ ...prev, name: e.target.value }))}
-                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                                 placeholder="Label (e.g. Portfolio)"
                                             />
                                             <div className="flex gap-2">
                                                 <input
+                                                    disabled={!isEditing}
                                                     value={newSocial.url}
                                                     onChange={(e) => setNewSocial(prev => ({ ...prev, url: e.target.value }))}
-                                                    className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                    className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                                     placeholder="https://..."
                                                 />
                                                 <button
                                                     type="button"
+                                                    disabled={!isEditing}
                                                     onClick={addSocial}
-                                                    className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-xs font-bold text-white"
+                                                    className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-xs font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                                     title="Add link"
                                                 >
                                                     <Plus className="w-4 h-4" />
@@ -746,8 +787,9 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                                         </div>
                                                         <button
                                                             type="button"
+                                                            disabled={!isEditing}
                                                             onClick={() => removeSocial(idx)}
-                                                            className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                                                            className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                             title="Remove"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
@@ -767,10 +809,11 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                     </div>
                                     <div className="space-y-3">
                                         <input
+                                            disabled={!isEditing}
                                             value={newSkill}
                                             onChange={(e) => setNewSkill(e.target.value)}
                                             onKeyDown={addSkill}
-                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                            className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                             placeholder="+ Add Skill (Press Enter)"
                                         />
                                         <div className="flex flex-wrap gap-2">
@@ -806,12 +849,14 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                                     <button
                                                         key={i}
                                                         type="button"
+                                                        disabled={!isEditing}
                                                         onClick={() => extra.interests.includes(i) ? removeInterest(i) : addInterest(i)}
                                                         className={cn(
                                                             "px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors",
                                                             extra.interests.includes(i)
                                                                 ? "bg-white text-black border-white"
-                                                                : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white"
+                                                                : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white",
+                                                            !isEditing && "opacity-50 cursor-not-allowed"
                                                         )}
                                                     >
                                                         {i}
@@ -820,15 +865,17 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                             </div>
                                             <div className="flex gap-2">
                                                 <input
+                                                    disabled={!isEditing}
                                                     value={newInterest}
                                                     onChange={(e) => setNewInterest(e.target.value)}
-                                                    className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                    className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                                                     placeholder="Custom interest..."
                                                 />
                                                 <button
                                                     type="button"
+                                                    disabled={!isEditing}
                                                     onClick={() => addInterest()}
-                                                    className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-xs font-bold text-white"
+                                                    className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-xs font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                                     title="Add"
                                                 >
                                                     <Plus className="w-4 h-4" />
@@ -842,8 +889,9 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                                         <button
                                                             key={i}
                                                             type="button"
+                                                            disabled={!isEditing}
                                                             onClick={() => removeInterest(i)}
-                                                            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-zinc-200 flex items-center gap-2"
+                                                            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-zinc-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                                             title="Remove"
                                                         >
                                                             {i} <X className="w-3 h-3 text-zinc-500" />
@@ -861,19 +909,21 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                                         </div>
                                         <div className="flex flex-wrap gap-2">
                                             {AVAILABLE_ROLES.map((r) => (
-                                                <button
-                                                    key={r}
-                                                    type="button"
-                                                    onClick={() => toggleRole(r)}
-                                                    className={cn(
-                                                        "px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors",
-                                                        extra.roles.includes(r)
-                                                            ? "bg-white text-black border-white"
-                                                            : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white"
-                                                    )}
-                                                >
-                                                    {r}
-                                                </button>
+                                                    <button
+                                                        key={r}
+                                                        type="button"
+                                                        disabled={!isEditing}
+                                                        onClick={() => toggleRole(r)}
+                                                        className={cn(
+                                                            "px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors",
+                                                            extra.roles.includes(r)
+                                                                ? "bg-white text-black border-white"
+                                                                : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white",
+                                                            !isEditing && "opacity-50 cursor-not-allowed"
+                                                        )}
+                                                    >
+                                                        {r}
+                                                    </button>
                                             ))}
                                         </div>
                                     </div>
