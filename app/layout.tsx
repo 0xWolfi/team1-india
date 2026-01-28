@@ -65,6 +65,7 @@ export const viewport: Viewport = {
 
 import { ThemeProvider } from "./providers";
 import { DynamicBackground } from "@/components/ui/DynamicBackground";
+import { VideoPreloader } from "@/components/website/VideoPreloader";
 
 import { Analytics } from "@vercel/analytics/react";
 import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
@@ -86,6 +87,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
+            <VideoPreloader />
             <div className="relative text-white min-h-[100svh]">
                 <div className="fixed inset-0 z-0 pointer-events-none">
                     <DynamicBackground />
