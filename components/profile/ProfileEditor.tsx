@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Toast } from "@/components/ui/Toast";
-import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle, ChevronDown, Search, Check, Shield, Info, Upload as UploadIcon, Plus, Trash2, Link as LinkIcon, Edit2, Globe, Briefcase } from "lucide-react";
+import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle, ChevronDown, Search, Check, Shield, Info, Upload as UploadIcon, Plus, Trash2, Link as LinkIcon, Edit2, Globe, Briefcase, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { INDIAN_STATES } from "@/lib/data/indian-states";
