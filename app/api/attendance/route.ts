@@ -25,12 +25,19 @@ export async function GET(req: NextRequest) {
             return NextResponse.json(records);
         }
 
-        // Fetch all members to populate the list
+        // Fetch all active members to populate the list (both core and community)
         const [coreMembers, communityMembers] = await Promise.all([
             prisma.member.findMany({ 
+                where: {
+                    status: 'active',
+                    deletedAt: null
+                },
                 select: { id: true, name: true, email: true, xHandle: true, customFields: true }
             }),
             prisma.communityMember.findMany({
+                where: {
+                    status: 'active'
+                },
                 select: { id: true, name: true, email: true, xHandle: true, customFields: true }
             })
         ]);

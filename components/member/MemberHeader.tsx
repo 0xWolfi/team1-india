@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { User, LogOut, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -10,16 +10,48 @@ import Image from "next/image";
 
 export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenContribution: () => void }) {
     const [profileImageError, setProfileImageError] = useState(false);
+    const [profileImage, setProfileImage] = useState<string | null>(null);
+    const [imageCacheBust, setImageCacheBust] = useState<number>(0);
 
-    // Cache-buster for blob URLs
-    const getImageUrl = (url: string | null | undefined): string | undefined => {
+    // Fetch latest profile image from API (not session, which can be stale)
+    const fetchProfileImage = async () => {
+        try {
+            const res = await fetch("/api/profile");
+            if (res.ok) {
+                const data = await res.json();
+                if (data.image) {
+                    setProfileImage(data.image);
+                    setImageCacheBust(Date.now());
+                    setProfileImageError(false);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to fetch profile image:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchProfileImage();
+        // Listen for profile updates (triggered after saving profile)
+        const handleProfileUpdate = () => {
+            fetchProfileImage();
+        };
+        window.addEventListener("profileUpdated", handleProfileUpdate);
+        return () => window.removeEventListener("profileUpdated", handleProfileUpdate);
+    }, []);
+
+    const buildImageSrc = (url: string | null | undefined): string | undefined => {
         if (!url) return undefined;
-        if (url.includes('.public.blob.vercel-storage.com')) {
-            const separator = url.includes('?') ? '&' : '?';
-            return `${url}${separator}t=${Date.now()}`;
+        // Only cache-bust when we explicitly fetched a new image
+        if (url.includes(".public.blob.vercel-storage.com") && imageCacheBust) {
+            const separator = url.includes("?") ? "&" : "?";
+            return `${url}${separator}t=${imageCacheBust}`;
         }
         return url;
     };
+
+    // Use fetched image, fallback to session image
+    const displayImage = profileImage || user?.image;
 
     return (
         <header className="mb-6 md:mb-8 border-b border-white/5 pb-6 md:pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
@@ -34,9 +66,24 @@ export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenC
                     {/* Mobile Actions: HIDDEN (Moved to sticky nav) */}
                  </div>
 
-                <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500">
-                    Overview
-                </h1>
+                <div className="flex items-center gap-4">
+                    {displayImage && !profileImageError ? (
+                        <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-lg ring-2 ring-white/10 overflow-hidden flex-shrink-0">
+                            <Image 
+                                src={buildImageSrc(displayImage) || displayImage} 
+                                alt="Profile" 
+                                fill
+                                className="object-cover"
+                                onError={() => setProfileImageError(true)}
+                                unoptimized={displayImage.startsWith('data:') || displayImage.startsWith('blob:')}
+                            />
+                        </div>
+                    ) : (
+                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg bg-zinc-800 flex items-center justify-center ring-2 ring-white/10 flex-shrink-0">
+                            <User className="w-8 h-8 md:w-10 md:h-10 text-zinc-400" />
+                        </div>
+                    )}
+                </div>
                 <p className="text-zinc-500 font-medium text-xs md:text-sm mt-1 md:mt-2 max-w-lg leading-relaxed">
                     Welcome back, <span className="text-white">{user?.name || 'Member'}</span>.
                 </p>
@@ -51,28 +98,12 @@ export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenC
                     submit your contributions
                 </button>
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
-                    {user?.image && !profileImageError ? (
-                        <div className="relative w-10 h-10 rounded-full ring-2 ring-white/10 overflow-hidden">
-                            <Image 
-                                src={getImageUrl(user.image) || user.image} 
-                                alt="Profile" 
-                                fill
-                                className="object-cover"
-                                onError={() => setProfileImageError(true)}
-                                unoptimized={user.image.startsWith('data:') || user.image.startsWith('blob:')}
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center ring-2 ring-white/10">
-                                <User className="w-5 h-5 text-zinc-400" />
-                        </div>
-                    )}
                     <Link 
                         href="/member/profile"
                         className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
                         title="My Profile"
                     >
-                        <Settings className="w-4 h-4" />
+                        <User className="w-4 h-4" />
                     </Link>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}

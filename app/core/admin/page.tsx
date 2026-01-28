@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ShieldAlert, Plus } from "lucide-react";
+import { ShieldAlert, Plus, AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { AdminTable } from "./components/AdminTable";
 import { AdminToolbar } from "./components/AdminToolbar";
@@ -25,6 +25,7 @@ export default function TeamPage() {
     const [isAddingMember, setIsAddingMember] = useState(false);
     const [deletingMember, setDeletingMember] = useState<Member | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [duplicates, setDuplicates] = useState<Set<string>>(new Set());
 
     const refreshMembers = () => {
         setIsLoading(true);
@@ -43,6 +44,30 @@ export default function TeamPage() {
     useEffect(() => {
         refreshMembers();
     }, []);
+
+    // Check for duplicates by email
+    useEffect(() => {
+        if (members.length === 0) {
+            setDuplicates(new Set());
+            return;
+        }
+
+        const emailCounts = new Map<string, number>();
+        const duplicateEmails = new Set<string>();
+
+        members.forEach(member => {
+            const email = member.email?.toLowerCase().trim();
+            if (email) {
+                const count = (emailCounts.get(email) || 0) + 1;
+                emailCounts.set(email, count);
+                if (count > 1) {
+                    duplicateEmails.add(email);
+                }
+            }
+        });
+
+        setDuplicates(duplicateEmails);
+    }, [members]);
 
     // Filter logic
     const filteredMembers = members.filter(m => {
@@ -180,6 +205,16 @@ export default function TeamPage() {
                     </button>
                 )}
              </CorePageHeader>
+
+             {duplicates.size > 0 && (
+                <div className="mb-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400 text-sm flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>
+                        Warning: Found {duplicates.size} duplicate email{duplicates.size !== 1 ? 's' : ''} in the list. 
+                        Please review: {Array.from(duplicates).slice(0, 3).join(', ')}{duplicates.size > 3 ? '...' : ''}
+                    </span>
+                </div>
+             )}
 
              <AdminToolbar 
                 searchTerm={searchTerm} 

@@ -71,29 +71,56 @@ export async function POST(req: NextRequest) {
         let attendeeEmails: string[] = [];
         
         if (memberSelection === 'all') {
-            // Get all active members
-            const allMembers = await prisma.member.findMany({
-                where: {
-                    status: 'active',
-                    deletedAt: null
-                },
-                select: {
-                    email: true
-                }
-            });
-            attendeeEmails = allMembers.map(m => m.email).filter(Boolean);
+            // Get all active members from both core and community
+            const [coreMembers, communityMembers] = await Promise.all([
+                prisma.member.findMany({
+                    where: {
+                        status: 'active',
+                        deletedAt: null
+                    },
+                    select: {
+                        email: true
+                    }
+                }),
+                prisma.communityMember.findMany({
+                    where: {
+                        status: 'active'
+                    },
+                    select: {
+                        email: true
+                    }
+                })
+            ]);
+            attendeeEmails = [
+                ...coreMembers.map(m => m.email),
+                ...communityMembers.map(m => m.email)
+            ].filter(Boolean);
         } else {
-            // Get selected members
-            const selectedMembers = await prisma.member.findMany({
-                where: {
-                    id: { in: selectedMemberIds },
-                    deletedAt: null
-                },
-                select: {
-                    email: true
-                }
-            });
-            attendeeEmails = selectedMembers.map(m => m.email).filter(Boolean);
+            // Get selected members from both core and community
+            // We need to check both tables since IDs might be from either
+            const [selectedCoreMembers, selectedCommunityMembers] = await Promise.all([
+                prisma.member.findMany({
+                    where: {
+                        id: { in: selectedMemberIds },
+                        deletedAt: null
+                    },
+                    select: {
+                        email: true
+                    }
+                }),
+                prisma.communityMember.findMany({
+                    where: {
+                        id: { in: selectedMemberIds }
+                    },
+                    select: {
+                        email: true
+                    }
+                })
+            ]);
+            attendeeEmails = [
+                ...selectedCoreMembers.map(m => m.email),
+                ...selectedCommunityMembers.map(m => m.email)
+            ].filter(Boolean);
         }
 
         if (attendeeEmails.length === 0) {

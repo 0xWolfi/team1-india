@@ -167,6 +167,8 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
             setImageCacheBust(Date.now());
             setProfileImageError(false);
             await updateSession(); // Refresh session (best-effort)
+            // Notify other components (like MemberHeader) to refresh profile image
+            window.dispatchEvent(new Event("profileUpdated"));
             
         } catch (error) {
             console.error("Upload error:", error);
@@ -295,6 +297,8 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
             await updateSession();
             setIsEditing(false);
             setShowToast(true);
+            // Notify other components (like MemberHeader) to refresh profile image
+            window.dispatchEvent(new Event("profileUpdated"));
         } catch (error) {
             console.error(error);
             alert("Failed to save. Please try again.");

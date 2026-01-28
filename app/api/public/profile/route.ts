@@ -20,7 +20,7 @@ const profileSchema = z.object({
       name: z.string(),
       url: z.string().url()
   })).optional(),
-  profileImage: z.string().url().optional().or(z.literal("")),
+  profileImage: z.union([z.string().url(), z.literal("")]).optional(),
   consentNewsletter: z.boolean().optional(),
   consentLegal: z.boolean().optional(),
 });
@@ -80,7 +80,7 @@ export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user) {
-    return new NextResponse("Unauthorized", { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // @ts-ignore
@@ -88,8 +88,12 @@ export async function PATCH(req: NextRequest) {
   // @ts-ignore
   const userId = session.user.id;
 
+  if (!userId) {
+    return NextResponse.json({ error: "User ID not found in session" }, { status: 401 });
+  }
+
   if (role !== 'PUBLIC') {
-      return new NextResponse("Forbidden", { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
@@ -109,7 +113,10 @@ export async function PATCH(req: NextRequest) {
     if (validatedData.currentProject !== undefined) updateData.currentProject = validatedData.currentProject;
     if (validatedData.availability !== undefined) updateData.availability = validatedData.availability;
     if (validatedData.socialProfiles !== undefined) updateData.socialProfiles = validatedData.socialProfiles;
-    if (validatedData.profileImage !== undefined) updateData.profileImage = validatedData.profileImage;
+    // Handle profileImage: empty string becomes null, valid URL stays as is
+    if (validatedData.profileImage !== undefined) {
+      updateData.profileImage = validatedData.profileImage === "" ? null : validatedData.profileImage;
+    }
     
     // Handle Consent
     if (validatedData.consentNewsletter !== undefined) updateData.consentNewsletter = validatedData.consentNewsletter;
@@ -129,9 +136,16 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(updatedUser);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse("Invalid request data", { status: 400 });
+      console.error("Validation Error:", error.errors);
+      return NextResponse.json({ 
+        error: "Invalid request data", 
+        details: error.errors 
+      }, { status: 400 });
     }
     console.error("Profile Update Error:", error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json({ 
+      error: "Internal Server Error",
+      message: error instanceof Error ? error.message : "Unknown error"
+    }, { status: 500 });
   }
 }

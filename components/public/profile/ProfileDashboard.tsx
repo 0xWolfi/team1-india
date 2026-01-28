@@ -194,14 +194,19 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to save");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Unknown error" }));
+        throw new Error(errorData.error || errorData.message || "Failed to save");
+      }
 
       setMessage({ type: 'success', text: "Profile updated successfully!" });
       router.refresh(); 
       setIsEditing(false); 
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      setMessage({ type: 'error', text: "Failed to save profile. Please try again." });
+      const errorMessage = error instanceof Error ? error.message : "Failed to save profile. Please try again.";
+      console.error("Save error:", error);
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setIsSaving(false);
     }
