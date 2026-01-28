@@ -248,6 +248,63 @@ export function getCustomApprovalEmailTemplate(
     `;
 }
 
+// Event rejection email template with custom body (superadmin-written)
+export function getCustomRejectionEmailTemplate(
+    applicantName: string,
+    programTitle: string,
+    customBody: string
+) {
+    const safeBody = (customBody || '').trim();
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; color: #000000;">
+    <div style="padding: 40px 20px; max-width: 600px; margin: 0 auto;">
+        <h1 style="margin: 0 0 20px; font-size: 24px; font-weight: bold;">Update on Your ${programTitle} Application</h1>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Hi ${applicantName},
+        </p>
+
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Thank you for applying for ${programTitle} with Team1 India.
+        </p>
+
+        <div style="margin: 0 0 16px; font-size: 16px; line-height: 1.6; white-space: pre-wrap;">
+            ${safeBody || `After careful review, we regret to inform you that your application was not approved at this time.`}
+        </div>
+        
+        <p style="margin: 24px 0 16px; font-size: 16px; line-height: 1.6; font-weight: bold;">
+            🔐 Security Notice:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            Team1 India will not reach out individually regarding rejected applications. If anyone claims otherwise, you can verify official members and contacts here:
+        </p>
+        
+        <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
+            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+        </p>
+        
+        <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
+            Thank you for your interest and understanding.
+        </p>
+        
+        <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.6;">
+            Sarnavo<br>
+            Team1 India Team
+        </p>
+    </div>
+</body>
+</html>
+    `;
+}
+
 // Email template for application rejection
 export function getRejectionEmailTemplate(applicantName: string, programTitle: string) {
     return `
