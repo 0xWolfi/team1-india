@@ -136,10 +136,10 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json(updatedUser);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error("Validation Error:", error.errors);
+      console.error("Validation Error:", error.issues);
       return NextResponse.json({ 
         error: "Invalid request data", 
-        details: error.errors 
+        details: error.issues 
       }, { status: 400 });
     }
     console.error("Profile Update Error:", error);
