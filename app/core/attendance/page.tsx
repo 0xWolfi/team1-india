@@ -11,6 +11,7 @@ interface Member {
     name: string;
     email: string;
     xHandle?: string | null;
+    discord?: string | null;
     type: 'CORE' | 'COMMUNITY';
     role: string;
 }
@@ -113,7 +114,8 @@ export default function AttendancePage() {
 
     const filteredMembers = members.filter(m =>
         (m.name || '').toLowerCase().includes(memberSearch.toLowerCase()) ||
-        (m.email || '').toLowerCase().includes(memberSearch.toLowerCase())
+        (m.email || '').toLowerCase().includes(memberSearch.toLowerCase()) ||
+        (m.discord || '').toLowerCase().includes(memberSearch.toLowerCase())
     );
 
     const getAttendees = (record: any) => {

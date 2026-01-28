@@ -11,6 +11,7 @@ const ProfileUpdateSchema = z.object({
     xHandle: z.string().max(100).optional().nullable(),
     telegram: z.string().max(100).optional().nullable(),
     customFields: z.record(z.string(), z.any()).optional(),
+    image: z.string().max(2000).optional().nullable(),
 });
 
 export async function GET(request: NextRequest) {
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
         if (role === 'CORE') {
             member = await prisma.member.findUnique({ 
                 where: { email: session.user.email },
-                select: { customFields: true, name: true, email: true, xHandle: true }
+                select: { customFields: true, name: true, email: true, xHandle: true, image: true }
             });
         } else {
             member = await prisma.communityMember.findUnique({ 
@@ -47,7 +48,11 @@ export async function GET(request: NextRequest) {
             wallet: customFields.wallet || '',
             address: customFields.address || '',
             discord: customFields.discord || '',
-            bio: customFields.bio || ''
+            bio: customFields.bio || '',
+            // Image: CORE uses Member.image, MEMBER uses customFields.profileImage (or legacy customFields.image)
+            image: role === 'CORE'
+                ? ((member as any)?.image || session.user.image || '')
+                : (customFields.profileImage || customFields.image || session.user.image || '')
         });
     } catch (error) {
         log("ERROR", "Failed to fetch profile", "PROFILE", { 
@@ -80,38 +85,57 @@ export async function PATCH(request: NextRequest) {
             }, { status: 400 });
         }
 
-        const { customFields, name, xHandle, telegram } = validationResult.data;
+        const { customFields, name, xHandle, telegram, image } = validationResult.data;
 
         // Determine if user is Core or Community based on Role
         // @ts-ignore
         const role = session.user.role;
 
         if (role === 'CORE') {
+            const existing = await prisma.member.findUnique({
+                where: { email: session.user.email },
+                select: { customFields: true }
+            });
+            const existingCustomFields = (existing?.customFields as any) || {};
+            const mergedCustomFields = customFields ? { ...existingCustomFields, ...customFields } : undefined;
+
             await prisma.member.update({
                 where: { email: session.user.email },
                 data: {
                     ...(name !== undefined && { name }),
                     ...(xHandle !== undefined && { xHandle }),
-                    ...(customFields && { customFields }),
+                    ...(mergedCustomFields && { customFields: mergedCustomFields }),
+                    ...(image !== undefined && { image: image || null }),
                 }
             });
         } else {
             // Community Member
             // Community Member
+            const existing = await prisma.communityMember.findUnique({
+                where: { email: session.user.email },
+                select: { customFields: true }
+            });
+            const existingCustomFields = (existing?.customFields as any) || {};
+            const mergedCustomFields = customFields ? { ...existingCustomFields, ...customFields } : undefined;
+            // Store uploaded profile photo for members in customFields.profileImage
+            const mergedWithImage = image !== undefined
+                ? { ...(mergedCustomFields || existingCustomFields), profileImage: image || '' }
+                : mergedCustomFields;
+
             await prisma.communityMember.upsert({
                 where: { email: session.user.email },
                 update: {
                     ...(name !== undefined && { name }),
                     ...(xHandle !== undefined && { xHandle }),
                     ...(telegram !== undefined && { telegram }),
-                    ...(customFields && { customFields }),
+                    ...(mergedWithImage && { customFields: mergedWithImage }),
                 },
                 create: {
                     email: session.user.email,
                     name: name || session.user.name,
                     xHandle: xHandle,
                     telegram: telegram,
-                    customFields: customFields,
+                    customFields: mergedWithImage || customFields,
                     status: 'active'
                 }
             });

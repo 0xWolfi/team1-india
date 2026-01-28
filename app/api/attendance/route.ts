@@ -28,16 +28,32 @@ export async function GET(req: NextRequest) {
         // Fetch all members to populate the list
         const [coreMembers, communityMembers] = await Promise.all([
             prisma.member.findMany({ 
-                select: { id: true, name: true, email: true, xHandle: true }
+                select: { id: true, name: true, email: true, xHandle: true, customFields: true }
             }),
             prisma.communityMember.findMany({
-                select: { id: true, name: true, email: true, xHandle: true }
+                select: { id: true, name: true, email: true, xHandle: true, customFields: true }
             })
         ]);
 
         const allMembers = [
-            ...coreMembers.map((m: any) => ({ ...m, type: 'CORE', role: 'CORE' })),
-            ...communityMembers.map((m: any) => ({ ...m, type: 'COMMUNITY', role: 'MEMBER' }))
+            ...coreMembers.map((m: any) => ({
+                id: m.id,
+                name: m.name,
+                email: m.email,
+                xHandle: m.xHandle,
+                discord: (m.customFields as any)?.discord || '',
+                type: 'CORE',
+                role: 'CORE'
+            })),
+            ...communityMembers.map((m: any) => ({
+                id: m.id,
+                name: m.name,
+                email: m.email,
+                xHandle: m.xHandle,
+                discord: (m.customFields as any)?.discord || '',
+                type: 'COMMUNITY',
+                role: 'MEMBER'
+            }))
         ];
 
         return NextResponse.json(allMembers);

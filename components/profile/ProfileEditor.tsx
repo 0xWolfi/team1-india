@@ -4,10 +4,25 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Toast } from "@/components/ui/Toast";
-import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle, ChevronDown, Search, Check, Shield, Info, Upload as UploadIcon } from "lucide-react";
+import { User, Save, Send, Twitter, Wallet, MapPin, Loader2, ArrowLeft, MessageCircle, ChevronDown, Search, Check, Shield, Info, Upload as UploadIcon, Plus, Trash2, Link as LinkIcon, Edit2, Globe, Briefcase } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { INDIAN_STATES } from "@/lib/data/indian-states";
+
+interface SocialProfile {
+    name: string;
+    url: string;
+}
+
+const AVAILABLE_ROLES = ["Developer", "Marketing", "Business Development", "Designer", "Community Manager", "Founder", "Investor", "Other"];
+const PREDEFINED_INTERESTS = [
+    "DeFi", "NFTs", "Gaming", "DAO", "Infrastructure", "Social", "Mobile", "Zero Knowledge", "Consumer",
+    "AI", "RWAs", "Security", "Analytics", "Trading", "Governance"
+];
+
+const AVAILABILITY_OPTIONS = [
+    "Open to Hack", "Looking for Co-founder", "Hiring", "Just Exploring", "Not Available"
+];
 
 interface SearchableDropdownProps {
     label: string;
@@ -117,11 +132,13 @@ interface ProfileEditorProps {
 export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
     const { data: session, update: updateSession } = useSession();
     const router = useRouter();
+    const isMemberContext = backHref.startsWith("/member");
     const [isLoading, setIsLoading] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false); // New State
     const [showToast, setShowToast] = useState(false);
     const [profileImageError, setProfileImageError] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null); // New Ref
+    const [profileImage, setProfileImage] = useState<string>("");
     
     // Image Upload Handler
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,16 +167,15 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
             const data = await res.json();
             
             // Immediately update the user profile with the new image URL in the DB
-            // We reuse the existing patch endpoint or create a specific one. 
-            // Assuming the main PATCH endpoint handles 'image' or we add it safely.
-            // For now, let's update via the main profile patch to ensure it persists.
             await fetch("/api/profile", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ image: data.url }) // Backend must support 'image' update
             });
 
-            await updateSession(); // Refresh session to show new image
+            setProfileImage(data.url);
+            setProfileImageError(false);
+            await updateSession(); // Refresh session (best-effort)
             
         } catch (error) {
             console.error("Upload error:", error);
@@ -197,6 +213,7 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
             const res = await fetch("/api/profile");
             if (res.ok) {
                 const data = await res.json();
+                setProfileImage(data.image || "");
                 setFormData({
                     name: data.name || "",
                     xHandle: data.xHandle || "",
@@ -262,6 +279,8 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
             });
 
             if (res.ok) {
+                // refresh image (in case server normalized/stored differently)
+                await fetchProfile();
                 await updateSession();
                 setShowToast(true);
             }
@@ -271,6 +290,126 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
             setIsLoading(false);
         }
     };
+
+    // --- Extra (Public-style) Profile Section (Member context only) ---
+    const [extra, setExtra] = useState<{
+        availability: string;
+        currentProject: string;
+        country: string;
+        city: string;
+        roles: string[];
+        interests: string[];
+        skills: string[];
+        socialProfiles: SocialProfile[];
+    }>({
+        availability: "Just Exploring",
+        currentProject: "",
+        country: "",
+        city: "",
+        roles: [],
+        interests: [],
+        skills: [],
+        socialProfiles: []
+    });
+    const [extraLoaded, setExtraLoaded] = useState(false);
+    const [isExtraEditing, setIsExtraEditing] = useState(false);
+    const [isExtraSaving, setIsExtraSaving] = useState(false);
+    const [extraError, setExtraError] = useState<string>("");
+    const [newSkill, setNewSkill] = useState("");
+    const [newInterest, setNewInterest] = useState("");
+    const [newSocial, setNewSocial] = useState<SocialProfile>({ name: "", url: "" });
+
+    const fetchExtra = async () => {
+        try {
+            const res = await fetch("/api/profile/extra");
+            if (!res.ok) return;
+            const data = await res.json();
+            setExtra({
+                availability: data.availability || "Just Exploring",
+                currentProject: data.currentProject || "",
+                country: data.country || "",
+                city: data.city || "",
+                roles: Array.isArray(data.roles) ? data.roles : [],
+                interests: Array.isArray(data.interests) ? data.interests : [],
+                skills: Array.isArray(data.skills) ? data.skills : [],
+                socialProfiles: Array.isArray(data.socialProfiles) ? data.socialProfiles : []
+            });
+            setExtraLoaded(true);
+        } catch (e) {
+            console.error("Failed to fetch extra profile:", e);
+        }
+    };
+
+    useEffect(() => {
+        if (session?.user && isMemberContext) {
+            fetchExtra();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session, isMemberContext]);
+
+    const saveExtra = async () => {
+        setExtraError("");
+        setIsExtraSaving(true);
+        try {
+            const res = await fetch("/api/profile/extra", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(extra),
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data?.error || "Failed to save");
+            }
+            await fetchExtra();
+            setIsExtraEditing(false);
+            setShowToast(true);
+        } catch (e: any) {
+            setExtraError(e?.message || "Failed to save. Please try again.");
+        } finally {
+            setIsExtraSaving(false);
+        }
+    };
+
+    const addSkill = (e?: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e && e.key !== "Enter" && e.key !== ",") return;
+        if (e) e.preventDefault();
+        const skill = newSkill.trim();
+        if (!skill) return;
+        if (extra.skills.includes(skill)) {
+            setNewSkill("");
+            return;
+        }
+        setExtra(prev => ({ ...prev, skills: [...prev.skills, skill] }));
+        setNewSkill("");
+    };
+    const removeSkill = (skill: string) => setExtra(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skill) }));
+
+    const addInterest = (custom?: string) => {
+        const val = (custom || newInterest).trim();
+        if (!val) return;
+        if (extra.interests.length >= 10) return;
+        if (extra.interests.includes(val)) return;
+        setExtra(prev => ({ ...prev, interests: [...prev.interests, val] }));
+        if (!custom) setNewInterest("");
+    };
+    const removeInterest = (interest: string) => setExtra(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
+
+    const toggleRole = (role: string) => {
+        setExtra(prev => {
+            if (prev.roles.includes(role)) return { ...prev, roles: prev.roles.filter(r => r !== role) };
+            if (prev.roles.length >= 3) return prev;
+            return { ...prev, roles: [...prev.roles, role] };
+        });
+    };
+
+    const addSocial = () => {
+        const name = newSocial.name.trim();
+        const url = newSocial.url.trim();
+        if (!name || !url) return;
+        setExtra(prev => ({ ...prev, socialProfiles: [...prev.socialProfiles, { name, url }] }));
+        setNewSocial({ name: "", url: "" });
+    };
+    const removeSocial = (idx: number) => setExtra(prev => ({ ...prev, socialProfiles: prev.socialProfiles.filter((_, i) => i !== idx) }));
 
     return (
         <div>
@@ -310,9 +449,9 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                              <div className="absolute inset-0 bg-white/10 blur-2xl rounded-full scale-110" />
                              
                              <div className="relative group/edit">
-                                 {session?.user?.image && !profileImageError ? (
+                                 {(profileImage || session?.user?.image) && !profileImageError ? (
                                     <img 
-                                        src={getImageUrl(session.user.image) || session.user.image} 
+                                        src={getImageUrl(profileImage || session?.user?.image) || profileImage || session?.user?.image || ''} 
                                         alt="Profile" 
                                         className="relative w-28 h-28 rounded-full border-4 border-zinc-900 ring-1 ring-white/20 shadow-2xl object-cover" 
                                         onError={() => setProfileImageError(true)}
@@ -349,7 +488,7 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                         </div>
 
                         {/* Name & Email */}
-                        <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">{session?.user?.name}</h2>
+                        <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">{formData.name || session?.user?.name}</h2>
                         <p className="text-sm font-medium text-zinc-500 mb-8 font-mono">{session?.user?.email}</p>
 
                         {/* Info/Stats Block */}
@@ -516,6 +655,344 @@ export function ProfileEditor({ backHref, backLabel }: ProfileEditorProps) {
                             </button>
                         </div>
                     </form>
+
+                    {/* Extra public-style fields (member profile only) */}
+                    {isMemberContext && (
+                        <div className="mt-10 pt-8 border-t border-white/10">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-2">
+                                    <Briefcase className="w-4 h-4 text-zinc-400" />
+                                    <h4 className="text-sm font-bold text-white">Additional Profile</h4>
+                                    <span className="text-[10px] text-zinc-500">(stored separately)</span>
+                                </div>
+                                {!isExtraEditing ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setExtraError("");
+                                            setIsExtraEditing(true);
+                                        }}
+                                        className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-xs font-bold text-white flex items-center gap-2 transition-colors"
+                                    >
+                                        <Edit2 className="w-3.5 h-3.5" /> Edit
+                                    </button>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsExtraEditing(false);
+                                                setExtraError("");
+                                                if (!extraLoaded) fetchExtra();
+                                            }}
+                                            disabled={isExtraSaving}
+                                            className="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-bold text-zinc-300 hover:text-white transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={saveExtra}
+                                            disabled={isExtraSaving}
+                                            className="px-3 py-2 bg-white text-black hover:bg-zinc-200 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-60"
+                                        >
+                                            {isExtraSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                                            Save
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {extraError && (
+                                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                                    {extraError}
+                                </div>
+                            )}
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Professional */}
+                                <div className="bg-black/20 border border-white/5 rounded-2xl p-5">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="text-sm font-bold text-white">Professional</div>
+                                        <span className="text-[10px] text-zinc-500 flex items-center gap-1">
+                                            <Globe className="w-3 h-3" /> Optional
+                                        </span>
+                                    </div>
+
+                                    {!isExtraEditing ? (
+                                        <div className="space-y-3 text-sm">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-zinc-500">Availability</span>
+                                                <span className="text-zinc-200 font-medium">{extra.availability || "Just Exploring"}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-zinc-500">Current project</span>
+                                                <span className="text-zinc-200 font-medium text-right">{extra.currentProject || "—"}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-zinc-500">Location</span>
+                                                <span className="text-zinc-200 font-medium text-right">
+                                                    {(extra.city || extra.country) ? `${extra.city}${extra.city && extra.country ? ", " : ""}${extra.country}` : "—"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Availability</label>
+                                                <select
+                                                    value={extra.availability}
+                                                    onChange={(e) => setExtra(prev => ({ ...prev, availability: e.target.value }))}
+                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                >
+                                                    {AVAILABILITY_OPTIONS.map(opt => (
+                                                        <option key={opt} value={opt} className="bg-zinc-900">{opt}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Current project</label>
+                                                <input
+                                                    value={extra.currentProject}
+                                                    onChange={(e) => setExtra(prev => ({ ...prev, currentProject: e.target.value }))}
+                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                    placeholder="e.g. Building a consumer app"
+                                                />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">Country</label>
+                                                    <input
+                                                        value={extra.country}
+                                                        onChange={(e) => setExtra(prev => ({ ...prev, country: e.target.value }))}
+                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                        placeholder="Select Country"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1">City</label>
+                                                    <input
+                                                        value={extra.city}
+                                                        onChange={(e) => setExtra(prev => ({ ...prev, city: e.target.value }))}
+                                                        className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                        placeholder="e.g. Bengaluru"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Social Links */}
+                                <div className="bg-black/20 border border-white/5 rounded-2xl p-5">
+                                    <div className="text-sm font-bold text-white mb-4">Social Links</div>
+                                    {!isExtraEditing ? (
+                                        <div className="space-y-2">
+                                            {extra.socialProfiles.length === 0 ? (
+                                                <div className="text-sm text-zinc-500">—</div>
+                                            ) : (
+                                                extra.socialProfiles.map((s, idx) => (
+                                                    <a
+                                                        key={`${s.name}-${idx}`}
+                                                        href={s.url}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors text-sm"
+                                                    >
+                                                        <LinkIcon className="w-4 h-4 text-zinc-400" />
+                                                        <span className="text-white font-medium">{s.name}</span>
+                                                        <span className="text-zinc-500 truncate">{s.url}</span>
+                                                    </a>
+                                                ))
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            <div className="grid grid-cols-1 gap-2">
+                                                <input
+                                                    value={newSocial.name}
+                                                    onChange={(e) => setNewSocial(prev => ({ ...prev, name: e.target.value }))}
+                                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                    placeholder="Label (e.g. Portfolio)"
+                                                />
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        value={newSocial.url}
+                                                        onChange={(e) => setNewSocial(prev => ({ ...prev, url: e.target.value }))}
+                                                        className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                        placeholder="https://..."
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={addSocial}
+                                                        className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-xs font-bold text-white"
+                                                    >
+                                                        <Plus className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {extra.socialProfiles.map((s, idx) => (
+                                                    <div key={`${s.name}-${idx}`} className="flex items-center justify-between gap-3 p-2 rounded-xl bg-white/5 border border-white/5">
+                                                        <div className="min-w-0">
+                                                            <div className="text-sm text-white font-medium truncate">{s.name}</div>
+                                                            <div className="text-xs text-zinc-500 truncate">{s.url}</div>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeSocial(idx)}
+                                                            className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Skills */}
+                                <div className="bg-black/20 border border-white/5 rounded-2xl p-5">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="text-sm font-bold text-white">Skills</div>
+                                        <div className="text-[10px] text-zinc-500">{extra.skills.length}/50</div>
+                                    </div>
+                                    {!isExtraEditing ? (
+                                        <div className="flex flex-wrap gap-2">
+                                            {extra.skills.length === 0 ? (
+                                                <div className="text-sm text-zinc-500">—</div>
+                                            ) : (
+                                                extra.skills.map((s) => (
+                                                    <span key={s} className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-zinc-200">
+                                                        {s}
+                                                    </span>
+                                                ))
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            <input
+                                                value={newSkill}
+                                                onChange={(e) => setNewSkill(e.target.value)}
+                                                onKeyDown={addSkill}
+                                                className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                placeholder="+ Add Skill (Press Enter)"
+                                            />
+                                            <div className="flex flex-wrap gap-2">
+                                                {extra.skills.map((s) => (
+                                                    <button
+                                                        key={s}
+                                                        type="button"
+                                                        onClick={() => removeSkill(s)}
+                                                        className="px-2.5 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-zinc-200 flex items-center gap-2"
+                                                    >
+                                                        {s} <X className="w-3 h-3 text-zinc-500" />
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Interests + Roles */}
+                                <div className="bg-black/20 border border-white/5 rounded-2xl p-5 space-y-6">
+                                    <div>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="text-sm font-bold text-white">Interests</div>
+                                            <div className="text-[10px] text-zinc-500">{extra.interests.length}/10</div>
+                                        </div>
+                                        {!isExtraEditing ? (
+                                            <div className="flex flex-wrap gap-2">
+                                                {extra.interests.length === 0 ? (
+                                                    <div className="text-sm text-zinc-500">—</div>
+                                                ) : (
+                                                    extra.interests.map((i) => (
+                                                        <span key={i} className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-zinc-200">
+                                                            {i}
+                                                        </span>
+                                                    ))
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                <div className="flex flex-wrap gap-2">
+                                                    {PREDEFINED_INTERESTS.map((i) => (
+                                                        <button
+                                                            key={i}
+                                                            type="button"
+                                                            onClick={() => extra.interests.includes(i) ? removeInterest(i) : addInterest(i)}
+                                                            className={cn(
+                                                                "px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors",
+                                                                extra.interests.includes(i)
+                                                                    ? "bg-white text-black border-white"
+                                                                    : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white"
+                                                            )}
+                                                        >
+                                                            {i}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        value={newInterest}
+                                                        onChange={(e) => setNewInterest(e.target.value)}
+                                                        className="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
+                                                        placeholder="Custom interest..."
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => addInterest()}
+                                                        className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-xs font-bold text-white"
+                                                    >
+                                                        <Plus className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="text-sm font-bold text-white">Roles (Max 3)</div>
+                                            <div className="text-[10px] text-zinc-500">{extra.roles.length}/3</div>
+                                        </div>
+                                        {!isExtraEditing ? (
+                                            <div className="flex flex-wrap gap-2">
+                                                {extra.roles.length === 0 ? (
+                                                    <div className="text-sm text-zinc-500">—</div>
+                                                ) : (
+                                                    extra.roles.map((r) => (
+                                                        <span key={r} className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-zinc-200">
+                                                            {r}
+                                                        </span>
+                                                    ))
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-wrap gap-2">
+                                                {AVAILABLE_ROLES.map((r) => (
+                                                    <button
+                                                        key={r}
+                                                        type="button"
+                                                        onClick={() => toggleRole(r)}
+                                                        className={cn(
+                                                            "px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors",
+                                                            extra.roles.includes(r)
+                                                                ? "bg-white text-black border-white"
+                                                                : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white"
+                                                        )}
+                                                    >
+                                                        {r}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
