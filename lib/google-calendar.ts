@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { OAuth2Client } from 'google-auth-library';
 
 interface CreateMeetingParams {
     title: string;
@@ -22,7 +22,7 @@ export async function createGoogleMeetEvent({
         const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
         const hostEmail = process.env.GOOGLE_HOST_EMAIL;
         
-        // Determine redirect URI - prioritize GOOGLE_REDIRECT_URI, then use NEXTAUTH_URL, then default
+        // Determine redirect URI
         const redirectUri = process.env.GOOGLE_REDIRECT_URI || 
             (process.env.NEXTAUTH_URL 
                 ? `${process.env.NEXTAUTH_URL}/api/auth/callback/google`
@@ -38,7 +38,7 @@ export async function createGoogleMeetEvent({
         }
 
         // Create OAuth2 client
-        const oauth2Client = new google.auth.OAuth2(
+        const oauth2Client = new OAuth2Client(
             clientId,
             clientSecret,
             redirectUri
@@ -49,56 +49,28 @@ export async function createGoogleMeetEvent({
             refresh_token: refreshToken
         });
 
-        // Get access token
+        // Test implementation: simple check if we can get a token
+        // This will throw if credentials are invalid
         try {
-            const { credentials } = await oauth2Client.refreshAccessToken();
-            oauth2Client.setCredentials(credentials);
+            await oauth2Client.getAccessToken();
         } catch (tokenError: any) {
-            const errorDetails = {
+             const errorDetails = {
                 error: tokenError.message,
                 code: tokenError.code,
                 clientIdPrefix: clientId?.substring(0, 20) + '...',
                 redirectUri,
                 hasRefreshToken: !!refreshToken,
-                refreshTokenPrefix: refreshToken?.substring(0, 20) + '...',
                 environment: process.env.NODE_ENV
             };
-            
             console.error('Token refresh error details:', errorDetails);
             
             if (tokenError.message?.includes('unauthorized_client') || tokenError.code === 'unauthorized_client') {
-                const errorMessage = `OAuth authorization failed (unauthorized_client).
-
-CRITICAL: The refresh token must be regenerated with the EXACT same credentials.
-
-Current Configuration:
-- Client ID: ${clientId?.substring(0, 30)}...
-- Redirect URI: ${redirectUri}
-- Environment: ${process.env.NODE_ENV}
-
-REQUIRED ACTIONS:
-1. Go to Google Cloud Console → APIs & Services → Credentials
-2. Verify your OAuth Client ID matches: ${clientId?.substring(0, 30)}...
-3. Verify redirect URI "${redirectUri}" is EXACTLY listed in Authorized redirect URIs
-4. Go to OAuth 2.0 Playground (https://developers.google.com/oauthplayground/)
-5. Click gear icon → "Use your own OAuth credentials"
-6. Enter the SAME Client ID and Secret from step 2
-7. Select scope: https://www.googleapis.com/auth/calendar
-8. Complete authorization and copy the NEW refresh token
-9. Update GOOGLE_REFRESH_TOKEN in Vercel environment variables
-10. Redeploy or wait for environment variables to refresh
-
-The refresh token MUST be generated with the exact same Client ID/Secret/Redirect URI combination.`;
-                
-                throw new Error(errorMessage);
+                 throw new Error('OAuth authorization failed. Please regenerate refresh token.');
             }
             throw tokenError;
         }
 
-        // Create Calendar API client
-        const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-
-        // Create event with Google Meet
+        // Prepare event data
         const event = {
             summary: title,
             description: description || '',
@@ -125,18 +97,22 @@ The refresh token MUST be generated with the exact same Client ID/Secret/Redirec
             reminders: {
                 useDefault: false,
                 overrides: [
-                    { method: 'email', minutes: 24 * 60 }, // 1 day before
-                    { method: 'popup', minutes: 15 } // 15 minutes before
+                    { method: 'email', minutes: 24 * 60 },
+                    { method: 'popup', minutes: 15 }
                 ]
             }
         };
 
-        // Insert event
-        const response = await calendar.events.insert({
-            calendarId: 'primary',
-            conferenceDataVersion: 1,
-            requestBody: event,
-            sendUpdates: 'all' // Send invites to all attendees
+        // Make API request using proper types
+        // url: https://www.googleapis.com/calendar/v3/calendars/primary/events
+        const response = await oauth2Client.request<any>({
+            url: 'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+            method: 'POST',
+            params: {
+                conferenceDataVersion: 1,
+                sendUpdates: 'all'
+            },
+            data: event
         });
 
         if (!response.data.id || !response.data.hangoutLink) {

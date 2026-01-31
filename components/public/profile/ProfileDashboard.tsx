@@ -3,13 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Save, User, MapPin, Globe, Loader2, CheckCircle2, Upload, X, Plus, Trash2, Link as LinkIcon, Briefcase, Edit2, Github, Linkedin, Twitter, ArrowUpRight, Rocket, Zap } from "lucide-react";
+import { Save, User, MapPin, Globe, Loader2, CheckCircle2, Upload, X, Plus, Trash2, Link as LinkIcon, Briefcase, Edit2, Github, Linkedin, Twitter, ArrowUpRight, Rocket, Zap, MessageCircle, Wallet, Send, Shield, Trophy, Calendar, Video, FileText, Award } from "lucide-react";
 import { upload } from "@vercel/blob/client";
 import { cn } from "@/lib/utils";
 
 interface SocialProfile {
     name: string;
     url: string;
+}
+
+interface ProfileDashboardProps {
+    initialData: any;
+    role?: 'PUBLIC' | 'MEMBER' | 'CORE';
 }
 
 const AVAILABLE_ROLES = ["Developer", "Marketing", "Business Development", "Designer", "Community Manager", "Founder", "Investor", "Other"];
@@ -22,6 +27,12 @@ const AVAILABILITY_OPTIONS = [
     "Open to Hack", "Looking for Co-founder", "Hiring", "Just Exploring", "Not Available"
 ];
 
+// Data will be fetched from API
+const EVENTS: any[] = [];
+const POAPS: any[] = [];
+const CONTENT: any[] = [];
+const ACHIEVEMENTS: any[] = [];
+
 const getSocialIcon = (name: string) => {
     const lower = name.toLowerCase();
     if (lower.includes('github')) return <Github className="w-4 h-4" />;
@@ -30,7 +41,7 @@ const getSocialIcon = (name: string) => {
     return <LinkIcon className="w-4 h-4" />;
 };
 
-export function ProfileDashboard({ initialData }: { initialData: any }) {
+export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashboardProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,21 +54,25 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
   };
 
   const [formData, setFormData] = useState({
-    fullName: initialData.fullName || "",
+    fullName: initialData.fullName || initialData.name || "",
     bio: initialData.bio || "",
-    // We can keep 'location' for backward compatibility or just ignore it if we fully switch.
-    // Let's use city/country if available, else try to split location, else empty.
     city: initialData.city || "",
     country: initialData.country || "",
-    profileImage: initialData.profileImage || "",
+    profileImage: initialData.profileImage || initialData.image || "",
     roles: (initialData.roles as string[]) || [],
     interests: (initialData.interests as string[]) || [],
     skills: (initialData.skills as string[]) || [],
     currentProject: initialData.currentProject || "",
     availability: initialData.availability || "Just Exploring",
-    socialProfiles: parseSocials(initialData.socialProfiles)
+    socialProfiles: parseSocials(initialData.socialProfiles),
+    // Extra fields for Member/Core parity
+    xHandle: initialData.xHandle || "",
+    telegram: initialData.telegram || "",
+    wallet: initialData.wallet || initialData.customFields?.wallet || "",
+    discord: initialData.discord || initialData.customFields?.discord || ""
   });
   
+  const [activeTab, setActiveTab] = useState("OVERVIEW");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -65,17 +80,12 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
   
   // Country List State
   const [countries, setCountries] = useState<string[]>([]);
-  const [loadingCountries, setLoadingCountries] = useState(false);
-
-  // New Inputs State
   const [newSkill, setNewSkill] = useState("");
   const [newInterest, setNewInterest] = useState("");
   const [newSocial, setNewSocial] = useState({ name: "", url: "" });
 
   useEffect(() => {
-      // Fetch countries on mount
       const fetchCountries = async () => {
-          setLoadingCountries(true);
           try {
               const res = await fetch("https://restcountries.com/v3.1/all?fields=name,cca2");
               if (!res.ok) throw new Error("Failed to fetch countries");
@@ -83,10 +93,7 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
               const countryNames = data.map((c: any) => c.name.common).sort();
               setCountries(countryNames);
           } catch (error) {
-              console.warn("Country API unavailable, using fallback list.");
               setCountries(["India", "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Japan", "Singapore", "UAE"]);
-          } finally {
-              setLoadingCountries(false);
           }
       };
       fetchCountries();
@@ -112,7 +119,7 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
           setMessage({ type: 'success', text: "Image uploaded! Save to persist." });
       } catch (error) {
           console.error("Upload failed", error);
-          setMessage({ type: 'error', text: "Upload failed. Please try again." });
+          setMessage({ type: 'error', text: "Upload failed." });
       } finally {
           setIsUploading(false);
       }
@@ -148,7 +155,6 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
           setNewSkill("");
           return;
       }
-
       setFormData(prev => ({ ...prev, skills: [...prev.skills, skill] }));
       setNewSkill("");
   };
@@ -185,18 +191,31 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
     setIsSaving(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/public/profile", {
+      // Determine endpoint based on role/context logic or stick to public prop for now
+      // Since this is unifying, we might need a dynamic endpoint. 
+      // For now we default to public profile update, but in real unified app, this should adapt.
+      const endpoint = role === 'MEMBER' || role === 'CORE' ? "/api/profile" : "/api/public/profile";
+      
+      // Member/Core usually patch specific fields. 
+      // For this implementation, we simulate success for demo or map correctly.
+      
+      const res = await fetch(endpoint, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             ...formData,
-            location: `${formData.city}, ${formData.country}` // Update legacy location field too just in case
+            name: formData.fullName, // Map back for member/core
+            customFields: { // Map for member/core
+                wallet: formData.wallet,
+                discord: formData.discord,
+                bio: formData.bio
+            },
+            location: `${formData.city}, ${formData.country}`
         }),
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: "Unknown error" }));
-        throw new Error(errorData.error || errorData.message || "Failed to save");
+        throw new Error("Failed to save");
       }
 
       setMessage({ type: 'success', text: "Profile updated successfully!" });
@@ -204,9 +223,8 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
       setIsEditing(false); 
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to save profile. Please try again.";
       console.error("Save error:", error);
-      setMessage({ type: 'error', text: errorMessage });
+      setMessage({ type: 'error', text: "Failed to save profile." });
     } finally {
       setIsSaving(false);
     }
@@ -217,120 +235,319 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
       return (
           <div className="max-w-4xl mx-auto py-10 pb-32 animate-in fade-in duration-500">
               {/* Header Section */}
-              <div className="flex flex-col md:flex-row gap-8 items-start">
-                   {/* Profile Image - Square/Straight as requested */}
-                   <div className="relative w-24 h-24 md:w-28 md:h-28 shrink-0 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+              <div className="flex flex-col md:flex-row gap-8 items-start mb-12">
+                   {/* Profile Image */}
+                   <div className="relative w-32 h-32 shrink-0 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
                        {formData.profileImage ? (
                            <Image src={formData.profileImage} alt={formData.fullName || "User"} fill className="object-cover" />
                        ) : (
                            <div className="w-full h-full flex items-center justify-center">
-                               <User className="w-10 h-10 text-zinc-700" />
+                               <User className="w-12 h-12 text-zinc-700" />
                            </div>
                        )}
                    </div>
 
-                   <div className="flex-1 space-y-4">
-                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                           <div>
-                               <h1 className="text-3xl font-bold text-white tracking-tight">{formData.fullName || "New Builder"}</h1>
-                               <div className="flex flex-wrap items-center gap-3 mt-2 text-zinc-500 text-sm">
+                   <div className="flex-1 w-full space-y-4">
+                       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                           <div className="space-y-2">
+                               <div className="flex items-center gap-3">
+                                   <h1 className="text-4xl font-bold text-white tracking-tight">{formData.fullName || "New Builder"}</h1>
+                                   <span className={cn(
+                                       "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border",
+                                       role === 'CORE' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                                       role === 'MEMBER' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                                       "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                   )}>
+                                       {role}
+                                   </span>
+                               </div>
+                               
+                               <div className="flex flex-wrap items-center gap-4 text-zinc-400 text-sm">
                                    {(formData.city || formData.country) && (
                                        <div className="flex items-center gap-1.5">
-                                           <MapPin className="w-4 h-4" />
-                                           <span>
-                                               {formData.city && formData.country 
-                                                    ? `${formData.city}, ${formData.country}`
-                                                    : formData.city || formData.country
-                                                }
-                                           </span>
+                                           <MapPin className="w-3.5 h-3.5" />
+                                           <span>{formData.city}{formData.city && formData.country ? ", " : ""}{formData.country}</span>
                                        </div>
                                    )}
-                                   {formData.availability && (
-                                       <span className="px-2 py-0.5 rounded border border-zinc-800 bg-zinc-900 text-zinc-400 text-xs">
-                                           {formData.availability}
-                                       </span>
+                                   {formData.xHandle && (
+                                       <div className="flex items-center gap-1.5 text-zinc-500">
+                                            <Twitter className="w-3.5 h-3.5" />
+                                            <span>{formData.xHandle}</span>
+                                       </div>
                                    )}
                                </div>
                            </div>
                            
                            <button 
                                 onClick={() => setIsEditing(true)}
-                                className="px-4 py-2 bg-white text-black text-sm font-medium hover:bg-zinc-200 transition-colors rounded-md flex items-center gap-2"
+                                className="px-4 py-2 bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors rounded-lg flex items-center gap-2"
                            >
                                <Edit2 className="w-3.5 h-3.5" />
                                Edit Profile
                            </button>
                        </div>
                        
-                       <p className="text-zinc-400 text-base leading-relaxed max-w-2xl">
-                           {formData.bio || "No bio yet."}
+                       <p className="text-zinc-300 text-base leading-relaxed max-w-2xl">
+                           {formData.bio || "No bio provided."}
                        </p>
 
-                       {/* Socials - Simple List */}
-                       <div className="flex flex-wrap gap-3 pt-2">
-                           {formData.socialProfiles.map((social, i) => (
-                               <a 
-                                  key={i} 
-                                  href={social.url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-zinc-500 hover:text-white transition-colors"
-                                  title={social.name}
-                               >
-                                   {getSocialIcon(social.name)}
-                               </a>
-                           ))}
+                       {/* Socials & Availability */}
+                       <div className="flex flex-wrap items-center gap-4 pt-2">
+                           {formData.availability && (
+                               <span className="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium">
+                                   {formData.availability}
+                               </span>
+                           )}
+                           <div className="h-4 w-px bg-zinc-800 hidden md:block" />
+                           <div className="flex gap-3">
+                               {formData.socialProfiles.map((social, i) => (
+                                   <a key={i} href={social.url} target="_blank" rel="noreferrer" className="text-zinc-500 hover:text-white transition-colors">
+                                       {getSocialIcon(social.name)}
+                                   </a>
+                               ))}
+                               {formData.wallet && (
+                                   <div title="Wallet Connected" className="text-zinc-500 hover:text-white cursor-help">
+                                       <Wallet className="w-4 h-4" />
+                                   </div>
+                               )}
+                           </div>
                        </div>
                    </div>
               </div>
 
-              <div className="mt-12 space-y-12">
-                  {/* Current Project */}
-                  <section className="space-y-3">
-                      <h3 className="text-sm font-semibold text-zinc-200 uppercase tracking-widest">Current Project</h3>
-                      <div className="p-4 bg-zinc-900/30 border border-zinc-800 rounded-lg">
-                          <p className="text-zinc-300">
-                              {formData.currentProject || "Not working on anything public right now."}
-                          </p>
+              {/* Tabs Navigation */}
+              <div className="flex border-b border-zinc-800 mb-8 overflow-x-auto">
+                  {["OVERVIEW", "EVENTS", "CONTENT", "ACHIEVEMENTS"].map((tab) => (
+                      <button
+                          key={tab}
+                          onClick={() => setActiveTab(tab)}
+                          className={cn(
+                              "px-6 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap",
+                              activeTab === tab 
+                                  ? "border-white text-white" 
+                                  : "border-transparent text-zinc-500 hover:text-zinc-300 hover:border-zinc-800"
+                          )}
+                      >
+                          {tab}
+                      </button>
+                  ))}
+              </div>
+
+              {/* Tab Content */}
+              <div className="min-h-[400px]">
+                  {activeTab === "OVERVIEW" && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        {/* Left Col */}
+                        <div className="md:col-span-2 space-y-8">
+                            <section>
+                                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Current Project</h3>
+                                <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+                                    <div className="flex items-start gap-3">
+                                        <Briefcase className="w-5 h-5 text-zinc-400 mt-0.5" />
+                                        <p className="text-zinc-300 font-medium">
+                                            {formData.currentProject || "Not working on anything public right now."}
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Skills</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {formData.skills.length > 0 ? formData.skills.map(skill => (
+                                        <span key={skill} className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-sm rounded-lg">
+                                            {skill}
+                                        </span>
+                                    )) : <span className="text-zinc-600 italic">No skills listed</span>}
+                                </div>
+                            </section>
+
+                             <section>
+                                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Interests</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {formData.interests.length > 0 ? formData.interests.map(item => (
+                                        <span key={item} className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm rounded-lg">
+                                            {item}
+                                        </span>
+                                    )) : <span className="text-zinc-600 italic">No interests selected</span>}
+                                </div>
+                            </section>
+                        </div>
+
+                        {/* Right Col */}
+                        <div className="space-y-8">
+                            <section>
+                                <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Roles</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {formData.roles.length > 0 ? formData.roles.map(role => (
+                                        <span key={role} className="px-3 py-1.5 bg-white/5 border border-white/5 text-white text-sm font-medium rounded-lg">
+                                            {role}
+                                        </span>
+                                    )) : <span className="text-zinc-600 italic">--</span>}
+                                </div>
+                            </section>
+
+                            {/* Contact Card (Simulated based on viewable fields) */}
+                            <section className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-xl space-y-4">
+                                <h3 className="text-sm font-bold text-white mb-2">Contact</h3>
+                                {formData.telegram && (
+                                    <div className="flex items-center gap-3 text-sm text-zinc-400">
+                                        <Send className="w-4 h-4" />
+                                        <span>{formData.telegram}</span>
+                                    </div>
+                                )}
+                                {formData.discord && (
+                                    <div className="flex items-center gap-3 text-sm text-zinc-400">
+                                        <MessageCircle className="w-4 h-4" />
+                                        <span>{formData.discord}</span>
+                                    </div>
+                                )}
+                            </section>
+                        </div>
+                    </div>
+                  )}
+
+                  {activeTab === "EVENTS" && (
+                      <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                          {/* Event Timeline / List */}
+                          <section>
+                              <div className="flex items-center justify-between mb-6">
+                                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                      <Calendar className="w-5 h-5 text-zinc-100" />
+                                      Events Attended
+                                  </h3>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                  {EVENTS.length > 0 ? EVENTS.map(event => (
+                                      <div key={event.id} className="group relative bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-all hover:scale-[1.02] duration-300">
+                                          <div className="relative h-32 w-full">
+                                              <Image src={event.image} alt={event.name} fill className="object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                                              <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-xs font-bold text-white border border-white/10">
+                                                  {event.status}
+                                              </div>
+                                          </div>
+                                          <div className="p-4">
+                                              <h4 className="text-base font-bold text-white mb-1">{event.name}</h4>
+                                              <div className="flex justify-between items-center text-xs text-zinc-500">
+                                                  <span>{event.date}</span>
+                                                  <span className="text-zinc-300 font-medium">{event.role}</span>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  )) : (
+                                      <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
+                                          <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+                                              <Calendar className="w-8 h-8 text-zinc-600" />
+                                          </div>
+                                          <h3 className="text-lg font-bold text-white mb-2">No Events Yet</h3>
+                                          <p className="text-zinc-500 text-center max-w-sm">
+                                              Join our upcoming hackathons and community meetups to start building your timeline!
+                                          </p>
+                                      </div>
+                                  )}
+                              </div>
+                          </section>
+                          
+                          {/* POAPs */}
+                          <section>
+                               <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
+                                  <Award className="w-5 h-5 text-zinc-100" />
+                                  POAPs & Collectibles
+                               </h3>
+                               <div className="flex flex-wrap gap-4">
+                                   {POAPS.length > 0 ? POAPS.map(poap => (
+                                       <div key={poap.id} className="w-24 h-24 relative rounded-full border-2 border-zinc-800 bg-zinc-900 p-1 group hover:border-purple-500/50 transition-colors" title={poap.name}>
+                                           <div className="w-full h-full relative rounded-full overflow-hidden">
+                                                <Image src={poap.image} alt={poap.name} fill className="object-cover" />
+                                           </div>
+                                       </div>
+                                   )) : (
+                                       <div className="w-full flex items-center gap-4 p-4 bg-zinc-900/30 border border-zinc-800/50 rounded-xl">
+                                             <div className="w-10 h-10 bg-zinc-800/50 rounded-full flex items-center justify-center">
+                                                  <Award className="w-5 h-5 text-zinc-400" />
+                                             </div>
+                                             <div className="flex-1">
+                                                 <p className="text-sm text-zinc-400">No collectibles yet. Attend events to earn POAPs!</p>
+                                             </div>
+                                       </div>
+                                   )}
+                               </div>
+                          </section>
                       </div>
-                  </section>
+                  )}
 
-                  {/* Skills & Roles Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <section className="space-y-3">
-                          <h3 className="text-sm font-semibold text-zinc-200 uppercase tracking-widest">Skills</h3>
-                          <div className="flex flex-wrap gap-2">
-                              {formData.skills.length > 0 ? formData.skills.map(skill => (
-                                  <span key={skill} className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-sm rounded">
-                                      {skill}
-                                  </span>
-                              )) : <span className="text-zinc-600 text-sm italic">No skills listed</span>}
-                          </div>
-                      </section>
+                  {activeTab === "CONTENT" && (
+                       <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
+                                <FileText className="w-5 h-5 text-zinc-100" />
+                                Content Contributions
+                            </h3>
+                            <div className="space-y-4">
+                                {CONTENT.length > 0 ? CONTENT.map(content => (
+                                    <div key={content.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-zinc-900/40 border border-zinc-800 rounded-xl hover:bg-zinc-900/60 transition-colors">
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-3 bg-zinc-800 rounded-lg">
+                                                {content.type === "Video" ? <Video className="w-5 h-5 text-white" /> : <FileText className="w-5 h-5 text-white" />}
+                                            </div>
+                                            <div>
+                                                <h4 className="text-base font-bold text-white mb-1 hover:underline cursor-pointer">{content.title}</h4>
+                                                <div className="flex items-center gap-3 text-xs text-zinc-500">
+                                                    <span className="bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">{content.type}</span>
+                                                    <span>{content.date}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className={cn(
+                                            "px-3 py-1 rounded-full text-xs font-bold border self-start md:self-center",
+                                            content.status === "Accepted" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+                                        )}>
+                                            {content.status}
+                                        </div>
+                                    </div>
+                                )) : (
+                                    <div className="flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
+                                        <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+                                            <FileText className="w-8 h-8 text-zinc-600" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-white mb-2">No Content Yet</h3>
+                                        <p className="text-zinc-500 text-center max-w-sm">
+                                            Share your knowledge! Submit articles, videos, or guides to earn reputation.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                       </div>
+                  )}
 
-                      <section className="space-y-3">
-                          <h3 className="text-sm font-semibold text-zinc-200 uppercase tracking-widest">Roles</h3>
-                          <div className="flex flex-wrap gap-2">
-                              {formData.roles.length > 0 ? formData.roles.map(role => (
-                                  <span key={role} className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-sm rounded">
-                                      {role}
-                                  </span>
-                              )) : <span className="text-zinc-600 text-sm italic">--</span>}
-                          </div>
-                      </section>
-                  </div>
-
-                  {/* Interests */}
-                  <section className="space-y-3">
-                      <h3 className="text-sm font-semibold text-zinc-200 uppercase tracking-widest">Interests</h3>
-                      <div className="flex flex-wrap gap-2">
-                          {formData.interests.length > 0 ? formData.interests.map(item => (
-                              <span key={item} className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 text-sm rounded transition-colors cursor-default">
-                                  {item}
-                              </span>
-                          )) : <span className="text-zinc-600 italic text-sm">No interests selected</span>}
-                      </div>
-                  </section>
+                  {activeTab === "ACHIEVEMENTS" && (
+                       <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
+                                <Trophy className="w-5 h-5 text-zinc-100" />
+                                Badges & Achievements
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                {ACHIEVEMENTS.length > 0 ? ACHIEVEMENTS.map(badge => (
+                                    <div key={badge.id} className="flex flex-col items-center text-center p-6 bg-zinc-900/50 border border-zinc-800/50 rounded-2xl hover:bg-zinc-800/50 transition-colors">
+                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center mb-4 shadow-lg">
+                                            {badge.icon}
+                                        </div>
+                                        <h4 className="text-sm font-bold text-white mb-1">{badge.name}</h4>
+                                        <p className="text-xs text-zinc-500">{badge.description}</p>
+                                    </div>
+                                )) : (
+                                    <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
+                                        <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+                                            <Trophy className="w-8 h-8 text-zinc-600" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-white mb-2">No Achievements Yet</h3>
+                                        <p className="text-zinc-500 text-center max-w-sm">
+                                            Contributions tracked on-chain will appear here as badges.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                       </div>
+                  )}
               </div>
           </div>
       );
@@ -341,13 +558,15 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
     <div className="max-w-4xl mx-auto py-10 pb-32 animate-in slide-in-from-bottom-5 duration-300">
       
       {/* Header Editor */}
+      <h2 className="text-2xl font-bold text-white mb-8">Edit Profile</h2>
+
       <div className="flex flex-col md:flex-row gap-8 items-start mb-10">
         <div className="flex flex-col items-center gap-3">
             {/* Square/Straight Profile Picture Box */}
-            <div className="relative w-24 h-24 md:w-28 md:h-28 bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden group">
+            <div className="relative w-32 h-32 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden group shadow-xl">
                 {isUploading ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-                        <Loader2 className="w-6 h-6 text-white animate-spin" />
+                        <Loader2 className="w-8 h-8 text-white animate-spin" />
                     </div>
                 ) : (
                     <>
@@ -362,8 +581,8 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
                             className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                             onClick={() => fileInputRef.current?.click()}
                         >
-                            <Upload className="w-6 h-6 text-white mb-1" />
-                            <span className="text-[10px] uppercase font-bold text-zinc-300">Change</span>
+                            <Upload className="w-8 h-8 text-white mb-2" />
+                            <span className="text-xs uppercase font-bold text-zinc-300">Change</span>
                         </div>
                     </>
                 )}
@@ -383,15 +602,30 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
         </div>
 
         <div className="flex-1 space-y-5 w-full">
-            <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-500 uppercase ml-1">Full Name</label>
-                <input 
-                    type="text" 
-                    value={formData.fullName} 
-                    onChange={(e) => handleChange('fullName', e.target.value)}
-                    placeholder="Your Name"
-                    className="w-full text-2xl font-bold text-white bg-transparent border-b border-zinc-800 rounded-none px-2 py-2 focus:border-white focus:outline-none transition-all placeholder:text-zinc-700"
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-zinc-500 uppercase ml-1">Full Name</label>
+                    <input 
+                        type="text" 
+                        value={formData.fullName} 
+                        onChange={(e) => handleChange('fullName', e.target.value)}
+                        placeholder="Your Name"
+                        className="w-full text-base font-bold text-white bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 focus:border-white focus:outline-none transition-all placeholder:text-zinc-700"
+                    />
+                </div>
+                <div className="space-y-1.5">
+                     <label className="text-xs font-semibold text-zinc-500 uppercase ml-1">X Handle</label>
+                     <div className="relative">
+                        <Twitter className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
+                        <input 
+                            type="text"
+                            value={formData.xHandle}
+                            onChange={(e) => handleChange('xHandle', e.target.value)}
+                            placeholder="@username"
+                            className="w-full text-base text-zinc-200 bg-zinc-900/50 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 focus:border-white focus:outline-none transition-all placeholder:text-zinc-700"
+                        />
+                     </div>
+                </div>
             </div>
             
             <div className="space-y-1.5">
@@ -401,32 +635,9 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
                     onChange={(e) => handleChange('bio', e.target.value)}
                     rows={3}
                     placeholder="Short bio..."
-                    className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 text-zinc-200 focus:outline-none focus:border-zinc-600 transition-all resize-none text-sm leading-relaxed"
+                    className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 text-zinc-200 focus:outline-none focus:border-white transition-all resize-none text-sm leading-relaxed"
                 />
             </div>
-        </div>
-
-        {/* Buttons - Sleek & Better Positioned */}
-        <div className="flex flex-col gap-3 min-w-[120px]">
-            <button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="w-full px-4 py-2 bg-white text-black text-sm font-bold rounded-md hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-                {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                Save
-            </button>
-            <button
-                onClick={() => setIsEditing(false)}
-                className="w-full px-4 py-2 bg-zinc-800 text-zinc-300 text-sm font-medium rounded-md hover:bg-zinc-700 hover:text-white transition-all flex items-center justify-center gap-2"
-            >
-                Cancel
-            </button>
-            {message && (
-                <div className={`mt-2 text-[10px] font-bold text-center ${message.type === 'success' ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {message.text}
-                </div>
-            )}
         </div>
       </div>
 
@@ -533,8 +744,57 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
           {/* Right: Socials & Interests */}
           <div className="space-y-8">
               <section className="bg-zinc-900/50 border border-white/10 p-6 rounded-3xl space-y-4">
-                   <h3 className="text-lg font-bold text-white">Social Links</h3>
+                   <h3 className="text-lg font-bold text-white">Contact & Socials</h3>
+                   
+                   {/* Wallet Field */}
+                   <div>
+                       <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">Wallet Address</label>
+                       <div className="relative">
+                           <Wallet className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
+                           <input 
+                               type="text" 
+                               value={formData.wallet} 
+                               onChange={(e) => handleChange('wallet', e.target.value)}
+                               placeholder="0x..."
+                               className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-white/20 font-mono text-sm"
+                           />
+                       </div>
+                   </div>
+
+                   {/* Telegram & Discord */}
+                   <div className="grid grid-cols-2 gap-4">
+                       <div>
+                           <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">Telegram</label>
+                           <div className="relative">
+                               <Send className="absolute left-3 top-3 w-3.5 h-3.5 text-zinc-500" />
+                               <input 
+                                   type="text" 
+                                   value={formData.telegram} 
+                                   onChange={(e) => handleChange('telegram', e.target.value)}
+                                   placeholder="@username"
+                                   className="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-white/20 text-sm"
+                               />
+                           </div>
+                       </div>
+                       <div>
+                           <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">Discord</label>
+                           <div className="relative">
+                               <MessageCircle className="absolute left-3 top-3 w-3.5 h-3.5 text-zinc-500" />
+                               <input 
+                                   type="text" 
+                                   value={formData.discord} 
+                                   onChange={(e) => handleChange('discord', e.target.value)}
+                                   placeholder="username"
+                                   className="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-white/20 text-sm"
+                               />
+                           </div>
+                       </div>
+                   </div>
+
+                   <hr className="border-white/5 my-2" />
+
                    <div className="space-y-3">
+                       <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">Other Links</label>
                        {formData.socialProfiles.map((social, idx) => (
                            <div key={idx} className="flex items-center gap-2 bg-black/40 p-2 rounded-xl border border-white/5">
                                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-zinc-400">
@@ -614,6 +874,28 @@ export function ProfileDashboard({ initialData }: { initialData: any }) {
                        </button>
                    </div>
               </section>
+          </div>
+      </div>
+      
+      {/* Fixed Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-zinc-900/80 backdrop-blur-xl border-t border-white/10 flex items-center justify-between px-8 z-50">
+          <p className="text-sm text-zinc-400 hidden md:block">Unsaved changes will be lost.</p>
+          <div className="flex gap-3 ml-auto">
+             <button
+                  onClick={() => setIsEditing(false)}
+                  className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold rounded-xl transition-colors"
+                  disabled={isSaving}
+              >
+                  Cancel
+              </button>
+              <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="px-6 py-2.5 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-white/5"
+              >
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Save Changes
+              </button>
           </div>
       </div>
     </div>
