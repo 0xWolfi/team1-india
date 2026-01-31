@@ -63,7 +63,7 @@ export default async function PublicProfilePage() {
                      <p className="text-zinc-400">Manage your identity and preferences across the Team1 Network.</p>
                  </div>
 
-                 <ProfileDashboard initialData={safeData} />
+                 <ProfileDashboard initialData={safeData} role="PUBLIC" />
             </div>
 
             <Footer />

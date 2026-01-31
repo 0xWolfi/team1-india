@@ -11,21 +11,21 @@ export function Preloader() {
     useEffect(() => {
         document.body.style.overflow = "hidden";
 
-        // Start filling text
+        // Start filling text (Wait for outline to draw)
         const fillTimer = setTimeout(() => {
-            setLoading(false); // Triggers the fill animation to complete
-        }, 100);
+            setLoading(false); // Triggers the fill animation
+        }, 1500);
 
         // Start fade out
         const fadeTimer = setTimeout(() => {
             setFading(true);
-        }, 2500); // Wait for fill to complete + pause
+        }, 4000); // 1500ms + 2500ms for fill calculation
 
         // Remove from DOM
         const removeTimer = setTimeout(() => {
             setVisible(false);
             document.body.style.overflow = "unset";
-        }, 3200);
+        }, 4700);
 
         return () => {
              clearTimeout(fillTimer);
@@ -44,48 +44,52 @@ export function Preloader() {
                 fading ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
         >
-            <div className="flex items-center gap-4">
-                {/* Logo with Fill Animation */}
-                <div className="relative w-12 h-12 md:w-16 md:h-16 flex-shrink-0">
-                     {/* Background (Dim) */}
-                     <img 
-                        src="/t1-red-logo.png" 
-                        alt="Team1" 
-                        className="w-full h-full object-contain opacity-20 grayscale"
-                     />
-                     
-                     {/* Foreground (Fill) */}
-                     <div 
-                        className="absolute top-0 left-0 h-full transition-all duration-[2000ms] ease-out overflow-hidden"
-                        style={{ width: loading ? '0%' : '100%' }}
-                     >
-                         <img 
-                            src="/t1-red-logo.png" 
-                            alt="Team1" 
-                            className="w-[3rem] h-[3rem] md:w-[4rem] md:h-[4rem] max-w-none object-contain drop-shadow-[0_0_15px_rgba(220,38,38,0.5)]"
-                         />
-                     </div>
-                </div>
-                
-                {/* Text with Fill Animation */}
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase relative overflow-hidden">
-                    <span className="text-zinc-800">Team1</span>
-                    {/* Shimmer */}
-                    <span 
-                        className="absolute inset-0 text-white animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/50 to-transparent bg-clip-text text-transparent"
-                        style={{ backgroundSize: '200% auto' }}
+            <svg 
+                viewBox="0 0 800 120" 
+                className="w-full max-w-4xl h-auto px-4"
+            >
+                <defs>
+                    <clipPath id="text-fill-clip">
+                        <rect x="0" y="0" width="100%" height="100%" style={{ 
+                            transform: loading ? 'scaleX(0)' : 'scaleX(1)',
+                            transformOrigin: 'left',
+                            transition: 'transform 2s ease-in-out'
+                        }} />
+                    </clipPath>
+                    <linearGradient id="avalanche-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#ef4444" />
+                        <stop offset="100%" stopColor="#dc2626" />
+                    </linearGradient>
+                </defs>
+
+                {/* Outline Layer (Always Visible, drawing in) */}
+                <text 
+                    x="50%" 
+                    y="50%" 
+                    dy=".35em" 
+                    textAnchor="middle"
+                    className="text-4xl md:text-6xl font-black tracking-tighter uppercase"
+                >
+                    <tspan className="fill-transparent stroke-red-500 stroke-[2px]" style={{ strokeDasharray: 800, strokeDashoffset: loading ? 800 : 0, transition: 'stroke-dashoffset 1.5s ease-in-out' }}>Avalanche </tspan>
+                    <tspan className="fill-transparent stroke-white stroke-[2px]" style={{ strokeDasharray: 400, strokeDashoffset: loading ? 400 : 0, transition: 'stroke-dashoffset 1.5s ease-in-out' }}>Team</tspan>
+                    <tspan className="fill-transparent stroke-red-500 stroke-[2px]" style={{ strokeDasharray: 100, strokeDashoffset: loading ? 100 : 0, transition: 'stroke-dashoffset 1.5s ease-in-out' }}>1</tspan>
+                </text>
+
+                {/* Fill Layer (Clipped, Wipes Left to Right) */}
+                <g clipPath="url(#text-fill-clip)">
+                    <text 
+                        x="50%" 
+                        y="50%" 
+                        dy=".35em" 
+                        textAnchor="middle"
+                        className="text-4xl md:text-6xl font-black tracking-tighter uppercase"
                     >
-                        Team1
-                    </span>
-                    {/* Fill effect */}
-                    <span 
-                        className="absolute inset-0 text-white transition-all duration-[2000ms] ease-out overflow-hidden whitespace-nowrap"
-                        style={{ width: loading ? '0%' : '100%' }}
-                    >
-                        Team1
-                    </span>
-                </h1>
-            </div>
+                        <tspan fill="#ef4444">Avalanche </tspan>
+                        <tspan fill="#ffffff">Team</tspan>
+                        <tspan fill="#ef4444">1</tspan>
+                    </text>
+                </g>
+            </svg>
         </div>
     );
 }
