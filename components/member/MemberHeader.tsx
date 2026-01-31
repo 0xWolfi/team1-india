@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User, LogOut, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { User, LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
-import Link from "next/link";
 import Image from "next/image";
 
 
 
 export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenContribution: () => void }) {
+    const router = useRouter();
     const [profileImageError, setProfileImageError] = useState(false);
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [imageCacheBust, setImageCacheBust] = useState<number>(0);
@@ -67,7 +68,12 @@ export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenC
                  </div>
 
                 <div className="flex items-center gap-4">
-                    <Link href="/member/profile" className="block rounded-lg ring-2 ring-white/10 overflow-hidden shrink-0 w-16 h-16 md:w-20 md:h-20 hover:ring-white/20 transition-shadow focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <button
+                        type="button"
+                        onClick={() => router.push("/member/profile")}
+                        className="block rounded-lg ring-2 ring-white/10 overflow-hidden shrink-0 w-16 h-16 md:w-20 md:h-20 hover:ring-white/20 transition-shadow focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                        title="My Profile"
+                    >
                         {displayImage && !profileImageError ? (
                             <div className="relative w-full h-full">
                                 <Image 
@@ -84,7 +90,7 @@ export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenC
                                 <User className="w-8 h-8 md:w-10 md:h-10 text-zinc-400" />
                             </div>
                         )}
-                    </Link>
+                    </button>
                 </div>
                 <p className="text-zinc-500 font-medium text-xs md:text-sm mt-1 md:mt-2 max-w-lg leading-relaxed">
                     Welcome back, <span className="text-white">{user?.name || 'Member'}</span>.
@@ -100,13 +106,14 @@ export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenC
                     submit your contributions
                 </button>
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
-                    <Link 
-                        href="/member/profile"
-                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
+                    <button
+                        type="button"
+                        onClick={() => router.push("/member/profile")}
+                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer"
                         title="My Profile"
                     >
                         <User className="w-4 h-4" />
-                    </Link>
+                    </button>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}
                         className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center text-red-500 hover:text-red-400"
