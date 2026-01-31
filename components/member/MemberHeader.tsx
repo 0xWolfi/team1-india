@@ -67,22 +67,24 @@ export function MemberHeader({ user, onOpenContribution }: { user?: any, onOpenC
                  </div>
 
                 <div className="flex items-center gap-4">
-                    {displayImage && !profileImageError ? (
-                        <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-lg ring-2 ring-white/10 overflow-hidden flex-shrink-0">
-                            <Image 
-                                src={buildImageSrc(displayImage) || displayImage} 
-                                alt="Profile" 
-                                fill
-                                className="object-cover"
-                                onError={() => setProfileImageError(true)}
-                                unoptimized={displayImage.startsWith('data:') || displayImage.startsWith('blob:')}
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg bg-zinc-800 flex items-center justify-center ring-2 ring-white/10 flex-shrink-0">
-                            <User className="w-8 h-8 md:w-10 md:h-10 text-zinc-400" />
-                        </div>
-                    )}
+                    <Link href="/member/profile" className="block rounded-lg ring-2 ring-white/10 overflow-hidden shrink-0 w-16 h-16 md:w-20 md:h-20 hover:ring-white/20 transition-shadow focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        {displayImage && !profileImageError ? (
+                            <div className="relative w-full h-full">
+                                <Image 
+                                    src={buildImageSrc(displayImage) || displayImage} 
+                                    alt="Profile" 
+                                    fill
+                                    className="object-cover"
+                                    onError={() => setProfileImageError(true)}
+                                    unoptimized={displayImage.startsWith('data:') || displayImage.startsWith('blob:')}
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                                <User className="w-8 h-8 md:w-10 md:h-10 text-zinc-400" />
+                            </div>
+                        )}
+                    </Link>
                 </div>
                 <p className="text-zinc-500 font-medium text-xs md:text-sm mt-1 md:mt-2 max-w-lg leading-relaxed">
                     Welcome back, <span className="text-white">{user?.name || 'Member'}</span>.

@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Footer } from "@/components/website/Footer";
 import { Team1Logo } from "@/components/Team1Logo";
 import Image from "next/image";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, User } from "lucide-react";
 
 interface MemberWrapperProps {
     children: React.ReactNode;
@@ -146,25 +146,33 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                 </div>
                 
                 <div className="flex items-center gap-3">
-                     {displayImage && !profileImageError ? (
-                            <div className="relative w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10">
-                                 <Image 
+                    <button
+                        type="button"
+                        onClick={() => router.push('/member/profile')}
+                        className="flex-shrink-0 rounded-full overflow-hidden ring-1 ring-white/10 w-8 h-8 hover:ring-white/20 transition-shadow focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        title="My Profile"
+                    >
+                        {displayImage && !profileImageError ? (
+                            <div className="relative w-full h-full">
+                                <Image 
                                     src={buildImageSrc(displayImage) || displayImage} 
                                     alt="Profile" 
                                     fill 
                                     className="object-cover"
                                     onError={() => setProfileImageError(true)}
                                     unoptimized={displayImage.startsWith('data:') || displayImage.startsWith('blob:')}
-                                 />
+                                />
                             </div>
                         ) : (
-                            <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
-                                 <LogOut className="w-4 h-4 text-zinc-400" /> {/* Fallback icon */}
+                            <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
+                                <User className="w-4 h-4 text-zinc-400" />
                             </div>
                         )}
+                    </button>
                     <button 
                         onClick={() => router.push('/member/profile')}
                         className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400"
+                        title="Profile settings"
                     >
                         <Settings className="w-4 h-4" />
                     </button>

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { LumaEventData } from "@/lib/luma";
-import Image from "next/image";
 import { Search, MapPin, Calendar, ChevronDown } from "lucide-react";
 import { CustomDatePicker } from "./CustomDatePicker";
 
@@ -15,26 +14,22 @@ export function EventGrid({ initialEvents }: EventGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("All Cities");
   const [selectedDate, setSelectedDate] = useState("");
-  const [visibleCount, setVisibleCount] = useState(6);
-
   // Extract unique cities
   const cities = ["All Cities", ...Array.from(new Set(initialEvents.map(e => e.event.geo_address_json?.city).filter(Boolean)))];
 
   // Filtering Logic
-  const filteredEvents = initialEvents.filter(item => {
-    const matchesSearch = item.event.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCity = selectedCity === "All Cities" || item.event.geo_address_json?.city === selectedCity;
-    
-    let matchesDate = true;
-    if (selectedDate) {
+  const filteredEvents = initialEvents
+    .filter(item => {
+      const matchesSearch = item.event.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCity = selectedCity === "All Cities" || item.event.geo_address_json?.city === selectedCity;
+      let matchesDate = true;
+      if (selectedDate) {
         const eventDate = new Date(item.event.start_at).toISOString().split('T')[0];
         matchesDate = eventDate === selectedDate;
-    }
-
-    return matchesSearch && matchesCity && matchesDate;
-  });
-
-  const displayedEvents = filteredEvents.slice(0, visibleCount);
+      }
+      return matchesSearch && matchesCity && matchesDate;
+    })
+    .sort((a, b) => new Date(a.event.start_at).getTime() - new Date(b.event.start_at).getTime());
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-12">
@@ -82,52 +77,50 @@ export function EventGrid({ initialEvents }: EventGridProps) {
          />
       </div>
 
-      {/* Grid or Empty State */}
       {filteredEvents.length > 0 ? (
         <div className="flex flex-col items-center gap-10">
-            <div className="flex flex-wrap justify-center gap-8 px-4">
-              {displayedEvents.map(({ event, api_id }) => {
-                 const fallbackGradient = "bg-gradient-to-br from-zinc-800 to-zinc-900";
-                 return (
-                    <a
-                      key={api_id}
-                      href={event.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group block w-full sm:w-[280px] md:w-[300px]"
-                    >
-                      <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] bg-zinc-900/60 backdrop-blur-2xl transition-all duration-500 group-hover:border-white/30 group-hover:shadow-2xl group-hover:shadow-white/5 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
-                        {event.cover_url && (
-                          <Image
-                            src={event.cover_url}
-                            alt={event.name}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                        )}
-                      </div>
-                      <div className="space-y-2 text-center">
-                        <h3 className="text-xl font-bold text-white leading-tight line-clamp-2 group-hover:text-zinc-200 transition-colors">
-                          {event.name}
-                        </h3>
-                        <p className="text-sm text-zinc-500 font-medium tracking-wide uppercase">
-                             {new Date(event.start_at).toLocaleDateString('en-GB', { month: 'long', day: 'numeric', year: 'numeric' })}
-                        </p>
-                      </div>
-                    </a>
-                );
-              })}
+            {/* Horizontal scroll: all event cards */}
+            <div className="w-full px-4">
+                <p className="text-sm font-medium text-zinc-400 uppercase tracking-wider mb-4 text-center md:text-left">More events</p>
+                <div className="overflow-x-auto overflow-y-hidden pb-4 -mx-4 px-4 md:mx-0 md:px-0" style={{ scrollSnapType: "x mandatory" }}>
+                  <div className="flex gap-8 justify-start min-w-0">
+                    {filteredEvents.map(({ event, api_id }) => {
+                      const fallbackGradient = "bg-gradient-to-br from-zinc-800 to-zinc-900";
+                      return (
+                        <a
+                          key={api_id}
+                          href={event.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group block shrink-0 w-[260px] snap-center"
+                        >
+                          <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] bg-zinc-900/60 backdrop-blur-2xl transition-all duration-500 group-hover:border-white/30 group-hover:shadow-2xl group-hover:shadow-white/5 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
+                            {event.cover_url ? (
+                              <img
+                                src={event.cover_url}
+                                alt={event.name}
+                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              />
+                            ) : (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Calendar className="w-12 h-12 text-zinc-600" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="space-y-2 text-center">
+                            <h3 className="text-xl font-bold text-white leading-tight line-clamp-2 group-hover:text-zinc-200 transition-colors">
+                              {event.name}
+                            </h3>
+                            <p className="text-sm text-zinc-500 font-medium tracking-wide uppercase">
+                              {new Date(event.start_at).toLocaleDateString("en-GB", { month: "long", day: "numeric", year: "numeric" })}
+                            </p>
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
             </div>
-            
-            {visibleCount < filteredEvents.length && (
-                <button
-                    onClick={() => setVisibleCount((prev) => prev + 6)}
-                    className="px-6 py-2 rounded-full border border-zinc-700 text-zinc-400 text-sm font-medium hover:bg-white/10 hover:border-white/50 hover:text-white transition-all"
-                >
-                    Show More Events
-                </button>
-            )}
         </div>
       ) : (
         /* Empty State */
