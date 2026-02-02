@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Save, User, MapPin, Globe, Loader2, CheckCircle2, Upload, X, Plus, Trash2, Link as LinkIcon, Briefcase, Edit2, Github, Linkedin, Twitter, ArrowUpRight, Rocket, Zap, MessageCircle, Wallet, Send, Shield, Trophy, Calendar, Video, FileText, Award } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { upload } from "@vercel/blob/client";
 import { cn } from "@/lib/utils";
 
@@ -35,10 +35,10 @@ const ACHIEVEMENTS: any[] = [];
 
 const getSocialIcon = (name: string) => {
     const lower = name.toLowerCase();
-    if (lower.includes('github')) return <Github className="w-4 h-4" />;
-    if (lower.includes('twitter') || lower.includes('x.com')) return <Twitter className="w-4 h-4" />;
-    if (lower.includes('linkedin')) return <Linkedin className="w-4 h-4" />;
-    return <LinkIcon className="w-4 h-4" />;
+    if (lower.includes('github')) return <MotionIcon name="Github" className="w-4 h-4" />;
+    if (lower.includes('twitter') || lower.includes('x.com')) return <MotionIcon name="Twitter" className="w-4 h-4" />;
+    if (lower.includes('linkedin')) return <MotionIcon name="Linkedin" className="w-4 h-4" />;
+    return <MotionIcon name="Link" className="w-4 h-4" />;
 };
 
 export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashboardProps) {
@@ -242,7 +242,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                            <Image src={formData.profileImage} alt={formData.fullName || "User"} fill className="object-cover" />
                        ) : (
                            <div className="w-full h-full flex items-center justify-center">
-                               <User className="w-12 h-12 text-zinc-700" />
+                               <MotionIcon name="User" className="w-12 h-12 text-zinc-700" />
                            </div>
                        )}
                    </div>
@@ -265,13 +265,13 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                <div className="flex flex-wrap items-center gap-4 text-zinc-400 text-sm">
                                    {(formData.city || formData.country) && (
                                        <div className="flex items-center gap-1.5">
-                                           <MapPin className="w-3.5 h-3.5" />
+                                           <MotionIcon name="MapPin" className="w-3.5 h-3.5" />
                                            <span>{formData.city}{formData.city && formData.country ? ", " : ""}{formData.country}</span>
                                        </div>
                                    )}
                                    {formData.xHandle && (
                                        <div className="flex items-center gap-1.5 text-zinc-500">
-                                            <Twitter className="w-3.5 h-3.5" />
+                                            <MotionIcon name="Twitter" className="w-3.5 h-3.5" />
                                             <span>{formData.xHandle}</span>
                                        </div>
                                    )}
@@ -282,7 +282,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 onClick={() => setIsEditing(true)}
                                 className="px-4 py-2 bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors rounded-lg flex items-center gap-2"
                            >
-                               <Edit2 className="w-3.5 h-3.5" />
+                               <MotionIcon name="Edit2" className="w-3.5 h-3.5" />
                                Edit Profile
                            </button>
                        </div>
@@ -307,7 +307,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                ))}
                                {formData.wallet && (
                                    <div title="Wallet Connected" className="text-zinc-500 hover:text-white cursor-help">
-                                       <Wallet className="w-4 h-4" />
+                                       <MotionIcon name="Wallet" className="w-4 h-4" />
                                    </div>
                                )}
                            </div>
@@ -343,7 +343,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Current Project</h3>
                                 <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-xl">
                                     <div className="flex items-start gap-3">
-                                        <Briefcase className="w-5 h-5 text-zinc-400 mt-0.5" />
+                                        <MotionIcon name="Briefcase" className="w-5 h-5 text-zinc-400 mt-0.5" />
                                         <p className="text-zinc-300 font-medium">
                                             {formData.currentProject || "Not working on anything public right now."}
                                         </p>
@@ -392,13 +392,13 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 <h3 className="text-sm font-bold text-white mb-2">Contact</h3>
                                 {formData.telegram && (
                                     <div className="flex items-center gap-3 text-sm text-zinc-400">
-                                        <Send className="w-4 h-4" />
+                                        <MotionIcon name="Send" className="w-4 h-4" />
                                         <span>{formData.telegram}</span>
                                     </div>
                                 )}
                                 {formData.discord && (
                                     <div className="flex items-center gap-3 text-sm text-zinc-400">
-                                        <MessageCircle className="w-4 h-4" />
+                                        <MotionIcon name="MessageCircle" className="w-4 h-4" />
                                         <span>{formData.discord}</span>
                                     </div>
                                 )}
@@ -413,7 +413,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                           <section>
                               <div className="flex items-center justify-between mb-6">
                                   <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                      <Calendar className="w-5 h-5 text-zinc-100" />
+                                      <MotionIcon name="Calendar" className="w-5 h-5 text-zinc-100" />
                                       Events Attended
                                   </h3>
                               </div>
@@ -437,7 +437,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                   )) : (
                                       <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
                                           <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
-                                              <Calendar className="w-8 h-8 text-zinc-600" />
+                                              <MotionIcon name="Calendar" className="w-8 h-8 text-zinc-600" />
                                           </div>
                                           <h3 className="text-lg font-bold text-white mb-2">No Events Yet</h3>
                                           <p className="text-zinc-500 text-center max-w-sm">
@@ -451,7 +451,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                           {/* POAPs */}
                           <section>
                                <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
-                                  <Award className="w-5 h-5 text-zinc-100" />
+                                  <MotionIcon name="Award" className="w-5 h-5 text-zinc-100" />
                                   POAPs & Collectibles
                                </h3>
                                <div className="flex flex-wrap gap-4">
@@ -464,7 +464,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                    )) : (
                                        <div className="w-full flex items-center gap-4 p-4 bg-zinc-900/30 border border-zinc-800/50 rounded-xl">
                                              <div className="w-10 h-10 bg-zinc-800/50 rounded-full flex items-center justify-center">
-                                                  <Award className="w-5 h-5 text-zinc-400" />
+                                                  <MotionIcon name="Award" className="w-5 h-5 text-zinc-400" />
                                              </div>
                                              <div className="flex-1">
                                                  <p className="text-sm text-zinc-400">No collectibles yet. Attend events to earn POAPs!</p>
@@ -479,7 +479,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                   {activeTab === "CONTENT" && (
                        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
-                                <FileText className="w-5 h-5 text-zinc-100" />
+                                <MotionIcon name="FileText" className="w-5 h-5 text-zinc-100" />
                                 Content Contributions
                             </h3>
                             <div className="space-y-4">
@@ -487,7 +487,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                     <div key={content.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-zinc-900/40 border border-zinc-800 rounded-xl hover:bg-zinc-900/60 transition-colors">
                                         <div className="flex items-start gap-4">
                                             <div className="p-3 bg-zinc-800 rounded-lg">
-                                                {content.type === "Video" ? <Video className="w-5 h-5 text-white" /> : <FileText className="w-5 h-5 text-white" />}
+                                                {content.type === "Video" ? <MotionIcon name="Video" className="w-5 h-5 text-white" /> : <MotionIcon name="FileText" className="w-5 h-5 text-white" />}
                                             </div>
                                             <div>
                                                 <h4 className="text-base font-bold text-white mb-1 hover:underline cursor-pointer">{content.title}</h4>
@@ -507,7 +507,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 )) : (
                                     <div className="flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
                                         <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
-                                            <FileText className="w-8 h-8 text-zinc-600" />
+                                            <MotionIcon name="FileText" className="w-8 h-8 text-zinc-600" />
                                         </div>
                                         <h3 className="text-lg font-bold text-white mb-2">No Content Yet</h3>
                                         <p className="text-zinc-500 text-center max-w-sm">
@@ -522,7 +522,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                   {activeTab === "ACHIEVEMENTS" && (
                        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
-                                <Trophy className="w-5 h-5 text-zinc-100" />
+                                <MotionIcon name="Trophy" className="w-5 h-5 text-zinc-100" />
                                 Badges & Achievements
                             </h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -537,7 +537,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 )) : (
                                     <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
                                         <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
-                                            <Trophy className="w-8 h-8 text-zinc-600" />
+                                            <MotionIcon name="Trophy" className="w-8 h-8 text-zinc-600" />
                                         </div>
                                         <h3 className="text-lg font-bold text-white mb-2">No Achievements Yet</h3>
                                         <p className="text-zinc-500 text-center max-w-sm">
@@ -566,7 +566,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
             <div className="relative w-32 h-32 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden group shadow-xl">
                 {isUploading ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                        <MotionIcon name="Loader2" className="w-8 h-8 text-white animate-spin" animation="spin" />
                     </div>
                 ) : (
                     <>
@@ -574,14 +574,14 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                             <Image src={formData.profileImage} alt="Profile" fill className="object-cover" />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                                <User className="w-12 h-12 text-zinc-700" />
+                                <MotionIcon name="User" className="w-12 h-12 text-zinc-700" />
                             </div>
                         )}
                         <div 
                             className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                             onClick={() => fileInputRef.current?.click()}
                         >
-                            <Upload className="w-8 h-8 text-white mb-2" />
+                            <MotionIcon name="Upload" className="w-8 h-8 text-white mb-2" />
                             <span className="text-xs uppercase font-bold text-zinc-300">Change</span>
                         </div>
                     </>
@@ -596,7 +596,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
             />
             {formData.profileImage && (
                 <button onClick={handleRemoveImage} className="text-xs text-red-500 hover:text-red-400 flex items-center gap-1 font-medium">
-                    <Trash2 className="w-3 h-3" /> Remove
+                    <MotionIcon name="Trash2" className="w-3 h-3" /> Remove
                 </button>
             )}
         </div>
@@ -616,7 +616,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                 <div className="space-y-1.5">
                      <label className="text-xs font-semibold text-zinc-500 uppercase ml-1">X Handle</label>
                      <div className="relative">
-                        <Twitter className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
+                        <MotionIcon name="Twitter" className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
                         <input 
                             type="text"
                             value={formData.xHandle}
@@ -703,7 +703,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                        {formData.skills.map(skill => (
                            <span key={skill} className="px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/5 text-sm font-medium flex items-center gap-2">
                                {skill}
-                               <button onClick={() => removeSkill(skill)} className="text-zinc-500 hover:text-white"><X className="w-3 h-3" /></button>
+                               <button onClick={() => removeSkill(skill)} className="text-zinc-500 hover:text-white"><MotionIcon name="X" className="w-3 h-3" /></button>
                            </span>
                        ))}
                    </div>
@@ -750,7 +750,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                    <div>
                        <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">Wallet Address</label>
                        <div className="relative">
-                           <Wallet className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
+                           <MotionIcon name="Wallet" className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
                            <input 
                                type="text" 
                                value={formData.wallet} 
@@ -766,7 +766,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                        <div>
                            <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">Telegram</label>
                            <div className="relative">
-                               <Send className="absolute left-3 top-3 w-3.5 h-3.5 text-zinc-500" />
+                               <MotionIcon name="Send" className="absolute left-3 top-3 w-3.5 h-3.5 text-zinc-500" />
                                <input 
                                    type="text" 
                                    value={formData.telegram} 
@@ -779,7 +779,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                        <div>
                            <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">Discord</label>
                            <div className="relative">
-                               <MessageCircle className="absolute left-3 top-3 w-3.5 h-3.5 text-zinc-500" />
+                               <MotionIcon name="MessageCircle" className="absolute left-3 top-3 w-3.5 h-3.5 text-zinc-500" />
                                <input 
                                    type="text" 
                                    value={formData.discord} 
@@ -805,7 +805,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                    <div className="text-[10px] text-zinc-500 truncate">{social.url}</div>
                                </div>
                                <button onClick={() => removeSocial(idx)} className="p-2 text-zinc-600 hover:text-red-400">
-                                   <Trash2 className="w-4 h-4" />
+                                   <MotionIcon name="Trash2" className="w-4 h-4" />
                                </button>
                            </div>
                        ))}
@@ -826,7 +826,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                     className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-xs text-white"
                                 />
                                 <button onClick={addSocial} className="px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white">
-                                    <Plus className="w-4 h-4" />
+                                    <MotionIcon name="Plus" className="w-4 h-4" />
                                 </button>
                             </div>
                        </div>
@@ -870,7 +870,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                            className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-xs text-white"
                        />
                        <button onClick={() => addInterest()} className="px-3 bg-white/5 hover:bg-white/10 rounded-lg text-white">
-                           <Plus className="w-3 h-3" />
+                           <MotionIcon name="Plus" className="w-3 h-3" />
                        </button>
                    </div>
               </section>
@@ -893,7 +893,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                   disabled={isSaving}
                   className="px-6 py-2.5 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-white/5"
               >
-                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  {isSaving ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" animation="spin" /> : <MotionIcon name="Save" className="w-4 h-4" />}
                   Save Changes
               </button>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Calendar, MapPin, ArrowRight, ExternalLink } from 'lucide-react';
+import { MotionIcon } from "motion-icons-react";
 import Link from 'next/link';
 import {  format } from 'date-fns';
 
@@ -76,7 +76,7 @@ export default function PublicEventsViewer() {
         <section className="space-y-8">
              <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-white/10 pb-4">
                 <h2 className="text-2xl font-bold flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-zinc-400" /> Upcoming Events
+                    <MotionIcon name="Calendar" className="w-5 h-5 text-zinc-400" /> Upcoming Events
                 </h2>
                 
                 {/* Filters */}
@@ -135,13 +135,13 @@ export default function PublicEventsViewer() {
                                 </h3>
                                 
                                 <div className="flex items-center gap-2 text-xs text-zinc-500 mt-1">
-                                    <MapPin className="w-3 h-3" />
+                                    <MotionIcon name="MapPin" className="w-3 h-3" />
                                     <span>{event.location}</span>
                                 </div>
 
                                 <div className="mt-auto pt-4">
                                     <span className="flex items-center gap-1 text-xs font-bold text-white group-hover:underline">
-                                        Register via Luma <ExternalLink className="w-3 h-3" />
+                                        Register via Luma <MotionIcon name="ExternalLink" className="w-3 h-3" />
                                     </span>
                                 </div>
                             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ShieldAlert, Plus, AlertCircle } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { useSession } from "next-auth/react";
 import { AdminTable } from "./components/AdminTable";
 import { AdminToolbar } from "./components/AdminToolbar";
@@ -194,21 +194,21 @@ export default function TeamPage() {
              <CorePageHeader
                 title="Core Team Management"
                 description="Manage admins and page access permissions. (Member Table)"
-                icon={<ShieldAlert className="w-5 h-5 text-indigo-400" />}
+                icon={<MotionIcon name="ShieldAlert" className="w-5 h-5 text-indigo-400" />}
              >
                 {canAddMembers && (
                     <button 
                         onClick={() => setIsAddingMember(true)}
                         className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-white/5 flex items-center gap-2 active:scale-95"
                     >
-                        <Plus className="w-4 h-4" /> Add Admin
+                        <MotionIcon name="Plus" className="w-4 h-4" /> Add Admin
                     </button>
                 )}
              </CorePageHeader>
 
              {duplicates.size > 0 && (
                 <div className="mb-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400 text-sm flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <MotionIcon name="AlertCircle" className="w-4 h-4 flex-shrink-0" />
                     <span>
                         Warning: Found {duplicates.size} duplicate email{duplicates.size !== 1 ? 's' : ''} in the list. 
                         Please review: {Array.from(duplicates).slice(0, 3).join(', ')}{duplicates.size > 3 ? '...' : ''}

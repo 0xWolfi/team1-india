@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Megaphone, ExternalLink } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 
 interface Announcement {
@@ -44,7 +44,7 @@ export default function MemberAnnouncementsPage() {
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-white/5 rounded-lg">
-                        <Megaphone className="w-5 h-5 text-zinc-200" />
+                        <MotionIcon name="Megaphone" className="w-5 h-5 text-zinc-200" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Announcements</h1>
@@ -56,7 +56,7 @@ export default function MemberAnnouncementsPage() {
             <div className="grid gap-3">
                 {(!Array.isArray(announcements) || announcements.length === 0) ? (
                     <div className="flex flex-col items-center justify-center text-zinc-500 h-64 border border-dashed border-white/10 rounded-2xl">
-                        <Megaphone className="w-12 h-12 mb-4 opacity-20" />
+                        <MotionIcon name="Megaphone" className="w-12 h-12 mb-4 opacity-20" />
                         <p>No active announcements.</p>
                     </div>
                 ) : (
@@ -67,14 +67,14 @@ export default function MemberAnnouncementsPage() {
                                     item.audience === 'MEMBER' ? 'bg-emerald-500/10 text-emerald-400' :
                                     'bg-purple-500/10 text-purple-400'
                                 }`}>
-                                    <Megaphone className="w-5 h-5" />
+                                    <MotionIcon name="Megaphone" className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="font-bold text-white flex items-center gap-2">
                                         {item.title}
                                         {item.link && (
                                             <a href={item.link} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-white transition-colors">
-                                                <ExternalLink className="w-3 h-3" />
+                                                <MotionIcon name="ExternalLink" className="w-3 h-3" />
                                             </a>
                                         )}
                                     </h3>

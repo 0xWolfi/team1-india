@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Footer } from "@/components/website/Footer";
 import { Team1Logo } from "@/components/Team1Logo";
 import Image from "next/image";
-import { Settings, LogOut, User } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 
 interface MemberWrapperProps {
     children: React.ReactNode;
@@ -165,7 +165,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                             </div>
                         ) : (
                             <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
-                                <User className="w-4 h-4 text-zinc-400" />
+                                <MotionIcon name="User" className="w-4 h-4 text-zinc-400" />
                             </div>
                         )}
                     </button>
@@ -174,13 +174,13 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                         className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400"
                         title="Profile settings"
                     >
-                        <Settings className="w-4 h-4" />
+                        <MotionIcon name="Settings" className="w-4 h-4" />
                     </button>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}
                         className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500"
                     >
-                        <LogOut className="w-4 h-4" />
+                        <MotionIcon name="LogOut" className="w-4 h-4" />
                     </button>
                 </div>
             </div>

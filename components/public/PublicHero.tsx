@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Clock, Star, Zap, LayoutGrid, LogIn, LayoutDashboard } from 'lucide-react';
+import { MotionIcon } from "motion-icons-react";
 import ApplicationModal from './ApplicationModal';
 
 interface HeroItem {
@@ -53,13 +53,13 @@ export default function PublicHero({ heroItem, onLoginClick, userRole, isAuthent
                             {!isAuthenticated ? (
                                 <button onClick={onLoginClick} className="group px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center text-lg overflow-hidden">
                                     <span className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-110">
-                                        <LogIn className="w-5 h-5" /> Login
+                                        <MotionIcon name="LogIn" className="w-5 h-5" /> Login
                                     </span>
                                 </button>
                             ) : userRole === 'PUBLIC' ? (
                                 <button onClick={() => setShowApplication(true)} className="group px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center text-lg overflow-hidden">
                                     <span className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-110">
-                                        <Zap className="w-5 h-5 fill-black" /> Apply for Membership
+                                        <MotionIcon name="Zap" className="w-5 h-5 fill-black" /> Apply for Membership
                                     </span>
                                 </button>
                             ) : (
@@ -68,14 +68,14 @@ export default function PublicHero({ heroItem, onLoginClick, userRole, isAuthent
                                     className="group px-8 py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center text-lg overflow-hidden"
                                 >
                                     <span className="flex items-center gap-2 transition-transform duration-300 group-hover:scale-110">
-                                        <LayoutDashboard className="w-5 h-5" /> Go to Dashboard
+                                        <MotionIcon name="LayoutDashboard" className="w-5 h-5" /> Go to Dashboard
                                     </span>
                                 </Link>
                             )}
 
                             <Link href="#playbooks" className="group px-8 py-4 bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/40 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2 text-lg shadow-lg hover:shadow-white/10 backdrop-blur-md">
                                 <span className="flex items-center gap-2 transition-transform duration-200 group-hover:scale-110">
-                                    <LayoutGrid className="w-5 h-5" /> Browse Resources
+                                    <MotionIcon name="LayoutGrid" className="w-5 h-5" /> Browse Resources
                                 </span>
                             </Link>
                         </div>

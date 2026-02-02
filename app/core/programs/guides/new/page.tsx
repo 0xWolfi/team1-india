@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { GuideBuilder } from "@/components/guides/GuideBuilder";
-import { Layers, X } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import Link from "next/link";
 
 export default function NewProgramGuidePage() {
@@ -36,11 +36,11 @@ export default function NewProgramGuidePage() {
             <CorePageHeader 
                 title="Create Program Guide" 
                 description="Define a new framework for programs and initiatives."
-                icon={<Layers className="w-5 h-5 text-zinc-200" />}
+                icon={<MotionIcon name="Layers" className="w-5 h-5 text-zinc-200" />}
             >
                 <Link href="/core/programs">
                     <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition-colors border border-white/5">
-                        <X className="w-4 h-4" /> Close
+                        <MotionIcon name="X" className="w-4 h-4" /> Close
                     </button>
                 </Link>
             </CorePageHeader>
