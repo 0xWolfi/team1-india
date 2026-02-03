@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
-import { Loader2, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { MotionIcon } from "motion-icons-react";
 import { useSession } from 'next-auth/react';
 
 const INDIAN_STATES = [
@@ -175,7 +175,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
             {step === 'success' ? (
                 <div className="flex flex-col items-center justify-center p-8 space-y-4 text-center">
                     <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-green-500">
-                        <CheckCircle className="w-8 h-8" />
+                        <MotionIcon name="CheckCircle" className="w-8 h-8" />
                     </div>
                     <h3 className="text-2xl font-bold text-white">Application Submitted!</h3>
                     <p className="text-zinc-400">
@@ -188,7 +188,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
             ) : step === 'error' ? (
                 <div className="flex flex-col items-center justify-center p-8 space-y-4 text-center">
                     <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400">
-                        <AlertCircle className="w-8 h-8" />
+                        <MotionIcon name="AlertCircle" className="w-8 h-8" />
                     </div>
                     <h3 className="text-2xl font-bold text-white">Submission Failed</h3>
                     <p className="text-zinc-400">{error}</p>
@@ -321,7 +321,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                                     {tags.map(tag => (
                                         <span key={tag} className="bg-white/10 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
                                             {tag}
-                                            <button type="button" onClick={() => removeTag(tag)} className="hover:text-white"><XCircle className="w-3 h-3" /></button>
+                                            <button type="button" onClick={() => removeTag(tag)} className="hover:text-white"><MotionIcon name="XCircle" className="w-3 h-3" /></button>
                                         </span>
                                     ))}
                                     <input 
@@ -399,7 +399,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                             disabled={step === 'submitting' || !formData.consent}
                             className="w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:opacity-100 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                         >
-                            {step === 'submitting' && <Loader2 className="w-5 h-5 animate-spin" />}
+                            {step === 'submitting' && <MotionIcon name="Loader2" className="w-5 h-5 animate-spin" animation="spin" />}
                             {step === 'submitting' ? 'Submitting Application...' : 'Submit Member Application'}
                         </button>
                     </div>

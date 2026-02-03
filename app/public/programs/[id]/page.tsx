@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Users, Calendar, Clock, Globe } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import ReactMarkdown from 'react-markdown';
@@ -85,7 +85,7 @@ export default async function ProgramDetailPage({ params }: Props) {
             {/* Left Content */}
             <div className="lg:col-span-2">
                 <Link href="/public/programs" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
-                    <ArrowLeft className="w-4 h-4" /> Back to Programs
+                    <MotionIcon name="ArrowLeft" className="w-4 h-4" /> Back to Programs
                 </Link>
 
                 <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{program.title}</h1>
@@ -93,17 +93,17 @@ export default async function ProgramDetailPage({ params }: Props) {
                 
                 <div className="flex flex-wrap gap-4 text-sm text-zinc-500 mb-12 border-y border-white/5 py-6">
                     <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-zinc-400" />
+                        <MotionIcon name="Users" className="w-4 h-4 text-zinc-400" />
                         <span>Open Enrollment</span>
                     </div>
                     <div className="w-px h-4 bg-white/10" />
                     <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-zinc-400" />
+                        <MotionIcon name="Calendar" className="w-4 h-4 text-zinc-400" />
                         <span>Rolling Admissions</span>
                     </div>
                     <div className="w-px h-4 bg-white/10" />
                     <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-zinc-400" />
+                        <MotionIcon name="Globe" className="w-4 h-4 text-zinc-400" />
                         <span>Remote / Global</span>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Users, Plus } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 
 interface AdminHeaderProps {
     canAddMembers: boolean;
@@ -21,7 +21,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
             <div>
                 <h1 className="text-3xl font-bold flex items-center gap-3 tracking-tighter text-white">
                     <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                        <Users className="w-5 h-5 text-zinc-200" />
+                        <MotionIcon name="Users" className="w-5 h-5 text-zinc-200" />
                     </span>
                     {title}
                 </h1>
@@ -35,7 +35,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                         onClick={onAddClick}
                         className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-white/5 flex items-center gap-2 active:scale-95"
                     >
-                        <Plus className="w-4 h-4" /> Add
+                        <MotionIcon name="Plus" className="w-4 h-4" /> Add
                     </button>
                 )}
             </div>

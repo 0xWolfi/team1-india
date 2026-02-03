@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { XCircle, Loader2, Tag, Shield } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { Member, PERMISSION_SCOPES } from "../../shared";
 
 interface EditAccessModalProps {
@@ -49,7 +49,7 @@ export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChan
                         <p className="text-zinc-500 text-xs mt-1 font-mono">{member.email}</p>
                     </div>
                     <button onClick={onClose} className="text-zinc-500 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
-                        <XCircle className="w-5 h-5" />
+                        <MotionIcon name="XCircle" className="w-5 h-5" />
                     </button>
                 </div>
                 
@@ -61,13 +61,13 @@ export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChan
                                 {(member.tags || []).map(tag => (
                                     <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-800 text-zinc-200 border border-white/10">
                                     {tag}
-                                    <button onClick={() => removeTag(tag)} className="ml-1.5 text-zinc-500 hover:text-white transition-colors"><XCircle className="w-3 h-3" /></button>
+                                    <button onClick={() => removeTag(tag)} className="ml-1.5 text-zinc-500 hover:text-white transition-colors"><MotionIcon name="XCircle" className="w-3 h-3" /></button>
                                     </span>
                                 ))}
                                 {(!member.tags || member.tags.length === 0) && <span className="text-zinc-600 text-xs italic py-1">No tags assigned</span>}
                         </div>
                         <div className="relative group">
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2"><Tag className="w-4 h-4 text-zinc-600 group-focus-within:text-zinc-400 transition-colors" /></div>
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2"><MotionIcon name="Tag" className="w-4 h-4 text-zinc-600 group-focus-within:text-zinc-400 transition-colors" /></div>
                             <input 
                                 type="text" 
                                 placeholder="Add tag..." 
@@ -90,7 +90,7 @@ export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChan
                     <div className="bg-purple-900/10 border border-purple-500/20 rounded-xl p-5 flex items-center justify-between group hover:border-purple-500/40 transition-colors mb-6">
                         <div>
                             <div className="font-bold text-purple-400 flex items-center gap-2">
-                                <Shield className="w-4 h-4" /> Superadmin
+                                <MotionIcon name="Shield" className="w-4 h-4" /> Superadmin
                             </div>
                             <p className="text-[10px] text-zinc-400 mt-1 max-w-[200px] leading-snug">Grants full unrestricted access.</p>
                         </div>
@@ -130,13 +130,12 @@ export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChan
                                 const isFull = (member.permissions || {})['*'] === 'FULL_ACCESS';
                                 const permissions = member.permissions || {};
                                 const currentLevel = permissions[scope.key];
-                                const Icon = scope.icon;
                                 
                                 return (
                                     <div key={scope.key} className={`flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.01] ${isFull ? 'opacity-30 pointer-events-none grayscale' : 'hover:bg-white/[0.03] transition-colors'} group transition-colors`}>
                                         <div className="flex items-center gap-3">
                                             <div className={`p-2 rounded-lg border border-white/5 transition-colors ${currentLevel ? 'bg-zinc-800' : 'bg-black/40'}`}>
-                                                <Icon className={`w-4 h-4 ${currentLevel ? 'text-zinc-200' : 'text-zinc-600'}`} />
+                                                <MotionIcon name={scope.iconName} className={`w-4 h-4 ${currentLevel ? 'text-zinc-200' : 'text-zinc-600'}`} />
                                             </div>
                                             <div>
                                                 <div className={`text-sm font-medium transition-colors ${currentLevel ? 'text-zinc-200' : 'text-zinc-500'}`}>{scope.label}</div>
@@ -196,7 +195,7 @@ export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChan
                         disabled={isSubmitting}
                         className="px-6 py-2.5 rounded-xl text-sm font-bold bg-white text-black hover:bg-zinc-200 transition-colors shadow-lg shadow-white/10 flex items-center gap-2"
                     >
-                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
+                        {isSubmitting ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : "Save Changes"}
                     </button>
                 </div>
             </div>

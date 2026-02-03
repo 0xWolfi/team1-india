@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Clock, MapPin, Calendar } from 'lucide-react';
+import { MotionIcon } from "motion-icons-react";
 
 interface HeroItem {
     id: string;
@@ -46,7 +46,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
                         </span>
                         {item.createdAt && (
                              <span className="text-zinc-300 text-xs flex items-center gap-1 font-medium bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
-                                <Clock className="w-3 h-3" /> {new Date(item.createdAt).toLocaleDateString()}
+                                <MotionIcon name="Clock" className="w-3 h-3" /> {new Date(item.createdAt).toLocaleDateString()}
                             </span>
                         )}
                     </div>
@@ -66,7 +66,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
                             href={item.href}
                             className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-zinc-200 transition-all active:scale-95"
                         >
-                            Read Now <ArrowRight className="w-4 h-4" />
+                            Read Now <MotionIcon name="ArrowRight" className="w-4 h-4" />
                         </Link>
                     </div>
                 </div>

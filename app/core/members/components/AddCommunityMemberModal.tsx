@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { XCircle, Loader2, Tag, AtSign, ChevronDown, AlertCircle, CheckCircle2 } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 
 interface AddCommunityMemberModalProps {
     isOpen: boolean;
@@ -86,7 +86,7 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                         <p className="text-zinc-500 text-xs mt-1">Register a new member to the community roster.</p>
                     </div>
                     <button onClick={onClose} className="text-zinc-500 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
-                        <XCircle className="w-5 h-5" />
+                        <MotionIcon name="XCircle" className="w-5 h-5" />
                     </button>
                 </div>
 
@@ -97,7 +97,7 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                             <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Email Address</label>
                             <div className="relative">
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                                    <AtSign className="w-4 h-4 text-zinc-600" />
+                                    <MotionIcon name="AtSign" className="w-4 h-4 text-zinc-600" />
                                 </div>
                                 <input 
                                     autoFocus
@@ -116,19 +116,19 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                                 />
                                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                     {emailStatus === 'checking' && (
-                                        <Loader2 className="w-4 h-4 text-zinc-500 animate-spin" />
+                                        <MotionIcon name="Loader2" className="w-4 h-4 text-zinc-500 animate-spin" />
                                     )}
                                     {emailStatus === 'exists' && (
-                                        <AlertCircle className="w-4 h-4 text-red-500" />
+                                        <MotionIcon name="AlertCircle" className="w-4 h-4 text-red-500" />
                                     )}
                                     {emailStatus === 'available' && (
-                                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                        <MotionIcon name="CheckCircle2" className="w-4 h-4 text-emerald-500" />
                                     )}
                                 </div>
                             </div>
                             {emailStatus === 'exists' && emailMessage && (
                                 <p className="text-xs text-red-400 flex items-center gap-1 mt-1">
-                                    <AlertCircle className="w-3 h-3" />
+                                    <MotionIcon name="AlertCircle" className="w-3 h-3" />
                                     {emailMessage}
                                 </p>
                             )}
@@ -139,7 +139,7 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                             <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Role</label>
                             <div className="relative">
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                                    <Tag className="w-4 h-4 text-zinc-600" />
+                                    <MotionIcon name="Tag" className="w-4 h-4 text-zinc-600" />
                                 </div>
                                 <select
                                     value={tag}
@@ -150,7 +150,7 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                                     <option value="collaborator">Collaborator</option>
                                 </select>
                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                    <ChevronDown className="w-4 h-4 text-zinc-500" />
+                                    <MotionIcon name="ChevronDown" className="w-4 h-4 text-zinc-500" />
                                 </div>
                             </div>
                             <p className="text-xs text-zinc-600 mt-1">The member will be asked to complete their profile details after first login.</p>
@@ -169,7 +169,7 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                                 disabled={isSubmitting || emailStatus === 'exists' || emailStatus === 'checking'}
                                 className="flex-1 py-3 rounded-lg text-sm font-bold bg-white text-black hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add Member"}
+                                {isSubmitting ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : "Add Member"}
                             </button>
                         </div>
                     </form>

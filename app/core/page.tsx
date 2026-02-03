@@ -2,22 +2,18 @@
 
 import { signOut, useSession } from "next-auth/react";
 import React, { useState } from "react";
-import { 
-    BookOpen, Calendar, Layers, FileText, Briefcase, 
-    Handshake, Users, Settings, Plus, Search,
-     Beaker, History, Film, Megaphone, Zap as ZapIcon,
-    LogOut, User as UserIcon, Lock, LayoutDashboard, BarChart3, ClipboardList
-} from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Team1Logo } from "@/components/Team1Logo";
+import { UnifiedDashboardHeader } from "@/components/UnifiedDashboardHeader";
 
 // Types
 interface ResourceItem {
     title: string;
     key: string; // Permission Key
-    icon: React.ReactNode;
+    iconName: string;
     items: string[];
     link: string;
     description?: string;
@@ -85,7 +81,7 @@ export default function CorePage() {
             title: "Playbooks", 
             key: "playbooks",
             link: "/core/playbooks",
-            icon: <BookOpen />,
+            iconName: "BookOpen",
             description: "Manage standard operating procedures and governance documentation.",
             image: "/images/dashboard/planning.png",
             items: []
@@ -94,7 +90,7 @@ export default function CorePage() {
             title: "Events", 
             key: "events", 
             link: "/core/events", 
-            icon: <Calendar />, 
+            iconName: "Calendar", 
             description: "Coordinate meetups, conferences, and community gatherings.",
             image: "/images/dashboard/planning.png",
             items: [] 
@@ -103,7 +99,7 @@ export default function CorePage() {
             title: "Programs", 
             key: "programs", 
             link: "/core/programs", 
-            icon: <Layers />, 
+            iconName: "Layers", 
             description: "Oversee recurring initiatives, mentorships, and long-term series.",
             image: "/images/dashboard/planning.png",
             items: [] 
@@ -112,7 +108,7 @@ export default function CorePage() {
             title: "Content", 
             key: "content", 
             link: "/core/content", 
-            icon: <FileText />, 
+            iconName: "FileText", 
             description: "Organize content strategy, resources, and publishing workflows.",
             image: "/images/dashboard/community.png",
             items: [] 
@@ -123,7 +119,7 @@ export default function CorePage() {
             title: "Operations", 
             key: "operations", 
             link: "/core/operations", 
-            icon: <Settings />, 
+            iconName: "Settings", 
             description: "Track internal tasks, logistics, and operational workflows.",
             image: "/images/dashboard/data.png",
             items: [] 
@@ -132,7 +128,7 @@ export default function CorePage() {
             title: "Experiment", 
             key: "experiments", 
             link: "/core/experiments", 
-            icon: <Beaker />, 
+            iconName: "Beaker", 
             description: "Propose and track new ideas, pilots, and governance proposals.",
             image: "/images/dashboard/data.png",
             items: [] 
@@ -141,7 +137,7 @@ export default function CorePage() {
             title: "Media", 
             key: "media", 
             link: "/core/media", 
-            icon: <Film />, 
+            iconName: "Film", 
             description: "Manage media assets, posts, and digital distribution.",
             image: "/images/dashboard/community.png",
             items: [] 
@@ -150,7 +146,7 @@ export default function CorePage() {
             title: "Members Details", 
             key: "members", 
             link: "/core/members", 
-            icon: <Users />, 
+            iconName: "Users", 
             description: "Manage community members, roles, and access permissions.",
             image: "/images/dashboard/community.png",
             items: [] 
@@ -161,7 +157,7 @@ export default function CorePage() {
             title: "Projects", 
             key: "projects", 
             link: "/core/projects", 
-            icon: <Briefcase />, 
+            iconName: "Briefcase", 
             description: "Manage active projects, deliverables, and milestones.",
             image: "/images/dashboard/data.png",
             items: [] 
@@ -170,7 +166,7 @@ export default function CorePage() {
             title: "Partners", 
             key: "partners", 
             link: "/core/partners", 
-            icon: <Handshake />, 
+            iconName: "Handshake", 
             description: "Track sponsors, vendors, and strategic alliances.",
             image: "/images/dashboard/community.png",
             items: [] 
@@ -179,7 +175,7 @@ export default function CorePage() {
             title: "Mediakit", 
             key: "mediakit", 
             link: "/core/mediakit", 
-            icon: <Megaphone />, 
+            iconName: "Megaphone", 
             description: "Access brand assets, press kits, and promotional materials.",
             image: "/images/dashboard/community.png",
             items: [] 
@@ -188,7 +184,7 @@ export default function CorePage() {
             title: "Logs", 
             key: "logs", 
             link: "/core/logs", 
-            icon: <History />, 
+            iconName: "History", 
             description: "Audit system activities, user actions, and change logs.",
             image: "/images/dashboard/data.png",
             items: [] 
@@ -214,83 +210,47 @@ export default function CorePage() {
                         </div>
                     ) : (
                         <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
-                             <UserIcon className="w-4 h-4 text-zinc-400" />
+                             <MotionIcon name="User" className="w-4 h-4 text-zinc-400" />
                         </div>
                     )}
                 <Link 
                     href="/core/profile"
                     className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400"
                 >
-                    <Settings className="w-4 h-4" />
+                    <MotionIcon name="Settings" className="w-4 h-4" />
                 </Link>
                 <button 
                     onClick={() => signOut({ callbackUrl: '/public' })}
                     className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500"
                 >
-                    <LogOut className="w-4 h-4" />
+                    <MotionIcon name="LogOut" className="w-4 h-4" />
                 </button>
             </div>
         </div>
 
         <main className="container mx-auto px-6 md:px-12 md:pt-24 pt-8">
         {/* Header */}
-        <header className="mb-12 border-b border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-                 <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                    <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">System Online</span>
-                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500">
-                    Core Terminal
-                </h1>
-                <p className="text-zinc-500 font-medium text-sm mt-2 max-w-lg leading-relaxed">
-                    Welcome back, <span className="text-white">{session?.user?.name?.split(' ')[0] || 'User'}</span>. Access your mission control for operations, content, and community management.
-                </p>
-            </div>
-            
-            <div className="hidden md:flex items-center gap-6">
-                 <div className="hidden md:block">
-                     <WorldClock />
-                 </div>
-                <div className="flex items-center gap-3 pl-6 border-l border-white/5">
-                    {session?.user?.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/10">
-                             <Image src={session.user.image} alt="Profile" fill className="object-cover" />
-                        </div>
-                    ) : (
-                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center ring-2 ring-white/10">
-                             <UserIcon className="w-5 h-5 text-zinc-400" />
-                        </div>
-                    )}
-                    <Link 
-                        href="/core/profile"
-                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
-                        title="My Profile"
-                    >
-                        <Settings className="w-4 h-4" />
-                    </Link>
-                    <button 
-                        onClick={() => signOut({ callbackUrl: '/public' })}
-                        className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center text-red-500 hover:text-red-400"
-                        title="Logout"
-                    >
-                        <LogOut className="w-4 h-4" />
-                    </button>
-                </div>
-            </div>
-        </header>
+        <UnifiedDashboardHeader 
+            title="Core Terminal"
+            subtitle={<>Welcome back, <span className="text-white">{session?.user?.name?.split(' ')[0] || 'User'}</span>. Access your mission control for operations, content, and community management.</>}
+            user={session?.user}
+            backLink="/public"
+        >
+             <div className="hidden md:block">
+                 <WorldClock />
+             </div>
+        </UnifiedDashboardHeader>
 
         {/* Quick Actions Row */}
         <div className="mb-12">
              <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                 <ZapIcon className="w-4 h-4" /> Quick Actions
+                 <MotionIcon name="Zap" className="w-4 h-4" /> Quick Actions
              </h2>
              <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:gap-4 gap-3">
                  {/* Applications */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <ClipboardList className="w-4 h-4 md:w-5 md:h-5" />
+                        <MotionIcon name="ClipboardList" className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Applications</span>
                  </button>
@@ -298,7 +258,7 @@ export default function CorePage() {
                  {/* Announcements */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <Megaphone className="w-4 h-4 md:w-5 md:h-5" />
+                        <MotionIcon name="Megaphone" className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Announcements</span>
                  </button>
@@ -306,7 +266,7 @@ export default function CorePage() {
                  {/* Attendance */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <Users className="w-4 h-4 md:w-5 md:h-5" />
+                        <MotionIcon name="Users" className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Attendance</span>
                  </button>
@@ -314,7 +274,7 @@ export default function CorePage() {
                  {/* Meeting Notes */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <FileText className="w-4 h-4 md:w-5 md:h-5" />
+                        <MotionIcon name="FileText" className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Meeting Notes</span>
                  </button>
@@ -322,7 +282,7 @@ export default function CorePage() {
                  {/* New Poll */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <BarChart3 className="w-4 h-4 md:w-5 md:h-5" />
+                        <MotionIcon name="BarChart3" className="w-4 h-4 md:w-5 md:h-5" />
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Vote / Polls</span>
                  </button>
@@ -331,7 +291,7 @@ export default function CorePage() {
                  {isSuperAdmin && (
                      <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
                          <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                            <Settings className="w-4 h-4 md:w-5 md:h-5" />
+                            <MotionIcon name="Settings" className="w-4 h-4 md:w-5 md:h-5" />
                          </div>
                          <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Manage Team</span>
                      </button>
@@ -373,7 +333,7 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
                     
                     {/* Centered Main Icon (No Box) */}
                     <div className="relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-2xl">
-                         {React.cloneElement(resource.icon as React.ReactElement<{ className?: string }>, { className: "w-12 h-12 text-zinc-500 group-hover:text-white transition-colors duration-300" })}
+                         <MotionIcon name={resource.iconName} className="w-12 h-12 text-zinc-500 group-hover:text-white transition-colors duration-300" />
                     </div>
                 </div>
 
@@ -395,7 +355,7 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-[2px] rounded-2xl border border-white/5">
                     <div className="flex flex-col items-center gap-3 animate-in zoom-in duration-300">
                         <div className="p-4 rounded-full bg-black/50 border border-white/10 shadow-2xl">
-                            <Lock className="w-6 h-6 text-zinc-500" />
+                            <MotionIcon name="Lock" className="w-6 h-6 text-zinc-500" />
                         </div>
                         <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest bg-black/80 px-3 py-1 rounded border border-white/10">
                             Access Denied

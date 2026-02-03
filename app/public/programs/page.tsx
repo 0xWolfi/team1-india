@@ -1,7 +1,7 @@
 
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { ArrowLeft, Users } from "lucide-react";
+import { MotionIcon } from "@/components/ui/ClientMotionIcon";
 import { Footer } from "@/components/website/Footer";
 import ProgramsClient from "@/components/public/ProgramsClient";
 
@@ -47,7 +47,7 @@ export default async function PublicProgramsPage() {
         
         {/* Back Link */}
         <Link href="/public" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
-            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+            <MotionIcon name="ArrowLeft" className="w-4 h-4" /> Back to Dashboard
         </Link>
 
         {/* Header */}
@@ -55,7 +55,7 @@ export default async function PublicProgramsPage() {
             <div>
                 <h1 className="text-3xl md:text-4xl font-bold mb-3 flex items-center gap-3">
                      <span className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center border border-white/10">
-                        <Users className="w-4 h-4 text-zinc-400" />
+                        <MotionIcon name="Users" className="w-4 h-4 text-zinc-400" />
                      </span>
                      Programs
                 </h1>

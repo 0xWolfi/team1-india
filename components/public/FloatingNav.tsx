@@ -7,18 +7,18 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Team1Logo } from "@/components/Team1Logo";
 import { useSession, signOut, signIn } from "next-auth/react";
-import { User, X, LogOut, LayoutDashboard, LogIn, Ticket, Book, Rocket, Trophy, Calendar, Mail, ShieldCheck } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 import { useDrag } from "@use-gesture/react";
 
 const navItems = [
-    { label: "Attend", href: "#upcoming-events", icon: Ticket },
-    { label: "Playbooks", href: "#playbooks", icon: Book },
-    { label: "Programs", href: "#programs", icon: Rocket },
-    { label: "Content", href: "#content", icon: Trophy },
-    { label: "Events", href: "#events", icon: Calendar },
-    { label: "Contact", href: "#contact", icon: Mail },
-    { label: "Verify", href: "#verify-desktop", icon: ShieldCheck },
+    { label: "Attend", href: "#upcoming-events", icon: "Ticket" },
+    { label: "Playbooks", href: "#playbooks", icon: "Book" },
+    { label: "Programs", href: "#programs", icon: "Rocket" },
+    { label: "Content", href: "#content", icon: "Trophy" },
+    { label: "Events", href: "#events", icon: "Calendar" },
+    { label: "Contact", href: "#contact", icon: "Mail" },
+    { label: "Verify", href: "#verify-desktop", icon: "ShieldCheck" },
 ];
 
 export function FloatingNav() {
@@ -164,7 +164,7 @@ export function FloatingNav() {
                                 className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white transition-colors md:p-2 md:w-auto md:h-auto"
                                 title="Member Access"
                             >
-                                <User className="w-5 h-5" />
+                                <MotionIcon name="User" className="w-5 h-5" />
                             </button>
                         )}
 
@@ -191,7 +191,7 @@ export function FloatingNav() {
                             onClick={() => setShowUserMenu(false)}
                             className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
                         >
-                            <X className="w-5 h-5" />
+                            <MotionIcon name="X" className="w-5 h-5" />
                         </button>
 
                         <div className="flex items-center gap-4 mb-6">
@@ -223,7 +223,7 @@ export function FloatingNav() {
                                     href={(session?.user as any)?.role === 'CORE' ? '/core' : '/member'}
                                     className="group w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                    <MotionIcon name="LayoutDashboard" className="w-4 h-4 transition-transform group-hover:scale-110" /> 
                                     <span className="transition-transform duration-200 group-hover:scale-105">Go to Dashboard</span>
                                 </Link>
                             )}
@@ -234,7 +234,7 @@ export function FloatingNav() {
                                     href="/public/profile"
                                     className="group w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                    <MotionIcon name="LayoutDashboard" className="w-4 h-4 transition-transform group-hover:scale-110" /> 
                                     <span className="transition-transform duration-200 group-hover:scale-105">My Profile</span>
                                 </Link>
                             )}
@@ -243,7 +243,7 @@ export function FloatingNav() {
                                 onClick={() => signOut()}
                                 className="group w-full py-3 bg-white/5 text-zinc-400 font-bold rounded-xl hover:bg-red-500/10 hover:text-red-500 border border-white/5 hover:border-red-500/20 transition-all flex items-center justify-center gap-2"
                             >
-                                <LogOut className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                <MotionIcon name="LogOut" className="w-4 h-4 transition-transform group-hover:scale-110" /> 
                                 <span>Sign Out</span>
                             </button>
                         </div>
@@ -268,7 +268,7 @@ export function FloatingNav() {
                             )}
                             title={item.label}
                         >
-                            <Icon className="w-5 h-5" />
+                            <MotionIcon name={item.icon} className="w-5 h-5" />
                         </Link>
                     )
                 })}

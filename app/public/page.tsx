@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Book, Code2, Users, Calendar, Trophy, ExternalLink, Clock } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 
 import PublicHero from "@/components/public/PublicHero";
 import { Announcements } from "@/components/website/Announcements";
@@ -129,7 +129,7 @@ export default function PublicPage() {
                                 className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-2 rounded-lg transition-all"
                             >
                                 See All
-                                <ArrowRight className="w-4 h-4" />
+                                <MotionIcon name="ArrowRight" className="w-4 h-4" />
                             </Link>
                         </div>
 
@@ -158,7 +158,7 @@ export default function PublicPage() {
                                     <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
-                                        <Book className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
+                                        <MotionIcon name="Book" className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
                                     </div>
                                 )}
                             </div>
@@ -167,7 +167,7 @@ export default function PublicPage() {
                                 {item.description && <p className="text-sm text-zinc-400 line-clamp-2 leading-relaxed mb-4 flex-1">{item.description}</p>}
                                 <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-300 transition-colors">Read Playbook</span>
-                                    <ArrowRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
+                                    <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
                                 </div>
                             </div>
                         </Link>
@@ -194,7 +194,7 @@ export default function PublicPage() {
                             {item.coverImage ? (
                                     <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
                                 ) : (
-                                    <Users className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
+                                    <MotionIcon name="Users" className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
                                 )}
                             </div>
                             <div className="p-5 flex flex-col flex-1">
@@ -202,7 +202,7 @@ export default function PublicPage() {
                                 {item.description && <p className="text-sm text-zinc-400 line-clamp-2 leading-relaxed mb-4 flex-1">{item.description}</p>}
                                 <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-300 transition-colors">View Program</span>
-                                    <ArrowRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
+                                    <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
                                 </div>
                             </div>
                         </Link>
@@ -229,7 +229,7 @@ export default function PublicPage() {
                                 {item.coverImage ? (
                                     <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
                                 ) : (
-                                    <Trophy className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
+                                    <MotionIcon name="Trophy" className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
                                 )}
                             </div>
                             <div className="p-5 flex flex-col flex-1">
@@ -240,7 +240,7 @@ export default function PublicPage() {
                                 <div className="flex-1" /> {/* Spacer */}
                                 <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-300 transition-colors">View Bounty</span>
-                                    <ArrowRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
+                                    <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
                                 </div>
                             </div>
                         </Link>
@@ -271,13 +271,13 @@ export default function PublicPage() {
                                     <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
                                  ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
-                                        <Calendar className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
+                                        <MotionIcon name="Calendar" className="w-10 h-10 text-zinc-600 group-hover:text-zinc-400" />
                                     </div>
                                  )}
                             </div>
                             <div className="p-5 flex flex-col flex-1">
                                 <div className="text-[10px] font-bold text-zinc-400 mb-2 uppercase tracking-wider flex items-center gap-2">
-                                    <Calendar className="w-3 h-3" /> {item.date ? (() => {
+                                    <MotionIcon name="Calendar" className="w-3 h-3" /> {item.date ? (() => {
                                         try {
                                             const dateStr = typeof item.date === 'string' ? item.date : item.date?.toString();
                                             if (!dateStr) return 'TBA';
@@ -292,7 +292,7 @@ export default function PublicPage() {
                                 {item.location && <p className="text-sm text-zinc-500 mb-4 flex-1">{item.location}</p>}
                                 <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 group-hover:text-zinc-300 transition-colors">View Details</span>
-                                    <ArrowRight className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
+                                    <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors" />
                                 </div>
                             </div>
                          </Link>

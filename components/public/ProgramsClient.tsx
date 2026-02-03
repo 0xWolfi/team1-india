@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, LayoutGrid, List as ListIcon, Users, ChevronDown } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { cn } from "@/lib/utils";
 
 const glassClass = "bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]";
@@ -35,7 +35,7 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
             {/* Search & Filter Bar */}
             <div className="flex flex-col md:flex-row gap-4 mb-8">
                 <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+                    <MotionIcon name="Search" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
                     <input 
                         type="text" 
                         placeholder="Search programs..." 
@@ -49,9 +49,9 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                 </div>
                 <div className="flex items-center gap-2">
                     <button className={cn("flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-400 hover:text-white transition-all", glassClass)}>
-                        <LayoutGrid className="w-4 h-4" /> 
+                        <MotionIcon name="LayoutGrid" className="w-4 h-4" /> 
                         <span>All Views</span>
-                        <ChevronDown className="w-3 h-3 opacity-50" />
+                        <MotionIcon name="ChevronDown" className="w-3 h-3 opacity-50" />
                     </button>
                     <div className={cn("flex items-center rounded-xl p-1", glassClass)}>
                         <button 
@@ -61,7 +61,7 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                 viewMode === 'grid' ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-white"
                             )}
                         >
-                            <LayoutGrid className="w-4 h-4" />
+                            <MotionIcon name="LayoutGrid" className="w-4 h-4" />
                         </button>
                         <button 
                             onClick={() => setViewMode('list')}
@@ -70,7 +70,7 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                 viewMode === 'list' ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-white"
                             )}
                         >
-                            <ListIcon className="w-4 h-4" />
+                            <MotionIcon name="List" className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
@@ -99,7 +99,7 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-zinc-900">
                                     <div className="p-4 rounded-full bg-white/5 mx-auto">
-                                        <Users className="w-8 h-8 text-zinc-700" />
+                                        <MotionIcon name="Users" className="w-8 h-8 text-zinc-700" />
                                     </div>
                                 </div>
                             )}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { ArrowRight, Search } from 'lucide-react'; // kept for pagination button
+import { MotionIcon } from "motion-icons-react"; // kept for pagination button
 import { formatDistanceToNow } from 'date-fns';
 import { ResourceCard } from './ResourceCard';
 
@@ -61,7 +61,7 @@ export default function PublicResourcesViewer({ playbooks, guides }: PublicResou
             {/* Search Bar */}
             <div className="max-w-md mx-auto relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                     <Search className="w-5 h-5 text-zinc-500 group-focus-within:text-white transition-colors" />
+                     <MotionIcon name="Search" className="w-5 h-5 text-zinc-500 group-focus-within:text-white transition-colors" />
                 </div>
                 <input 
                     type="text"
@@ -108,7 +108,7 @@ export default function PublicResourcesViewer({ playbooks, guides }: PublicResou
             ) : (
                 <div className="text-center py-20 text-zinc-500 italic border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center border border-white/5">
-                        <Search className="w-6 h-6 text-zinc-600" />
+                        <MotionIcon name="Search" className="w-6 h-6 text-zinc-600" />
                     </div>
                     <div>
                         <p>No resources found for "{activeTab}"</p>
@@ -124,7 +124,7 @@ export default function PublicResourcesViewer({ playbooks, guides }: PublicResou
                         onClick={handleLoadMore}
                         className="px-6 py-2 bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-full font-bold transition-all flex items-center gap-2 text-xs"
                     >
-                        See More <ArrowRight className="w-4 h-4" />
+                        See More <MotionIcon name="ArrowRight" className="w-4 h-4" />
                     </button>
                 </div>
             )}

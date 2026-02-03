@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Calendar, Users, FileText, BookOpen, ArrowRight } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { cn } from "@/lib/utils";
 
 interface DashboardCardProps {
@@ -33,11 +33,11 @@ export function DashboardCard({
     // Icon Selection based on Type
     const getIcon = () => {
         switch (type) {
-            case 'EVENT': return <Calendar className="w-5 h-5" />;
-            case 'PROGRAM': return <Users className="w-5 h-5" />;
-            case 'CONTENT': return <FileText className="w-5 h-5" />;
-            case 'PLAYBOOK': return <BookOpen className="w-5 h-5" />;
-            default: return <BookOpen className="w-5 h-5" />;
+            case 'EVENT': return <MotionIcon name="Calendar" className="w-5 h-5" />;
+            case 'PROGRAM': return <MotionIcon name="Users" className="w-5 h-5" />;
+            case 'CONTENT': return <MotionIcon name="FileText" className="w-5 h-5" />;
+            case 'PLAYBOOK': return <MotionIcon name="BookOpen" className="w-5 h-5" />;
+            default: return <MotionIcon name="BookOpen" className="w-5 h-5" />;
         }
     };
 
