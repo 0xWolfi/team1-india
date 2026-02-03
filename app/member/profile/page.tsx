@@ -26,7 +26,8 @@ export default async function MemberProfilePage() {
         redirect("/member");
     }
 
-    const member = await prisma.member.findUnique({
+    // For MEMBER role, session.user.id is the CommunityMember id (not Member table).
+    const member = await prisma.communityMember.findUnique({
         where: { id: userId },
         include: { extraProfile: true }
     });
@@ -39,31 +40,34 @@ export default async function MemberProfilePage() {
     const customFields = typeof member.customFields === 'object' && member.customFields ? member.customFields : {};
     // @ts-ignore
     const { wallet, discord, bio, telegram, address } = customFields;
-    
+    // CommunityMember has no image column; use customFields or session
+    const profileImage = (customFields as { profileImage?: string; image?: string }).profileImage
+        ?? (customFields as { image?: string }).image
+        ?? session.user?.image
+        ?? null;
+
     // Parse Address for City/Country fallback if extraProfile is empty
     let city = member.extraProfile?.city || "";
     let country = member.extraProfile?.country || "";
-    
     if (!city && !country && address) {
-         const parts = (address as string).split(',').map((s: string) => s.trim());
-         if (parts.length >= 2) {
-             city = parts[0];
-             country = parts[1]; // simplified
-         } else {
-             city = address as string;
-         }
+        const parts = (address as string).split(',').map((s: string) => s.trim());
+        if (parts.length >= 2) {
+            city = parts[0];
+            country = parts[1];
+        } else {
+            city = address as string;
+        }
     }
 
     const safeData = {
         fullName: member.name,
-        profileImage: member.image,
+        profileImage: profileImage,
         xHandle: member.xHandle,
-        telegram: telegram, 
+        telegram: member.telegram ?? telegram,
         wallet: wallet,
         discord: discord,
         bio: bio,
-        
-        // Extra Profile
+
         city: city,
         country: country,
         currentProject: member.extraProfile?.currentProject || "",
@@ -72,8 +76,7 @@ export default async function MemberProfilePage() {
         interests: Array.isArray(member.extraProfile?.interests) ? member.extraProfile.interests : [],
         skills: Array.isArray(member.extraProfile?.skills) ? member.extraProfile.skills : [],
         socialProfiles: typeof member.extraProfile?.socialProfiles === 'object' ? member.extraProfile.socialProfiles : [],
-        
-        // Pass complete customFields for save parity if needed
+
         customFields: customFields
     };
 
