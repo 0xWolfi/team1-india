@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { MotionIcon } from "motion-icons-react";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
@@ -24,7 +23,6 @@ export function UnifiedDashboardHeader({
     backLabel = "Back to Home", 
     children 
 }: UnifiedDashboardHeaderProps) {
-    const router = useRouter();
     const [profileImageError, setProfileImageError] = useState(false);
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [imageCacheBust, setImageCacheBust] = useState<number>(0);
@@ -126,15 +124,14 @@ export function UnifiedDashboardHeader({
                         )}
                     </div>
 
-                    {/* Settings Button */}
-                    <button
-                        type="button"
-                        onClick={() => router.push(user?.role === 'CORE' ? "/core/profile" : "/member/profile")}
-                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer"
+                    {/* Settings Button - use link so profile always opens */}
+                    <Link
+                        href={user?.role === 'CORE' ? "/core/profile" : "/member/profile"}
+                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
                         title="My Profile"
                     >
-                        <MotionIcon name="Settings" className="w-4 h-4" />
-                    </button>
+                        <MotionIcon name="Settings" className="w-4 h-4 pointer-events-none" />
+                    </Link>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}
                         className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center text-red-500 hover:text-red-400"

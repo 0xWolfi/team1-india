@@ -3,6 +3,7 @@ import { Announcements } from "@/components/website/Announcements";
 import { Footer } from "@/components/website/Footer";
 import { WhatWeDo } from "@/components/website/WhatWeDo";
 import { Preloader } from "@/components/ui/Preloader";
+import { VideoPreloader } from "@/components/website/VideoPreloader";
 
 import dynamic from "next/dynamic";
 
@@ -15,6 +16,7 @@ const GetInvolved = dynamic(() => import("@/components/website/GetInvolved").the
 export default function Home() {
   return (
     <main className="min-h-screen bg-transparent text-white antialiased selection:bg-white selection:text-black">
+      <VideoPreloader />
       <Preloader />
       <div className="flex flex-col">
         <HeroScroll />
