@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { Footer } from "@/components/website/Footer";
 import { Team1Logo } from "@/components/Team1Logo";
 import Image from "next/image";
@@ -146,10 +147,9 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                 </div>
                 
                 <div className="flex items-center gap-3">
-                    <button
-                        type="button"
-                        onClick={() => router.push('/member/profile')}
-                        className="flex-shrink-0 rounded-full overflow-hidden ring-1 ring-white/10 w-8 h-8 hover:ring-white/20 transition-shadow focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    <Link
+                        href="/member/profile"
+                        className="flex-shrink-0 rounded-full overflow-hidden ring-1 ring-white/10 w-8 h-8 hover:ring-white/20 transition-shadow focus:outline-none focus:ring-2 focus:ring-emerald-500 flex items-center justify-center [&>div]:!relative [&>div]:!w-full [&>div]:!h-full"
                         title="My Profile"
                     >
                         {displayImage && !profileImageError ? (
@@ -165,22 +165,23 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                             </div>
                         ) : (
                             <div className="w-full h-full bg-zinc-800 flex items-center justify-center">
-                                <MotionIcon name="User" className="w-4 h-4 text-zinc-400" />
+                                <MotionIcon name="User" className="w-4 h-4 text-zinc-400 pointer-events-none" />
                             </div>
                         )}
-                    </button>
-                    <button 
-                        onClick={() => router.push('/member/profile')}
-                        className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400"
+                    </Link>
+                    <Link
+                        href="/member/profile"
+                        className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors"
                         title="Profile settings"
                     >
-                        <MotionIcon name="Settings" className="w-4 h-4" />
-                    </button>
+                        <MotionIcon name="Settings" className="w-4 h-4 pointer-events-none" />
+                    </Link>
                     <button 
+                        type="button"
                         onClick={() => signOut({ callbackUrl: '/public' })}
-                        className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500"
+                        className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 hover:bg-red-500/20 transition-colors"
                     >
-                        <MotionIcon name="LogOut" className="w-4 h-4" />
+                        <MotionIcon name="LogOut" className="w-4 h-4 pointer-events-none" />
                     </button>
                 </div>
             </div>
