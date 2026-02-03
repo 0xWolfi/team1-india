@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MoreVertical, Settings, CheckCircle, XCircle } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { Member } from "../shared";
 
 interface AdminTableProps {
@@ -108,7 +108,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                                             }}
                                             className={`p-1.5 rounded-md transition-all ${activeMenuId === member.id ? 'bg-white text-black' : 'hover:bg-white/10 text-zinc-600 hover:text-white'}`}
                                         >
-                                            <MoreVertical className="w-4 h-4" />
+                                            <MotionIcon name="MoreVertical" className="w-4 h-4" />
                                         </button>
                                         
                                         {activeMenuId === member.id && (
@@ -122,7 +122,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                                                         }}
                                                         className="w-full text-left px-4 py-2 text-xs hover:bg-white/5 text-white flex items-center gap-2 transition-colors group/btn"
                                                     >
-                                                        <Settings className="w-3.5 h-3.5 text-zinc-500 group-hover/btn:text-white" /> Access
+                                                        <MotionIcon name="Settings" className="w-3.5 h-3.5 text-zinc-500 group-hover/btn:text-white" /> Access
                                                     </button>
                                                 )}
                                                 
@@ -133,7 +133,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                                                         onClick={() => onApprove(member.id)}
                                                         className="w-full text-left px-4 py-2 text-xs hover:bg-emerald-500/10 text-emerald-400 hover:text-emerald-300 flex items-center gap-2 transition-colors"
                                                     >
-                                                        <CheckCircle className="w-3.5 h-3.5" /> Approve
+                                                        <MotionIcon name="CheckCircle" className="w-3.5 h-3.5" /> Approve
                                                     </button>
                                                 ) : (
                                                     <button 
@@ -143,7 +143,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                                                         }}
                                                         className="w-full text-left px-4 py-2 text-xs hover:bg-red-500/10 text-red-400 hover:text-red-300 flex items-center gap-2 transition-colors"
                                                     >
-                                                        <XCircle className="w-3.5 h-3.5" /> Remove
+                                                        <MotionIcon name="XCircle" className="w-3.5 h-3.5" /> Remove
                                                     </button>
                                                 )}
                                             </div>

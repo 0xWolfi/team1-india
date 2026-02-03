@@ -4,7 +4,7 @@ import React, { Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Lock, ShieldCheck, Terminal, AlertTriangle, Globe } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 
 function SignInContent() {
     const searchParams = useSearchParams();
@@ -47,7 +47,7 @@ function SignInContent() {
                                 className="w-16 h-16 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-6 shadow-xl relative overflow-hidden group/icon"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500"/>
-                                <Terminal className="w-7 h-7 text-white relative z-10" />
+                                <MotionIcon name="Terminal" className="w-7 h-7 text-white relative z-10" />
                             </motion.div>
                             
                             <motion.h1 
@@ -75,7 +75,7 @@ function SignInContent() {
                                 animate={{ opacity: 1, height: "auto" }}
                                 className="mb-6 p-3 rounded-lg bg-zinc-800/50 border border-white/10 flex items-center gap-3 overflow-hidden text-zinc-300"
                             >
-                                <AlertTriangle className="w-4 h-4 text-zinc-400 shrink-0" />
+                                <MotionIcon name="AlertTriangle" className="w-4 h-4 text-zinc-400 shrink-0" />
                                 <span className="text-xs font-medium">Authentication Failed. Access Denied.</span>
                             </motion.div>
                         )}
@@ -120,7 +120,7 @@ function SignInContent() {
                         >
                             <div className="flex items-center gap-2 group/status cursor-default">
                                 <div className="p-1.5 rounded-md bg-white/5 border border-white/10 group-hover/status:bg-white/10 transition-colors">
-                                    <Globe className="w-3 h-3 text-zinc-400 group-hover/status:text-white transition-colors" />
+                                    <MotionIcon name="Globe" className="w-3 h-3 text-zinc-400 group-hover/status:text-white transition-colors" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-wider">System</span>
@@ -133,7 +133,7 @@ function SignInContent() {
                                     <span className="text-[10px] text-zinc-300 font-mono">Secure</span>
                                 </div>
                                 <div className="p-1.5 rounded-md bg-white/5 border border-white/10 group-hover/status:bg-white/10 transition-colors">
-                                    <ShieldCheck className="w-3 h-3 text-zinc-400 group-hover/status:text-white transition-colors" />
+                                    <MotionIcon name="ShieldCheck" className="w-3 h-3 text-zinc-400 group-hover/status:text-white transition-colors" />
                                 </div>
                             </div>
                         </motion.div>

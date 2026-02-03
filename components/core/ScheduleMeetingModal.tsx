@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Calendar, Clock, Users, Video, Loader2, CheckCircle2, Mail } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { Modal } from "@/components/ui/Modal";
 
 interface Member {
@@ -139,7 +139,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                     </label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                            <Video className="w-4 h-4 text-zinc-500" />
+                            <MotionIcon name="Video" className="w-4 h-4 text-zinc-500" />
                         </div>
                         <input
                             required
@@ -174,7 +174,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                         </label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                <Calendar className="w-4 h-4 text-zinc-500" />
+                                <MotionIcon name="Calendar" className="w-4 h-4 text-zinc-500" />
                             </div>
                             <input
                                 required
@@ -192,7 +192,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                         </label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                <Clock className="w-4 h-4 text-zinc-500" />
+                                <MotionIcon name="Clock" className="w-4 h-4 text-zinc-500" />
                             </div>
                             <input
                                 required
@@ -292,7 +292,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                                                         </div>
                                                     </div>
                                                     {selectedMemberIds.has(member.id) && (
-                                                        <CheckCircle2 className="w-5 h-5 text-white" />
+                                                        <MotionIcon name="CheckCircle2" className="w-5 h-5 text-white" />
                                                     )}
                                                 </div>
                                             </button>
@@ -326,12 +326,12 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" />
                                 Scheduling...
                             </>
                         ) : (
                             <>
-                                <Mail className="w-4 h-4" />
+                                <MotionIcon name="Mail" className="w-4 h-4" />
                                 Schedule Meeting
                             </>
                         )}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, X } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { LumaEventData } from "@/lib/luma";
 
 interface CustomDatePickerProps {
@@ -79,7 +79,7 @@ export function CustomDatePicker({ events, selectedDate, onChange }: CustomDateP
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center gap-3 pl-3 pr-4 py-2.5 bg-white/5 border rounded-xl text-sm transition-all cursor-pointer select-none ${isOpen ? 'border-white/30 bg-white/10' : 'border-white/10 hover:border-white/20'}`}
       >
-         <CalendarIcon className={`w-4 h-4 transition-colors ${selectedDate ? 'text-white' : 'text-zinc-500'}`} />
+         <MotionIcon name="Calendar" className={`w-4 h-4 transition-colors ${selectedDate ? 'text-white' : 'text-zinc-500'}`} />
          <span className={`flex-1 truncate ${selectedDate ? 'text-white' : 'text-zinc-400'}`}>
             {selectedDate ? new Date(selectedDate).toLocaleDateString('en-GB') : "Select Date"}
          </span>
@@ -91,7 +91,7 @@ export function CustomDatePicker({ events, selectedDate, onChange }: CustomDateP
                 }}
                 className="p-0.5 hover:bg-white/20 rounded-full transition-colors"
              >
-                <X className="w-3 h-3 text-zinc-400 hover:text-white" />
+                <MotionIcon name="X" className="w-3 h-3 text-zinc-400 hover:text-white" />
             </div>
          )}
       </div>
@@ -106,7 +106,7 @@ export function CustomDatePicker({ events, selectedDate, onChange }: CustomDateP
                 className="p-1 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 type="button"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <MotionIcon name="ChevronLeft" className="w-4 h-4" />
               </button>
               <span className="text-white font-bold text-sm tracking-wide">{monthYear}</span>
               <button 
@@ -114,7 +114,7 @@ export function CustomDatePicker({ events, selectedDate, onChange }: CustomDateP
                 className="p-1 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 type="button"
               >
-                <ChevronRight className="w-4 h-4" />
+                <MotionIcon name="ChevronRight" className="w-4 h-4" />
               </button>
            </div>
 

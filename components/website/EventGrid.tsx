@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import NextImage from "next/image";
 import { LumaEventData } from "@/lib/luma";
-import { Search, MapPin, Calendar, ChevronDown } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { CustomDatePicker } from "./CustomDatePicker";
 
 interface EventGridProps {
@@ -39,7 +40,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {/* Search */}
         <div className="relative w-full md:w-64 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+            <MotionIcon name="Search" className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
           </div>
           <input 
             type="text"
@@ -53,7 +54,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {/* City Filter */}
         <div className="relative w-full md:w-48 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <MapPin className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+            <MotionIcon name="MapPin" className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
           </div>
           <select 
             value={selectedCity}
@@ -65,7 +66,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
             ))}
           </select>
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-            <ChevronDown className="w-4 h-4 text-zinc-600" />
+            <MotionIcon name="ChevronDown" className="w-4 h-4 text-zinc-600" />
           </div>
         </div>
 
@@ -94,19 +95,21 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                           rel="noopener noreferrer"
                           className="group block shrink-0 w-[260px] snap-center"
                         >
-                          <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] bg-zinc-900/60 backdrop-blur-2xl transition-all duration-500 group-hover:border-white/30 group-hover:shadow-2xl group-hover:shadow-white/5 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
-                            {event.cover_url ? (
-                              <img
-                                src={event.cover_url}
-                                alt={event.name}
-                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                              />
-                            ) : (
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <Calendar className="w-12 h-12 text-zinc-600" />
-                              </div>
-                            )}
-                          </div>
+                            <div className={`relative aspect-square overflow-hidden rounded-3xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] bg-zinc-900/60 backdrop-blur-2xl transition-all duration-500 group-hover:border-white/30 group-hover:shadow-2xl group-hover:shadow-white/5 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
+                              {event.cover_url ? (
+                                <NextImage
+                                  src={event.cover_url}
+                                  alt={event.name}
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                />
+                              ) : (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <MotionIcon name="Calendar" className="w-12 h-12 text-zinc-600" />
+                                </div>
+                              )}
+                            </div>
                           <div className="space-y-2 text-center">
                             <h3 className="text-xl font-bold text-white leading-tight line-clamp-2 group-hover:text-zinc-200 transition-colors">
                               {event.name}

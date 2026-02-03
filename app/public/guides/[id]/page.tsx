@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Clock, ShieldAlert, FileText, Globe } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { formatDistanceToNow } from "date-fns";
 import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
@@ -58,7 +58,7 @@ export default function PublicGuidePage() {
     if (isLoading) return (
         <div className="min-h-screen bg-black text-white flex items-center justify-center">
             <div className="animate-pulse flex flex-col items-center gap-2">
-                <Globe className="w-8 h-8 text-indigo-500 animate-spin-slow" />
+                <MotionIcon name="Globe" className="w-8 h-8 text-indigo-500 animate-spin-slow" />
                 <span className="text-zinc-500 text-sm">Loading Guide...</span>
             </div>
         </div>
@@ -70,7 +70,7 @@ export default function PublicGuidePage() {
                 <h1 className="text-2xl font-bold mb-2 text-white">Error</h1>
                 <p className="text-zinc-500">{error || "Something went wrong"}</p>
                  <Link href="/public" className="mt-4 inline-flex items-center text-sm text-zinc-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Directory
+                    <MotionIcon name="ArrowLeft" className="w-4 h-4 mr-2" /> Back to Directory
                 </Link>
             </div>
         </div>
@@ -81,7 +81,7 @@ export default function PublicGuidePage() {
             {/* Header / Nav */}
             <div className="pt-8 px-6 max-w-6xl mx-auto">
                  <Link href="/public" className="inline-flex items-center gap-2 text-sm font-bold text-zinc-500 hover:text-white transition-colors px-4 py-2 rounded-full border border-transparent hover:border-white/10 hover:bg-white/5">
-                    <ArrowLeft className="w-4 h-4" /> Back to Directory
+                    <MotionIcon name="ArrowLeft" className="w-4 h-4" /> Back to Directory
                 </Link>
             </div>
 
@@ -98,7 +98,7 @@ export default function PublicGuidePage() {
                                             {guide.type} Guide
                                         </span>
                                         <span className="text-zinc-500 text-xs flex items-center gap-1">
-                                            <Clock className="w-3 h-3" /> Updated {formatDistanceToNow(new Date(guide.updatedAt))} ago
+                                            <MotionIcon name="Clock" className="w-3 h-3" /> Updated {formatDistanceToNow(new Date(guide.updatedAt))} ago
                                         </span>
                                     </div>
                                     <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">{guide.title}</h1>
@@ -163,7 +163,7 @@ export default function PublicGuidePage() {
                                                 </div>
                                                 <h3 className="text-white font-bold text-lg">{item.step}</h3>
                                                 <p className="text-zinc-500 text-sm mt-1 flex items-center gap-2">
-                                                    <Clock className="w-3 h-3" /> Duration: {item.duration}
+                                                    <MotionIcon name="Clock" className="w-3 h-3" /> Duration: {item.duration}
                                                 </p>
                                             </div>
                                         ))}
@@ -180,7 +180,7 @@ export default function PublicGuidePage() {
                                     <ul className="grid grid-cols-1 gap-3">
                                         {guide.body.rules.map((rule, idx) => (
                                             <li key={idx} className="flex gap-4 text-base text-zinc-400 bg-white/[0.02] p-4 rounded-xl border border-white/5 items-start">
-                                                <ShieldAlert className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+                                                <MotionIcon name="ShieldAlert" className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
                                                 <span>{rule}</span>
                                             </li>
                                         ))}

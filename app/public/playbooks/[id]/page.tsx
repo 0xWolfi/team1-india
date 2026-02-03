@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Globe, ArrowLeft } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { PlaybookShell } from "@/components/playbooks/PlaybookShell";
 
 // Dynamic import with NO SSR to avoid build errors with web APIs
@@ -51,7 +51,7 @@ export default function PublicPlaybookPage() {
     if (isLoading) return (
         <div className="min-h-screen bg-black text-white flex items-center justify-center">
             <div className="animate-pulse flex flex-col items-center gap-2">
-                <Globe className="w-8 h-8 text-blue-500 animate-spin-slow" />
+                <MotionIcon name="Globe" className="w-8 h-8 text-blue-500 animate-spin-slow" />
                 <span className="text-zinc-500 text-sm">Loading Public Doc...</span>
             </div>
         </div>
@@ -63,7 +63,7 @@ export default function PublicPlaybookPage() {
                 <h1 className="text-2xl font-bold mb-2 text-white">Error</h1>
                 <p className="text-zinc-500">{error || "Something went wrong"}</p>
                  <Link href="/public" className="mt-4 inline-flex items-center text-sm text-zinc-400 hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Directory
+                    <MotionIcon name="ArrowLeft" className="w-4 h-4 mr-2" /> Back to Directory
                 </Link>
             </div>
         </div>

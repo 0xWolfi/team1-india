@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { ProfileDashboard } from "@/components/public/profile/ProfileDashboard";
-import { ArrowLeft } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import Link from "next/link";
 
 export default async function MemberProfilePage() {
@@ -81,7 +81,7 @@ export default async function MemberProfilePage() {
         <MemberWrapper>
             <div className="max-w-5xl mx-auto px-4 py-8">
                  <Link href="/member" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-6 group">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    <MotionIcon name="ArrowLeft" className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <span className="text-sm font-medium">Back to Dashboard</span>
                  </Link>
                  

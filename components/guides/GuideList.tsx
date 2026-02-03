@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import Image from 'next/image';
-import { Search, LayoutGrid, List, MoreHorizontal, Edit, Trash2, Lock, Globe, Cpu, FileText, ArrowRight } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 
 interface Guide {
     id: string;
@@ -89,7 +89,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
             <div className="flex flex-col md:flex-row gap-4 mb-10">
                 <div className="relative flex-1 group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+                        <MotionIcon name="Search" className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
                     </div>
                     <input 
                         className="w-full bg-zinc-900/50 border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/10 transition-all hover:bg-zinc-900/80"
@@ -109,23 +109,23 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                         className="h-full px-4 rounded-xl bg-zinc-900/50 border border-white/5 flex items-center gap-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all min-w-[140px] justify-between"
                     >
                         <span className="flex items-center gap-2">
-                            {visibilityFilter === "ALL" && <LayoutGrid className="w-3.5 h-3.5" />}
-                            {visibilityFilter === "CORE" && <Cpu className="w-3.5 h-3.5" />}
-                            {visibilityFilter === "MEMBER" && <Cpu className="w-3.5 h-3.5" />}
-                            {visibilityFilter === "PUBLIC" && <Globe className="w-3.5 h-3.5" />}
+                            {visibilityFilter === "ALL" && <MotionIcon name="LayoutGrid" className="w-3.5 h-3.5" />}
+                            {visibilityFilter === "CORE" && <MotionIcon name="Cpu" className="w-3.5 h-3.5" />}
+                            {visibilityFilter === "MEMBER" && <MotionIcon name="Cpu" className="w-3.5 h-3.5" />}
+                            {visibilityFilter === "PUBLIC" && <MotionIcon name="Globe" className="w-3.5 h-3.5" />}
                             {visibilityFilter === "ALL" ? "All Views" : 
                              visibilityFilter.charAt(0) + visibilityFilter.slice(1).toLowerCase()}
                         </span>
-                        <MoreHorizontal className="w-3.5 h-3.5 rotate-90" />
+                        <MotionIcon name="MoreHorizontal" className="w-3.5 h-3.5 rotate-90" />
                     </button>
 
                     {showFilterMenu && (
                         <div className="absolute right-0 top-full mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100">
                             {[
-                                { id: "ALL", label: "All Views", icon: LayoutGrid },
-                                { id: "CORE", label: "Core Only", icon: Cpu },
-                                { id: "MEMBER", label: "Members", icon: Cpu },
-                                { id: "PUBLIC", label: "Public", icon: Globe }
+                                { id: "ALL", label: "All Views", icon: "LayoutGrid" },
+                                { id: "CORE", label: "Core Only", icon: "Cpu" },
+                                { id: "MEMBER", label: "Members", icon: "Cpu" },
+                                { id: "PUBLIC", label: "Public", icon: "Globe" }
                             ].map((opt) => (
                                 <button
                                     key={opt.id}
@@ -139,7 +139,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                         : "text-zinc-400 hover:text-white hover:bg-white/5"
                                     }`}
                                 >
-                                    <opt.icon className="w-3.5 h-3.5" />
+                                    <MotionIcon name={opt.icon} className="w-3.5 h-3.5" />
                                     {opt.label}
                                 </button>
                             ))}
@@ -153,14 +153,14 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                         className={`p-1.5 rounded-lg transition-all ${viewMode === "grid" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
                         title="Grid View"
                     >
-                        <LayoutGrid className="w-4 h-4" />
+                        <MotionIcon name="LayoutGrid" className="w-4 h-4" />
                     </button>
                     <button 
                         onClick={() => setViewMode("list")}
                         className={`p-1.5 rounded-lg transition-all ${viewMode === "list" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
                         title="List View"
                     >
-                        <List className="w-4 h-4" />
+                        <MotionIcon name="List" className="w-4 h-4" />
                     </button>
                 </div>
             </div>
@@ -169,7 +169,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
             {!isLoading && filtered.length === 0 && (
                 <div className="py-32 text-center border-2 border-white/5 rounded-[2rem] border-dashed bg-white/5 backdrop-blur-sm flex flex-col items-center max-w-2xl mx-auto">
                     <div className="w-20 h-20 rounded-full bg-black border border-white/10 flex items-center justify-center mb-6 shadow-inner">
-                        <Search className="w-8 h-8 text-zinc-600" />
+                        <MotionIcon name="Search" className="w-8 h-8 text-zinc-600" />
                     </div>
                     <h3 className="text-zinc-200 text-xl font-bold mb-2">No guides found</h3>
                     <p className="text-zinc-500 max-w-xs mx-auto">
@@ -215,7 +215,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-zinc-800/50">
-                                                    <FileText className="w-12 h-12 text-zinc-700 group-hover:text-zinc-600 transition-colors" />
+                                                    <MotionIcon name="FileText" className="w-12 h-12 text-zinc-700 group-hover:text-zinc-600 transition-colors" />
                                                 </div>
                                             )}
                                             
@@ -223,7 +223,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                             <div className="absolute top-4 right-4 flex gap-2">
                                                 {doc.lockedBy && (
                                                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] uppercase tracking-wider font-bold text-zinc-400">
-                                                        <Lock className="w-3 h-3" />
+                                                        <MotionIcon name="Lock" className="w-3 h-3" />
                                                         Locked
                                                     </div>
                                                 )}
@@ -232,9 +232,9 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                                     doc.visibility === "CORE" ? "bg-black/60 border-white/10 text-white" :
                                                     "bg-black/60 border-white/10 text-zinc-400"
                                                 }`}>
-                                                    {doc.visibility === "PUBLIC" && <Globe className="w-3 h-3" />}
-                                                    {doc.visibility === "MEMBER" && <Cpu className="w-3 h-3" />}
-                                                    {doc.visibility === "CORE" && <Cpu className="w-3 h-3" />}
+                                                    {doc.visibility === "PUBLIC" && <MotionIcon name="Globe" className="w-3 h-3" />}
+                                                    {doc.visibility === "MEMBER" && <MotionIcon name="Cpu" className="w-3 h-3" />}
+                                                    {doc.visibility === "CORE" && <MotionIcon name="Cpu" className="w-3 h-3" />}
                                                     <span>{doc.visibility}</span>
                                                 </div>
                                             </div>
@@ -250,7 +250,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                                         {doc.title}
                                                     </h3>
                                                     <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white group-hover:bg-zinc-700 transition-all flex items-center gap-2">
-                                                        Open <ArrowRight className="w-3 h-3" />
+                                                        Open <MotionIcon name="ArrowRight" className="w-3 h-3" />
                                                     </div>
                                                 </div>
 
@@ -277,7 +277,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                                     <div className="flex items-center gap-2 ml-4 flex-shrink-0">
                                                         {doc.lockedBy && (
                                                             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold text-red-500">
-                                                                <Lock className="w-3 h-3" />
+                                                                <MotionIcon name="Lock" className="w-3 h-3" />
                                                             </div>
                                                         )}
                                                         <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
@@ -333,7 +333,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                     }}
                                     className="p-2 rounded-full hover:bg-white/10 text-zinc-500 hover:text-white transition-colors opacity-0 group-hover/card:opacity-100 bg-[#121212]/50 backdrop-blur-sm border border-white/5"
                                 >
-                                    <MoreHorizontal className="w-5 h-5" />
+                                    <MotionIcon name="MoreHorizontal" className="w-5 h-5" />
                                 </button>
 
                                 {activeMenuId === doc.id && (
@@ -344,7 +344,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                                 className="px-3 py-2 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center gap-2"
                                                 onClick={(e) => e.stopPropagation()} 
                                             >
-                                                <Edit className="w-3.5 h-3.5" /> Open Editor
+                                                <MotionIcon name="Edit" className="w-3.5 h-3.5" /> Open Editor
                                             </Link>
                                         )}
                                         {effectiveCanWrite && effectiveCanDelete && <div className="h-px bg-white/5 my-1" />}
@@ -353,7 +353,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                                                 onClick={(e) => handleDeleteClick(e, doc.id)}
                                                 className="text-left px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg flex items-center gap-2 w-full"
                                             >
-                                                <Trash2 className="w-3.5 h-3.5" /> Delete
+                                                <MotionIcon name="Trash2" className="w-3.5 h-3.5" /> Delete
                                             </button>
                                         )}
                                     </div>
@@ -370,7 +370,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
                     <div className="bg-[#09090b]/90 border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl scale-100 animate-in zoom-in-95 duration-200 backdrop-blur-xl ring-1 ring-white/10">
                         <div className="flex flex-col items-center text-center gap-4">
                             <div className="p-4 rounded-full bg-zinc-800 border border-white/10 text-zinc-400">
-                                <Trash2 className="w-8 h-8" />
+                                <MotionIcon name="Trash2" className="w-8 h-8" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-2">Delete Guide?</h3>

@@ -10,6 +10,7 @@ export const HeroScroll = () => {
   
   /* New Ref for Video */
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -26,7 +27,7 @@ export const HeroScroll = () => {
   const textTranslate = useTransform(scrollYProgress, [0, 0.3], [50, -10]); // Text starts closer (40), moves UP to (-10)
 
   // Volume animation: Fade in [0.2 -> 0.4], Stay [0.4 -> 0.8], Fade out [0.8 -> 1.0]
-  const volume = useTransform(scrollYProgress, [0.2, 0.4, 0.8, 1.0], [0, 1, 1, 0]);
+  const scrollVolume = useTransform(scrollYProgress, [0.2, 0.4, 0.8, 1.0], [0, 1, 1, 0]);
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (latest > 0.3 && !isVideoPlaying) {
@@ -36,11 +37,27 @@ export const HeroScroll = () => {
     }
   });
 
-  useMotionValueEvent(volume, "change", (latest) => {
+  // Sync volume with scroll AND mute state
+  useMotionValueEvent(scrollVolume, "change", (latest) => {
     if (videoRef.current) {
-        videoRef.current.volume = latest;
+        if (isMuted) {
+            videoRef.current.volume = 0;
+            videoRef.current.muted = true;
+        } else {
+            videoRef.current.volume = latest;
+            videoRef.current.muted = false;
+        }
     }
   });
+
+  // Apply mute state change immediately
+  useEffect(() => {
+    if (videoRef.current) {
+        videoRef.current.muted = isMuted;
+        // If unmuted, restore volume from scroll position (or default to 1 if we can't get that easily here without reading motion value, which we can)
+        videoRef.current.volume = isMuted ? 0 : scrollVolume.get();
+    }
+  }, [isMuted, scrollVolume]);
 
   /* Effect to start loading video metadata when component mounts (lightweight) */
   React.useEffect(() => {
@@ -54,7 +71,10 @@ export const HeroScroll = () => {
   React.useEffect(() => {
     if (videoRef.current) {
         if (isVideoPlaying) {
-            videoRef.current.play().catch(e => console.log("Autoplay blocked:", e));
+            const playPromise = videoRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => console.log("Autoplay blocked:", e));
+            }
         } else {
             videoRef.current.pause();
         }
@@ -98,7 +118,15 @@ export const HeroScroll = () => {
           <Header scale={textScale} translate={textTranslate} isDesktop={isDesktop} />
           <div className="hidden md:block w-full">
             {isDesktop && (
-              <Card rotate={rotate} translate={translate} scale={scale} isVideoPlaying={isVideoPlaying} videoRef={videoRef} />
+              <Card 
+                rotate={rotate} 
+                translate={translate} 
+                scale={scale} 
+                isVideoPlaying={isVideoPlaying} 
+                videoRef={videoRef}
+                isMuted={isMuted}
+                setIsMuted={setIsMuted}
+              />
             )}
           </div>
           <HeroActions translate={translate} isDesktop={isDesktop} />
@@ -129,20 +157,25 @@ export const Header = ({ scale, translate, isDesktop }: { scale: MotionValue<num
 
 
 
-// Card scale/translate logic remains, but we add max-h to prevent it from eating all vertical space
+import { MotionIcon } from "motion-icons-react";
+
 // Card scale/translate logic remains, but we add max-h to prevent it from eating all vertical space
 export const Card = ({
   rotate,
   scale,
   translate,
   isVideoPlaying,
-  videoRef
+  videoRef,
+  isMuted,
+  setIsMuted
 }: {
   rotate: MotionValue<number>;
   scale: MotionValue<number>;
   translate: MotionValue<number>;
   isVideoPlaying: boolean;
   videoRef: React.RefObject<HTMLVideoElement | null>;
+  isMuted: boolean;
+  setIsMuted: (muted: boolean) => void;
 }) => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -173,7 +206,7 @@ export const Card = ({
       }}
       className="max-w-5xl mx-auto aspect-video w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-white/5 backdrop-blur-xl border-white/20 rounded-[30px] shadow-2xl max-h-[50vh] object-contain relative"
     >
-      <div className="h-full w-full overflow-hidden rounded-2xl bg-transparent relative">
+      <div className="h-full w-full overflow-hidden rounded-2xl bg-transparent relative group">
           
           {/* Loader Overlay */}
           {!isLoaded && (
@@ -200,6 +233,7 @@ export const Card = ({
                   ref={videoRef}
                   loop
                   playsInline
+                  muted={isMuted} // Ensure muted prop reflects state
                   preload="metadata"
                   poster="/hero-cover.jpg"
                   onProgress={handleProgress}
@@ -214,12 +248,20 @@ export const Card = ({
                   Your browser does not support the video tag.
                </video>
           </div>
+
+          {/* Mute/Unmute Button */}
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="absolute bottom-4 right-4 z-30 p-3 bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 rounded-full text-white transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 translate-y-2 group-hover:translate-y-0"
+            aria-label={isMuted ? "Unmute video" : "Mute video"}
+          >
+            {isMuted ? <MotionIcon name="VolumeX" className="w-5 h-5" /> : <MotionIcon name="Volume2" className="w-5 h-5" />}
+          </button>
       </div>
     </motion.div>
   );
 };
 
-import { Instagram, Linkedin, Send } from "lucide-react";
 import { signIn } from "next-auth/react";
 
 export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<number>; isDesktop: boolean }) => {
@@ -250,13 +292,13 @@ export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<n
                 </svg>
             </a>
             <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Instagram className="w-5 h-5" />
+                <MotionIcon name="Instagram" className="w-5 h-5" />
             </a>
             <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Linkedin className="w-5 h-5" />
+                <MotionIcon name="Linkedin" className="w-5 h-5" />
             </a>
             <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Send className="w-5 h-5" /> {/* Telegram */}
+                <MotionIcon name="Send" className="w-5 h-5" /> {/* Telegram */}
             </a>
         </div>
     </motion.div>

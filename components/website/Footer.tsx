@@ -1,6 +1,8 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { Twitter, Linkedin, Instagram, Github, Send } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 
 export function Footer() {
   return (
@@ -14,7 +16,7 @@ export function Footer() {
           
           <div className="flex items-center gap-6">
             <Link href="https://t.me/team1india" target="_blank" className="text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Send className="w-5 h-5" />
+                <MotionIcon name="Send" className="w-5 h-5" />
             </Link>
             <Link href="#" className="text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
@@ -22,13 +24,13 @@ export function Footer() {
                 </svg>
             </Link>
             <Link href="#" className="text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Linkedin className="w-5 h-5" />
+                <MotionIcon name="Linkedin" className="w-5 h-5" />
             </Link>
              <Link href="#" className="text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Instagram className="w-5 h-5" />
+                <MotionIcon name="Instagram" className="w-5 h-5" />
             </Link>
              <Link href="#" className="text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Github className="w-5 h-5" />
+                <MotionIcon name="Github" className="w-5 h-5" />
             </Link>
           </div>
         </div>

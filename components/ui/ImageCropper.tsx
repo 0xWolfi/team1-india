@@ -3,7 +3,7 @@
 
 import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
-import { X, Check, ZoomIn, ZoomOut, RotateCw } from "lucide-react";
+import { MotionIcon } from "motion-icons-react";
 import { getCroppedImg } from "../../lib/cropImage"; 
 
 interface ImageCropperProps {
@@ -45,7 +45,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel, aspectRatio =
                 <div className="flex items-center justify-between p-4 border-b border-white/5">
                     <h3 className="text-lg font-semibold text-white">Crop Cover Image</h3>
                     <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                        <X className="w-5 h-5 text-zinc-400" />
+                        <MotionIcon name="X" className="w-5 h-5 text-zinc-400" />
                     </button>
                 </div>
 
@@ -70,7 +70,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel, aspectRatio =
                     
                     <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs font-medium text-zinc-400">
-                            <span className="flex items-center gap-1"><ZoomOut className="w-3 h-3"/> Zoom</span>
+                            <span className="flex items-center gap-1"><MotionIcon name="ZoomOut" className="w-3 h-3"/> Zoom</span>
                             <span>{Math.round(zoom * 100)}%</span>
                         </div>
                         <input 
@@ -86,7 +86,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel, aspectRatio =
 
                     <div className="space-y-2">
                          <div className="flex items-center justify-between text-xs font-medium text-zinc-400">
-                             <span className="flex items-center gap-1"><RotateCw className="w-3 h-3"/> Rotate</span>
+                             <span className="flex items-center gap-1"><MotionIcon name="RotateCw" className="w-3 h-3"/> Rotate</span>
                             <span>{rotation}°</span>
                         </div>
                          <input 
@@ -106,7 +106,7 @@ export function ImageCropper({ imageSrc, onCropComplete, onCancel, aspectRatio =
                             Cancel
                         </button>
                         <button onClick={handleSave} className="flex items-center gap-2 px-6 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold transition-all shadow-lg hover:shadow-emerald-500/20">
-                            <Check className="w-4 h-4" />
+                            <MotionIcon name="Check" className="w-4 h-4" />
                             Apply Crop
                         </button>
                     </div>
