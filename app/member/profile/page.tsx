@@ -1,17 +1,11 @@
 import { redirect } from "next/navigation";
-import dynamic from "next/dynamic";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
+import { MemberProfileClient } from "@/components/member/MemberProfileClient";
 import { MotionIcon } from "motion-icons-react";
 import Link from "next/link";
-
-// Load ProfileDashboard only on client to avoid RSC serialization error (useState not iterable)
-const ProfileDashboard = dynamic(
-    () => import("@/components/public/profile/ProfileDashboard").then((mod) => ({ default: mod.ProfileDashboard })),
-    { ssr: false, loading: () => <div className="min-h-[400px] flex items-center justify-center text-zinc-500">Loading profile...</div> }
-);
 
 export default async function MemberProfilePage() {
     const session = await getServerSession(authOptions);
@@ -108,7 +102,7 @@ export default async function MemberProfilePage() {
                     <span className="text-sm font-medium">Back to Dashboard</span>
                  </Link>
                  
-                <ProfileDashboard initialData={safeData} role="MEMBER" />
+                <MemberProfileClient initialData={safeData} role="MEMBER" />
             </div>
         </MemberWrapper>
     );
