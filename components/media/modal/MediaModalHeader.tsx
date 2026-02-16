@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { X, LayoutList, MessageSquare } from 'lucide-react';
 import { MediaItem } from './types';

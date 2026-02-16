@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { MotionIcon } from "motion-icons-react";
+import { MotionIcon } from "@/components/ui/ClientMotionIcon";
 import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import ReactMarkdown from 'react-markdown';
