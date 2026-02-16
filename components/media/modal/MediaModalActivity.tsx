@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Loader2, Send } from 'lucide-react';
 import { Comment, MediaItem } from './types';
