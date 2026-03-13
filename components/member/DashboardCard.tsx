@@ -16,8 +16,12 @@ interface DashboardCardProps {
     className?: string;
 }
 
-// SAND-GLASS UTILITY CLASS (Matching MemberDashboard)
-const glassClass = "bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]";
+const typeConfig = {
+    EVENT: { icon: "Calendar", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", label: "Event" },
+    PROGRAM: { icon: "Users", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20", label: "Program" },
+    CONTENT: { icon: "FileText", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", label: "Content" },
+    PLAYBOOK: { icon: "BookOpen", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", label: "Playbook" },
+};
 
 export function DashboardCard({
     title,
@@ -29,22 +33,11 @@ export function DashboardCard({
     className
 }: DashboardCardProps) {
     const [imageError, setImageError] = useState(false);
-
-    // Icon Selection based on Type
-    const getIcon = () => {
-        switch (type) {
-            case 'EVENT': return <MotionIcon name="Calendar" className="w-5 h-5" />;
-            case 'PROGRAM': return <MotionIcon name="Users" className="w-5 h-5" />;
-            case 'CONTENT': return <MotionIcon name="FileText" className="w-5 h-5" />;
-            case 'PLAYBOOK': return <MotionIcon name="BookOpen" className="w-5 h-5" />;
-            default: return <MotionIcon name="BookOpen" className="w-5 h-5" />;
-        }
-    };
+    const config = typeConfig[type];
 
     // Add cache-buster for blob URLs to prevent SW cache issues
     const getImageUrl = (url: string | null | undefined): string | undefined => {
         if (!url) return undefined;
-        // Add timestamp only for vercel blob URLs to force fresh load
         if (url.includes('.public.blob.vercel-storage.com')) {
             const separator = url.includes('?') ? '&' : '?';
             return `${url}${separator}t=${Date.now()}`;
@@ -53,75 +46,62 @@ export function DashboardCard({
     };
 
     return (
-        <Link 
+        <Link
             href={href}
             className={cn(
-                "group min-w-[85vw] sm:min-w-[300px] md:min-w-0 snap-center p-5 rounded-2xl transition-all block relative h-full flex flex-col hover:border-white/20 hover:bg-zinc-900/80",
-                glassClass,
+                "group block rounded-2xl p-4 transition-all duration-300",
+                "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]",
+                "hover:border-white/[0.12] hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/20",
                 className
             )}
         >
-            {/* Image Container */}
-            <div className="mb-4 relative shrink-0">
+            {/* Image */}
+            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
                 {coverImage && !imageError ? (
-                    <div className="relative w-full aspect-[2/1] rounded-lg overflow-hidden bg-zinc-800 border border-white/5">
+                    <div className="aspect-[16/9]">
                         <img
                             src={getImageUrl(coverImage)}
                             alt={title}
-                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
                             onError={() => setImageError(true)}
                         />
-                         {/* Visibility Badge (Inset top-right) */}
-                        {visibility && (
-                            <div className="absolute top-2 right-2 z-10">
-                                <span className={cn(
-                                    "px-2 py-0.5 rounded text-[10px] font-bold uppercase border backdrop-blur-md shadow-lg",
-                                    visibility === 'MEMBER' 
-                                        ? "bg-white/10 text-white border-white/20" 
-                                        : "bg-emerald-500/20 text-emerald-300 border-emerald-500/20"
-                                )}>
-                                    {visibility}
-                                </span>
-                            </div>
-                        )}
                     </div>
                 ) : (
-                    /* Fallback Icon Box */
-                    <div className="relative w-full aspect-[2/1] rounded-lg overflow-hidden bg-zinc-800/50 border border-white/5 flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
-                        <div className="text-zinc-600 group-hover:text-zinc-200 transition-colors">
-                            {getIcon()}
+                    <div className="aspect-[16/9] flex items-center justify-center">
+                        <div className={cn("p-3 rounded-xl border", config.bg, config.border)}>
+                            <MotionIcon name={config.icon} className={cn("w-6 h-6 pointer-events-none", config.color)} />
                         </div>
-                        {/* Visibility Badge (Inset top-right) */}
-                        {visibility && (
-                            <div className="absolute top-2 right-2 z-10">
-                                <span className={cn(
-                                    "px-2 py-0.5 rounded text-[10px] font-bold uppercase border backdrop-blur-md shadow-lg",
-                                    visibility === 'MEMBER' 
-                                        ? "bg-white/10 text-white border-white/20" 
-                                        : "bg-emerald-500/20 text-emerald-300 border-emerald-500/20"
-                                )}>
-                                    {visibility}
-                                </span>
-                            </div>
-                        )}
                     </div>
                 )}
+
+                {/* Badges */}
+                <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                    <span className={cn(
+                        "px-2 py-0.5 rounded-md text-[10px] font-semibold backdrop-blur-md border",
+                        config.bg, config.color, config.border
+                    )}>
+                        {config.label}
+                    </span>
+                    {visibility && (
+                        <span className={cn(
+                            "px-2 py-0.5 rounded-md text-[10px] font-semibold border backdrop-blur-md",
+                            visibility === 'MEMBER'
+                                ? "bg-white/10 text-white/70 border-white/20"
+                                : "bg-zinc-800/60 text-zinc-400 border-zinc-700/50"
+                        )}>
+                            {visibility}
+                        </span>
+                    )}
+                </div>
             </div>
 
-            {/* Content Content */}
-            <div className="flex flex-col flex-1">
-                <h3 className="font-bold text-white text-lg leading-tight mb-2 group-hover:text-zinc-200 transition-colors line-clamp-2">
-                    {title}
-                </h3>
-                <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2 mb-4">
-                    {description || "No description provided."}
-                </p>
-                
-                {/* Optional: 'View' Link hidden but semantic, relying on card click */}
-                {/* <div className="mt-auto pt-2 flex items-center gap-1 text-[10px] font-bold uppercase text-zinc-600 group-hover:text-indigo-400 transition-colors">
-                    View Details <ArrowRight className="w-3 h-3" />
-                </div> */}
-            </div>
+            {/* Content */}
+            <h3 className="font-semibold text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-100 transition-colors">
+                {title}
+            </h3>
+            <p className="text-xs text-zinc-600 leading-relaxed line-clamp-2">
+                {description || "No description provided."}
+            </p>
         </Link>
     );
 }
