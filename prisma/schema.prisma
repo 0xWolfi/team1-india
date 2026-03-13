@@ -53,6 +53,7 @@ model CommunityMember {
   name         String?
   tags         String?   @default("member") // e.g. "Founder", "Investor"
   status       String    @default("active")
+  totalXp      Int       @default(0)
   customFields Json?     @default("{}")
   notificationPreferences Json?
   createdAt    DateTime  @default(now())
@@ -60,6 +61,7 @@ model CommunityMember {
   deletedAt    DateTime?
 
   extraProfile MemberExtraProfile? @relation("CommunityMemberExtraProfile")
+  bountySubmissions BountySubmission[]
 
   @@index([status])
   @@index([xHandle])
@@ -529,5 +531,53 @@ model MemberExtraProfile {
 
   @@index([memberId])
   @@index([communityMemberId])
+  @@index([deletedAt])
+}
+
+model Bounty {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  type        String    // "tweet", "thread", "blog", "video", "developer"
+  xpReward    Int       @default(10)
+  frequency   String    // "daily", "twice-weekly", "weekly", "biweekly"
+  status      String    @default("active") // "active", "paused", "closed"
+  deadline    DateTime?
+  maxPerCycle Int?      // Max submissions per member per cycle
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  deletedAt   DateTime?
+
+  submissions BountySubmission[]
+
+  @@index([type])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+model BountySubmission {
+  id               String    @id @default(uuid())
+  proofUrl         String
+  proofNote        String?
+  status           String    @default("pending") // "pending", "approved", "rejected"
+  reviewNote       String?
+  xpAwarded        Int?
+
+  bounty           Bounty    @relation(fields: [bountyId], references: [id])
+  bountyId         String
+
+  submittedBy      CommunityMember @relation(fields: [submittedById], references: [id])
+  submittedById    String
+  submittedByEmail String
+  reviewedById     String?
+
+  submittedAt      DateTime  @default(now())
+  reviewedAt       DateTime?
+  deletedAt        DateTime?
+
+  @@index([bountyId])
+  @@index([submittedById])
+  @@index([submittedByEmail])
+  @@index([status])
   @@index([deletedAt])
 }

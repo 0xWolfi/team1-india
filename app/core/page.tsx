@@ -152,9 +152,20 @@ export default function CorePage() {
             items: [] 
         },
 
+        // Bounty Management
+        {
+            title: "Bounties",
+            key: "bounty",
+            link: "/core/bounty",
+            iconName: "Zap",
+            description: "Manage bounties, review submissions, and track XP rewards.",
+            image: "/images/dashboard/data.png",
+            items: []
+        },
+
         // Row 3: Projects & System
-        { 
-            title: "Projects", 
+        {
+            title: "Projects",
             key: "projects", 
             link: "/core/projects", 
             iconName: "Briefcase", 

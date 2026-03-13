@@ -26,6 +26,17 @@ interface CommunityMember {
     tags?: string | null;
 }
 
+interface CommunityPulse {
+    totalMembers: number;
+    eventsHosted: number;
+    citiesReached: number;
+}
+
+interface ActivityFeed {
+    latestPlaybook: { id: string; title: string } | null;
+    nextEvent: { name: string; startAt: string } | null;
+}
+
 interface MemberDashboardProps {
     user: any;
     events: Event[];
@@ -35,6 +46,8 @@ interface MemberDashboardProps {
     experiments: ExperimentMock[];
     members: CommunityMember[];
     isProfileComplete?: boolean;
+    communityPulse?: CommunityPulse;
+    activityFeed?: ActivityFeed;
 }
 
 type Tab = "EVENTS" | "PROGRAMS" | "CONTENT";
@@ -50,7 +63,9 @@ export function MemberDashboard({
     playbooks = [],
     experiments = [],
     members: _members = [],
-    isProfileComplete = true
+    isProfileComplete = true,
+    communityPulse,
+    activityFeed,
 }: MemberDashboardProps) {
     const [activeTab, setActiveTab] = useState<Tab>("EVENTS");
     const [viewFilter, setViewFilter] = useState<ViewFilter>("ALL");
@@ -175,6 +190,79 @@ export function MemberDashboard({
                     </div>
                 ))}
             </div>
+
+            {/* ── Community Pulse ── */}
+            {communityPulse && (
+                <section className="mb-8">
+                    <h2 className="text-lg font-semibold text-white mb-4">Community Pulse</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {[
+                            { label: "Total Members", value: communityPulse.totalMembers, icon: "Users", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
+                            { label: "Events Hosted", value: communityPulse.eventsHosted, icon: "Calendar", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
+                            { label: "Cities Reached", value: communityPulse.citiesReached, icon: "MapPin", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+                        ].map((metric) => (
+                            <div
+                                key={metric.label}
+                                className={cn(
+                                    "p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:border-white/[0.1]",
+                                    glassClass
+                                )}
+                            >
+                                <div className={cn("inline-flex p-2 rounded-lg mb-3 border", metric.bg, metric.border)}>
+                                    <MotionIcon name={metric.icon} className={cn("w-4 h-4 pointer-events-none", metric.color)} />
+                                </div>
+                                <p className="text-2xl font-bold text-white tracking-tight">{metric.value}</p>
+                                <p className="text-xs text-zinc-500 mt-0.5 font-medium">{metric.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* ── Activity Feed ── */}
+            {activityFeed && (activityFeed.latestPlaybook || activityFeed.nextEvent) && (
+                <section className="mb-8">
+                    <h2 className="text-lg font-semibold text-white mb-4">Activity Feed</h2>
+                    <div className="space-y-2">
+                        {activityFeed.latestPlaybook && (
+                            <Link
+                                href={`/member/playbooks/${activityFeed.latestPlaybook.id}`}
+                                className={cn("flex items-center gap-3 p-3.5 rounded-xl transition-all hover:border-white/[0.1] group", glassClass)}
+                            >
+                                <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                                    <MotionIcon name="BookOpen" className="w-4 h-4 text-amber-400 pointer-events-none" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-white truncate">New playbook published</p>
+                                    <p className="text-xs text-zinc-500 truncate">{activityFeed.latestPlaybook.title}</p>
+                                </div>
+                                <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 text-zinc-600 group-hover:text-white transition-colors pointer-events-none flex-shrink-0" />
+                            </Link>
+                        )}
+                        {activityFeed.nextEvent && (() => {
+                            const eventDate = new Date(activityFeed.nextEvent.startAt);
+                            const now = new Date();
+                            const diffMs = eventDate.getTime() - now.getTime();
+                            const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+                            const timeLabel = diffDays === 0 ? "Today" : diffDays === 1 ? "Tomorrow" : `in ${diffDays} days`;
+                            return (
+                                <div className={cn("flex items-center gap-3 p-3.5 rounded-xl", glassClass)}>
+                                    <div className="p-2 bg-sky-500/10 rounded-lg border border-sky-500/20">
+                                        <MotionIcon name="Calendar" className="w-4 h-4 text-sky-400 pointer-events-none" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-white truncate">{activityFeed.nextEvent.name}</p>
+                                        <p className="text-xs text-zinc-500">{timeLabel}</p>
+                                    </div>
+                                    <span className="text-[11px] font-semibold text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded-lg border border-sky-500/20 flex-shrink-0">
+                                        Upcoming
+                                    </span>
+                                </div>
+                            );
+                        })()}
+                    </div>
+                </section>
+            )}
 
             {/* ── Explore Section ── */}
             <section className="mb-10">

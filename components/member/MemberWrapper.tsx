@@ -21,6 +21,7 @@ const NAV_ITEMS = [
     { label: "Programs", href: "/member/programs", icon: "Users" },
     { label: "Content", href: "/member/content", icon: "FileText" },
     { label: "Playbooks", href: "/member/playbooks", icon: "BookOpen" },
+    { label: "Bounties", href: "/member/bounty", icon: "Zap" },
     { label: "Experiments", href: "/member/experiments", icon: "Vote" },
     { label: "Directory", href: "/member/directory", icon: "User" },
     { label: "Announcements", href: "/member/announcements", icon: "Bell" },

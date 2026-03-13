@@ -376,6 +376,21 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
 
                         {/* Right Col */}
                         <div className="space-y-8">
+                            {/* XP Stats */}
+                            {(role === 'MEMBER' || role === 'CORE') && initialData.totalXp !== undefined && (
+                                <section className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                                            <MotionIcon name="Zap" className="w-4 h-4 text-amber-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-2xl font-bold text-white tabular-nums">{initialData.totalXp || 0}</p>
+                                            <p className="text-[11px] text-zinc-500 font-medium">Total XP Earned</p>
+                                        </div>
+                                    </div>
+                                </section>
+                            )}
+
                             <section>
                                 <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Roles</h3>
                                 <div className="flex flex-wrap gap-2">

@@ -11,7 +11,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-3xl bg-zinc-900/60 backdrop-blur-2xl">
           <div className="flex flex-col items-center md:items-start">
              <span className="text-xl font-bold text-white tracking-tighter mb-2">Team1India</span>
-             <p className="text-zinc-500 text-sm">© 2025 Team1India. All rights reserved.</p>
+             <p className="text-zinc-500 text-sm">© 2026 Team1India. All rights reserved.</p>
           </div>
           
           <div className="flex items-center gap-6">
