@@ -1,0 +1,289 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { MotionIcon } from "motion-icons-react";
+import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
+
+const typeConfig: Record<string, { icon: string; color: string; bg: string; border: string; label: string }> = {
+    tweet: { icon: "Send", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", label: "Tweet" },
+    thread: { icon: "FileText", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20", label: "Thread" },
+    blog: { icon: "BookOpen", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", label: "Blog" },
+    video: { icon: "Film", color: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", label: "Video" },
+    developer: { icon: "Code", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", label: "Developer" },
+};
+
+const statusBadge: Record<string, { text: string; cls: string }> = {
+    pending: { text: "Pending", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+    approved: { text: "Approved", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+    rejected: { text: "Rejected", cls: "bg-red-500/10 text-red-400 border-red-500/20" },
+};
+
+type Tab = "bounties" | "pending" | "history";
+
+export default function CoreBountyPage() {
+    const { data: session } = useSession();
+    const router = useRouter();
+
+    const [tab, setTab] = useState<Tab>("pending");
+    const [bounties, setBounties] = useState<any[]>([]);
+    const [submissions, setSubmissions] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // Create bounty form
+    const [showCreate, setShowCreate] = useState(false);
+    const [form, setForm] = useState({ title: "", description: "", type: "tweet", xpReward: 10, frequency: "daily", deadline: "" });
+    const [creating, setCreating] = useState(false);
+
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const [bRes, sRes] = await Promise.all([fetch("/api/bounty"), fetch("/api/bounty/submissions")]);
+            if (bRes.ok) setBounties(await bRes.json());
+            if (sRes.ok) setSubmissions(await sRes.json());
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => { fetchData(); }, []);
+
+    const pendingSubs = submissions.filter(s => s.status === 'pending');
+    const reviewedSubs = submissions.filter(s => s.status !== 'pending');
+
+    const handleCreate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setCreating(true);
+        try {
+            const res = await fetch("/api/bounty", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...form, xpReward: Number(form.xpReward), deadline: form.deadline || undefined }),
+            });
+            if (res.ok) {
+                setShowCreate(false);
+                setForm({ title: "", description: "", type: "tweet", xpReward: 10, frequency: "daily", deadline: "" });
+                fetchData();
+            } else {
+                const err = await res.json();
+                alert(err.error || "Failed");
+            }
+        } catch { alert("Failed"); } finally { setCreating(false); }
+    };
+
+    const handleReview = async (id: string, status: "approved" | "rejected") => {
+        try {
+            const res = await fetch(`/api/bounty/submissions/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status }),
+            });
+            if (res.ok) fetchData();
+            else alert("Failed to review");
+        } catch { alert("Error"); }
+    };
+
+    const handleToggleBounty = async (id: string, newStatus: string) => {
+        try {
+            const res = await fetch(`/api/bounty/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus }),
+            });
+            if (res.ok) fetchData();
+        } catch { alert("Error"); }
+    };
+
+    return (
+        <div className="min-h-screen text-white pb-20">
+            <main className="container mx-auto px-6 md:px-12 md:pt-24 pt-8">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+                    <div>
+                        <Link href="/core" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors mb-4 group">
+                            <MotionIcon name="ArrowLeft" className="w-3 h-3 group-hover:-translate-x-1 transition-transform pointer-events-none" />
+                            Back to Core
+                        </Link>
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Bounty Management</h1>
+                        <p className="text-sm text-zinc-500 mt-1">Create bounties, review submissions</p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setShowCreate(true)}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all shrink-0"
+                    >
+                        <MotionIcon name="Plus" className="w-4 h-4 pointer-events-none" />
+                        New Bounty
+                    </button>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-3 mb-8">
+                    <div className={cn("p-4 rounded-2xl", glassClass)}>
+                        <p className="text-2xl font-bold">{bounties.filter(b => b.status === 'active').length}</p>
+                        <p className="text-xs text-zinc-500">Active Bounties</p>
+                    </div>
+                    <div className={cn("p-4 rounded-2xl", glassClass)}>
+                        <p className="text-2xl font-bold text-amber-400">{pendingSubs.length}</p>
+                        <p className="text-xs text-zinc-500">Pending Review</p>
+                    </div>
+                    <div className={cn("p-4 rounded-2xl", glassClass)}>
+                        <p className="text-2xl font-bold text-emerald-400">{submissions.filter(s => s.status === 'approved').reduce((sum: number, s: any) => sum + (s.xpAwarded || 0), 0)}</p>
+                        <p className="text-xs text-zinc-500">Total XP Awarded</p>
+                    </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex rounded-lg p-0.5 bg-zinc-800/80 border border-white/5 w-fit mb-6">
+                    {(["pending", "bounties", "history"] as Tab[]).map(t => (
+                        <button key={t} type="button" onClick={() => setTab(t)} className={cn("px-4 py-2 rounded-md text-xs font-semibold capitalize transition-all", tab === t ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300")}>
+                            {t === "pending" ? `Pending (${pendingSubs.length})` : t === "bounties" ? "Bounties" : "History"}
+                        </button>
+                    ))}
+                </div>
+
+                {loading ? (
+                    <div className="py-20 text-center text-zinc-600 animate-pulse">Loading...</div>
+                ) : tab === "pending" ? (
+                    pendingSubs.length > 0 ? (
+                        <div className="space-y-3">
+                            {pendingSubs.map(sub => {
+                                const cfg = typeConfig[sub.bounty?.type] || typeConfig.tweet;
+                                return (
+                                    <div key={sub.id} className={cn("rounded-xl p-4 flex items-center gap-4", glassClass)}>
+                                        <div className={cn("p-2 rounded-lg border shrink-0", cfg.bg, cfg.border)}>
+                                            <MotionIcon name={cfg.icon} className={cn("w-4 h-4 pointer-events-none", cfg.color)} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-white">{sub.bounty?.title}</p>
+                                            <p className="text-xs text-zinc-500">{sub.submittedBy?.name || sub.submittedByEmail}</p>
+                                            <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-sky-400 hover:underline truncate block">{sub.proofUrl}</a>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <button type="button" onClick={() => handleReview(sub.id, "approved")} className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors" title="Approve">
+                                                <MotionIcon name="Check" className="w-4 h-4 pointer-events-none" />
+                                            </button>
+                                            <button type="button" onClick={() => handleReview(sub.id, "rejected")} className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors" title="Reject">
+                                                <MotionIcon name="X" className="w-4 h-4 pointer-events-none" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className={cn("py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
+                            <p className="text-zinc-600 text-sm">No pending submissions</p>
+                        </div>
+                    )
+                ) : tab === "bounties" ? (
+                    <div className="space-y-3">
+                        {bounties.map(b => {
+                            const cfg = typeConfig[b.type] || typeConfig.tweet;
+                            return (
+                                <div key={b.id} className={cn("rounded-xl p-4 flex items-center gap-4", glassClass)}>
+                                    <div className={cn("p-2 rounded-lg border shrink-0", cfg.bg, cfg.border)}>
+                                        <MotionIcon name={cfg.icon} className={cn("w-4 h-4 pointer-events-none", cfg.color)} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-white">{b.title}</p>
+                                        <p className="text-xs text-zinc-500">{cfg.label} &middot; {b.frequency} &middot; {b.xpReward} XP</p>
+                                    </div>
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <span className={cn("px-2 py-1 rounded-lg text-[10px] font-semibold border", b.status === 'active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-800 text-zinc-500 border-zinc-700")}>
+                                            {b.status}
+                                        </span>
+                                        <button type="button" onClick={() => handleToggleBounty(b.id, b.status === 'active' ? 'paused' : 'active')} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                                            {b.status === 'active' ? 'Pause' : 'Activate'}
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    reviewedSubs.length > 0 ? (
+                        <div className="space-y-3">
+                            {reviewedSubs.map(sub => {
+                                const cfg = typeConfig[sub.bounty?.type] || typeConfig.tweet;
+                                const badge = statusBadge[sub.status] || statusBadge.pending;
+                                return (
+                                    <div key={sub.id} className={cn("rounded-xl p-4 flex items-center gap-4", glassClass)}>
+                                        <div className={cn("p-2 rounded-lg border shrink-0", cfg.bg, cfg.border)}>
+                                            <MotionIcon name={cfg.icon} className={cn("w-4 h-4 pointer-events-none", cfg.color)} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-white">{sub.bounty?.title}</p>
+                                            <p className="text-xs text-zinc-500">{sub.submittedBy?.name || sub.submittedByEmail}</p>
+                                        </div>
+                                        <span className={cn("px-2.5 py-1 rounded-lg text-[11px] font-semibold border shrink-0", badge.cls)}>{badge.text}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className={cn("py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
+                            <p className="text-zinc-600 text-sm">No reviewed submissions yet</p>
+                        </div>
+                    )
+                )}
+
+                {/* Create Bounty Modal */}
+                {showCreate && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setShowCreate(false)}>
+                        <div className="w-full max-w-lg rounded-2xl p-6 bg-zinc-900/90 backdrop-blur-2xl border border-white/10" onClick={e => e.stopPropagation()}>
+                            <h3 className="text-lg font-bold text-white mb-6">Create Bounty</h3>
+                            <form onSubmit={handleCreate} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-zinc-300 mb-1">Title *</label>
+                                    <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-white/20" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-zinc-300 mb-1">Description</label>
+                                    <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={2} className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-white/20 resize-none" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-zinc-300 mb-1">Type *</label>
+                                        <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none">
+                                            <option value="tweet" className="bg-zinc-900">Tweet</option>
+                                            <option value="thread" className="bg-zinc-900">Thread</option>
+                                            <option value="blog" className="bg-zinc-900">Blog</option>
+                                            <option value="video" className="bg-zinc-900">Video</option>
+                                            <option value="developer" className="bg-zinc-900">Developer</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-zinc-300 mb-1">Frequency *</label>
+                                        <select value={form.frequency} onChange={e => setForm({ ...form, frequency: e.target.value })} className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none">
+                                            <option value="daily" className="bg-zinc-900">Daily</option>
+                                            <option value="twice-weekly" className="bg-zinc-900">Twice a week</option>
+                                            <option value="weekly" className="bg-zinc-900">Weekly</option>
+                                            <option value="biweekly" className="bg-zinc-900">Biweekly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-zinc-300 mb-1">XP Reward *</label>
+                                    <input type="number" value={form.xpReward} onChange={e => setForm({ ...form, xpReward: Number(e.target.value) })} min={1} max={1000} className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
+                                </div>
+                                <div className="flex justify-end gap-3 pt-2">
+                                    <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 rounded-xl text-sm text-zinc-400 hover:bg-white/5">Cancel</button>
+                                    <button type="submit" disabled={creating || !form.title} className="px-5 py-2 rounded-xl text-sm font-semibold bg-white text-black hover:bg-zinc-100 disabled:opacity-50">
+                                        {creating ? "Creating..." : "Create Bounty"}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </main>
+        </div>
+    );
+}

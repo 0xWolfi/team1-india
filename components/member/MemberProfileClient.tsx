@@ -16,13 +16,19 @@ export function MemberProfileClient({ role }: { role: "MEMBER" | "CORE" | "PUBLI
         let cancelled = false;
         (async () => {
             try {
-                const [profileRes, extraRes] = await Promise.all([
+                const [profileRes, extraRes, xpRes] = await Promise.all([
                     fetch("/api/profile", { cache: "no-store" }),
                     fetch("/api/profile/extra", { cache: "no-store" }),
+                    fetch("/api/bounty/submissions", { cache: "no-store" }),
                 ]);
                 if (!profileRes.ok) throw new Error("Failed to load profile");
                 const profile = await profileRes.json();
                 const extra = extraRes.ok ? await extraRes.json() : {};
+                let totalXp = 0;
+                if (xpRes.ok) {
+                    const subs = await xpRes.json();
+                    totalXp = subs.reduce((sum: number, s: any) => sum + (s.status === 'approved' ? (s.xpAwarded || 0) : 0), 0);
+                }
                 if (cancelled) return;
                 setInitialData({
                     fullName: profile.name ?? "",
@@ -41,6 +47,7 @@ export function MemberProfileClient({ role }: { role: "MEMBER" | "CORE" | "PUBLI
                     skills: Array.isArray(extra.skills) ? extra.skills : [],
                     socialProfiles: Array.isArray(extra.socialProfiles) ? extra.socialProfiles : [],
                     customFields: profile.customFields ?? {},
+                    totalXp,
                 });
             } catch (e) {
                 if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load profile");
