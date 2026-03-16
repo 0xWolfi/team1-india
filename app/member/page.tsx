@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { MemberDashboard } from "@/components/member/MemberDashboard";
 import { Program, Event, Guide } from "@/types/public";
-import { getAllEvents, getUpcomingEvents } from "@/lib/luma";
+import { getAllEvents } from "@/lib/luma";
 
 // Helper to determine type of guide
 const bucketGuides = (guides: any[]) => {
@@ -58,7 +58,7 @@ export default async function MemberPage() {
     const userEmail = session.user?.email;
 
     // Parallel Data Fetching
-    const [playbooks, rawGuides, experiments, communityMembers, userProfile, allLumaEvents, upcomingLumaEvents, totalMemberCount] = await Promise.all([
+    const [playbooks, rawGuides, experiments, communityMembers, userProfile, allLumaEvents, totalMemberCount] = await Promise.all([
         prisma.playbook.findMany({
             where: {
                 visibility: { in: ["PUBLIC", "MEMBER"] },
@@ -115,7 +115,6 @@ export default async function MemberPage() {
             }),
         // Luma events
         getAllEvents(),
-        getUpcomingEvents(),
         // Total community members count
         prisma.communityMember.count({ where: { status: 'active' } }),
     ]);
@@ -129,14 +128,6 @@ export default async function MemberPage() {
             .map(e => e.event.geo_address_json?.city)
             .filter(Boolean)
     )].length;
-
-    // Get the closest upcoming event for Activity Feed
-    const nextUpcomingEvent = upcomingLumaEvents.length > 0
-        ? upcomingLumaEvents[upcomingLumaEvents.length - 1] // sorted desc, last = soonest
-        : null;
-
-    // Get latest playbook for Activity Feed
-    const latestPlaybook = playbooks.length > 0 ? playbooks[0] : null;
 
     // Check if profile is complete
     const customFields = (userProfile?.customFields as any) || {};
@@ -163,13 +154,7 @@ export default async function MemberPage() {
                     eventsHosted: totalEventsHosted,
                     citiesReached: citiesReached,
                 }}
-                activityFeed={{
-                    latestPlaybook: latestPlaybook ? { id: latestPlaybook.id, title: latestPlaybook.title } : null,
-                    nextEvent: nextUpcomingEvent ? {
-                        name: nextUpcomingEvent.event.name,
-                        startAt: nextUpcomingEvent.event.start_at,
-                    } : null,
-                }}
+                lumaEvents={allLumaEvents}
             />
         </MemberWrapper>
     );

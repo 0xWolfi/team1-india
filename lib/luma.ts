@@ -5,6 +5,7 @@ export type LumaEventData = {
     api_id: string;
     name: string;
     start_at: string;
+    end_at?: string;
     cover_url: string;
     url: string;
     timezone?: string;
