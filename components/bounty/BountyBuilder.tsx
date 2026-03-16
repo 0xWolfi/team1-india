@@ -27,12 +27,18 @@ const frequencyOptions = [
     { value: "biweekly", label: "Biweekly" },
 ];
 
+const audienceOptions = [
+    { value: "member", label: "Member" },
+    { value: "public", label: "Public" },
+];
+
 export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSave, isSaving }) => {
     const [title, setTitle] = useState(initialData?.title || '');
     const [description, setDescription] = useState(initialData?.description || '');
     const [type, setType] = useState(initialData?.type || 'tweet');
     const [xpReward, setXpReward] = useState<number>(initialData?.xpReward || 10);
     const [frequency, setFrequency] = useState(initialData?.frequency || 'weekly');
+    const [audience, setAudience] = useState(initialData?.audience || 'member');
     const [deadline, setDeadline] = useState(initialData?.deadline || '');
 
     // Markdown instructions
@@ -56,6 +62,7 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
             type,
             xpReward: Number(xpReward),
             frequency,
+            audience,
             deadline: deadline || undefined,
             body: { markdown: markdownContent },
             formSchema: formFields,
@@ -130,6 +137,29 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                             ))}
                         </div>
                     </div>
+                </div>
+
+                <div>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Audience *</label>
+                    <div className="flex flex-wrap gap-2">
+                        {audienceOptions.map(opt => (
+                            <button
+                                key={opt.value}
+                                type="button"
+                                onClick={() => setAudience(opt.value)}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors ${
+                                    audience === opt.value
+                                        ? 'bg-white text-black border-white'
+                                        : 'bg-zinc-900 text-zinc-400 border-white/10 hover:bg-zinc-800'
+                                }`}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+                    <p className="text-[11px] text-zinc-600 mt-1.5">
+                        {audience === 'member' ? 'Only platform members can participate' : 'Only public users can participate'}
+                    </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

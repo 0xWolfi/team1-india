@@ -11,6 +11,7 @@ const BountyCreateSchema = z.object({
     type: z.enum(["tweet", "thread", "blog", "video", "developer"]),
     xpReward: z.number().int().min(1).max(1000).default(10),
     frequency: z.enum(["daily", "twice-weekly", "weekly", "biweekly"]),
+    audience: z.enum(["member", "public"]).default("member"),
     deadline: z.string().optional(),
     maxPerCycle: z.number().int().min(1).max(100).optional(),
 });
@@ -30,9 +31,10 @@ export async function GET() {
 
     try {
         const where: any = { deletedAt: null };
-        // Members only see active bounties
+        // Members only see active member-audience bounties
         if (role === 'MEMBER') {
             where.status = 'active';
+            where.audience = 'member';
         }
 
         const bounties = await prisma.bounty.findMany({
@@ -78,6 +80,7 @@ export async function POST(request: NextRequest) {
                 type: data.type,
                 xpReward: data.xpReward,
                 frequency: data.frequency,
+                audience: data.audience,
                 deadline: data.deadline ? new Date(data.deadline) : null,
                 maxPerCycle: data.maxPerCycle,
             }

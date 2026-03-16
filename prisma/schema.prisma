@@ -503,6 +503,8 @@ model PublicUser {
   updatedAt         DateTime @default(now()) @updatedAt
   deletedAt         DateTime?
 
+  bountySubmissions BountySubmission[]
+
   @@index([email])
 }
 
@@ -541,6 +543,7 @@ model Bounty {
   type        String    // "tweet", "thread", "blog", "video", "developer"
   xpReward    Int       @default(10)
   frequency   String    // "daily", "twice-weekly", "weekly", "biweekly"
+  audience    String    @default("member") // "member" or "public"
   status      String    @default("active") // "active", "paused", "closed"
   deadline    DateTime?
   maxPerCycle Int?      // Max submissions per member per cycle
@@ -552,6 +555,7 @@ model Bounty {
 
   @@index([type])
   @@index([status])
+  @@index([audience])
   @@index([deletedAt])
 }
 
@@ -566,8 +570,10 @@ model BountySubmission {
   bounty           Bounty    @relation(fields: [bountyId], references: [id])
   bountyId         String
 
-  submittedBy      CommunityMember @relation(fields: [submittedById], references: [id])
-  submittedById    String
+  submittedBy      CommunityMember? @relation(fields: [submittedById], references: [id])
+  submittedById    String?
+  publicUser       PublicUser?      @relation(fields: [publicUserId], references: [id])
+  publicUserId     String?
   submittedByEmail String
   reviewedById     String?
 
@@ -577,6 +583,7 @@ model BountySubmission {
 
   @@index([bountyId])
   @@index([submittedById])
+  @@index([publicUserId])
   @@index([submittedByEmail])
   @@index([status])
   @@index([deletedAt])

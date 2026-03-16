@@ -30,8 +30,21 @@ export async function GET() {
                 where: { deletedAt: null },
                 orderBy: { submittedAt: 'desc' },
                 include: {
-                    bounty: { select: { id: true, title: true, type: true, xpReward: true } },
-                    submittedBy: { select: { id: true, name: true, email: true } }
+                    bounty: { select: { id: true, title: true, type: true, xpReward: true, audience: true } },
+                    submittedBy: { select: { id: true, name: true, email: true } },
+                    publicUser: { select: { id: true, fullName: true, email: true } }
+                }
+            });
+            return NextResponse.json(submissions);
+        }
+
+        if (role === 'PUBLIC') {
+            // Public users see only their own submissions
+            const submissions = await prisma.bountySubmission.findMany({
+                where: { publicUserId: userId, deletedAt: null },
+                orderBy: { submittedAt: 'desc' },
+                include: {
+                    bounty: { select: { id: true, title: true, type: true, xpReward: true } }
                 }
             });
             return NextResponse.json(submissions);
@@ -52,7 +65,7 @@ export async function GET() {
     }
 }
 
-// POST — submit proof (MEMBER only)
+// POST — submit proof (MEMBER or PUBLIC)
 export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -64,8 +77,8 @@ export async function POST(request: NextRequest) {
     // @ts-ignore
     const userId: string = session.user.id;
 
-    if (role !== 'MEMBER' || !userId) {
-        return NextResponse.json({ error: "Only members can submit bounties" }, { status: 403 });
+    if ((role !== 'MEMBER' && role !== 'PUBLIC') || !userId) {
+        return NextResponse.json({ error: "Only members or public users can submit bounties" }, { status: 403 });
     }
 
     try {
@@ -83,25 +96,47 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Bounty not available" }, { status: 404 });
         }
 
-        // Check if member already has any submission for this bounty (one per bounty per member)
-        const existingSubmission = await prisma.bountySubmission.findFirst({
-            where: { bountyId, submittedById: userId, deletedAt: null }
-        });
-        if (existingSubmission) {
-            return NextResponse.json({ error: "You have already submitted for this bounty" }, { status: 409 });
+        // Validate audience: members can only submit to member bounties, public to public bounties
+        const expectedAudience = role === 'MEMBER' ? 'member' : 'public';
+        if (bounty.audience !== expectedAudience) {
+            return NextResponse.json({ error: "This bounty is not available for your role" }, { status: 403 });
+        }
+
+        // Check for existing submission (one per bounty per user)
+        if (role === 'MEMBER') {
+            const existing = await prisma.bountySubmission.findFirst({
+                where: { bountyId, submittedById: userId, deletedAt: null }
+            });
+            if (existing) {
+                return NextResponse.json({ error: "You have already submitted for this bounty" }, { status: 409 });
+            }
+        } else {
+            const existing = await prisma.bountySubmission.findFirst({
+                where: { bountyId, publicUserId: userId, deletedAt: null }
+            });
+            if (existing) {
+                return NextResponse.json({ error: "You have already submitted for this bounty" }, { status: 409 });
+            }
+        }
+
+        const submissionData: any = {
+            proofUrl,
+            proofNote,
+            bountyId,
+            submittedByEmail: session.user.email,
+        };
+
+        if (role === 'MEMBER') {
+            submissionData.submittedById = userId;
+        } else {
+            submissionData.publicUserId = userId;
         }
 
         const submission = await prisma.bountySubmission.create({
-            data: {
-                proofUrl,
-                proofNote,
-                bountyId,
-                submittedById: userId,
-                submittedByEmail: session.user.email,
-            }
+            data: submissionData,
         });
 
-        log("INFO", "Bounty submission created", "BOUNTY", { submissionId: submission.id, bountyId });
+        log("INFO", "Bounty submission created", "BOUNTY", { submissionId: submission.id, bountyId, role });
         return NextResponse.json(submission, { status: 201 });
     } catch (error) {
         log("ERROR", "Failed to submit bounty", "BOUNTY", {}, error instanceof Error ? error : new Error(String(error)));

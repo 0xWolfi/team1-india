@@ -1,4 +1,4 @@
-import { getUpcomingEvents } from "@/lib/luma";
+import { getAllEvents } from "@/lib/luma";
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withRateLimit } from "@/lib/rate-limit";
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
           customFields: true, // We'll filter sensitive data in the mapping below
         },
       }),
-      getUpcomingEvents(),
+      getAllEvents(),
     ]);
 
     // Bucket guides by type (keep same shape as /app/public/page.tsx expects)

@@ -16,9 +16,9 @@ export async function GET() {
     }
 
     try {
-        // Get all approved submissions grouped by member
+        // Get all approved submissions for member-audience bounties only
         const submissions = await prisma.bountySubmission.findMany({
-            where: { status: 'approved', deletedAt: null },
+            where: { status: 'approved', deletedAt: null, bounty: { audience: 'member' } },
             select: {
                 xpAwarded: true,
                 submittedById: true,
@@ -42,6 +42,7 @@ export async function GET() {
         }>();
 
         for (const sub of submissions) {
+            if (!sub.submittedById || !sub.submittedBy) continue;
             const existing = memberMap.get(sub.submittedById);
             if (existing) {
                 existing.totalXp += sub.xpAwarded || 0;
