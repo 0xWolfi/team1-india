@@ -162,7 +162,7 @@ export function BountyBoard() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {bounties.map((bounty) => {
                             const cfg = typeConfig[bounty.type] || typeConfig.tweet;
-                            const hasPending = submissions.some(s => s.bounty.id === bounty.id && s.status === 'pending');
+                            const hasSubmission = submissions.some(s => s.bounty.id === bounty.id);
                             return (
                                 <div key={bounty.id} className={cn("rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.1]", glassClass)}>
                                     {/* Type Badge + Frequency */}
@@ -195,15 +195,15 @@ export function BountyBoard() {
                                         <button
                                             type="button"
                                             onClick={() => { setSubmitModal(bounty); setProofUrl(""); setProofNote(""); }}
-                                            disabled={hasPending}
+                                            disabled={hasSubmission}
                                             className={cn(
                                                 "px-4 py-2 rounded-xl text-xs font-semibold transition-all",
-                                                hasPending
+                                                hasSubmission
                                                     ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
                                                     : "bg-white text-black hover:bg-zinc-100"
                                             )}
                                         >
-                                            {hasPending ? "Pending..." : "Submit"}
+                                            {hasSubmission ? "Submitted" : "Submit"}
                                         </button>
                                     </div>
                                 </div>

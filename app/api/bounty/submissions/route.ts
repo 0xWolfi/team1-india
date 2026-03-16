@@ -83,12 +83,12 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Bounty not available" }, { status: 404 });
         }
 
-        // Check if member already has a pending submission for this bounty
-        const existingPending = await prisma.bountySubmission.findFirst({
-            where: { bountyId, submittedById: userId, status: 'pending', deletedAt: null }
+        // Check if member already has any submission for this bounty (one per bounty per member)
+        const existingSubmission = await prisma.bountySubmission.findFirst({
+            where: { bountyId, submittedById: userId, deletedAt: null }
         });
-        if (existingPending) {
-            return NextResponse.json({ error: "You already have a pending submission for this bounty" }, { status: 409 });
+        if (existingSubmission) {
+            return NextResponse.json({ error: "You have already submitted for this bounty" }, { status: 409 });
         }
 
         const submission = await prisma.bountySubmission.create({
