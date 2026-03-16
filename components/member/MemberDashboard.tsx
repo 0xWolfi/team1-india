@@ -7,6 +7,7 @@ import { MotionIcon } from "motion-icons-react";
 import { cn } from "@/lib/utils";
 import { Guide, Program, Event } from "@/types/public";
 import { DashboardCard } from "./DashboardCard";
+import NextImage from "next/image";
 import type { LumaEventData } from "@/lib/luma";
 
 interface ExperimentMock {
@@ -406,9 +407,7 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
     const config = statusConfig[status];
     const eventDate = new Date(entry.event.start_at);
 
-    // Build image URL — use cover_url, fallback to constructed Luma CDN URL
-    const imageUrl = entry.event.cover_url
-        || `https://images.lumacdn.com/event-covers/${entry.event.api_id}`;
+    const imageUrl = entry.event.cover_url || "";
 
     const formatDate = (date: Date) => {
         return date.toLocaleDateString("en-IN", {
@@ -453,13 +452,14 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
         >
             {/* Cover Image */}
             <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
-                {!imageError ? (
-                    <div className="aspect-[16/9]">
-                        <img
+                {imageUrl && !imageError ? (
+                    <div className="aspect-[16/9] relative">
+                        <NextImage
                             src={imageUrl}
                             alt={entry.event.name}
-                            referrerPolicy="no-referrer"
-                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
+                            fill
+                            sizes="320px"
+                            className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
                             onError={() => setImageError(true)}
                         />
                     </div>
