@@ -12,11 +12,11 @@ import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 import { useDrag } from "@use-gesture/react";
 
 const navItems = [
-    { label: "Attend", href: "#upcoming-events", icon: "Ticket" },
+    { label: "Activity", href: "#activity-feed", icon: "Ticket" },
     { label: "Playbooks", href: "#playbooks", icon: "Book" },
     { label: "Programs", href: "#programs", icon: "Rocket" },
-    { label: "Content", href: "#content", icon: "Trophy" },
-    { label: "Events", href: "#events", icon: "Calendar" },
+    { label: "Bounties", href: "/public/bounty", icon: "Zap" },
+    { label: "Leaderboard", href: "/public/leaderboard", icon: "Trophy" },
     { label: "Contact", href: "#contact", icon: "Mail" },
     { label: "Verify", href: "#verify-desktop", icon: "ShieldCheck" },
 ];
@@ -103,8 +103,8 @@ export function FloatingNav() {
                 <div className="flex items-center justify-between md:justify-start w-full gap-1 px-6 py-3 md:p-1.5 md:rounded-2xl md:bg-black/40 md:backdrop-blur-md md:border md:border-white/10 md:shadow-[0_8px_32px_rgba(0,0,0,0.5)] md:supports-[backdrop-filter]:bg-black/20">
                     
                     {/* Logo / Home */}
-                    <Link 
-                        href="/"
+                    <Link
+                        href="/public"
                         className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"
                     >
                         <Team1Logo className="w-4 h-4 relative z-10" />

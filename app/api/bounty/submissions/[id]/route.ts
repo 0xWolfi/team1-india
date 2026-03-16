@@ -55,8 +55,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
             }
         });
 
-        // If approved, increment member's totalXp
-        if (status === 'approved') {
+        // If approved, increment the submitter's totalXp
+        if (status === 'approved' && submission.submittedById) {
             await prisma.communityMember.update({
                 where: { id: submission.submittedById },
                 data: { totalXp: { increment: xpAwarded } }

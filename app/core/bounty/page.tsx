@@ -132,7 +132,7 @@ export default function CoreBountyPage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-white">{sub.bounty?.title}</p>
-                                            <p className="text-xs text-zinc-500">{sub.submittedBy?.name || sub.submittedByEmail}</p>
+                                            <p className="text-xs text-zinc-500">{sub.submittedBy?.name || sub.publicUser?.fullName || sub.submittedByEmail}</p>
                                             <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-sky-400 hover:underline truncate block">{sub.proofUrl}</a>
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
@@ -166,6 +166,9 @@ export default function CoreBountyPage() {
                                         <p className="text-xs text-zinc-500">{cfg.label} &middot; {b.frequency} &middot; {b.xpReward} XP</p>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
+                                        <span className={cn("px-2 py-1 rounded-lg text-[10px] font-semibold border", b.audience === 'public' ? "bg-blue-500/10 text-blue-400 border-blue-500/20" : "bg-indigo-500/10 text-indigo-400 border-indigo-500/20")}>
+                                            {b.audience === 'public' ? 'Public' : 'Member'}
+                                        </span>
                                         <span className={cn("px-2 py-1 rounded-lg text-[10px] font-semibold border", b.status === 'active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-800 text-zinc-500 border-zinc-700")}>
                                             {b.status}
                                         </span>
@@ -190,7 +193,7 @@ export default function CoreBountyPage() {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-white">{sub.bounty?.title}</p>
-                                            <p className="text-xs text-zinc-500">{sub.submittedBy?.name || sub.submittedByEmail}</p>
+                                            <p className="text-xs text-zinc-500">{sub.submittedBy?.name || sub.publicUser?.fullName || sub.submittedByEmail}</p>
                                         </div>
                                         <span className={cn("px-2.5 py-1 rounded-lg text-[11px] font-semibold border shrink-0", badge.cls)}>{badge.text}</span>
                                     </div>
