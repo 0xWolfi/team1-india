@@ -453,7 +453,7 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
             {/* Cover Image */}
             <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
                 {imageUrl && !imageError ? (
-                    <div className="aspect-[16/9] relative">
+                    <div className="aspect-square relative">
                         <NextImage
                             src={imageUrl}
                             alt={entry.event.name}
@@ -464,7 +464,7 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
                         />
                     </div>
                 ) : (
-                    <div className="aspect-[16/9] flex items-center justify-center">
+                    <div className="aspect-square flex items-center justify-center">
                         <div className="p-3 bg-sky-500/10 rounded-xl border border-sky-500/20">
                             <MotionIcon name="Calendar" className="w-6 h-6 text-sky-400 pointer-events-none" />
                         </div>
