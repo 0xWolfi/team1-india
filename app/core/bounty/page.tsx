@@ -3,8 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { MotionIcon } from "motion-icons-react";
 import { cn } from "@/lib/utils";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
@@ -26,18 +24,11 @@ const statusBadge: Record<string, { text: string; cls: string }> = {
 type Tab = "bounties" | "pending" | "history";
 
 export default function CoreBountyPage() {
-    const { data: session } = useSession();
-    const router = useRouter();
-
     const [tab, setTab] = useState<Tab>("pending");
     const [bounties, setBounties] = useState<any[]>([]);
     const [submissions, setSubmissions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Create bounty form
-    const [showCreate, setShowCreate] = useState(false);
-    const [form, setForm] = useState({ title: "", description: "", type: "tweet", xpReward: 10, frequency: "daily", deadline: "" });
-    const [creating, setCreating] = useState(false);
 
     const fetchData = async () => {
         setLoading(true);
@@ -56,26 +47,6 @@ export default function CoreBountyPage() {
 
     const pendingSubs = submissions.filter(s => s.status === 'pending');
     const reviewedSubs = submissions.filter(s => s.status !== 'pending');
-
-    const handleCreate = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setCreating(true);
-        try {
-            const res = await fetch("/api/bounty", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...form, xpReward: Number(form.xpReward), deadline: form.deadline || undefined }),
-            });
-            if (res.ok) {
-                setShowCreate(false);
-                setForm({ title: "", description: "", type: "tweet", xpReward: 10, frequency: "daily", deadline: "" });
-                fetchData();
-            } else {
-                const err = await res.json();
-                alert(err.error || "Failed");
-            }
-        } catch { alert("Failed"); } finally { setCreating(false); }
-    };
 
     const handleReview = async (id: string, status: "approved" | "rejected") => {
         try {
@@ -113,14 +84,13 @@ export default function CoreBountyPage() {
                         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Bounty Management</h1>
                         <p className="text-sm text-zinc-500 mt-1">Create bounties, review submissions</p>
                     </div>
-                    <button
-                        type="button"
-                        onClick={() => setShowCreate(true)}
+                    <Link
+                        href="/core/bounty/new"
                         className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all shrink-0"
                     >
                         <MotionIcon name="Plus" className="w-4 h-4 pointer-events-none" />
                         New Bounty
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Stats */}
@@ -234,55 +204,6 @@ export default function CoreBountyPage() {
                     )
                 )}
 
-                {/* Create Bounty Modal */}
-                {showCreate && (
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setShowCreate(false)}>
-                        <div className="w-full max-w-lg rounded-2xl p-6 bg-zinc-900/90 backdrop-blur-2xl border border-white/10" onClick={e => e.stopPropagation()}>
-                            <h3 className="text-lg font-bold text-white mb-6">Create Bounty</h3>
-                            <form onSubmit={handleCreate} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-zinc-300 mb-1">Title *</label>
-                                    <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-white/20" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-zinc-300 mb-1">Description</label>
-                                    <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={2} className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-white/20 resize-none" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="block text-sm font-medium text-zinc-300 mb-1">Type *</label>
-                                        <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none">
-                                            <option value="tweet" className="bg-zinc-900">Tweet</option>
-                                            <option value="thread" className="bg-zinc-900">Thread</option>
-                                            <option value="blog" className="bg-zinc-900">Blog</option>
-                                            <option value="video" className="bg-zinc-900">Video</option>
-                                            <option value="developer" className="bg-zinc-900">Developer</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-zinc-300 mb-1">Frequency *</label>
-                                        <select value={form.frequency} onChange={e => setForm({ ...form, frequency: e.target.value })} className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none">
-                                            <option value="daily" className="bg-zinc-900">Daily</option>
-                                            <option value="twice-weekly" className="bg-zinc-900">Twice a week</option>
-                                            <option value="weekly" className="bg-zinc-900">Weekly</option>
-                                            <option value="biweekly" className="bg-zinc-900">Biweekly</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-zinc-300 mb-1">XP Reward *</label>
-                                    <input type="number" value={form.xpReward} onChange={e => setForm({ ...form, xpReward: Number(e.target.value) })} min={1} max={1000} className="w-full bg-zinc-800/50 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none" />
-                                </div>
-                                <div className="flex justify-end gap-3 pt-2">
-                                    <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 rounded-xl text-sm text-zinc-400 hover:bg-white/5">Cancel</button>
-                                    <button type="submit" disabled={creating || !form.title} className="px-5 py-2 rounded-xl text-sm font-semibold bg-white text-black hover:bg-zinc-100 disabled:opacity-50">
-                                        {creating ? "Creating..." : "Create Bounty"}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
             </main>
         </div>
     );
