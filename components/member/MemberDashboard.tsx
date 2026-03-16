@@ -232,7 +232,7 @@ export function MemberDashboard({
                                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                                     <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">Live Now</span>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
                                     {categorizedEvents.live.map((entry) => (
                                         <LumaEventCard key={entry.api_id} entry={entry} status="LIVE" />
                                     ))}
@@ -247,7 +247,7 @@ export function MemberDashboard({
                                     <div className="w-2 h-2 rounded-full bg-sky-400" />
                                     <span className="text-xs font-semibold text-sky-400 uppercase tracking-wider">Upcoming</span>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
                                     {categorizedEvents.upcoming.map((entry) => (
                                         <LumaEventCard key={entry.api_id} entry={entry} status="UPCOMING" />
                                     ))}
@@ -262,8 +262,8 @@ export function MemberDashboard({
                                     <div className="w-2 h-2 rounded-full bg-zinc-600" />
                                     <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Past</span>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {categorizedEvents.past.slice(0, 6).map((entry) => (
+                                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+                                    {categorizedEvents.past.map((entry) => (
                                         <LumaEventCard key={entry.api_id} entry={entry} status="PAST" />
                                     ))}
                                 </div>
@@ -406,6 +406,10 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
     const config = statusConfig[status];
     const eventDate = new Date(entry.event.start_at);
 
+    // Build image URL — use cover_url, fallback to constructed Luma CDN URL
+    const imageUrl = entry.event.cover_url
+        || `https://images.lumacdn.com/event-covers/${entry.event.api_id}`;
+
     const formatDate = (date: Date) => {
         return date.toLocaleDateString("en-IN", {
             weekday: "short",
@@ -440,7 +444,8 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
-                "group block rounded-2xl p-4 transition-all duration-300",
+                "group block rounded-2xl p-4 transition-all duration-300 snap-start",
+                "w-[280px] sm:w-[320px] flex-shrink-0",
                 "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]",
                 "hover:border-white/[0.12] hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/20",
                 status === "PAST" && "opacity-70 hover:opacity-100"
@@ -448,11 +453,12 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
         >
             {/* Cover Image */}
             <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
-                {entry.event.cover_url && !imageError ? (
+                {!imageError ? (
                     <div className="aspect-[16/9]">
                         <img
-                            src={entry.event.cover_url}
+                            src={imageUrl}
                             alt={entry.event.name}
+                            referrerPolicy="no-referrer"
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
                             onError={() => setImageError(true)}
                         />
