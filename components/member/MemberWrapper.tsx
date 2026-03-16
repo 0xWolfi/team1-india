@@ -19,10 +19,9 @@ const NAV_ITEMS = [
     { label: "Dashboard", href: "/member", icon: "Home", exact: true },
     { label: "Events", href: "/member/events", icon: "Calendar" },
     { label: "Programs", href: "/member/programs", icon: "Users" },
-    { label: "Content", href: "/member/content", icon: "FileText" },
     { label: "Playbooks", href: "/member/playbooks", icon: "BookOpen" },
     { label: "Bounties", href: "/member/bounty", icon: "Zap" },
-    { label: "Experiments", href: "/member/experiments", icon: "Vote" },
+    { label: "Proposals", href: "/member/experiments", icon: "Vote" },
     { label: "Directory", href: "/member/directory", icon: "User" },
     { label: "Announcements", href: "/member/announcements", icon: "Bell" },
 ];
@@ -317,7 +316,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                 <main className="flex-1 relative z-10 animate-in fade-in duration-500 px-5 md:px-8 lg:px-10 py-6 lg:py-8">
                     {children}
                 </main>
-                <div className="relative z-10 w-full">
+                <div className="w-full">
                     <Footer />
                 </div>
             </div>
