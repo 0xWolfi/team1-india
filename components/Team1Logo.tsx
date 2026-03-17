@@ -1,16 +1,15 @@
 import React from "react";
 import Image from "next/image";
 
-export function Team1Logo({ className = "w-8 h-8" }: { className?: string }) {
+export function Team1Logo({ className = "h-6 w-auto", iconOnly = false }: { className?: string; iconOnly?: boolean }) {
     return (
         <div className={`relative ${className} flex items-center justify-center`}>
-            {/* Using the uploaded logo as requested */}
-            <Image 
-                src="/team1-symbol.png"
-                alt="Team1" 
+            <Image
+                src={iconOnly ? "/team1-symbol.png" : "/team1-full-logo.png"}
+                alt="Team1"
                 fill
                 className="object-contain"
-                sizes="(max-width: 768px) 100px, 50px"
+                sizes="(max-width: 768px) 150px, 200px"
                 priority
             />
         </div>
