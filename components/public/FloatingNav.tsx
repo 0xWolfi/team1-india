@@ -107,8 +107,7 @@ export function FloatingNav() {
                         href="/public"
                         className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"
                     >
-                        <Team1Logo className="w-4 h-4 relative z-10" />
-                        <span className="font-bold text-lg md:text-sm text-zinc-300 group-hover:text-white tracking-tight transition-colors">Team1</span>
+                        <Team1Logo className="h-5 w-20 relative z-10" />
                     </Link>
 
                     {/* Divider */}

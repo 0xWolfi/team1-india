@@ -16,7 +16,7 @@ export function ThemeLoader() {
                     
                     <div className="relative w-20 h-20 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex items-center justify-center shadow-2xl">
                         <div className="relative z-10">
-                            <Team1Logo className="w-8 h-8 opacity-80" />
+                            <Team1Logo className="h-8 w-32 opacity-80" />
                         </div>
                     </div>
                 </div>
