@@ -3,8 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { withRateLimit } from "@/lib/rate-limit";
 import { NextRequest } from "next/server";
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 300;
 
 export async function GET(request: NextRequest) {
     // Rate limiting: 20 requests per minute per IP (public endpoint, prevent abuse)
@@ -45,9 +44,7 @@ export async function GET(request: NextRequest) {
         // Add cache headers to prevent caching
         return NextResponse.json(playbooks, {
             headers: {
-                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0',
+                'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
             }
         });
     } catch (error) {

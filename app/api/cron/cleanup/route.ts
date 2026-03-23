@@ -12,6 +12,11 @@ export async function GET(request: Request) {
     }
 
     try {
+        // 0. Clean up expired announcements
+        await prisma.announcement.deleteMany({
+            where: { expiresAt: { lt: new Date() } }
+        });
+
         // 1. List recent blobs (limit to 100 to prevent timeout)
         const { blobs } = await list({ limit: 100 });
         

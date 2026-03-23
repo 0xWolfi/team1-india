@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 
 export type LumaEventData = {
   api_id: string;
@@ -18,7 +19,7 @@ export type LumaEventData = {
 };
 
 // Fetch ALL events (including past) for calendar view
-export async function getAllEvents(): Promise<LumaEventData[]> {
+async function _getAllEvents(): Promise<LumaEventData[]> {
   const apiKey = process.env.LUMA_API;
   
   if (!apiKey) {
@@ -86,7 +87,14 @@ export async function getAllEvents(): Promise<LumaEventData[]> {
   }
 }
 
-export async function getUpcomingEvents(): Promise<LumaEventData[]> {
+// Cached version — revalidates every hour
+export const getAllEvents = unstable_cache(
+  _getAllEvents,
+  ["luma-all-events"],
+  { revalidate: 3600 }
+);
+
+async function _getUpcomingEvents(): Promise<LumaEventData[]> {
   const apiKey = process.env.LUMA_API;
   
   if (!apiKey) {
@@ -168,3 +176,10 @@ export async function getUpcomingEvents(): Promise<LumaEventData[]> {
     return [];
   }
 }
+
+// Cached version — revalidates every hour
+export const getUpcomingEvents = unstable_cache(
+  _getUpcomingEvents,
+  ["luma-upcoming-events"],
+  { revalidate: 3600 }
+);

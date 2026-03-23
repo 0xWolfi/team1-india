@@ -96,7 +96,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
         };
 
         checkUserValidity();
-        const interval = setInterval(checkUserValidity, 30000);
+        const interval = setInterval(checkUserValidity, 300000);
         return () => clearInterval(interval);
     }, [status, requireAuth, router, pathname]);
 

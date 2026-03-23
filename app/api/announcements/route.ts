@@ -27,12 +27,7 @@ export async function GET(req: NextRequest) {
                 in: audience === 'PUBLIC' ? ['PUBLIC', 'ALL'] : ['MEMBER', 'ALL']
             };
             
-            // Active Cleanup: Hard Delete expired items before fetching
-            await prisma.announcement.deleteMany({
-                 where: { expiresAt: { lt: new Date() } }
-            });
-
-            // Filter out any that might have just expired or have no expiration
+            // Filter out expired announcements (cleanup handled by cron)
             whereClause.OR = [
                 { expiresAt: null },
                 { expiresAt: { gt: new Date() } }

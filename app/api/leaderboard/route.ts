@@ -2,6 +2,22 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
+
+const getCachedLeaderboardData = unstable_cache(
+    () => prisma.bountySubmission.findMany({
+        where: { status: 'approved', deletedAt: null, bounty: { audience: 'member' } },
+        select: {
+            xpAwarded: true,
+            submittedById: true,
+            submittedBy: {
+                select: { id: true, name: true }
+            }
+        }
+    }),
+    ["member-leaderboard"],
+    { revalidate: 300 }
+);
 
 export async function GET() {
     const session = await getServerSession(authOptions);
@@ -17,20 +33,7 @@ export async function GET() {
 
     try {
         // Get all approved submissions for member-audience bounties only
-        const submissions = await prisma.bountySubmission.findMany({
-            where: { status: 'approved', deletedAt: null, bounty: { audience: 'member' } },
-            select: {
-                xpAwarded: true,
-                submittedById: true,
-                submittedBy: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                    }
-                }
-            }
-        });
+        const submissions = await getCachedLeaderboardData() as any[];
 
         // Aggregate XP per member
         const memberMap = new Map<string, {
