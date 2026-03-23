@@ -2,9 +2,48 @@ import { getAllEvents } from "@/lib/luma";
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withRateLimit } from "@/lib/rate-limit";
+import { unstable_cache } from "next/cache";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 300;
+
+const getCachedPublicPlaybooks = unstable_cache(
+  () => prisma.playbook.findMany({
+    where: { visibility: "PUBLIC", deletedAt: null },
+    orderBy: { createdAt: "desc" },
+    take: 6,
+    select: { id: true, title: true, description: true, coverImage: true },
+  }),
+  ["public-home-playbooks"],
+  { revalidate: 300 }
+);
+
+const getCachedPublicGuides = unstable_cache(
+  () => prisma.guide.findMany({
+    where: { visibility: "PUBLIC", deletedAt: null },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true, title: true, type: true, coverImage: true,
+      body: true, createdAt: true, updatedAt: true, visibility: true,
+    },
+  }),
+  ["public-home-guides"],
+  { revalidate: 300 }
+);
+
+const getCachedPublicResources = unstable_cache(
+  () => prisma.contentResource.findMany({
+    where: {
+      type: { in: ["BRAND_ASSET", "FILE", "BIO"] },
+      status: "published",
+      deletedAt: null,
+    },
+    take: 6,
+    orderBy: { createdAt: "desc" },
+    select: { id: true, title: true, content: true, customFields: true },
+  }),
+  ["public-home-resources"],
+  { revalidate: 300 }
+);
 
 export async function GET(req: NextRequest) {
   // Rate limiting: 30 requests per minute per IP (public endpoint, but prevent abuse)
@@ -15,44 +54,9 @@ export async function GET(req: NextRequest) {
 
   try {
     const [playbooks, publicGuides, resources, lumaEvents] = await Promise.all([
-      prisma.playbook.findMany({
-        where: { visibility: "PUBLIC", deletedAt: null },
-        orderBy: { createdAt: "desc" },
-        take: 6,
-        select: { id: true, title: true, description: true, coverImage: true },
-      }),
-      prisma.guide.findMany({
-        where: {
-          visibility: "PUBLIC",
-          deletedAt: null,
-        },
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          title: true,
-          type: true,
-          coverImage: true,
-          body: true,
-          createdAt: true,
-          updatedAt: true,
-          visibility: true,
-        },
-      }),
-      prisma.contentResource.findMany({
-        where: {
-          type: { in: ["BRAND_ASSET", "FILE", "BIO"] },
-          status: "published",
-          deletedAt: null,
-        },
-        take: 6,
-        orderBy: { createdAt: "desc" },
-        select: { 
-          id: true, 
-          title: true, 
-          content: true,
-          customFields: true, // We'll filter sensitive data in the mapping below
-        },
-      }),
+      getCachedPublicPlaybooks(),
+      getCachedPublicGuides(),
+      getCachedPublicResources(),
       getAllEvents(),
     ]);
 

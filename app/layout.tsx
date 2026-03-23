@@ -6,7 +6,7 @@ import "motion-icons-react/style.css";
 const kanit = Kanit({
   variable: "--font-kanit",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
   display: 'swap',
 });
 
@@ -63,8 +63,10 @@ import { ThemeProvider } from "./providers";
 import { DynamicBackground } from "@/components/ui/DynamicBackground";
 
 import { Analytics } from "@vercel/analytics/react";
-import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
-import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import dynamic from "next/dynamic";
+
+const PWAUpdatePrompt = dynamic(() => import("@/components/PWAUpdatePrompt"), { ssr: false });
+const PWAInstallPrompt = dynamic(() => import("@/components/PWAInstallPrompt"), { ssr: false });
 
 export default function RootLayout({
   children,

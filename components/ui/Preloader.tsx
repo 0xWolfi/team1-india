@@ -4,34 +4,29 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function Preloader() {
-    const [visible, setVisible] = useState(true);
+    const [visible, setVisible] = useState(() => {
+        if (typeof window !== "undefined") {
+            return !sessionStorage.getItem("preloader_shown");
+        }
+        return true;
+    });
     const [fading, setFading] = useState(false);
     const [drawing, setDrawing] = useState(false);
     const [filling, setFilling] = useState(false);
 
     useEffect(() => {
+        if (!visible) return;
+
+        sessionStorage.setItem("preloader_shown", "1");
         document.body.style.overflow = "hidden";
 
-        // 1. Start Drawing (Lines) - Nearly Immediate
-        const drawTimer = setTimeout(() => {
-            setDrawing(true);
-        }, 100);
-
-        // 2. Start Filling (Color) - Delayed to let lines show
-        const fillTimer = setTimeout(() => {
-            setFilling(true);
-        }, 1200);
-
-        // 3. Start Fade Out
-        const fadeTimer = setTimeout(() => {
-            setFading(true);
-        }, 3200);
-
-        // 4. Remove from DOM
+        const drawTimer = setTimeout(() => setDrawing(true), 50);
+        const fillTimer = setTimeout(() => setFilling(true), 300);
+        const fadeTimer = setTimeout(() => setFading(true), 600);
         const removeTimer = setTimeout(() => {
             setVisible(false);
             document.body.style.overflow = "unset";
-        }, 3900);
+        }, 800);
 
         return () => {
              clearTimeout(drawTimer);
@@ -40,7 +35,7 @@ export function Preloader() {
              clearTimeout(removeTimer);
              document.body.style.overflow = "unset";
         }
-    }, []);
+    }, [visible]);
 
     if (!visible) return null;
 
