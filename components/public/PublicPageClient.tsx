@@ -1,0 +1,342 @@
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
+import NextImage from "next/image";
+import { MotionIcon } from "motion-icons-react";
+import { cn } from "@/lib/utils";
+
+import PublicHero from "@/components/public/PublicHero";
+import { Announcements } from "@/components/website/Announcements";
+import { FloatingNav } from "@/components/public/FloatingNav";
+import PublicContactSection from "@/components/public/PublicContactSection";
+import { Program, Event, Guide } from "@/types/public";
+import { Footer } from "@/components/website/Footer";
+import type { LumaEventData } from "@/lib/luma";
+
+import { useSession } from "next-auth/react";
+import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
+import { PublicConsentModal } from "@/components/public/auth/PublicConsentModal";
+
+const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
+
+const statusConfig = {
+    LIVE: { label: "Live", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20" },
+    UPCOMING: { label: "Upcoming", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
+    PAST: { label: "Past", color: "text-zinc-500", bg: "bg-zinc-500/10", border: "border-zinc-500/20" },
+};
+
+// ── Section Header Component ──
+function SectionHeader({ icon, iconBg, iconColor, title, subtitle, action }: {
+    icon: string; iconBg: string; iconColor: string; title: string; subtitle: string; action?: React.ReactNode;
+}) {
+    return (
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+            <div className="flex items-start gap-4">
+                <div className={cn("p-3 rounded-2xl border shrink-0", iconBg, iconBg.replace('/10', '/20'))}>
+                    <MotionIcon name={icon} className={cn("w-6 h-6 pointer-events-none", iconColor)} />
+                </div>
+                <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{title}</h2>
+                    <p className="text-sm text-zinc-500 mt-1">{subtitle}</p>
+                </div>
+            </div>
+            {action}
+        </div>
+    );
+}
+
+// ── Luma Event Card ──
+function PublicLumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE" | "UPCOMING" | "PAST" }) {
+    const [imageError, setImageError] = useState(false);
+    const config = statusConfig[status];
+    const eventDate = new Date(entry.event.start_at);
+    const imageUrl = entry.event.cover_url || "";
+
+    const formatDate = (date: Date) =>
+        date.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    const formatTime = (date: Date) =>
+        date.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+
+    const getTimeLabel = () => {
+        const now = new Date();
+        const diffMs = eventDate.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        if (status === "LIVE") return "Happening now";
+        if (diffDays === 0) return "Today";
+        if (diffDays === 1) return "Tomorrow";
+        if (diffDays > 1) return `in ${diffDays} days`;
+        return formatDate(eventDate);
+    };
+
+    return (
+        <a
+            href={entry.event.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+                "group block rounded-2xl p-4 transition-all duration-300 snap-start",
+                "w-[280px] sm:w-[320px] flex-shrink-0",
+                glassClass,
+                "hover:border-white/[0.12] hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/20",
+                status === "PAST" && "opacity-70 hover:opacity-100"
+            )}
+        >
+            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
+                {imageUrl && !imageError ? (
+                    <div className="aspect-square relative">
+                        <NextImage src={imageUrl} alt={entry.event.name} fill sizes="320px"
+                            className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
+                            onError={() => setImageError(true)} />
+                    </div>
+                ) : (
+                    <div className="aspect-square flex items-center justify-center">
+                        <div className="p-3 bg-sky-500/10 rounded-xl border border-sky-500/20">
+                            <MotionIcon name="Calendar" className="w-6 h-6 text-sky-400 pointer-events-none" />
+                        </div>
+                    </div>
+                )}
+                <div className="absolute top-2 left-2">
+                    <span className={cn("px-2 py-0.5 rounded-md text-[10px] font-semibold backdrop-blur-md border flex items-center gap-1", config.bg, config.color, config.border)}>
+                        {status === "LIVE" && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />}
+                        {config.label}
+                    </span>
+                </div>
+            </div>
+            <h3 className="font-semibold text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-100 transition-colors">{entry.event.name}</h3>
+            <div className="flex items-center gap-2 text-xs text-zinc-500">
+                <span>{formatDate(eventDate)}</span>
+                <span className="text-zinc-700">&middot;</span>
+                <span>{formatTime(eventDate)}</span>
+            </div>
+            {entry.event.geo_address_json?.city && (
+                <p className="text-xs text-zinc-600 mt-1 flex items-center gap-1">
+                    <MotionIcon name="MapPin" className="w-3 h-3 pointer-events-none" />
+                    {entry.event.geo_address_json.city}
+                </p>
+            )}
+            {status !== "PAST" && <p className="text-[11px] font-medium mt-2 text-sky-400">{getTimeLabel()}</p>}
+        </a>
+    );
+}
+
+export interface PublicPageData {
+    playbooks: any[];
+    programs: Program[];
+    guides: Guide[];
+    events: Event[];
+    upcomingEvents: LumaEventData[];
+    mediaItems: any[];
+    bountyCount: number;
+    categorizedEvents: {
+        live: LumaEventData[];
+        upcoming: LumaEventData[];
+        past: LumaEventData[];
+    };
+}
+
+export default function PublicPageClient({ data }: { data: PublicPageData }) {
+    const { data: session, status } = useSession();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            const timer = setTimeout(() => setShowLoginModal(true), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [status]);
+
+    const { playbooks, programs, upcomingEvents, mediaItems, bountyCount, categorizedEvents } = data;
+
+    return (
+        <main className="h-[100dvh] w-full overflow-y-scroll overflow-x-hidden snap-y snap-mandatory md:h-auto md:w-auto md:overflow-visible md:snap-none text-white selection:bg-zinc-800 selection:text-zinc-200 supports-[height:100svh]:h-[100svh]">
+            <FloatingNav />
+            <PublicLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+            {session?.user?.role === 'PUBLIC' && session?.user?.consent === false && (
+                <PublicConsentModal />
+            )}
+
+            <div className="pt-20 md:pt-24 px-4 md:px-8 max-w-7xl mx-auto space-y-4">
+
+                {/* ── Hero ── */}
+                <PublicHero
+                    isAuthenticated={status === 'authenticated'}
+                    userRole={(session?.user as any)?.role}
+                    onLoginClick={() => setShowLoginModal(true)}
+                    stats={{
+                        totalEvents: upcomingEvents.length,
+                        activeBounties: bountyCount,
+                        totalPlaybooks: playbooks.length,
+                    }}
+                />
+
+                {/* ── Announcements ── */}
+                <Announcements />
+
+                {/* ── Activity Feed ── */}
+                <section
+                    id="activity-feed"
+                    className="min-h-[100dvh] snap-center flex flex-col justify-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-10"
+                    style={{ scrollSnapStop: 'always' }}
+                >
+                    <SectionHeader
+                        icon="Calendar"
+                        iconBg="bg-sky-500/10"
+                        iconColor="text-sky-400"
+                        title="Activity Feed"
+                        subtitle="Live, upcoming, and past events from our community"
+                        action={
+                            <Link href="https://lu.ma/Team1India" target="_blank"
+                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all">
+                                See All on Luma <MotionIcon name="ArrowUpRight" className="w-3.5 h-3.5 pointer-events-none" />
+                            </Link>
+                        }
+                    />
+                    {upcomingEvents.length > 0 ? (
+                        <div className="space-y-6">
+                            {categorizedEvents.live.length > 0 && (
+                                <div>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                        <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">Live Now</span>
+                                    </div>
+                                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+                                        {categorizedEvents.live.map((entry) => <PublicLumaEventCard key={entry.api_id} entry={entry} status="LIVE" />)}
+                                    </div>
+                                </div>
+                            )}
+                            {categorizedEvents.upcoming.length > 0 && (
+                                <div>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className="w-2 h-2 rounded-full bg-sky-400" />
+                                        <span className="text-xs font-semibold text-sky-400 uppercase tracking-wider">Upcoming</span>
+                                    </div>
+                                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+                                        {categorizedEvents.upcoming.map((entry) => <PublicLumaEventCard key={entry.api_id} entry={entry} status="UPCOMING" />)}
+                                    </div>
+                                </div>
+                            )}
+                            {categorizedEvents.past.length > 0 && (
+                                <div>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className="w-2 h-2 rounded-full bg-zinc-600" />
+                                        <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Past</span>
+                                    </div>
+                                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+                                        {categorizedEvents.past.map((entry) => <PublicLumaEventCard key={entry.api_id} entry={entry} status="PAST" />)}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
+                            <MotionIcon name="Calendar" className="w-8 h-8 text-zinc-700 mb-3 pointer-events-none" />
+                            <p className="text-zinc-600 font-medium text-sm">No events found</p>
+                        </div>
+                    )}
+                </section>
+
+                {/* ── Playbooks ── */}
+                <section
+                    id="playbooks"
+                    className="min-h-[100dvh] snap-center flex flex-col justify-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-10"
+                    style={{ scrollSnapStop: 'always' }}
+                >
+                    <SectionHeader
+                        icon="BookOpen"
+                        iconBg="bg-amber-500/10"
+                        iconColor="text-amber-400"
+                        title="Playbooks"
+                        subtitle="Essential rules, guidelines, and strategies to build and scale"
+                        action={
+                            <Link href="/public/playbooks"
+                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all">
+                                View All <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 pointer-events-none" />
+                            </Link>
+                        }
+                    />
+                    {playbooks.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {playbooks.slice(0, 6).map((item: any) => (
+                                <Link key={item.id} href={`/public/playbooks/${item.id}`}
+                                    className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.12]", glassClass)}>
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 shrink-0">
+                                            <MotionIcon name="BookOpen" className="w-5 h-5 text-amber-400 pointer-events-none" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <h3 className="font-semibold text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-100 transition-colors">{item.title}</h3>
+                                            {item.description && <p className="text-xs text-zinc-600 line-clamp-2">{item.description}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.04]">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-600 group-hover:text-zinc-400 transition-colors">Read Playbook</span>
+                                        <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 text-zinc-700 group-hover:text-white transition-colors pointer-events-none" />
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
+                            <MotionIcon name="BookOpen" className="w-8 h-8 text-zinc-700 mb-3 pointer-events-none" />
+                            <p className="text-zinc-600 font-medium text-sm">No playbooks yet</p>
+                        </div>
+                    )}
+                </section>
+
+                {/* ── Programs ── */}
+                <section
+                    id="programs"
+                    className="min-h-[100dvh] snap-center flex flex-col justify-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-10"
+                    style={{ scrollSnapStop: 'always' }}
+                >
+                    <SectionHeader
+                        icon="Rocket"
+                        iconBg="bg-violet-500/10"
+                        iconColor="text-violet-400"
+                        title="Programs"
+                        subtitle="Initiatives to accelerate your growth"
+                        action={
+                            <Link href="/public/programs"
+                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all">
+                                View All <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 pointer-events-none" />
+                            </Link>
+                        }
+                    />
+                    {programs.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {programs.slice(0, 6).map((item: any) => (
+                                <Link key={item.id} href={`/public/programs/${item.id}`}
+                                    className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.12]", glassClass)}>
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <div className="p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 shrink-0">
+                                            <MotionIcon name="Users" className="w-5 h-5 text-violet-400 pointer-events-none" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <h3 className="font-semibold text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-100 transition-colors">{item.title}</h3>
+                                            {item.description && <p className="text-xs text-zinc-600 line-clamp-2">{item.description}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.04]">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-600 group-hover:text-zinc-400 transition-colors">View Program</span>
+                                        <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 text-zinc-700 group-hover:text-white transition-colors pointer-events-none" />
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
+                            <MotionIcon name="Users" className="w-8 h-8 text-zinc-700 mb-3 pointer-events-none" />
+                            <p className="text-zinc-600 font-medium text-sm">No programs yet</p>
+                        </div>
+                    )}
+                </section>
+
+                {/* ── Contact ── */}
+                <PublicContactSection mediaItems={mediaItems} />
+            </div>
+
+            <Footer />
+        </main>
+    );
+}
