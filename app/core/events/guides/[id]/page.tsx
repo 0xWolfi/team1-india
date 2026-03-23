@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { GuideDetail } from '@/components/guides/GuideDetail';
-import { MotionIcon } from "motion-icons-react";
-
+import { Loader2 } from "lucide-react";
 export default function EventGuideDetailPage() {
     const params = useParams();
     const id = params?.id as string;
@@ -38,7 +37,7 @@ export default function EventGuideDetailPage() {
         return (
             <CoreWrapper>
                 <div className="flex justify-center pt-40">
-                    <MotionIcon name="Loader2" className="w-8 h-8 animate-spin text-zinc-500" />
+                    <Loader2 className="w-8 h-8 animate-spin text-zinc-500"/>
                 </div>
             </CoreWrapper>
         );

@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { MotionIcon } from "motion-icons-react";
+import { ExternalLink, FileText } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { Modal } from '@/components/ui/Modal';
 
 interface MediaItem {
@@ -39,7 +40,7 @@ export function MediaKitModal({ isOpen, onClose, mediaItems }: MediaKitModalProp
                             >
                                 <div className="flex items-start gap-3">
                                     <div className="p-2.5 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors flex-shrink-0">
-                                        <MotionIcon name={IconName} className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
+                                        <DynamicIcon name={IconName} className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors"/>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h4 className="text-sm font-bold text-white group-hover:text-white line-clamp-2 leading-snug mb-1">{item.title}</h4>
@@ -49,7 +50,7 @@ export function MediaKitModal({ isOpen, onClose, mediaItems }: MediaKitModalProp
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-zinc-400 group-hover:text-white transition-colors pt-2 border-t border-white/5">
-                                    <MotionIcon name="ExternalLink" className="w-3.5 h-3.5" />
+                                    <ExternalLink className="w-3.5 h-3.5"/>
                                     <span className="text-[10px] font-bold uppercase tracking-wider">Open in Drive</span>
                                 </div>
                             </Link>
@@ -64,7 +65,7 @@ export function MediaKitModal({ isOpen, onClose, mediaItems }: MediaKitModalProp
                 
                 <div className="p-5 rounded-xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-colors">
                     <div className="flex items-center gap-2 mb-3 text-zinc-400 text-[10px] uppercase tracking-widest font-bold">
-                        <MotionIcon name="FileText" className="w-3 h-3" /> Press One-Liner
+                        <FileText className="w-3 h-3"/> Press One-Liner
                     </div>
                     <p className="text-sm text-zinc-300 italic leading-relaxed font-serif group-hover:text-white transition-colors">
                         "Team1 India is the largest decentralized community of builders, founders, and students driving the web3 ecosystem forward."

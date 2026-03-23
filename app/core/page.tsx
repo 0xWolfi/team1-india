@@ -2,7 +2,8 @@
 
 import { signOut, useSession } from "next-auth/react";
 import React, { useState } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { BarChart3, ClipboardList, FileText, Lock, LogOut, Megaphone, Settings, User, Users, Zap } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -220,20 +221,20 @@ export default function CorePage() {
                         </div>
                     ) : (
                         <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center ring-1 ring-white/10">
-                             <MotionIcon name="User" className="w-4 h-4 text-zinc-400" />
+                             <User className="w-4 h-4 text-zinc-400"/>
                         </div>
                     )}
                 <Link 
                     href="/core/profile"
                     className="w-8 h-8 rounded-full bg-zinc-800 border border-white/5 flex items-center justify-center text-zinc-400"
                 >
-                    <MotionIcon name="Settings" className="w-4 h-4" />
+                    <Settings className="w-4 h-4"/>
                 </Link>
                 <button 
                     onClick={() => signOut({ callbackUrl: '/public' })}
                     className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500"
                 >
-                    <MotionIcon name="LogOut" className="w-4 h-4" />
+                    <LogOut className="w-4 h-4"/>
                 </button>
             </div>
         </div>
@@ -254,13 +255,13 @@ export default function CorePage() {
         {/* Quick Actions Row */}
         <div className="mb-12">
              <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                 <MotionIcon name="Zap" className="w-4 h-4" /> Quick Actions
+                 <Zap className="w-4 h-4"/> Quick Actions
              </h2>
              <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:gap-4 gap-3">
                  {/* Applications */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/applications')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <MotionIcon name="ClipboardList" className="w-4 h-4 md:w-5 md:h-5" />
+                        <ClipboardList className="w-4 h-4 md:w-5 md:h-5"/>
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Applications</span>
                  </button>
@@ -268,7 +269,7 @@ export default function CorePage() {
                  {/* Announcements */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/announcements')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <MotionIcon name="Megaphone" className="w-4 h-4 md:w-5 md:h-5" />
+                        <Megaphone className="w-4 h-4 md:w-5 md:h-5"/>
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Announcements</span>
                  </button>
@@ -276,7 +277,7 @@ export default function CorePage() {
                  {/* Attendance */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/attendance')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <MotionIcon name="Users" className="w-4 h-4 md:w-5 md:h-5" />
+                        <Users className="w-4 h-4 md:w-5 md:h-5"/>
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Attendance</span>
                  </button>
@@ -284,7 +285,7 @@ export default function CorePage() {
                  {/* Meeting Notes */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/notes')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <MotionIcon name="FileText" className="w-4 h-4 md:w-5 md:h-5" />
+                        <FileText className="w-4 h-4 md:w-5 md:h-5"/>
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Meeting Notes</span>
                  </button>
@@ -292,7 +293,7 @@ export default function CorePage() {
                  {/* New Poll */}
                  <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/poll')}>
                      <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                        <MotionIcon name="BarChart3" className="w-4 h-4 md:w-5 md:h-5" />
+                        <BarChart3 className="w-4 h-4 md:w-5 md:h-5"/>
                      </div>
                      <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Vote / Polls</span>
                  </button>
@@ -301,7 +302,7 @@ export default function CorePage() {
                  {isSuperAdmin && (
                      <button className="lg:flex-1 group flex items-center gap-3 p-3 md:p-4 bg-zinc-900/20 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] hover:border-white/20 hover:bg-zinc-900/40 hover:shadow-lg hover:shadow-white/5 rounded-xl transition-all hover:-translate-y-0.5" onClick={() => router.push('/core/admin')}>
                          <div className="p-1.5 md:p-2 bg-white/5 rounded-lg text-zinc-400 group-hover:text-white transition-colors">
-                            <MotionIcon name="Settings" className="w-4 h-4 md:w-5 md:h-5" />
+                            <Settings className="w-4 h-4 md:w-5 md:h-5"/>
                          </div>
                          <span className="text-xs md:text-sm font-bold text-zinc-400 group-hover:text-white truncate">Manage Team</span>
                      </button>
@@ -343,7 +344,7 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
                     
                     {/* Centered Main Icon (No Box) */}
                     <div className="relative z-10 transition-transform duration-300 group-hover:scale-110 drop-shadow-2xl">
-                         <MotionIcon name={resource.iconName} className="w-12 h-12 text-zinc-500 group-hover:text-white transition-colors duration-300" />
+                         <DynamicIcon name={resource.iconName} className="w-12 h-12 text-zinc-500 group-hover:text-white transition-colors duration-300"/>
                     </div>
                 </div>
 
@@ -365,7 +366,7 @@ function ResourceCard({ resource, isLocked }: { resource: ResourceItem, isLocked
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-[2px] rounded-2xl border border-white/5">
                     <div className="flex flex-col items-center gap-3 animate-in zoom-in duration-300">
                         <div className="p-4 rounded-full bg-black/50 border border-white/10 shadow-2xl">
-                            <MotionIcon name="Lock" className="w-6 h-6 text-zinc-500" />
+                            <Lock className="w-6 h-6 text-zinc-500"/>
                         </div>
                         <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest bg-black/80 px-3 py-1 rounded border border-white/10">
                             Access Denied

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Kanit } from "next/font/google";
 import "./globals.css";
-import "motion-icons-react/style.css";
+
 
 const kanit = Kanit({
   variable: "--font-kanit",

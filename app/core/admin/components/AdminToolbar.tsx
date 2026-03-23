@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { MotionIcon } from "motion-icons-react";
-
+import { RefreshCw, Search } from "lucide-react";
 interface AdminToolbarProps {
     searchTerm: string;
     onSearchChange: (value: string) => void;
@@ -14,7 +13,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps & { children?: React.React
     return (
         <div className="flex flex-col md:flex-row gap-4 mb-6 relative z-10">
             <div className="relative flex-1 group">
-                <MotionIcon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-zinc-400 transition-colors" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-zinc-400 transition-colors"/>
                 <input 
                     type="text" 
                     placeholder="Filter operatives..." 
@@ -26,7 +25,7 @@ export const AdminToolbar: React.FC<AdminToolbarProps & { children?: React.React
             {children}
             <div className="flex items-center gap-2">
                 <button onClick={onRefresh} className="p-2.5 rounded-xl bg-black/40 border border-white/5 hover:bg-white/5 text-zinc-500 hover:text-white transition-colors">
-                    <MotionIcon name="RefreshCw" className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`}/>
                 </button>
             </div>
         </div>

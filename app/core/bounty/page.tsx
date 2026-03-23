@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowLeft, Check, Plus, X } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -78,7 +79,7 @@ export default function CoreBountyPage() {
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
                     <div>
                         <Link href="/core" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors mb-4 group">
-                            <MotionIcon name="ArrowLeft" className="w-3 h-3 group-hover:-translate-x-1 transition-transform pointer-events-none" />
+                            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform"/>
                             Back to Core
                         </Link>
                         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Bounty Management</h1>
@@ -88,7 +89,7 @@ export default function CoreBountyPage() {
                         href="/core/bounty/new"
                         className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all shrink-0"
                     >
-                        <MotionIcon name="Plus" className="w-4 h-4 pointer-events-none" />
+                        <Plus className="w-4 h-4"/>
                         New Bounty
                     </Link>
                 </div>
@@ -128,7 +129,7 @@ export default function CoreBountyPage() {
                                 return (
                                     <div key={sub.id} className={cn("rounded-xl p-4 flex items-center gap-4", glassClass)}>
                                         <div className={cn("p-2 rounded-lg border shrink-0", cfg.bg, cfg.border)}>
-                                            <MotionIcon name={cfg.icon} className={cn("w-4 h-4 pointer-events-none", cfg.color)} />
+                                            <DynamicIcon name={cfg.icon} className={cn("w-4 h-4 ", cfg.color)}/>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-white">{sub.bounty?.title}</p>
@@ -137,10 +138,10 @@ export default function CoreBountyPage() {
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
                                             <button type="button" onClick={() => handleReview(sub.id, "approved")} className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors" title="Approve">
-                                                <MotionIcon name="Check" className="w-4 h-4 pointer-events-none" />
+                                                <Check className="w-4 h-4"/>
                                             </button>
                                             <button type="button" onClick={() => handleReview(sub.id, "rejected")} className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors" title="Reject">
-                                                <MotionIcon name="X" className="w-4 h-4 pointer-events-none" />
+                                                <X className="w-4 h-4"/>
                                             </button>
                                         </div>
                                     </div>
@@ -159,7 +160,7 @@ export default function CoreBountyPage() {
                             return (
                                 <div key={b.id} className={cn("rounded-xl p-4 flex items-center gap-4", glassClass)}>
                                     <div className={cn("p-2 rounded-lg border shrink-0", cfg.bg, cfg.border)}>
-                                        <MotionIcon name={cfg.icon} className={cn("w-4 h-4 pointer-events-none", cfg.color)} />
+                                        <DynamicIcon name={cfg.icon} className={cn("w-4 h-4 ", cfg.color)}/>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-white">{b.title}</p>
@@ -189,7 +190,7 @@ export default function CoreBountyPage() {
                                 return (
                                     <div key={sub.id} className={cn("rounded-xl p-4 flex items-center gap-4", glassClass)}>
                                         <div className={cn("p-2 rounded-lg border shrink-0", cfg.bg, cfg.border)}>
-                                            <MotionIcon name={cfg.icon} className={cn("w-4 h-4 pointer-events-none", cfg.color)} />
+                                            <DynamicIcon name={cfg.icon} className={cn("w-4 h-4 ", cfg.color)}/>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-white">{sub.bounty?.title}</p>

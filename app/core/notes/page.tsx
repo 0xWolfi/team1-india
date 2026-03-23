@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { Calendar, ChevronRight, Eye, FileText, Globe, Lock, Plus, Save, Search, Trash2 } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
@@ -114,21 +114,21 @@ export default function NotesPage() {
             <CorePageHeader
                 title="Meeting Notes"
                 description="Document team discussions, decisions, and action items."
-                icon={<MotionIcon name="FileText" className="w-5 h-5 text-red-500" />}
+                icon={<FileText className="w-5 h-5 text-red-500"/>}
             >
                 {canManage && (
                     <button 
                         onClick={() => setIsModalOpen(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm font-bold shadow-lg shadow-red-500/20"
                     >
-                        <MotionIcon name="Plus" className="w-4 h-4" /> New Note
+                        <Plus className="w-4 h-4"/> New Note
                     </button>
                 )}
             </CorePageHeader>
 
             {/* Search */}
             <div className="mb-8 relative">
-                 <MotionIcon name="Search" className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                 <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2"/>
                  <input 
                     type="text" 
                     placeholder="Search past meetings..." 
@@ -144,7 +144,7 @@ export default function NotesPage() {
                     <div className="col-span-full text-center py-24 text-zinc-500">Loading notes...</div>
                 ) : filteredNotes.length === 0 ? (
                     <div className="col-span-full flex flex-col items-center justify-center py-24 text-zinc-500 border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
-                        <MotionIcon name="FileText" className="w-12 h-12 mb-4 opacity-20" />
+                        <FileText className="w-12 h-12 mb-4 opacity-20"/>
                         <p>No meeting notes found.</p>
                     </div>
                 ) : (
@@ -156,7 +156,7 @@ export default function NotesPage() {
                         >
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-white/5 rounded-lg text-red-400 group-hover:text-red-500 transition-colors">
-                                    <MotionIcon name="FileText" className="w-5 h-5" />
+                                    <FileText className="w-5 h-5"/>
                                 </div>
                                 <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${
                                     note.customFields?.visibility === 'CORE' 
@@ -168,7 +168,7 @@ export default function NotesPage() {
                             </div>
                             <h3 className="text-lg font-bold text-white mb-1 line-clamp-1">{note.title}</h3>
                             <div className="text-sm text-zinc-500 mb-4 flex items-center gap-2">
-                                <MotionIcon name="Calendar" className="w-3 h-3" />
+                                <Calendar className="w-3 h-3"/>
                                 {new Date(note.customFields?.date || note.createdAt).toLocaleDateString()}
                             </div>
                             <p className="text-xs text-zinc-600 line-clamp-3 leading-relaxed flex-1">
@@ -236,7 +236,7 @@ export default function NotesPage() {
                                                         : 'bg-white/5 border-white/5 text-zinc-500 hover:bg-white/10'
                                                 }`}
                                             >
-                                                <MotionIcon name="Lock" className="w-5 h-5" />
+                                                <Lock className="w-5 h-5"/>
                                                 <span className="text-sm font-bold">Core Only</span>
                                             </button>
                                             <button 
@@ -247,7 +247,7 @@ export default function NotesPage() {
                                                         : 'bg-white/5 border-white/5 text-zinc-500 hover:bg-white/10'
                                                 }`}
                                             >
-                                                <MotionIcon name="Globe" className="w-5 h-5" />
+                                                <Globe className="w-5 h-5"/>
                                                 <span className="text-sm font-bold">Members</span>
                                             </button>
                                         </div>
@@ -287,7 +287,7 @@ export default function NotesPage() {
                                     disabled={!formData.title}
                                     className="px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
                                 >
-                                    Proceed <MotionIcon name="ChevronRight" className="w-4 h-4" />
+                                    Proceed <ChevronRight className="w-4 h-4"/>
                                 </button>
                             ) : (
                                 <button 
@@ -295,7 +295,7 @@ export default function NotesPage() {
                                     disabled={isSaving}
                                     className="px-8 py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-400 disabled:opacity-50 transition-all shadow-lg shadow-red-500/20 hover:shadow-red-500/40 hover:-translate-y-0.5 flex items-center gap-2"
                                 >
-                                    <MotionIcon name="Save" className="w-4 h-4" /> {isSaving ? "Saving..." : "Save Note"}
+                                    <Save className="w-4 h-4"/> {isSaving ? "Saving..." : "Save Note"}
                                 </button>
                             )}
                         </div>
@@ -313,7 +313,7 @@ export default function NotesPage() {
                                 <h2 className="text-3xl font-bold text-white mb-2">{selectedNote.title}</h2>
                                 <div className="flex items-center gap-3 text-sm text-zinc-400">
                                     <span className="flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg">
-                                        <MotionIcon name="Calendar" className="w-3.5 h-3.5" />
+                                        <Calendar className="w-3.5 h-3.5"/>
                                         {new Date(selectedNote.customFields?.date || selectedNote.createdAt).toLocaleDateString(undefined, {
                                             weekday: 'long', 
                                             year: 'numeric', 
@@ -334,7 +334,7 @@ export default function NotesPage() {
                                 onClick={() => setSelectedNote(null)}
                                 className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white"
                             >
-                                <MotionIcon name="Eye" className="w-5 h-5" />
+                                <Eye className="w-5 h-5"/>
                             </button>
                         </div>
 
@@ -350,7 +350,7 @@ export default function NotesPage() {
                                     onClick={() => setShowDeleteConfirm(true)}
                                     className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-all border border-red-500/10"
                                 >
-                                    <MotionIcon name="Trash2" className="w-4 h-4" /> Delete Note
+                                    <Trash2 className="w-4 h-4"/> Delete Note
                                 </button>
                             )}
                             <button 
@@ -370,7 +370,7 @@ export default function NotesPage() {
                     <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-red-500/20 rounded-3xl w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-red-500/10">
                          <div className="flex flex-col items-center text-center gap-6">
                             <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                                <MotionIcon name="Trash2" className="w-8 h-8" />
+                                <Trash2 className="w-8 h-8"/>
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-white">Delete Note?</h3>

@@ -157,8 +157,7 @@ export const Header = ({ scale, translate, isDesktop }: { scale: MotionValue<num
 
 
 
-import { MotionIcon } from "motion-icons-react";
-
+import { Instagram, Linkedin, Send, Volume2, VolumeX } from "lucide-react";
 // Card scale/translate logic remains, but we add max-h to prevent it from eating all vertical space
 export const Card = ({
   rotate,
@@ -255,7 +254,7 @@ export const Card = ({
             className="absolute bottom-4 right-4 z-30 p-3 bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 rounded-full text-white transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 translate-y-2 group-hover:translate-y-0"
             aria-label={isMuted ? "Unmute video" : "Mute video"}
           >
-            {isMuted ? <MotionIcon name="VolumeX" className="w-5 h-5" /> : <MotionIcon name="Volume2" className="w-5 h-5" />}
+            {isMuted ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
           </button>
       </div>
     </motion.div>
@@ -292,13 +291,13 @@ export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<n
                 </svg>
             </a>
             <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <MotionIcon name="Instagram" className="w-5 h-5" />
+                <Instagram className="w-5 h-5"/>
             </a>
             <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <MotionIcon name="Linkedin" className="w-5 h-5" />
+                <Linkedin className="w-5 h-5"/>
             </a>
             <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <MotionIcon name="Send" className="w-5 h-5" /> {/* Telegram */}
+                <Send className="w-5 h-5"/> {/* Telegram */}
             </a>
         </div>
     </motion.div>

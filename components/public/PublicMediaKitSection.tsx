@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { MotionIcon } from "motion-icons-react";
+import { ExternalLink, Image } from "lucide-react";
 import Link from 'next/link';
 
 interface MediaItem {
@@ -25,7 +25,7 @@ export default function PublicMediaKitSection({ mediaItems }: PublicMediaKitSect
         <section className="space-y-8">
              <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 rounded-full bg-pink-500/10 flex items-center justify-center border border-pink-500/20">
-                    <MotionIcon name="Image" className="w-5 h-5 text-pink-400" />
+                    <Image className="w-5 h-5 text-pink-400"/>
                 </div>
                 <div>
                     <h2 className="text-2xl font-bold text-white">Media Kit & Assets</h2>
@@ -73,7 +73,7 @@ export default function PublicMediaKitSection({ mediaItems }: PublicMediaKitSect
                                         className="flex items-center justify-between text-xs font-medium text-zinc-400 bg-black/20 px-3 py-2 rounded-lg hover:bg-black/40 hover:text-white transition-all group/link"
                                     >
                                         <span className="truncate max-w-[200px]">{link.replace(/^https?:\/\//, '')}</span>
-                                        <MotionIcon name="ExternalLink" className="w-3 h-3 text-zinc-600 group-hover/link:text-pink-400" />
+                                        <ExternalLink className="w-3 h-3 text-zinc-600 group-hover/link:text-pink-400"/>
                                     </Link>
                                 ))
                             ) : (

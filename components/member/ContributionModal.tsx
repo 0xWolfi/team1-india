@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { Calendar, ChevronDown, FileText, Loader2, Send, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 interface ContributionModalProps {
@@ -119,7 +119,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                         onClick={onClose}
                         className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors"
                     >
-                        <MotionIcon name="X" className="w-5 h-5" />
+                        <X className="w-5 h-5"/>
                     </button>
                 </div>
 
@@ -171,7 +171,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                 <option value="event-host" className="bg-zinc-900">Event Host</option>
                                 <option value="content" className="bg-zinc-900">Content</option>
                             </select>
-                            <MotionIcon name="ChevronDown" className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"/>
                         </div>
                     </div>
 
@@ -179,7 +179,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     {contributionType === "event-host" && (
                         <div className="mb-6 p-4 bg-zinc-800/30 border border-white/5 rounded-lg">
                             <div className="flex items-center gap-2 mb-3">
-                                <MotionIcon name="Calendar" className="w-4 h-4 text-zinc-400" />
+                                <Calendar className="w-4 h-4 text-zinc-400"/>
                                 <label className="text-sm font-semibold text-zinc-200">
                                     Event Host Details
                                 </label>
@@ -218,7 +218,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     {contributionType === "content" && (
                         <div className="mb-6 p-4 bg-zinc-800/30 border border-white/5 rounded-lg">
                             <div className="flex items-center gap-2 mb-3">
-                                <MotionIcon name="FileText" className="w-4 h-4 text-zinc-400" />
+                                <FileText className="w-4 h-4 text-zinc-400"/>
                                 <label className="text-sm font-semibold text-zinc-200">
                                     Content Details
                                 </label>
@@ -256,12 +256,12 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                         >
                             {isSubmitting ? (
                                 <>
-                                    <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" animation="spin" />
+                                    <Loader2 className="w-4 h-4 animate-spin" animation="spin"/>
                                     Submitting...
                                 </>
                             ) : (
                                 <>
-                                    <MotionIcon name="Send" className="w-4 h-4" />
+                                    <Send className="w-4 h-4"/>
                                     Submit Contribution
                                 </>
                             )}

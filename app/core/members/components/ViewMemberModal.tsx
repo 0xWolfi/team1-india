@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { ExternalLink, FileText, Loader2, Mail, MapPin, MessageCircle, Send, Tag, Twitter, Wallet, X, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export interface CommunityMember {
@@ -95,7 +95,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                         onClick={onClose}
                         className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors"
                     >
-                        <MotionIcon name="X" className="w-5 h-5" />
+                        <X className="w-5 h-5"/>
                     </button>
                 </div>
 
@@ -119,7 +119,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                                     className="px-3 py-1.5 bg-white text-black rounded-lg text-xs font-medium hover:bg-zinc-200 transition-colors flex items-center gap-1.5"
                                     title="View Full Details"
                                 >
-                                    <MotionIcon name="ExternalLink" className="w-3 h-3" />
+                                    <ExternalLink className="w-3 h-3"/>
                                     View in Detail
                                 </button>
                             </div>
@@ -142,7 +142,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                     {/* Change Role Section */}
                     <div className="mb-8 p-4 bg-zinc-900/30 border border-white/5 rounded-xl">
                         <label className="block text-sm font-semibold text-zinc-300 mb-3 flex items-center gap-2">
-                            <MotionIcon name="Tag" className="w-4 h-4" />
+                            <Tag className="w-4 h-4"/>
                             Change Role
                         </label>
                         <div className="flex items-center gap-3">
@@ -161,7 +161,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                             >
                                 {isChangingRole ? (
                                     <>
-                                        <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" />
+                                        <Loader2 className="w-4 h-4 animate-spin"/>
                                         Updating...
                                     </>
                                 ) : (
@@ -176,7 +176,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                         <h5 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Contact Information</h5>
                         <div className="space-y-3">
                             <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                                <MotionIcon name="Mail" className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
+                                <Mail className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                 <div className="flex-1 min-w-0">
                                     <div className="text-xs text-zinc-500 mb-1">Email</div>
                                     <div className="text-sm text-white break-all">{memberData.email}</div>
@@ -185,7 +185,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
 
                             {memberData.xHandle && (
                                 <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                                    <MotionIcon name="Twitter" className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
+                                    <Twitter className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">X (Twitter) Handle</div>
                                         <div className="text-sm text-white">@{memberData.xHandle.replace('@', '')}</div>
@@ -195,7 +195,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
 
                             {memberData.telegram && (
                                 <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                                    <MotionIcon name="Send" className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
+                                    <Send className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Telegram Handle</div>
                                         <div className="text-sm text-white">@{memberData.telegram.replace('@', '')}</div>
@@ -205,7 +205,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
 
                             {discord && (
                                 <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                                    <MotionIcon name="MessageCircle" className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
+                                    <MessageCircle className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Discord Handle</div>
                                         <div className="text-sm text-white">{discord}</div>
@@ -221,7 +221,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                         <div className="space-y-3">
                             {wallet && (
                                 <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                                    <MotionIcon name="Wallet" className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
+                                    <Wallet className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Wallet Address</div>
                                         <div className="text-sm text-white break-all font-mono">{wallet}</div>
@@ -231,7 +231,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
 
                             {address && (
                                 <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                                    <MotionIcon name="MapPin" className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
+                                    <MapPin className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Location / Address</div>
                                         <div className="text-sm text-white">{address}</div>
@@ -241,7 +241,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
 
                             {bio && (
                                 <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                                    <MotionIcon name="FileText" className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0" />
+                                    <FileText className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Bio</div>
                                         <div className="text-sm text-white whitespace-pre-wrap">{bio}</div>
@@ -267,12 +267,12 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                     >
                         {isSubmitting ? (
                             <>
-                                <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" />
+                                <Loader2 className="w-4 h-4 animate-spin"/>
                                 Removing...
                             </>
                         ) : (
                             <>
-                                <MotionIcon name="XCircle" className="w-4 h-4" />
+                                <XCircle className="w-4 h-4"/>
                                 Remove Member
                             </>
                         )}

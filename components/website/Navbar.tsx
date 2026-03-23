@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MotionIcon } from "motion-icons-react";
+import { User } from "lucide-react";
 import { Team1Logo } from "@/components/Team1Logo";
 
 export function Navbar() {
@@ -16,7 +16,7 @@ export function Navbar() {
 
       <div className="flex items-center gap-4">
         <Link href="/access-check" className="text-sm text-zinc-400 hover:text-white transition-colors">
-          <MotionIcon name="User" className="w-5 h-5" />
+          <User className="w-5 h-5"/>
         </Link>
         <Link href="/public" className="rounded-xl bg-white px-4 py-2 text-sm font-medium text-black hover:bg-zinc-200 transition-colors">
           Guidebook

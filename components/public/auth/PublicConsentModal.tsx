@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -57,7 +57,7 @@ export function PublicConsentModal() {
             <div className="space-y-4">
               <label className="flex items-start gap-3 cursor-pointer group">
                 <div className={`mt-0.5 min-w-5 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all ${agreedNewsletter ? 'bg-white border-white text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'border-white/10 bg-black/20 group-hover:border-white/30 group-hover:bg-black/40'}`}>
-                   {agreedNewsletter && <MotionIcon name="Check" className="w-3.5 h-3.5 stroke-[3]" />}
+                   {agreedNewsletter && <Check className="w-3.5 h-3.5 stroke-[3]"/>}
                 </div>
                 <input 
                   type="checkbox" 
@@ -72,7 +72,7 @@ export function PublicConsentModal() {
 
               <label className="flex items-start gap-3 cursor-pointer group">
                 <div className={`mt-0.5 min-w-5 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all ${agreedLegal ? 'bg-white border-white text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'border-white/10 bg-black/20 group-hover:border-white/30 group-hover:bg-black/40'}`}>
-                   {agreedLegal && <MotionIcon name="Check" className="w-3.5 h-3.5 stroke-[3]" />}
+                   {agreedLegal && <Check className="w-3.5 h-3.5 stroke-[3]"/>}
                 </div>
                 <input 
                   type="checkbox" 

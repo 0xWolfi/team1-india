@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { applyToProgram } from "@/app/public/actions";
-import { MotionIcon } from "motion-icons-react";
+import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -76,7 +76,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
     return (
       <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6 text-center">
         <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-3">
-          <MotionIcon name="CheckCircle" className="w-6 h-6 text-emerald-400" />
+          <CheckCircle className="w-6 h-6 text-emerald-400"/>
         </div>
         <h3 className="text-lg font-bold text-white mb-2">Application Received</h3>
         <p className="text-zinc-400">We'll be in touch with you shortly.</p>
@@ -208,7 +208,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
 
       {status === "error" && (
         <div className="flex items-center gap-2 p-3 rounded-lg bg-zinc-800/50 border border-white/10 text-zinc-300 text-sm mb-4">
-            <MotionIcon name="AlertCircle" className="w-4 h-4" /> {message}
+            <AlertCircle className="w-4 h-4"/> {message}
         </div>
       )}
 
@@ -219,7 +219,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
       >
         {status === "submitting" ? (
           <>
-            <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" animation="spin" /> Submitting...
+            <Loader2 className="w-4 h-4 animate-spin" animation="spin"/> Submitting...
           </>
         ) : (
           "Submit Application"

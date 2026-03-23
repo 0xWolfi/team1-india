@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { MotionIcon } from "motion-icons-react";
+import { X } from "lucide-react";
 import Link from "next/link";
 
 interface PublicLoginModalProps {
@@ -37,7 +37,7 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
         >
-          <MotionIcon name="X" className="w-5 h-5" />
+          <X className="w-5 h-5"/>
         </button>
 
         <div className="p-8">

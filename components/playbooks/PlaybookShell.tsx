@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import NextImage from "next/image";
 import Link from "next/link";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowLeft, ArrowUpRight, Check, Copy, Image, Loader2, X } from "lucide-react";
 import { upload } from "@vercel/blob/client";
 import { HelpfulWidget } from "./HelpfulWidget";
 import { Footer } from "@/components/website/Footer";
@@ -156,7 +157,7 @@ export function PlaybookShell({
                                         className="w-9 h-9 flex items-center justify-center rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-all border border-white/5"
                                         title={backLabel}
                                     >
-                                        <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                                        <ArrowLeft className="w-4 h-4"/>
                                     </Link>
                                     <span className="w-px h-4 bg-white/10" />
                                 </>
@@ -218,7 +219,7 @@ export function PlaybookShell({
                                     {/* Uploading Spinner */}
                                     {isUploading && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-30">
-                                            <MotionIcon name="Loader2" className="w-8 h-8 text-purple-500 animate-spin" />
+                                            <Loader2 className="w-8 h-8 text-purple-500 animate-spin"/>
                                         </div>
                                     )}
 
@@ -232,7 +233,7 @@ export function PlaybookShell({
                                         className="absolute top-4 right-4 w-9 h-9 bg-black/60 hover:bg-red-500/90 rounded-xl text-white flex items-center justify-center transition-all backdrop-blur-md border border-white/10 z-30 shadow-lg"
                                         title="Remove Cover"
                                     >
-                                        <MotionIcon name="X" className="w-4 h-4" />
+                                        <X className="w-4 h-4"/>
                                     </button>
                                     )}
                                     {/* Back Button */}
@@ -242,7 +243,7 @@ export function PlaybookShell({
                                             className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/40 text-white hover:bg-black/60 transition-all border border-white/10 backdrop-blur-md"
                                             title={backLabel}
                                         >
-                                            <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                                            <ArrowLeft className="w-4 h-4"/>
                                         </Link>
                                     </div>
                                 </div>
@@ -250,7 +251,7 @@ export function PlaybookShell({
                                 /* Fallback when image fails to load */
                                 <div className="relative w-full rounded-2xl overflow-hidden h-[400px] border border-white/10 bg-zinc-900/50 shadow-2xl flex items-center justify-center">
                                     <div className="text-center">
-                                        <MotionIcon name="Image" className="w-16 h-16 text-zinc-700 mx-auto mb-3" />
+                                        <Image className="w-16 h-16 text-zinc-700 mx-auto mb-3"/>
                                         <p className="text-sm text-zinc-500 mb-4">Image failed to load</p>
                                         <button 
                                             onClick={() => {
@@ -268,7 +269,7 @@ export function PlaybookShell({
                                             className="w-10 h-10 flex items-center justify-center rounded-xl bg-black/40 text-white hover:bg-black/60 transition-all border border-white/10 backdrop-blur-md"
                                             title={backLabel}
                                         >
-                                            <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                                            <ArrowLeft className="w-4 h-4"/>
                                         </Link>
                                     </div>
                                 </div>
@@ -278,7 +279,7 @@ export function PlaybookShell({
                                     
                                      {/* Uploading Spinner or content */}
                                     {isUploading ? (
-                                        <MotionIcon name="Loader2" className="w-8 h-8 text-zinc-500 animate-spin" />
+                                        <Loader2 className="w-8 h-8 text-zinc-500 animate-spin"/>
                                     ) : (
                                         <>
                                             <div className="absolute top-4 left-4 z-20">
@@ -287,12 +288,12 @@ export function PlaybookShell({
                                                     className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-800/50 text-white hover:bg-zinc-800 transition-all border border-white/10"
                                                     title={backLabel}
                                                 >
-                                                    <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                                                    <ArrowLeft className="w-4 h-4"/>
                                                 </Link>
                                             </div>
                                             <label className="flex flex-col items-center cursor-pointer group/label p-8">
                                                 <div className="w-14 h-14 rounded-2xl bg-zinc-900 flex items-center justify-center mb-3 group-hover/label:bg-zinc-800 transition-all border border-white/5 shadow-inner">
-                                                    <MotionIcon name="Image" className="w-6 h-6 text-zinc-500 group-hover/label:text-zinc-200 transition-colors" />
+                                                    <Image className="w-6 h-6 text-zinc-500 group-hover/label:text-zinc-200 transition-colors"/>
                                                 </div>
                                                 <span className="text-sm font-semibold text-zinc-500 group-hover/label:text-zinc-300 transition-colors">Add Cover Image</span>
                                                 <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
@@ -350,20 +351,20 @@ export function PlaybookShell({
                                         className="w-10 h-10 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 transition-all backdrop-blur-md border border-white/10"
                                         title={backLabel}
                                     >
-                                        <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                                        <ArrowLeft className="w-4 h-4"/>
                                     </Link>
                                 </div>
                             </div>
                         ) : playbook.coverImage && coverImageError ? (
                             <div className="relative w-full rounded-2xl overflow-hidden aspect-[2.4/1] bg-zinc-900 shadow-2xl mb-8 flex items-center justify-center">
-                                <MotionIcon name="Image" className="w-20 h-20 text-zinc-700" />
+                                <Image className="w-20 h-20 text-zinc-700"/>
                                 <div className="absolute top-4 left-4 z-20">
                                     <Link 
                                         href={backLink} 
                                         className="w-10 h-10 flex items-center justify-center rounded-full bg-black/40 text-white hover:bg-black/60 transition-all backdrop-blur-md border border-white/10"
                                         title={backLabel}
                                     >
-                                        <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                                        <ArrowLeft className="w-4 h-4"/>
                                     </Link>
                                 </div>
                             </div>
@@ -376,7 +377,7 @@ export function PlaybookShell({
                                     className="w-10 h-10 flex items-center justify-center rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-all"
                                     title={backLabel}
                                 >
-                                    <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                                    <ArrowLeft className="w-4 h-4"/>
                                 </Link>
                              </div>
                         )}
@@ -456,7 +457,7 @@ export function PlaybookShell({
                                     onClick={handleCopyMarkdown}
                                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium transition-all"
                                 >
-                                    {isCopied ? <MotionIcon name="Check" className="w-4 h-4 text-emerald-400" /> : <MotionIcon name="Copy" className="w-4 h-4" />}
+                                    {isCopied ? <Check className="w-4 h-4 text-emerald-400"/> : <Copy className="w-4 h-4"/>}
                                     {isCopied ? <span className="text-emerald-400">Copied!</span> : "Copy Markdown"}
                                 </button>
                              </div>
@@ -488,7 +489,7 @@ export function PlaybookShell({
                                 <div className="flex items-center gap-3 text-sm">
                                     <span className="text-zinc-500">Need changes?</span>
                                     <a href="mailto:support@team1.india" className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-white transition-colors group">
-                                       Reach out <MotionIcon name="ArrowUpRight" className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                       Reach out <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity"/>
                                     </a>
                                 </div>
                              </div>

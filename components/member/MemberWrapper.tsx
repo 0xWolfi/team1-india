@@ -7,7 +7,8 @@ import Link from "next/link";
 import { Footer } from "@/components/website/Footer";
 import { Team1Logo } from "@/components/Team1Logo";
 import Image from "next/image";
-import { MotionIcon } from "motion-icons-react";
+import { LogOut, Menu, User } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 
 interface MemberWrapperProps {
@@ -189,13 +190,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                                     : "text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]"
                             )}
                         >
-                            <MotionIcon
-                                name={item.icon}
-                                className={cn(
-                                    "w-[18px] h-[18px] pointer-events-none transition-colors",
-                                    active ? "text-white" : "text-zinc-600 group-hover:text-zinc-400"
-                                )}
-                            />
+                            <DynamicIcon name={item.icon} className={cn( "w-[18px] h-[18px] transition-colors", active ? "text-white" : "text-zinc-600 group-hover:text-zinc-400" )}/>
                             <span>{item.label}</span>
                             {active && (
                                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)]" />
@@ -230,7 +225,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                             </div>
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                                <MotionIcon name="User" className="w-3.5 h-3.5 text-zinc-600 pointer-events-none" />
+                                <User className="w-3.5 h-3.5 text-zinc-600"/>
                             </div>
                         )}
                     </div>
@@ -244,7 +239,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                     onClick={() => signOut({ callbackUrl: '/public' })}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-zinc-600 hover:text-red-400 hover:bg-red-500/[0.06] transition-all duration-200"
                 >
-                    <MotionIcon name="LogOut" className="w-[18px] h-[18px] pointer-events-none" />
+                    <LogOut className="w-[18px] h-[18px]"/>
                     <span>Sign out</span>
                 </button>
             </div>
@@ -271,7 +266,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                         className="p-2 -ml-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
                         aria-label="Open navigation menu"
                     >
-                        <MotionIcon name="Menu" className="w-5 h-5 pointer-events-none" />
+                        <Menu className="w-5 h-5"/>
                     </button>
                     <Team1Logo className="h-5 w-20" />
                 </div>
@@ -292,7 +287,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                             />
                         </div>
                     ) : (
-                        <MotionIcon name="User" className="w-4 h-4 text-zinc-400 pointer-events-none" />
+                        <User className="w-4 h-4 text-zinc-400"/>
                     )}
                 </Link>
             </header>

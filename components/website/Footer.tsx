@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { MotionIcon } from "motion-icons-react";
+import { Github, Instagram, Linkedin, Send } from "lucide-react";
 import { Team1Logo } from "@/components/Team1Logo";
 
 export function Footer() {
@@ -17,7 +17,7 @@ export function Footer() {
 
           <div className="flex items-center gap-5">
             <Link href="https://t.me/team1india" target="_blank" className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <MotionIcon name="Send" className="w-4 h-4" />
+                <Send className="w-4 h-4"/>
             </Link>
             <Link href="#" className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
@@ -25,13 +25,13 @@ export function Footer() {
                 </svg>
             </Link>
             <Link href="#" className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <MotionIcon name="Linkedin" className="w-4 h-4" />
+                <Linkedin className="w-4 h-4"/>
             </Link>
             <Link href="#" className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <MotionIcon name="Instagram" className="w-4 h-4" />
+                <Instagram className="w-4 h-4"/>
             </Link>
             <Link href="#" className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <MotionIcon name="Github" className="w-4 h-4" />
+                <Github className="w-4 h-4"/>
             </Link>
           </div>
         </div>

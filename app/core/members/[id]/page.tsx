@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useParams } from "next/navigation";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowLeft, Beaker, Calendar, CheckCircle, Clock, FileText, Loader2, MapPin, MessageCircle, MessageSquare, Send, Twitter, User, Wallet, XCircle } from "lucide-react";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { type CommunityMember } from "../components/ViewMemberModal";
 
@@ -106,7 +106,7 @@ export default function MemberDetailPage() {
     if (!session) {
         return (
             <div className="flex items-center justify-center h-screen text-zinc-500">
-                <MotionIcon name="Loader2" className="w-5 h-5 animate-spin mr-2" />
+                <Loader2 className="w-5 h-5 animate-spin mr-2"/>
                 Loading...
             </div>
         );
@@ -118,7 +118,7 @@ export default function MemberDetailPage() {
                 <CorePageHeader
                     title="Access Denied"
                     description="Only Superadmins can view member details"
-                    icon={<MotionIcon name="User" className="w-5 h-5 text-red-400" />}
+                    icon={<User className="w-5 h-5 text-red-400"/>}
                 />
             </div>
         );
@@ -130,10 +130,10 @@ export default function MemberDetailPage() {
                 <CorePageHeader
                     title="Member Details"
                     description="Loading member information..."
-                    icon={<MotionIcon name="User" className="w-5 h-5 text-emerald-400" />}
+                    icon={<User className="w-5 h-5 text-emerald-400"/>}
                 />
                 <div className="flex items-center justify-center h-64 text-zinc-500 gap-2">
-                    <MotionIcon name="Loader2" className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin"/>
                     Loading...
                 </div>
             </div>
@@ -151,7 +151,7 @@ export default function MemberDetailPage() {
         if (statusLower === 'approved' || statusLower === 'accepted') {
             return (
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <MotionIcon name="CheckCircle" className="w-3 h-3 mr-1" />
+                    <CheckCircle className="w-3 h-3 mr-1"/>
                     {status}
                 </span>
             );
@@ -159,14 +159,14 @@ export default function MemberDetailPage() {
         if (statusLower === 'rejected' || statusLower === 'declined') {
             return (
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
-                    <MotionIcon name="XCircle" className="w-3 h-3 mr-1" />
+                    <XCircle className="w-3 h-3 mr-1"/>
                     {status}
                 </span>
             );
         }
         return (
             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                <MotionIcon name="Clock" className="w-3 h-3 mr-1" />
+                <Clock className="w-3 h-3 mr-1"/>
                 {status}
             </span>
         );
@@ -183,14 +183,14 @@ export default function MemberDetailPage() {
             <CorePageHeader
                 title="Member Details"
                 description={`Complete profile and activity tracking for ${member?.name || member?.email || 'Member'}`}
-                icon={<MotionIcon name="User" className="w-5 h-5 text-emerald-400" />}
+                icon={<User className="w-5 h-5 text-emerald-400"/>}
                 backLink="/core/members"
             >
                 <button 
                     onClick={() => router.push('/core')}
                     className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-white/5 flex items-center gap-2 active:scale-95"
                 >
-                    <MotionIcon name="ArrowLeft" className="w-4 h-4" /> Back to Dashboard
+                    <ArrowLeft className="w-4 h-4"/> Back to Dashboard
                 </button>
             </CorePageHeader>
 
@@ -224,7 +224,7 @@ export default function MemberDetailPage() {
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {member?.xHandle && (
                         <div className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                            <MotionIcon name="Twitter" className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+                            <Twitter className="w-4 h-4 text-zinc-500 flex-shrink-0"/>
                             <div className="flex-1 min-w-0">
                                 <div className="text-xs text-zinc-500 mb-1">X Handle</div>
                                 <div className="text-sm text-white">@{member.xHandle.replace('@', '')}</div>
@@ -234,7 +234,7 @@ export default function MemberDetailPage() {
 
                     {member?.telegram && (
                         <div className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                            <MotionIcon name="Send" className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+                            <Send className="w-4 h-4 text-zinc-500 flex-shrink-0"/>
                             <div className="flex-1 min-w-0">
                                 <div className="text-xs text-zinc-500 mb-1">Telegram</div>
                                 <div className="text-sm text-white">@{member.telegram.replace('@', '')}</div>
@@ -244,7 +244,7 @@ export default function MemberDetailPage() {
 
                     {discord && (
                         <div className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                            <MotionIcon name="MessageCircle" className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+                            <MessageCircle className="w-4 h-4 text-zinc-500 flex-shrink-0"/>
                             <div className="flex-1 min-w-0">
                                 <div className="text-xs text-zinc-500 mb-1">Discord</div>
                                 <div className="text-sm text-white">{discord}</div>
@@ -254,7 +254,7 @@ export default function MemberDetailPage() {
 
                     {wallet && (
                         <div className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
-                            <MotionIcon name="Wallet" className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+                            <Wallet className="w-4 h-4 text-zinc-500 flex-shrink-0"/>
                             <div className="flex-1 min-w-0">
                                 <div className="text-xs text-zinc-500 mb-1">Wallet</div>
                                 <div className="text-sm text-white font-mono break-all">{wallet}</div>
@@ -264,7 +264,7 @@ export default function MemberDetailPage() {
 
                     {address && (
                         <div className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg md:col-span-2">
-                            <MotionIcon name="MapPin" className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+                            <MapPin className="w-4 h-4 text-zinc-500 flex-shrink-0"/>
                             <div className="flex-1 min-w-0">
                                 <div className="text-xs text-zinc-500 mb-1">Address</div>
                                 <div className="text-sm text-white">{address}</div>
@@ -274,7 +274,7 @@ export default function MemberDetailPage() {
 
                     {bio && (
                         <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg md:col-span-2">
-                            <MotionIcon name="FileText" className="w-4 h-4 text-zinc-500 flex-shrink-0 mt-0.5" />
+                            <FileText className="w-4 h-4 text-zinc-500 flex-shrink-0 mt-0.5"/>
                             <div className="flex-1 min-w-0">
                                 <div className="text-xs text-zinc-500 mb-1">Bio</div>
                                 <div className="text-sm text-white whitespace-pre-wrap">{bio}</div>
@@ -310,7 +310,7 @@ export default function MemberDetailPage() {
             {activity && activity.applications.length > 0 && (
                 <div className="bg-black/40 backdrop-blur-xl border border-white/5 rounded-xl shadow-2xl p-6 mb-6">
                     <div className="flex items-center gap-3 mb-6">
-                        <MotionIcon name="Calendar" className="w-5 h-5 text-indigo-400" />
+                        <Calendar className="w-5 h-5 text-indigo-400"/>
                         <h3 className="text-xl font-bold text-white">Applications</h3>
                         <span className="px-2 py-0.5 rounded text-xs font-medium bg-zinc-900/50 text-zinc-400 border border-white/5">
                             {activity.applications.length}
@@ -346,7 +346,7 @@ export default function MemberDetailPage() {
             {activity && activity.experiments.length > 0 && (
                 <div className="bg-black/40 backdrop-blur-xl border border-white/5 rounded-xl shadow-2xl p-6 mb-6">
                     <div className="flex items-center gap-3 mb-6">
-                        <MotionIcon name="Beaker" className="w-5 h-5 text-purple-400" />
+                        <Beaker className="w-5 h-5 text-purple-400"/>
                         <h3 className="text-xl font-bold text-white">Proposals</h3>
                         <span className="px-2 py-0.5 rounded text-xs font-medium bg-zinc-900/50 text-zinc-400 border border-white/5">
                             {activity.experiments.length}
@@ -385,7 +385,7 @@ export default function MemberDetailPage() {
             {activity && activity.experimentComments.length > 0 && (
                 <div className="bg-black/40 backdrop-blur-xl border border-white/5 rounded-xl shadow-2xl p-6 mb-6">
                     <div className="flex items-center gap-3 mb-6">
-                        <MotionIcon name="MessageSquare" className="w-5 h-5 text-blue-400" />
+                        <MessageSquare className="w-5 h-5 text-blue-400"/>
                         <h3 className="text-xl font-bold text-white">Comments</h3>
                         <span className="px-2 py-0.5 rounded text-xs font-medium bg-zinc-900/50 text-zinc-400 border border-white/5">
                             {activity.experimentComments.length}

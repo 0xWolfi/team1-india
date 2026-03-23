@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { MotionIcon } from "@/components/ui/ClientMotionIcon";
 import { Footer } from "@/components/website/Footer";
 import EventsClient from "@/components/public/EventsClient";
+
+export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 async function getEvents() {
   const guides = await prisma.guide.findMany({
@@ -48,7 +49,7 @@ export default async function PublicEventsPage() {
         
         {/* Back Link */}
         <Link href="/public" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
-            <MotionIcon name="ArrowLeft" className="w-4 h-4" /> Back to Dashboard
+            <ArrowLeft className="w-4 h-4"/> Back to Dashboard
         </Link>
 
         {/* Header */}
@@ -56,7 +57,7 @@ export default async function PublicEventsPage() {
             <div>
                 <h1 className="text-3xl md:text-4xl font-bold mb-3 flex items-center gap-3">
                      <span className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center border border-white/10">
-                        <MotionIcon name="Calendar" className="w-4 h-4 text-zinc-400" />
+                        <Calendar className="w-4 h-4 text-zinc-400"/>
                      </span>
                      Events
                 </h1>

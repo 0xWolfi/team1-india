@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { Calendar, CheckCircle2, Clock, LayoutDashboard, ListTodo, Plus, Video } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { useSession } from "next-auth/react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
@@ -59,14 +60,14 @@ export default function OperationsPage() {
             <CorePageHeader
                 title="Operations Center"
                 description="Manage tasks, sprints, and operational workflows."
-                icon={<MotionIcon name="CheckCircle2" className="w-5 h-5 text-zinc-200" />}
+                icon={<CheckCircle2 className="w-5 h-5 text-zinc-200"/>}
             >
                 <button 
                     className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all hover:bg-zinc-200 active:scale-95 text-sm"
                     onClick={() => alert("Create Task Modal Coming Soon")}
                 >
                     <span className="flex items-center gap-2">
-                        <MotionIcon name="Plus" className="w-4 h-4" /> New Task
+                        <Plus className="w-4 h-4"/> New Task
                     </span>
                 </button>
             </CorePageHeader>
@@ -83,7 +84,7 @@ export default function OperationsPage() {
                             : 'text-zinc-400 hover:text-white hover:bg-white/5'
                         }`}
                     >
-                        <MotionIcon name={tab.iconName} className="w-4 h-4" />
+                        <DynamicIcon name={tab.iconName} className="w-4 h-4"/>
                         {tab.label}
                     </button>
                 ))}
@@ -98,14 +99,14 @@ export default function OperationsPage() {
                         {/* Render View Specific Content */}
                         {view === 'board' && (
                             <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
-                                <MotionIcon name="LayoutDashboard" className="w-12 h-12 mb-4 opacity-50" />
+                                <LayoutDashboard className="w-12 h-12 mb-4 opacity-50"/>
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-300">Kanban Board</h3>
                                 <p className="text-sm">Task cards and drag-and-drop workflow will be here.</p>
                             </div>
                         )}
                         {view === 'calendar' && (
                              <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
-                                <MotionIcon name="Calendar" className="w-12 h-12 mb-4 opacity-50" />
+                                <Calendar className="w-12 h-12 mb-4 opacity-50"/>
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-300">Calendar View</h3>
                                 <p className="text-sm mb-6">Monthly schedule and deadlines.</p>
                                 <button 
@@ -113,21 +114,21 @@ export default function OperationsPage() {
                                     onClick={() => setIsMeetingModalOpen(true)}
                                 >
                                     <span className="flex items-center gap-2">
-                                        <MotionIcon name="Video" className="w-4 h-4" /> Schedule Google Meet
+                                        <Video className="w-4 h-4"/> Schedule Google Meet
                                     </span>
                                 </button>
                             </div>
                         )}
                         {view === 'list' && (
                              <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
-                                <MotionIcon name="ListTodo" className="w-12 h-12 mb-4 opacity-50" />
+                                <ListTodo className="w-12 h-12 mb-4 opacity-50"/>
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-300">List View</h3>
                                 <p className="text-sm">Detailed list of tasks and assignments.</p>
                             </div>
                         )}
                         {view === 'time' && (
                              <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
-                                <MotionIcon name="Clock" className="w-12 h-12 mb-4 opacity-50" />
+                                <Clock className="w-12 h-12 mb-4 opacity-50"/>
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-300">Time Logs</h3>
                                 <p className="text-sm">Tracked time and performance metrics.</p>
                             </div>

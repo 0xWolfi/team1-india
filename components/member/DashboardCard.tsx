@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { MotionIcon } from "motion-icons-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 
 interface DashboardCardProps {
@@ -69,7 +69,7 @@ export function DashboardCard({
                 ) : (
                     <div className="aspect-[16/9] flex items-center justify-center">
                         <div className={cn("p-3 rounded-xl border", config.bg, config.border)}>
-                            <MotionIcon name={config.icon} className={cn("w-6 h-6 pointer-events-none", config.color)} />
+                            <DynamicIcon name={config.icon} className={cn("w-6 h-6 ", config.color)}/>
                         </div>
                     </div>
                 )}

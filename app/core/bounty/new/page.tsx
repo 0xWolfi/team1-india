@@ -6,7 +6,7 @@ import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { BountyBuilder } from '@/components/bounty/BountyBuilder';
 import { X } from 'lucide-react';
-import { MotionIcon } from 'motion-icons-react';
+import { Zap } from "lucide-react";
 import Link from 'next/link';
 
 export default function NewBountyPage() {
@@ -41,7 +41,7 @@ export default function NewBountyPage() {
             <CorePageHeader
                 title="Create Bounty"
                 description="Define a new bounty with instructions and submission requirements."
-                icon={<MotionIcon name="Zap" className="w-5 h-5 text-zinc-200 pointer-events-none" />}
+                icon={<Zap className="w-5 h-5 text-zinc-200"/>}
             >
                 <Link href="/core/bounty">
                     <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition-colors border border-white/5">

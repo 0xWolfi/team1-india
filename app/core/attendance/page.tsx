@@ -1,6 +1,6 @@
 "use client";
 
-import { MotionIcon } from "motion-icons-react";
+import { Calendar, CheckCircle2, Search, Trash2, Users } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { usePermission } from "@/hooks/usePermission";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
@@ -145,21 +145,21 @@ export default function AttendancePage() {
             <CorePageHeader
                 title="Attendance Tracker"
                 description="Manage meeting logs and track member presence."
-                icon={<MotionIcon name="Users" className="w-5 h-5 text-red-500" />}
+                icon={<Users className="w-5 h-5 text-red-500"/>}
             >
                 {canManage && (
                     <button 
                         onClick={() => setIsModalOpen(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm font-bold shadow-lg shadow-red-500/20"
                     >
-                        <MotionIcon name="Calendar" className="w-4 h-4" /> New Session
+                        <Calendar className="w-4 h-4"/> New Session
                     </button>
                 )}
             </CorePageHeader>
 
             {/* Controls */}
             <div className="mb-6 relative">
-                 <MotionIcon name="Search" className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                 <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2"/>
                  <input 
                     type="text" 
                     placeholder="Search past meetings..." 
@@ -175,7 +175,7 @@ export default function AttendancePage() {
                     <div className="text-center py-12 text-zinc-500">Loading history...</div>
                 ) : filteredHistory.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-24 text-zinc-500 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                        <MotionIcon name="Calendar" className="w-12 h-12 mb-4 opacity-20" />
+                        <Calendar className="w-12 h-12 mb-4 opacity-20"/>
                         <p>No attendance logs found.</p>
                     </div>
                 ) : (
@@ -190,7 +190,7 @@ export default function AttendancePage() {
                                     {record.note || "Untitled Meeting"}
                                 </h3>
                                 <div className="flex items-center gap-2 text-sm text-zinc-500 mt-1">
-                                    <MotionIcon name="Calendar" className="w-3 h-3" />
+                                    <Calendar className="w-3 h-3"/>
                                     {new Date(record.date).toLocaleDateString(undefined, {
                                         weekday: 'long', 
                                         year: 'numeric', 
@@ -228,7 +228,7 @@ export default function AttendancePage() {
                             <div>
                                 <h2 className="text-2xl font-bold text-white mb-1">{selectedRecord.note || "Untitled Meeting"}</h2>
                                 <div className="flex items-center gap-2 text-sm text-zinc-300">
-                                    <MotionIcon name="Calendar" className="w-4 h-4" />
+                                    <Calendar className="w-4 h-4"/>
                                     {new Date(selectedRecord.date).toLocaleDateString(undefined, {
                                         weekday: 'long', 
                                         year: 'numeric', 
@@ -243,7 +243,7 @@ export default function AttendancePage() {
                                 onClick={() => setSelectedRecord(null)}
                                 className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white"
                             >
-                                <MotionIcon name="Users" className="w-5 h-5" />
+                                <Users className="w-5 h-5"/>
                             </button>
                         </div>
                         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
@@ -267,7 +267,7 @@ export default function AttendancePage() {
                                     onClick={() => setShowDeleteConfirm(true)}
                                     className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-all border border-red-500/10"
                                 >
-                                    <MotionIcon name="Trash2" className="w-4 h-4" /> Delete Log
+                                    <Trash2 className="w-4 h-4"/> Delete Log
                                 </button>
                             )}
                             <button 
@@ -311,7 +311,7 @@ export default function AttendancePage() {
                                         <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Meeting Name</label>
                                         <div className="group relative">
                                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                                <MotionIcon name="Users" className="w-5 h-5 text-zinc-500 group-focus-within:text-red-500 transition-colors" />
+                                                <Users className="w-5 h-5 text-zinc-500 group-focus-within:text-red-500 transition-colors"/>
                                             </div>
                                             <input 
                                                 type="text" 
@@ -327,7 +327,7 @@ export default function AttendancePage() {
                                         <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Date</label>
                                         <div className="group relative">
                                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                                <MotionIcon name="Calendar" className="w-5 h-5 text-zinc-500 group-focus-within:text-red-500 transition-colors" />
+                                                <Calendar className="w-5 h-5 text-zinc-500 group-focus-within:text-red-500 transition-colors"/>
                                             </div>
                                             <input 
                                                 type="date" 
@@ -343,7 +343,7 @@ export default function AttendancePage() {
                             {modalStep === 2 && (
                                 <div className="space-y-4">
                                     <div className="relative group">
-                                         <MotionIcon name="Search" className="w-5 h-5 text-zinc-500 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-red-500 transition-colors" />
+                                         <Search className="w-5 h-5 text-zinc-500 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-red-500 transition-colors"/>
                                          <input 
                                             type="text" 
                                             placeholder="Search members..." 
@@ -366,7 +366,7 @@ export default function AttendancePage() {
                                                         ? 'bg-red-500 border-red-500 text-white scale-110 shadow-lg shadow-red-500/20' 
                                                         : 'border-zinc-700 text-transparent'
                                                 }`}>
-                                                    <MotionIcon name="CheckCircle2" className="w-3.5 h-3.5" />
+                                                    <CheckCircle2 className="w-3.5 h-3.5"/>
                                                 </div>
                                                 <div className="flex-1">
                                                      <div className="flex items-center gap-2">
@@ -426,7 +426,7 @@ export default function AttendancePage() {
                     <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-red-500/20 rounded-3xl w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-red-500/10">
                         <div className="flex flex-col items-center text-center gap-6">
                             <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                                <MotionIcon name="Trash2" className="w-8 h-8" />
+                                <Trash2 className="w-8 h-8"/>
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-white">Delete Log?</h3>

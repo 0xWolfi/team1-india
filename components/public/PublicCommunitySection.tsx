@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { MotionIcon } from "motion-icons-react";
+import Image from "next/image";
+import { Globe, Handshake, Rocket, Send, Twitter } from "lucide-react";
 import Link from 'next/link';
 
 interface Project {
@@ -35,17 +36,17 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
         <div className="flex gap-3 mt-4">
             {item.website && (
                 <Link href={item.website} target="_blank" className="text-zinc-500 hover:text-white transition-colors">
-                    <MotionIcon name="Globe" className="w-4 h-4" />
+                    <Globe className="w-4 h-4"/>
                 </Link>
             )}
             {item.twitter && (
                 <Link href={item.twitter} target="_blank" className="text-zinc-500 hover:text-blue-400 transition-colors">
-                    <MotionIcon name="Twitter" className="w-4 h-4" />
+                    <Twitter className="w-4 h-4"/>
                 </Link>
             )}
             {item.telegram && (
                 <Link href={item.telegram} target="_blank" className="text-zinc-500 hover:text-sky-400 transition-colors">
-                    <MotionIcon name="Send" className="w-4 h-4" />
+                    <Send className="w-4 h-4"/>
                 </Link>
             )}
         </div>
@@ -58,7 +59,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                 <section>
                     <div className="flex items-center gap-3 mb-8">
                         <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-                            <MotionIcon name="Rocket" className="w-5 h-5 text-indigo-400" />
+                            <Rocket className="w-5 h-5 text-indigo-400"/>
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-white">Community Projects</h2>
@@ -72,7 +73,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-4">
                                         {project.logo ? (
-                                            <img src={project.logo} alt={project.name} className="w-12 h-12 rounded-xl object-cover bg-black" />
+                                            <Image src={project.logo} alt={project.name} width={48} height={48} className="w-12 h-12 rounded-xl object-cover bg-black" />
                                         ) : (
                                             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center text-xl font-bold text-zinc-500 uppercase">
                                                 {project.name.substring(0, 2)}
@@ -95,7 +96,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                 <section>
                     <div className="flex items-center gap-3 mb-8">
                         <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                            <MotionIcon name="Handshake" className="w-5 h-5 text-emerald-400" />
+                            <Handshake className="w-5 h-5 text-emerald-400"/>
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-white">Partners & Ecosystem</h2>
@@ -107,7 +108,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                         {partners.map(partner => (
                             <div key={partner.id} className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all flex flex-col items-center text-center group">
                                 {partner.logo ? (
-                                    <img src={partner.logo} alt={partner.name} className="w-16 h-16 rounded-full object-cover bg-black mb-4 border border-white/5" />
+                                    <Image src={partner.logo} alt={partner.name} width={64} height={64} className="w-16 h-16 rounded-full object-cover bg-black mb-4 border border-white/5" />
                                 ) : (
                                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center text-xl font-bold text-zinc-500 uppercase mb-4">
                                         {partner.name.substring(0, 2)}

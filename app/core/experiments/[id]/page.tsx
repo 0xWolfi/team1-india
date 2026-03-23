@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowLeft, Calendar, CheckCircle, Clock, Loader2, MessageSquare, Send, User, XCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 
@@ -105,7 +106,7 @@ export default function ExperimentDetailPage() {
   if (loading) return (
       <CoreWrapper>
         <div className="flex items-center justify-center h-[50vh] text-white">
-            <MotionIcon name="Loader2" className="animate-spin w-8 h-8 text-indigo-500" />
+            <Loader2 className="animate-spin w-8 h-8 text-indigo-500"/>
         </div>
       </CoreWrapper>
   );
@@ -127,7 +128,7 @@ export default function ExperimentDetailPage() {
     <CoreWrapper>
         <div className="max-w-6xl mx-auto pb-20">
             <Link href="/core/experiments" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
-                <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4"/>
                 Back to Lab
             </Link>
 
@@ -143,7 +144,7 @@ export default function ExperimentDetailPage() {
                                     {experiment.stage}
                                 </span>
                                 <div className="flex items-center gap-2 text-zinc-500 text-xs font-mono border border-white/5 px-3 py-1.5 rounded-full bg-black/40">
-                                    <MotionIcon name="Calendar" className="w-3.5 h-3.5" />
+                                    <Calendar className="w-3.5 h-3.5"/>
                                     {new Date(experiment.createdAt).toLocaleDateString()}
                                 </div>
                             </div>
@@ -152,11 +153,10 @@ export default function ExperimentDetailPage() {
                             
                             <div className="flex items-center gap-4 mb-8 pb-8 border-b border-white/5">
                                 {experiment.createdBy?.image ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={experiment.createdBy.image} alt={experiment.createdBy.name} className="w-12 h-12 rounded-full ring-2 ring-white/10" />
+                                    <Image src={experiment.createdBy.image} alt={experiment.createdBy.name} width={48} height={48} className="w-12 h-12 rounded-full ring-2 ring-white/10" />
                                 ) : (
                                     <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 ring-2 ring-white/10">
-                                        <MotionIcon name="User" className="w-6 h-6" />
+                                        <User className="w-6 h-6"/>
                                     </div>
                                 )}
                                 <div>
@@ -178,7 +178,7 @@ export default function ExperimentDetailPage() {
 
                         <h3 className="text-lg font-bold mb-8 flex items-center gap-3">
                             <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400">
-                                <MotionIcon name="MessageSquare" className="w-5 h-5" />
+                                <MessageSquare className="w-5 h-5"/>
                             </div>
                             Discussion Feed 
                             <span className="text-zinc-500 text-sm font-normal">({experiment.comments.length})</span>
@@ -195,8 +195,7 @@ export default function ExperimentDetailPage() {
                                     {/* Avaatara */}
                                     <div className="absolute left-0 top-0">
                                          {comment.author?.image ? (
-                                            // eslint-disable-next-line @next/next/no-img-element
-                                            <img src={comment.author.image} alt="User" className="w-10 h-10 rounded-full border-2 border-[#121212] relative z-10" />
+                                            <Image src={comment.author.image} alt="User" width={40} height={40} className="w-10 h-10 rounded-full border-2 border-[#121212] relative z-10" />
                                         ) : (
                                             <div className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-[#121212] flex items-center justify-center text-xs relative z-10">
                                                 {comment.author?.name?.[0]}
@@ -238,7 +237,7 @@ export default function ExperimentDetailPage() {
                                         disabled={submittingComment || !commentBody.trim()}
                                         className="absolute bottom-3 right-3 p-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-white/5 disabled:text-zinc-600 text-white rounded-lg transition-all shadow-lg shadow-indigo-500/20"
                                     >
-                                        {submittingComment ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : <MotionIcon name="Send" className="w-4 h-4" />}
+                                        {submittingComment ? <Loader2 className="w-4 h-4 animate-spin"/> : <Send className="w-4 h-4"/>}
                                     </button>
                                 </div>
                             </form>
@@ -267,7 +266,7 @@ export default function ExperimentDetailPage() {
                                     disabled={actionLoading}
                                     className="w-full py-3.5 px-4 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 hover:border-amber-500/40 text-amber-400 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(245,158,11,0.1)]"
                                 >
-                                    {actionLoading ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : <MotionIcon name="MessageSquare" className="w-4 h-4" />}
+                                    {actionLoading ? <Loader2 className="w-4 h-4 animate-spin"/> : <MessageSquare className="w-4 h-4"/>}
                                     Open for Discussion
                                 </button>
                             )}
@@ -280,7 +279,7 @@ export default function ExperimentDetailPage() {
                                         disabled={actionLoading}
                                         className="w-full py-3.5 px-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]"
                                     >
-                                        {actionLoading ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : <MotionIcon name="CheckCircle" className="w-4 h-4" />}
+                                        {actionLoading ? <Loader2 className="w-4 h-4 animate-spin"/> : <CheckCircle className="w-4 h-4"/>}
                                         Approve Proposal
                                     </button>
                                     <button 
@@ -288,7 +287,7 @@ export default function ExperimentDetailPage() {
                                         disabled={actionLoading}
                                         className="w-full py-3.5 px-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(239,68,68,0.1)]"
                                     >
-                                        {actionLoading ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : <MotionIcon name="XCircle" className="w-4 h-4" />}
+                                        {actionLoading ? <Loader2 className="w-4 h-4 animate-spin"/> : <XCircle className="w-4 h-4"/>}
                                         Reject Proposal
                                     </button>
                                 </>
@@ -298,7 +297,7 @@ export default function ExperimentDetailPage() {
                             {experiment.stage === 'APPROVED' && (
                                 <div className="p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-center">
                                     <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-3 text-emerald-500">
-                                         <MotionIcon name="CheckCircle" className="w-6 h-6" />
+                                         <CheckCircle className="w-6 h-6"/>
                                     </div>
                                     <div className="text-emerald-400 font-bold mb-1">Ratified</div>
                                     <p className="text-xs text-emerald-500/60">This proposal has been approved and moved to implementation planning.</p>
@@ -307,7 +306,7 @@ export default function ExperimentDetailPage() {
                              {experiment.stage === 'REJECTED' && (
                                 <div className="p-6 bg-red-500/5 border border-red-500/10 rounded-xl text-center">
                                     <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3 text-red-500">
-                                         <MotionIcon name="XCircle" className="w-6 h-6" />
+                                         <XCircle className="w-6 h-6"/>
                                     </div>
                                     <div className="text-red-400 font-bold mb-1">Declined</div>
                                     <p className="text-xs text-red-500/60">This proposal was not accepted by the governance committee.</p>
@@ -316,7 +315,7 @@ export default function ExperimentDetailPage() {
 
                             {!isSuperAdmin && experiment.stage === 'PROPOSED' && (
                                 <div className="p-4 bg-white/5 border border-white/5 rounded-xl text-center">
-                                    <MotionIcon name="Clock" className="w-5 h-5 text-zinc-500 mx-auto mb-2" />
+                                    <Clock className="w-5 h-5 text-zinc-500 mx-auto mb-2"/>
                                     <p className="text-xs text-zinc-500 italic">
                                         Proposal is currently under review by Superadmin.
                                     </p>
