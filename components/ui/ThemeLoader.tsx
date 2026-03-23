@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react";
 import { Team1Logo } from "@/components/Team1Logo";
-import { cn } from "@/lib/utils";
 
 export function ThemeLoader() {
     return (
@@ -16,7 +14,7 @@ export function ThemeLoader() {
                     
                     <div className="relative w-20 h-20 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl flex items-center justify-center shadow-2xl">
                         <div className="relative z-10">
-                            <Team1Logo className="h-8 w-32 opacity-80" />
+                            <Team1Logo className="h-10 w-10 opacity-80" iconOnly />
                         </div>
                     </div>
                 </div>

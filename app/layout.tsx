@@ -65,8 +65,8 @@ import { DynamicBackground } from "@/components/ui/DynamicBackground";
 import { Analytics } from "@vercel/analytics/react";
 import dynamic from "next/dynamic";
 
-const PWAUpdatePrompt = dynamic(() => import("@/components/PWAUpdatePrompt"), { ssr: false });
-const PWAInstallPrompt = dynamic(() => import("@/components/PWAInstallPrompt"), { ssr: false });
+const PWAUpdatePrompt = dynamic(() => import("@/components/PWAUpdatePrompt"));
+const PWAInstallPrompt = dynamic(() => import("@/components/PWAInstallPrompt"));
 
 export default function RootLayout({
   children,
