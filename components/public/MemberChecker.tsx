@@ -134,7 +134,7 @@ export default function MemberChecker() {
                     >
                         {status === 'LOADING' ? (
                             <>
-                                <Loader2 className="w-4 h-4 animate-spin" animation="spin"/> Verifying...
+                                <Loader2 className="w-4 h-4 animate-spin"/> Verifying...
                             </>
                         ) : (
                             <>

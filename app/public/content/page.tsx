@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft, Trophy } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Footer } from "@/components/website/Footer";
 import ContentClient from "@/components/public/ContentClient";

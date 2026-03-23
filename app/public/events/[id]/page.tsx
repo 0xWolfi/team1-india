@@ -2,6 +2,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";

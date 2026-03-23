@@ -399,7 +399,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                             disabled={step === 'submitting' || !formData.consent}
                             className="w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:opacity-100 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                         >
-                            {step === 'submitting' && <Loader2 className="w-5 h-5 animate-spin" animation="spin"/>}
+                            {step === 'submitting' && <Loader2 className="w-5 h-5 animate-spin"/>}
                             {step === 'submitting' ? 'Submitting Application...' : 'Submit Member Application'}
                         </button>
                     </div>

@@ -581,7 +581,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
             <div className="relative w-32 h-32 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden group shadow-xl">
                 {isUploading ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-                        <Loader2 className="w-8 h-8 text-white animate-spin" animation="spin"/>
+                        <Loader2 className="w-8 h-8 text-white animate-spin"/>
                     </div>
                 ) : (
                     <>
@@ -908,7 +908,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                   disabled={isSaving}
                   className="px-6 py-2.5 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-white/5"
               >
-                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" animation="spin"/> : <Save className="w-4 h-4"/>}
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin"/> : <Save className="w-4 h-4"/>}
                   Save Changes
               </button>
           </div>

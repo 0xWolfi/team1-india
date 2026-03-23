@@ -86,7 +86,7 @@ export default function NewMemberExperimentPage() {
                             disabled={loading}
                             className="flex items-center gap-2 px-8 py-3 bg-white text-black hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-bold transition-all shadow-lg hover:shadow-white/10 hover:scale-105"
                         >
-                            {loading ? <Loader2 className="w-4 h-4 animate-spin" animation="spin"/> : <Save className="w-4 h-4"/>}
+                            {loading ? <Loader2 className="w-4 h-4 animate-spin"/> : <Save className="w-4 h-4"/>}
                             Submit Proposal
                         </button>
                     </div>

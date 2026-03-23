@@ -97,7 +97,7 @@ export default function MemberExperimentsPage() {
 
             {loading ? (
                 <div className="flex justify-center py-40">
-                    <Loader2 className="w-8 h-8 text-zinc-500 animate-spin" animation="spin"/>
+                    <Loader2 className="w-8 h-8 text-zinc-500 animate-spin"/>
                 </div>
             ) : viewMode === "BOARD" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 overflow-x-auto pb-4">
