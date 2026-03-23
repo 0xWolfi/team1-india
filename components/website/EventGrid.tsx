@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import NextImage from "next/image";
 import { LumaEventData } from "@/lib/luma";
-import { MotionIcon } from "motion-icons-react";
+import { Calendar, ChevronDown, MapPin, Search } from "lucide-react";
 import { CustomDatePicker } from "./CustomDatePicker";
 
 interface EventGridProps {
@@ -40,7 +40,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {/* Search */}
         <div className="relative w-full md:w-64 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <MotionIcon name="Search" className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+            <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors"/>
           </div>
           <input 
             type="text"
@@ -54,7 +54,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {/* City Filter */}
         <div className="relative w-full md:w-48 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <MotionIcon name="MapPin" className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+            <MapPin className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors"/>
           </div>
           <select 
             value={selectedCity}
@@ -66,7 +66,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
             ))}
           </select>
           <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-            <MotionIcon name="ChevronDown" className="w-4 h-4 text-zinc-600" />
+            <ChevronDown className="w-4 h-4 text-zinc-600"/>
           </div>
         </div>
 
@@ -106,7 +106,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                                 />
                               ) : (
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                  <MotionIcon name="Calendar" className="w-12 h-12 text-zinc-600" />
+                                  <Calendar className="w-12 h-12 text-zinc-600"/>
                                 </div>
                               )}
                             </div>

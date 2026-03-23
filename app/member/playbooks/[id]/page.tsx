@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { MemberWrapper } from "@/components/member/MemberWrapper";
-import { MotionIcon } from 'motion-icons-react';
+import { Loader2 } from "lucide-react";
 import { PlaybookShell } from "@/components/playbooks/PlaybookShell";
 import Editor from '@/components/playbooks/Editor';
 
@@ -45,7 +45,7 @@ export default function MemberPlaybookDetailPage() {
         return (
             <MemberWrapper>
                 <div className="flex justify-center pt-40">
-                    <MotionIcon name="Loader2" className="w-8 h-8 animate-spin text-zinc-500" animation="spin" />
+                    <Loader2 className="w-8 h-8 animate-spin text-zinc-500" animation="spin"/>
                 </div>
             </MemberWrapper>
         );

@@ -7,7 +7,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { Block } from "@blocknote/core";
-import { MotionIcon } from "motion-icons-react";
+import { Code, Eye } from "lucide-react";
 import { upload } from "@vercel/blob/client";
 import { cn } from "@/lib/utils";
 
@@ -187,7 +187,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                              viewMode === 'markdown' ? "bg-zinc-800 text-white shadow-sm border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
                          )}
                      >
-                         <MotionIcon name="Code" className="w-3.5 h-3.5" /> Markdown
+                         <Code className="w-3.5 h-3.5"/> Markdown
                      </button>
                      <button
                          onClick={() => handleModeChange('preview')}
@@ -196,7 +196,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
                              viewMode === 'preview' ? "bg-zinc-800 text-white shadow-sm border border-white/10" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
                          )}
                      >
-                         <MotionIcon name="Eye" className="w-3.5 h-3.5" /> Preview
+                         <Eye className="w-3.5 h-3.5"/> Preview
                      </button>
                  </div>
              )}

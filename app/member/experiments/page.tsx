@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MotionIcon } from 'motion-icons-react';
+import { Beaker, ChevronDown, LayoutGrid, List, Loader2, MessageSquare, Plus } from "lucide-react";
 import Link from 'next/link';
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
@@ -66,7 +66,7 @@ export default function MemberExperimentsPage() {
             <CorePageHeader
                 title="Experiments Lab"
                 description="The innovation engine. Propose new ideas, debate implementations, and govern the roadmap."
-                icon={<MotionIcon name="Beaker" className="w-5 h-5 text-zinc-200" />}
+                icon={<Beaker className="w-5 h-5 text-zinc-200"/>}
                 backLink="/member"
             >
                 <div className="flex items-center gap-3">
@@ -76,19 +76,19 @@ export default function MemberExperimentsPage() {
                             onClick={() => setViewMode("BOARD")}
                             className={`p-1.5 rounded-md transition-all ${viewMode === "BOARD" ? "bg-zinc-100 text-black shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
                         >
-                            <MotionIcon name="LayoutGrid" className="w-4 h-4" />
+                            <LayoutGrid className="w-4 h-4"/>
                         </button>
                         <button
                             onClick={() => setViewMode("LIST")}
                             className={`p-1.5 rounded-md transition-all ${viewMode === "LIST" ? "bg-zinc-100 text-black shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
                         >
-                            <MotionIcon name="List" className="w-4 h-4" />
+                            <List className="w-4 h-4"/>
                         </button>
                     </div>
 
                     <Link href="/member/experiments/new">
                         <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors">
-                            <MotionIcon name="Plus" className="w-4 h-4" /> New Proposal
+                            <Plus className="w-4 h-4"/> New Proposal
                         </button>
                     </Link>
                 </div>
@@ -96,7 +96,7 @@ export default function MemberExperimentsPage() {
 
             {loading ? (
                 <div className="flex justify-center py-40">
-                    <MotionIcon name="Loader2" className="w-8 h-8 text-zinc-500 animate-spin" animation="spin" />
+                    <Loader2 className="w-8 h-8 text-zinc-500 animate-spin" animation="spin"/>
                 </div>
             ) : viewMode === "BOARD" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 overflow-x-auto pb-4">
@@ -137,7 +137,7 @@ export default function MemberExperimentsPage() {
                                 <option value="ALL">All Stages</option>
                                 {columns.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
                             </select>
-                            <MotionIcon name="ChevronDown" className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"/>
                         </div>
                     </div>
 
@@ -192,7 +192,7 @@ function ExperimentCard({ exp }: { exp: Experiment }) {
 
             <div className="flex items-center justify-between mt-4">
                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-zinc-500 group-hover:text-zinc-400">
-                    <MotionIcon name="MessageSquare" className="w-3 h-3" />
+                    <MessageSquare className="w-3 h-3"/>
                     {exp._count.comments}
                 </div>
             </div>

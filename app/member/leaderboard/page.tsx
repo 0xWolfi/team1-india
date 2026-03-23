@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
-import { MotionIcon } from "motion-icons-react";
+import { Trophy, Zap } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 
@@ -46,7 +47,7 @@ export default function LeaderboardPage() {
                 <div className="mb-8">
                     <div className="flex items-center gap-3 mb-1">
                         <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                            <MotionIcon name="Trophy" className="w-5 h-5 text-amber-400 pointer-events-none" />
+                            <Trophy className="w-5 h-5 text-amber-400"/>
                         </div>
                         <div>
                             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">Leaderboard</h1>
@@ -59,7 +60,7 @@ export default function LeaderboardPage() {
                     <div className="py-20 text-center text-zinc-600 animate-pulse">Loading leaderboard...</div>
                 ) : leaderboard.length === 0 ? (
                     <div className={cn("py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                        <MotionIcon name="Trophy" className="w-8 h-8 text-zinc-700 mb-3 pointer-events-none" />
+                        <Trophy className="w-8 h-8 text-zinc-700 mb-3"/>
                         <p className="text-zinc-600 font-medium text-sm">No bounty completions yet. Be the first!</p>
                     </div>
                 ) : (
@@ -75,7 +76,7 @@ export default function LeaderboardPage() {
                                     <p className="font-semibold text-white text-sm truncate w-full">{leaderboard[1].name || "Anonymous"}</p>
                                     <p className="text-xs text-zinc-500 truncate w-full">{leaderboard[1].email}</p>
                                     <div className="flex items-center gap-1.5 mt-3">
-                                        <MotionIcon name="Zap" className="w-3.5 h-3.5 text-amber-400 pointer-events-none" />
+                                        <Zap className="w-3.5 h-3.5 text-amber-400"/>
                                         <span className="text-sm font-bold text-amber-400">{leaderboard[1].totalXp} XP</span>
                                     </div>
                                     <p className="text-[11px] text-zinc-600 mt-1">{leaderboard[1].completedBounties} bounties</p>
@@ -84,12 +85,12 @@ export default function LeaderboardPage() {
                                 {/* 1st Place */}
                                 <div className={cn("rounded-2xl p-5 flex flex-col items-center text-center border-amber-500/30", glassClass)}>
                                     <div className="w-14 h-14 rounded-full bg-amber-500/10 border-2 border-amber-500/40 flex items-center justify-center mb-3">
-                                        <MotionIcon name="Trophy" className="w-6 h-6 text-amber-400 pointer-events-none" />
+                                        <Trophy className="w-6 h-6 text-amber-400"/>
                                     </div>
                                     <p className="font-bold text-white text-sm truncate w-full">{leaderboard[0].name || "Anonymous"}</p>
                                     <p className="text-xs text-zinc-500 truncate w-full">{leaderboard[0].email}</p>
                                     <div className="flex items-center gap-1.5 mt-3">
-                                        <MotionIcon name="Zap" className="w-3.5 h-3.5 text-amber-400 pointer-events-none" />
+                                        <Zap className="w-3.5 h-3.5 text-amber-400"/>
                                         <span className="text-base font-bold text-amber-400">{leaderboard[0].totalXp} XP</span>
                                     </div>
                                     <p className="text-[11px] text-zinc-600 mt-1">{leaderboard[0].completedBounties} bounties</p>
@@ -103,7 +104,7 @@ export default function LeaderboardPage() {
                                     <p className="font-semibold text-white text-sm truncate w-full">{leaderboard[2].name || "Anonymous"}</p>
                                     <p className="text-xs text-zinc-500 truncate w-full">{leaderboard[2].email}</p>
                                     <div className="flex items-center gap-1.5 mt-3">
-                                        <MotionIcon name="Zap" className="w-3.5 h-3.5 text-amber-400 pointer-events-none" />
+                                        <Zap className="w-3.5 h-3.5 text-amber-400"/>
                                         <span className="text-sm font-bold text-amber-400">{leaderboard[2].totalXp} XP</span>
                                     </div>
                                     <p className="text-[11px] text-zinc-600 mt-1">{leaderboard[2].completedBounties} bounties</p>
@@ -133,7 +134,7 @@ export default function LeaderboardPage() {
                                                 : "bg-zinc-800/50 border-white/5 text-zinc-500"
                                         )}>
                                             {entry.rank <= 3 ? (
-                                                <MotionIcon name={topRank?.icon || "Hash"} className="w-4 h-4 pointer-events-none" />
+                                                <DynamicIcon name={topRank?.icon || "Hash"} className="w-4 h-4"/>
                                             ) : (
                                                 <span>{entry.rank}</span>
                                             )}
@@ -163,7 +164,7 @@ export default function LeaderboardPage() {
 
                                         {/* XP */}
                                         <div className="flex items-center gap-1.5 shrink-0">
-                                            <MotionIcon name="Zap" className="w-3.5 h-3.5 text-amber-400 pointer-events-none" />
+                                            <Zap className="w-3.5 h-3.5 text-amber-400"/>
                                             <span className="text-sm font-bold text-amber-400 tabular-nums">{entry.totalXp} XP</span>
                                         </div>
                                     </div>

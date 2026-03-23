@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowLeft, Lock, LogIn, Trophy, Zap } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { FloatingNav } from "@/components/public/FloatingNav";
@@ -46,7 +47,7 @@ export default function PublicLeaderboardPage() {
                 <div className="flex-1 flex items-center justify-center px-4 md:px-8">
                     <div className={cn("max-w-md w-full rounded-2xl p-8 flex flex-col items-center text-center", glassClass)}>
                         <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-6">
-                            <MotionIcon name="Lock" className="w-8 h-8 text-amber-400 pointer-events-none" />
+                            <Lock className="w-8 h-8 text-amber-400"/>
                         </div>
                         <h1 className="text-xl font-bold mb-2">Login Required</h1>
                         <p className="text-sm text-zinc-500 mb-6">You need to be logged in to view the leaderboard.</p>
@@ -54,7 +55,7 @@ export default function PublicLeaderboardPage() {
                             onClick={() => setShowLoginModal(true)}
                             className="px-6 py-3 bg-white text-black font-semibold rounded-xl text-sm hover:bg-zinc-200 transition-all flex items-center gap-2"
                         >
-                            <MotionIcon name="LogIn" className="w-4 h-4 pointer-events-none" /> Login to Continue
+                            <LogIn className="w-4 h-4"/> Login to Continue
                         </button>
                     </div>
                 </div>
@@ -87,7 +88,7 @@ export default function PublicLeaderboardPage() {
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
                     <div>
                         <Link href="/public" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors mb-4 group">
-                            <MotionIcon name="ArrowLeft" className="w-3 h-3 group-hover:-translate-x-1 transition-transform pointer-events-none" />
+                            <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform"/>
                             Back to Home
                         </Link>
                         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Leaderboard</h1>
@@ -97,7 +98,7 @@ export default function PublicLeaderboardPage() {
                         href="/public/bounty"
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all shrink-0"
                     >
-                        <MotionIcon name="Zap" className="w-3.5 h-3.5 pointer-events-none" />
+                        <Zap className="w-3.5 h-3.5"/>
                         View Bounties
                     </Link>
                 </div>
@@ -145,7 +146,7 @@ export default function PublicLeaderboardPage() {
                                         isTop3 ? rankColors[entry.rank] : "bg-zinc-800/50 border-white/5 text-zinc-500"
                                     )}>
                                         {isTop3 ? (
-                                            <MotionIcon name={entry.rank === 1 ? "Trophy" : "Award"} className="w-4 h-4 pointer-events-none" />
+                                            <DynamicIcon name={entry.rank === 1 ? "Trophy" : "Award"} className="w-4 h-4"/>
                                         ) : (
                                             <span>{entry.rank}</span>
                                         )}
@@ -165,7 +166,7 @@ export default function PublicLeaderboardPage() {
                                         <p className="text-xs text-zinc-600">{entry.completedBounties} bounties completed</p>
                                     </div>
                                     <div className="flex items-center gap-1.5 shrink-0">
-                                        <MotionIcon name="Zap" className="w-3.5 h-3.5 text-amber-400 pointer-events-none" />
+                                        <Zap className="w-3.5 h-3.5 text-amber-400"/>
                                         <span className="text-sm font-bold text-amber-400 tabular-nums">{entry.totalXp} XP</span>
                                     </div>
                                 </div>
@@ -174,7 +175,7 @@ export default function PublicLeaderboardPage() {
                     </div>
                 ) : (
                     <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                        <MotionIcon name="Trophy" className="w-8 h-8 text-zinc-700 mb-3 pointer-events-none" />
+                        <Trophy className="w-8 h-8 text-zinc-700 mb-3"/>
                         <p className="text-zinc-600 font-medium text-sm">No bounty completions yet. Be the first!</p>
                         <Link href="/public/bounty" className="mt-4 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-black hover:bg-zinc-100 transition-all">
                             Browse Bounties

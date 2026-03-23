@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { MotionIcon } from "motion-icons-react";
+import { Globe, Handshake, Rocket, Send, Twitter } from "lucide-react";
 import Link from 'next/link';
 
 interface Project {
@@ -35,17 +35,17 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
         <div className="flex gap-3 mt-4">
             {item.website && (
                 <Link href={item.website} target="_blank" className="text-zinc-500 hover:text-white transition-colors">
-                    <MotionIcon name="Globe" className="w-4 h-4" />
+                    <Globe className="w-4 h-4"/>
                 </Link>
             )}
             {item.twitter && (
                 <Link href={item.twitter} target="_blank" className="text-zinc-500 hover:text-blue-400 transition-colors">
-                    <MotionIcon name="Twitter" className="w-4 h-4" />
+                    <Twitter className="w-4 h-4"/>
                 </Link>
             )}
             {item.telegram && (
                 <Link href={item.telegram} target="_blank" className="text-zinc-500 hover:text-sky-400 transition-colors">
-                    <MotionIcon name="Send" className="w-4 h-4" />
+                    <Send className="w-4 h-4"/>
                 </Link>
             )}
         </div>
@@ -58,7 +58,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                 <section>
                     <div className="flex items-center gap-3 mb-8">
                         <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-                            <MotionIcon name="Rocket" className="w-5 h-5 text-indigo-400" />
+                            <Rocket className="w-5 h-5 text-indigo-400"/>
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-white">Community Projects</h2>
@@ -95,7 +95,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                 <section>
                     <div className="flex items-center gap-3 mb-8">
                         <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                            <MotionIcon name="Handshake" className="w-5 h-5 text-emerald-400" />
+                            <Handshake className="w-5 h-5 text-emerald-400"/>
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-white">Partners & Ecosystem</h2>

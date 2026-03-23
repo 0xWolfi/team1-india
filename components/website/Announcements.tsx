@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 interface Announcement {
@@ -66,7 +66,7 @@ export function Announcements({ audience = "PUBLIC" }: AnnouncementsProps) {
                     <span className="text-sm text-zinc-300 group-hover:text-white transition-colors truncate">
                         {announcement.title}
                     </span>
-                    <MotionIcon name="ArrowRight" className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white group-hover:translate-x-1 transition-all ml-auto min-w-fit" />
+                    <ArrowRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white group-hover:translate-x-1 transition-all ml-auto min-w-fit"/>
                 </Link>
             ))}
         </div>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MotionIcon } from "motion-icons-react";
+import { FileText, Loader2, Save } from "lucide-react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 
@@ -42,7 +42,7 @@ export default function NewExperimentPage() {
         <CorePageHeader
             title="New Proposal"
             description="Draft a new experiment for community consideration."
-            icon={<MotionIcon name="FileText" className="w-5 h-5 text-zinc-200" />}
+            icon={<FileText className="w-5 h-5 text-zinc-200"/>}
             backLink="/core/experiments"
         />
 
@@ -75,7 +75,7 @@ export default function NewExperimentPage() {
                             />
                         </div>
                         <p className="text-xs text-zinc-600 mt-3 flex items-center gap-2">
-                             <MotionIcon name="FileText" className="w-3 h-3" />
+                             <FileText className="w-3 h-3"/>
                              Markdown formatting is supported.
                         </p>
                     </div>
@@ -86,7 +86,7 @@ export default function NewExperimentPage() {
                             disabled={loading}
                             className="flex items-center gap-2 px-8 py-3 bg-white text-black hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-bold transition-all shadow-lg hover:shadow-white/10 hover:scale-105"
                         >
-                            {loading ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : <MotionIcon name="Save" className="w-4 h-4" />}
+                            {loading ? <Loader2 className="w-4 h-4 animate-spin"/> : <Save className="w-4 h-4"/>}
                             Submit Proposal
                         </button>
                     </div>

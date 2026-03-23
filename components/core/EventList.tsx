@@ -1,6 +1,6 @@
 import React from 'react';
 import { ResourceCard } from '../public/ResourceCard';
-import { MotionIcon } from "motion-icons-react";
+import { Calendar } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 
 interface EventModel {
@@ -33,7 +33,7 @@ export const EventList: React.FC<EventListProps> = ({ events, basePath, isLoadin
     if (events.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center p-12 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                <MotionIcon name="Calendar" className="w-8 h-8 text-zinc-600 mb-4" />
+                <Calendar className="w-8 h-8 text-zinc-600 mb-4"/>
                 <h3 className="text-zinc-400 font-medium text-sm">No events scheduled</h3>
                 <p className="text-zinc-600 text-xs mt-1">Create an event to populate the calendar.</p>
             </div>

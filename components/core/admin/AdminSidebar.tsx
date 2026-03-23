@@ -2,8 +2,8 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MotionIcon } from "motion-icons-react";
-
+import { Shield } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 export function AdminSidebar() {
     const pathname = usePathname();
 
@@ -20,7 +20,7 @@ export function AdminSidebar() {
         <aside className="w-64 border-r border-white/5 bg-zinc-950/50 flex flex-col p-4 md:h-[calc(100vh-6rem)] sticky top-24 rounded-2xl md:mr-6">
             <div className="flex items-center gap-2 px-3 py-2 mb-6">
                 <div className="p-1.5 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
-                    <MotionIcon name="Shield" className="w-4 h-4 text-indigo-400" />
+                    <Shield className="w-4 h-4 text-indigo-400"/>
                 </div>
                 <span className="font-bold text-sm tracking-wide text-zinc-200">Admin Console</span>
             </div>
@@ -40,7 +40,7 @@ export function AdminSidebar() {
                                 }
                             `}
                         >
-                            <MotionIcon name={link.icon} className={`w-4 h-4 ${isActive ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400"}`} />
+                            <DynamicIcon name={link.icon} className={`w-4 h-4 ${isActive ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400"}`}/>
                             {link.label}
                         </Link>
                     );

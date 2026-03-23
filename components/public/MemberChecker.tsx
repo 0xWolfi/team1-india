@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { MotionIcon } from "motion-icons-react";
-
+import { CheckCircle2, Loader2, Search, XCircle } from "lucide-react";
 export default function MemberChecker() {
     const [email, setEmail] = useState("");
     const [xHandle, setXHandle] = useState("");
@@ -135,11 +134,11 @@ export default function MemberChecker() {
                     >
                         {status === 'LOADING' ? (
                             <>
-                                <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" animation="spin" /> Verifying...
+                                <Loader2 className="w-4 h-4 animate-spin" animation="spin"/> Verifying...
                             </>
                         ) : (
                             <>
-                                <MotionIcon name="Search" className="w-4 h-4" /> Check Status
+                                <Search className="w-4 h-4"/> Check Status
                             </>
                         )}
                     </button>
@@ -149,7 +148,7 @@ export default function MemberChecker() {
                 <div className="pt-2 min-h-[40px] flex items-center justify-center">
                     {status === 'FOUND' && result && (
                         <div className="flex items-center gap-3 text-emerald-400 bg-emerald-500/10 px-4 py-3 rounded-xl border border-emerald-500/20 w-full justify-center">
-                            <MotionIcon name="CheckCircle2" className="w-5 h-5 shrink-0" />
+                            <CheckCircle2 className="w-5 h-5 shrink-0"/>
                             <span className="font-medium text-sm">
                                 Yes, <strong className="text-white">{result.name}</strong> is a <span className="capitalize">{result.role}</span>.
                             </span>
@@ -158,7 +157,7 @@ export default function MemberChecker() {
 
                     {status === 'NOT_FOUND' && (
                         <div className="flex items-center gap-3 text-zinc-400 bg-zinc-800/50 px-4 py-3 rounded-xl border border-white/5 w-full justify-center">
-                            <MotionIcon name="XCircle" className="w-5 h-5 shrink-0" />
+                            <XCircle className="w-5 h-5 shrink-0"/>
                             <span className="font-medium text-sm">No member found with these details.</span>
                         </div>
                     )}

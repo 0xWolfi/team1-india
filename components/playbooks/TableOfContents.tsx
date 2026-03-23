@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { List, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Heading {
@@ -100,7 +100,7 @@ export function TableOfContents({ contentDependency }: TableOfContentsProps) {
                     className="h-12 w-12 rounded-full bg-white text-black shadow-lg flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
                     aria-label="Table of Contents"
                 >
-                    {isOpen ? <MotionIcon name="X" className="w-5 h-5" /> : <MotionIcon name="List" className="w-5 h-5" />}
+                    {isOpen ? <X className="w-5 h-5"/> : <List className="w-5 h-5"/>}
                 </button>
             </div>
 

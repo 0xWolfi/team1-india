@@ -1,6 +1,6 @@
 "use client";
 
-import { MotionIcon } from "motion-icons-react";
+import { ExternalLink, Megaphone, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { usePermission } from "@/hooks/usePermission";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
@@ -106,7 +106,7 @@ export default function AnnouncementsPage() {
                     <div className="bg-zinc-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-300">
                         <div className="flex items-start gap-4 mb-4">
                             <div className="p-3 bg-red-500/10 rounded-full text-red-500">
-                                <MotionIcon name="Megaphone" className="w-6 h-6" />
+                                <Megaphone className="w-6 h-6"/>
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold text-white mb-1">Limit Reached</h2>
@@ -147,14 +147,14 @@ export default function AnnouncementsPage() {
             <CorePageHeader
                 title="Announcements"
                 description="Broadcast updates to Public, Members, or Everyone."
-                icon={<MotionIcon name="Megaphone" className="w-5 h-5 text-red-500" />}
+                icon={<Megaphone className="w-5 h-5 text-red-500"/>}
             >
                 {!isCreating && canManage && (
                     <button 
                         onClick={() => setIsCreating(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm font-bold shadow-lg shadow-red-500/20"
                     >
-                        <MotionIcon name="Plus" className="w-4 h-4" /> New Announcement
+                        <Plus className="w-4 h-4"/> New Announcement
                     </button>
                 )}
             </CorePageHeader>
@@ -245,7 +245,7 @@ export default function AnnouncementsPage() {
             <div className="grid gap-3">
                     {(!Array.isArray(announcements) || announcements.length === 0) ? (
                     <div className="flex flex-col items-center justify-center text-zinc-500 h-64 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                        <MotionIcon name="Megaphone" className="w-12 h-12 mb-4 opacity-20" />
+                        <Megaphone className="w-12 h-12 mb-4 opacity-20"/>
                         <p>No active announcements.</p>
                     </div>
                     ) : (
@@ -257,14 +257,14 @@ export default function AnnouncementsPage() {
                                     item.audience === 'MEMBER' ? 'bg-emerald-500/10 text-emerald-400' :
                                     'bg-purple-500/10 text-purple-400'
                                 }`}>
-                                    <MotionIcon name="Megaphone" className="w-5 h-5" />
+                                    <Megaphone className="w-5 h-5"/>
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-white flex items-center gap-2">
                                         {item.title}
                                         {item.link && (
                                             <a href={item.link} target="_blank" className="text-zinc-500 hover:text-white">
-                                                <MotionIcon name="ExternalLink" className="w-3 h-3" />
+                                                <ExternalLink className="w-3 h-3"/>
                                             </a>
                                         )}
                                     </h3>
@@ -288,7 +288,7 @@ export default function AnnouncementsPage() {
                                     onClick={() => handleDelete(item.id)}
                                     className="p-2 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
                                 >
-                                    <MotionIcon name="Trash2" className="w-4 h-4" />
+                                    <Trash2 className="w-4 h-4"/>
                                 </button>
                             )}
                         </div>

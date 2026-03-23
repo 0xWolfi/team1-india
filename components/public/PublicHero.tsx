@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MotionIcon } from "motion-icons-react";
+import { Globe, LayoutDashboard, LayoutGrid, LogIn, User, Zap } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 import ApplicationModal from './ApplicationModal';
 
@@ -52,7 +53,7 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                            <MotionIcon name="Globe" className="w-5 h-5 text-white pointer-events-none" />
+                            <Globe className="w-5 h-5 text-white"/>
                         </div>
                         <div>
                             <h1 className="text-lg md:text-xl font-bold text-white tracking-tight">
@@ -71,13 +72,13 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
                                     onClick={onLoginClick}
                                     className="px-4 py-2 bg-white text-black font-semibold rounded-xl text-sm hover:bg-zinc-200 transition-all flex items-center gap-2"
                                 >
-                                    <MotionIcon name="LogIn" className="w-4 h-4 pointer-events-none" /> Login
+                                    <LogIn className="w-4 h-4"/> Login
                                 </button>
                                 <Link
                                     href="#playbooks"
                                     className="px-4 py-2 bg-white/5 border border-white/10 text-zinc-300 font-medium rounded-xl text-sm hover:bg-white/10 transition-all flex items-center gap-2"
                                 >
-                                    <MotionIcon name="LayoutGrid" className="w-4 h-4 pointer-events-none" /> Browse
+                                    <LayoutGrid className="w-4 h-4"/> Browse
                                 </Link>
                             </>
                         ) : userRole === 'PUBLIC' ? (
@@ -86,13 +87,13 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
                                     onClick={() => setShowApplication(true)}
                                     className="px-4 py-2 bg-white text-black font-semibold rounded-xl text-sm hover:bg-zinc-200 transition-all flex items-center gap-2"
                                 >
-                                    <MotionIcon name="Zap" className="w-4 h-4 pointer-events-none fill-black" /> Apply for Membership
+                                    <Zap className="w-4 h-4 fill-black"/> Apply for Membership
                                 </button>
                                 <Link
                                     href="/public/profile"
                                     className="px-4 py-2 bg-white/5 border border-white/10 text-zinc-300 font-medium rounded-xl text-sm hover:bg-white/10 transition-all flex items-center gap-2"
                                 >
-                                    <MotionIcon name="User" className="w-4 h-4 pointer-events-none" /> Profile
+                                    <User className="w-4 h-4"/> Profile
                                 </Link>
                             </>
                         ) : (
@@ -100,7 +101,7 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
                                 href={userRole === 'CORE' ? '/core' : '/member'}
                                 className="px-4 py-2 bg-white text-black font-semibold rounded-xl text-sm hover:bg-zinc-200 transition-all flex items-center gap-2"
                             >
-                                <MotionIcon name="LayoutDashboard" className="w-4 h-4 pointer-events-none" /> Dashboard
+                                <LayoutDashboard className="w-4 h-4"/> Dashboard
                             </Link>
                         )}
                     </div>
@@ -118,7 +119,7 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
                     >
                         <div className="flex items-center gap-2.5 mb-2">
                             <div className={cn("p-1.5 rounded-lg border", stat.bg, stat.border)}>
-                                <MotionIcon name={stat.icon} className={cn("w-3.5 h-3.5 pointer-events-none", stat.color)} />
+                                <DynamicIcon name={stat.icon} className={cn("w-3.5 h-3.5 ", stat.color)}/>
                             </div>
                             <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{stat.label}</span>
                         </div>

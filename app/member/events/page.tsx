@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MotionIcon } from 'motion-icons-react';
+import { ArrowLeft, Calendar } from "lucide-react";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { GuideList } from '@/components/guides/GuideList';
 
@@ -40,14 +40,14 @@ export default function MemberEventGuidesPage() {
     return (
         <MemberWrapper>
             <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
-                <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4"/>
                 Back to Dashboard
             </Link>
             
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-white/5 rounded-lg border border-white/5">
-                        <MotionIcon name="Calendar" className="w-5 h-5 text-zinc-200" />
+                        <Calendar className="w-5 h-5 text-zinc-200"/>
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Event Guidelines</h1>
