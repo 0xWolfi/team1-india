@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Calendar, ChevronDown, LayoutGrid, List, MapPin, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -95,7 +96,7 @@ export default function EventsClient({ events }: { events: any[] }) {
                             viewMode === 'grid' ? "w-full h-48" : "w-64 h-full"
                         )}>
                             {item.coverImage ? (
-                                <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                <Image src={item.coverImage} alt={item.title} fill className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-zinc-900">
                                     <div className="p-4 rounded-full bg-white/5 mx-auto">

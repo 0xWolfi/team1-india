@@ -9,6 +9,16 @@ import ReactMarkdown from 'react-markdown';
 
 import { Event, GuideBody } from "@/types/public";
 
+export const revalidate = 300; // ISR: revalidate every 5 minutes
+
+export async function generateStaticParams() {
+  const items = await prisma.guide.findMany({
+    where: { visibility: "PUBLIC", type: "EVENT", deletedAt: null },
+    select: { id: true },
+  });
+  return items.map((item) => ({ id: item.id }));
+}
+
 async function getEvent(id: string): Promise<Event | null> {
   const guide = await prisma.guide.findUnique({
     where: { id },

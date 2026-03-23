@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Image from "next/image";
 import { Globe, Handshake, Rocket, Send, Twitter } from "lucide-react";
 import Link from 'next/link';
 
@@ -72,7 +73,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-4">
                                         {project.logo ? (
-                                            <img src={project.logo} alt={project.name} className="w-12 h-12 rounded-xl object-cover bg-black" />
+                                            <Image src={project.logo} alt={project.name} width={48} height={48} className="w-12 h-12 rounded-xl object-cover bg-black" />
                                         ) : (
                                             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center text-xl font-bold text-zinc-500 uppercase">
                                                 {project.name.substring(0, 2)}
@@ -107,7 +108,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                         {partners.map(partner => (
                             <div key={partner.id} className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all flex flex-col items-center text-center group">
                                 {partner.logo ? (
-                                    <img src={partner.logo} alt={partner.name} className="w-16 h-16 rounded-full object-cover bg-black mb-4 border border-white/5" />
+                                    <Image src={partner.logo} alt={partner.name} width={64} height={64} className="w-16 h-16 rounded-full object-cover bg-black mb-4 border border-white/5" />
                                 ) : (
                                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center text-xl font-bold text-zinc-500 uppercase mb-4">
                                         {partner.name.substring(0, 2)}

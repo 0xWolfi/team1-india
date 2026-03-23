@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { Footer } from "@/components/website/Footer";
 import EventsClient from "@/components/public/EventsClient";
 
+export const revalidate = 300; // ISR: revalidate every 5 minutes
+
 async function getEvents() {
   const guides = await prisma.guide.findMany({
     where: { 

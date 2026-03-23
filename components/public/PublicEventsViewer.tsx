@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
+import Image from "next/image";
 import { Calendar, ExternalLink, MapPin } from "lucide-react";
 import Link from 'next/link';
 import {  format } from 'date-fns';
@@ -120,7 +121,7 @@ export default function PublicEventsViewer() {
                         <Link href={event.url} key={event.id} className="group block h-full bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col">
                             {/* Image */}
                             <div className="h-40 w-full relative">
-                                <img src={event.coverImage} alt={event.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                <Image src={event.coverImage} alt={event.title} fill className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md border border-white/10">
                                     <span className="text-xs font-bold text-white uppercase tracking-wider">
                                         {format(new Date(event.date), 'MMM d')}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowRight, BookOpen, Cpu, Edit, FileText, Globe, LayoutGrid, List, Lock, MoreHorizontal, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
@@ -299,11 +300,11 @@ export default function PlaybooksPage() {
                                      {viewMode === 'grid' && (
                                          <div className="relative h-48 w-full bg-zinc-900 overflow-hidden border-b border-white/5">
                                             {doc.coverImage ? (
-                                                <img 
-                                                    src={doc.coverImage} 
+                                                <Image
+                                                    src={doc.coverImage}
                                                     alt={doc.title}
-                                                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                                                    style={{ objectFit: 'cover', objectPosition: 'center' }}
+                                                    fill
+                                                    className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                                                     onError={(e) => {
                                                         // Fallback if image fails to load - safe rendering without innerHTML
                                                         const target = e.target as HTMLImageElement;

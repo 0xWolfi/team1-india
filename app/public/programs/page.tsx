@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { Footer } from "@/components/website/Footer";
 import ProgramsClient from "@/components/public/ProgramsClient";
 
+export const revalidate = 300; // ISR: revalidate every 5 minutes
+
 async function getPrograms() {
   const guides = await prisma.guide.findMany({
     where: { 

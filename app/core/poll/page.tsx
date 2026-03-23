@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { BarChart3, Clock, Globe, Lock, Plus, Trophy, Users, X } from "lucide-react";
 import { usePermission } from "@/hooks/usePermission";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
@@ -318,7 +319,7 @@ export default function PollsPage() {
                                                         {opt.voters?.slice(0, 8).map(v => (
                                                             <div key={v.id} className="w-6 h-6 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[8px] text-white font-bold" title={v.name}>
                                                                 {v.image ? (
-                                                                    <img src={v.image} alt={v.name} className="w-full h-full rounded-full object-cover" />
+                                                                    <Image src={v.image} alt={v.name} width={24} height={24} className="w-full h-full rounded-full object-cover" />
                                                                 ) : v.name[0]}
                                                             </div>
                                                         ))}

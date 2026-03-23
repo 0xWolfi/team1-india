@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import NextImage from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Check, Copy, Image, Loader2, X } from "lucide-react";
 import { upload } from "@vercel/blob/client";

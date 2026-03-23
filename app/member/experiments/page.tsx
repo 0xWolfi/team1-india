@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from "next/image";
 import { Beaker, ChevronDown, LayoutGrid, List, Loader2, MessageSquare, Plus } from "lucide-react";
 import Link from 'next/link';
 import { MemberWrapper } from "@/components/member/MemberWrapper";
@@ -173,8 +174,7 @@ function ExperimentCard({ exp }: { exp: Experiment }) {
         >
             <div className="flex items-center gap-2 mb-3">
                  {exp.createdBy?.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={exp.createdBy.image} alt={exp.createdBy.name} className="w-5 h-5 rounded-full" />
+                    <Image src={exp.createdBy.image} alt={exp.createdBy.name} width={20} height={20} className="w-5 h-5 rounded-full" />
                 ) : (
                     <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[8px] font-bold text-zinc-400">
                         {exp.createdBy?.name?.[0] || 'U'}
@@ -226,8 +226,7 @@ function ExperimentRow({ exp }: { exp: Experiment }) {
             {/* Proposed By */}
             <div className="col-span-3 hidden md:flex items-center gap-2">
                 {exp.createdBy?.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={exp.createdBy.image} alt={exp.createdBy.name} className="w-6 h-6 rounded-full grayscale group-hover:grayscale-0 transition-all" />
+                    <Image src={exp.createdBy.image} alt={exp.createdBy.name} width={24} height={24} className="w-6 h-6 rounded-full grayscale group-hover:grayscale-0 transition-all" />
                 ) : (
                     <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
                         {exp.createdBy?.name?.[0]}

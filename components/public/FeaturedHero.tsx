@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Image from "next/image";
 import Link from 'next/link';
 import { ArrowRight, Clock } from "lucide-react";
 interface HeroItem {
@@ -25,10 +26,11 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
             {/* Background Image */}
             <div className="absolute inset-0">
                 {item.coverImage ? (
-                    <img 
-                        src={item.coverImage} 
-                        alt={item.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    <Image
+                        src={item.coverImage}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                 ) : (
                     <div className="w-full h-full bg-zinc-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black" />

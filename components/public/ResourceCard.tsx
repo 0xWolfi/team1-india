@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from "next/image";
 import Link from 'next/link';
 import { ArrowRight, FileText } from "lucide-react";
 interface ResourceCardProps {
@@ -29,10 +30,11 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             {/* Image Section */}
             <div className="h-48 w-full bg-zinc-800 relative overflow-hidden">
                 {coverImage ? (
-                    <img 
-                        src={coverImage} 
-                        alt={title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100" 
+                    <Image
+                        src={coverImage}
+                        alt={title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">

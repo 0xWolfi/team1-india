@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Calendar, CheckCircle, Clock, Loader2, MessageSquare, Send, User, XCircle } from "lucide-react";
@@ -152,8 +153,7 @@ export default function ExperimentDetailPage() {
                             
                             <div className="flex items-center gap-4 mb-8 pb-8 border-b border-white/5">
                                 {experiment.createdBy?.image ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img src={experiment.createdBy.image} alt={experiment.createdBy.name} className="w-12 h-12 rounded-full ring-2 ring-white/10" />
+                                    <Image src={experiment.createdBy.image} alt={experiment.createdBy.name} width={48} height={48} className="w-12 h-12 rounded-full ring-2 ring-white/10" />
                                 ) : (
                                     <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 ring-2 ring-white/10">
                                         <User className="w-6 h-6"/>
@@ -195,8 +195,7 @@ export default function ExperimentDetailPage() {
                                     {/* Avaatara */}
                                     <div className="absolute left-0 top-0">
                                          {comment.author?.image ? (
-                                            // eslint-disable-next-line @next/next/no-img-element
-                                            <img src={comment.author.image} alt="User" className="w-10 h-10 rounded-full border-2 border-[#121212] relative z-10" />
+                                            <Image src={comment.author.image} alt="User" width={40} height={40} className="w-10 h-10 rounded-full border-2 border-[#121212] relative z-10" />
                                         ) : (
                                             <div className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-[#121212] flex items-center justify-center text-xs relative z-10">
                                                 {comment.author?.name?.[0]}
