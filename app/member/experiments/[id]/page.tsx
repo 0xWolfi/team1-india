@@ -87,7 +87,7 @@ export default function MemberExperimentDetailPage() {
   if (loading) return (
       <MemberWrapper>
         <div className="flex items-center justify-center h-[50vh] text-white">
-            <Loader2 className="animate-spin w-8 h-8 text-indigo-500" animation="spin"/>
+            <Loader2 className="animate-spin w-8 h-8 text-indigo-500"/>
         </div>
       </MemberWrapper>
   );
@@ -184,7 +184,7 @@ export default function MemberExperimentDetailPage() {
                                     disabled={actionLoading}
                                     className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 hover:border-amber-500/40 text-amber-400 rounded-lg font-bold text-xs transition-all flex items-center gap-2"
                                 >
-                                    {actionLoading ? <Loader2 className="w-3 h-3 animate-spin" animation="spin"/> : <MessageSquare className="w-3 h-3"/>}
+                                    {actionLoading ? <Loader2 className="w-3 h-3 animate-spin"/> : <MessageSquare className="w-3 h-3"/>}
                                     Open for Discussion
                                 </button>
                             )}
@@ -213,7 +213,7 @@ export default function MemberExperimentDetailPage() {
                                         disabled={actionLoading}
                                         className="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 rounded-lg font-bold text-xs transition-all flex items-center gap-2"
                                     >
-                                        {actionLoading ? <Loader2 className="w-3 h-3 animate-spin" animation="spin"/> : <CheckCircle className="w-3 h-3"/>}
+                                        {actionLoading ? <Loader2 className="w-3 h-3 animate-spin"/> : <CheckCircle className="w-3 h-3"/>}
                                         Approve
                                     </button>
                                     <button 
@@ -237,7 +237,7 @@ export default function MemberExperimentDetailPage() {
                                         disabled={actionLoading}
                                         className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 rounded-lg font-bold text-xs transition-all flex items-center gap-2"
                                     >
-                                        {actionLoading ? <Loader2 className="w-3 h-3 animate-spin" animation="spin"/> : <XCircle className="w-3 h-3"/>}
+                                        {actionLoading ? <Loader2 className="w-3 h-3 animate-spin"/> : <XCircle className="w-3 h-3"/>}
                                         Reject
                                     </button>
                                 </>
@@ -312,7 +312,7 @@ export default function MemberExperimentDetailPage() {
                                     disabled={submittingComment || !commentBody.trim()}
                                     className="absolute bottom-3 right-3 p-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-white/5 disabled:text-zinc-600 text-white rounded-lg transition-all shadow-lg shadow-indigo-500/20"
                                 >
-                                    {submittingComment ? <Loader2 className="w-4 h-4 animate-spin" animation="spin"/> : <Send className="w-4 h-4"/>}
+                                    {submittingComment ? <Loader2 className="w-4 h-4 animate-spin"/> : <Send className="w-4 h-4"/>}
                                 </button>
                             </div>
                         </form>

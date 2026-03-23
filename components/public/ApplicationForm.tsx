@@ -219,7 +219,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
       >
         {status === "submitting" ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" animation="spin"/> Submitting...
+            <Loader2 className="w-4 h-4 animate-spin"/> Submitting...
           </>
         ) : (
           "Submit Application"

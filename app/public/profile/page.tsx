@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { DynamicBackground } from "@/components/ui/DynamicBackground";
 import { prisma } from "@/lib/prisma";
 import { ProfileDashboard } from "@/components/public/profile/ProfileDashboard";

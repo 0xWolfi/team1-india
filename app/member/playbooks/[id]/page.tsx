@@ -45,7 +45,7 @@ export default function MemberPlaybookDetailPage() {
         return (
             <MemberWrapper>
                 <div className="flex justify-center pt-40">
-                    <Loader2 className="w-8 h-8 animate-spin text-zinc-500" animation="spin"/>
+                    <Loader2 className="w-8 h-8 animate-spin text-zinc-500"/>
                 </div>
             </MemberWrapper>
         );
