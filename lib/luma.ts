@@ -101,8 +101,13 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
     let pageCount = 0;
     const MAX_PAGES = 5; // Keep low for Vercel Hobby 10s timeout
 
+    // Fetch recent events (last 6 months) + all future events
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
     while (hasMore && pageCount < MAX_PAGES) {
       const url = new URL("https://public-api.luma.com/v1/calendar/list-events");
+      url.searchParams.append("after", sixMonthsAgo.toISOString());
       if (nextCursor) {
         url.searchParams.append("pagination_cursor", nextCursor);
       }
