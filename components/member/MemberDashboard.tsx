@@ -225,7 +225,7 @@ export function MemberDashboard({
                     </Link>
                 </div>
 
-                {lumaEvents.length > 0 ? (
+                {(categorizedEvents.live.length > 0 || categorizedEvents.upcoming.length > 0) ? (
                     <div className="space-y-6">
                         {/* Live Events */}
                         {categorizedEvents.live.length > 0 && (

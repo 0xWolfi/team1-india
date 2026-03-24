@@ -11,7 +11,7 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-6 py-5 border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-2xl bg-zinc-900/60 backdrop-blur-2xl">
           <div className="flex flex-col items-center sm:items-start gap-1">
-             <Team1Logo className="h-5 w-20" />
+             <Team1Logo className="h-5 w-auto" />
              <p className="text-zinc-500 text-xs">© 2026 Team1India. All rights reserved.</p>
           </div>
 
