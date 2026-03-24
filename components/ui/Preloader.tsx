@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function Preloader() {
@@ -11,8 +11,8 @@ export function Preloader() {
         return true;
     });
     const [fading, setFading] = useState(false);
-    const [drawing, setDrawing] = useState(false);
-    const [filling, setFilling] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const fallbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (!visible) return;
@@ -20,78 +20,56 @@ export function Preloader() {
         sessionStorage.setItem("preloader_shown", "1");
         document.body.style.overflow = "hidden";
 
-        const drawTimer = setTimeout(() => setDrawing(true), 50);
-        const fillTimer = setTimeout(() => setFilling(true), 300);
-        const fadeTimer = setTimeout(() => setFading(true), 600);
-        const removeTimer = setTimeout(() => {
-            setVisible(false);
-            document.body.style.overflow = "unset";
-        }, 800);
+        const video = videoRef.current;
+        if (video) {
+            video.play().catch(() => {
+                // Autoplay blocked — fade out after short delay
+                startFadeOut();
+            });
+        }
+
+        // Safety fallback: if video takes too long, fade out after 8s
+        fallbackTimer.current = setTimeout(() => {
+            startFadeOut();
+        }, 8000);
 
         return () => {
-             clearTimeout(drawTimer);
-             clearTimeout(fillTimer);
-             clearTimeout(fadeTimer);
-             clearTimeout(removeTimer);
-             document.body.style.overflow = "unset";
-        }
+            document.body.style.overflow = "unset";
+            if (fallbackTimer.current) clearTimeout(fallbackTimer.current);
+        };
     }, [visible]);
+
+    const startFadeOut = () => {
+        if (fading) return;
+        setFading(true);
+        setTimeout(() => {
+            setVisible(false);
+            document.body.style.overflow = "unset";
+        }, 700);
+    };
+
+    const handleVideoEnd = () => {
+        if (fallbackTimer.current) clearTimeout(fallbackTimer.current);
+        startFadeOut();
+    };
 
     if (!visible) return null;
 
     return (
         <div
             className={cn(
-                "fixed inset-0 z-[1000] bg-black flex items-center justify-center transition-opacity duration-700 ease-in-out",
+                "fixed inset-0 z-[1000] bg-black transition-opacity duration-700 ease-in-out",
                 fading ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
         >
-            <svg
-                viewBox="0 0 800 120"
-                className="w-full max-w-4xl h-auto px-4"
-            >
-                <defs>
-                    <clipPath id="text-fill-clip">
-                        <rect x="0" y="0" width="100%" height="100%" style={{
-                            transform: filling ? 'scaleX(1)' : 'scaleX(0)',
-                            transformOrigin: 'left',
-                            transition: 'transform 1.5s ease-in-out'
-                        }} />
-                    </clipPath>
-                    <linearGradient id="avalanche-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#ef4444" />
-                        <stop offset="100%" stopColor="#dc2626" />
-                    </linearGradient>
-                </defs>
-
-                {/* Outline Layer (Always Visible, drawing in) */}
-                <text
-                    x="50%"
-                    y="50%"
-                    dy=".35em"
-                    textAnchor="middle"
-                    className="text-4xl md:text-6xl font-black tracking-tighter uppercase"
-                >
-                    <tspan className="fill-transparent stroke-red-500 stroke-[2px]" style={{ strokeDasharray: 800, strokeDashoffset: drawing ? 0 : 800, transition: 'stroke-dashoffset 1.5s ease-in-out' }}>Avalanche </tspan>
-                    <tspan className="fill-transparent stroke-white stroke-[2px]" style={{ strokeDasharray: 400, strokeDashoffset: drawing ? 0 : 400, transition: 'stroke-dashoffset 1.5s ease-in-out' }}>Team</tspan>
-                    <tspan className="fill-transparent stroke-red-500 stroke-[2px]" style={{ strokeDasharray: 100, strokeDashoffset: drawing ? 0 : 100, transition: 'stroke-dashoffset 1.5s ease-in-out' }}>1</tspan>
-                </text>
-
-                {/* Fill Layer (Clipped, Wipes Left to Right) */}
-                <g clipPath="url(#text-fill-clip)">
-                    <text
-                        x="50%"
-                        y="50%"
-                        dy=".35em"
-                        textAnchor="middle"
-                        className="text-4xl md:text-6xl font-black tracking-tighter uppercase"
-                    >
-                        <tspan fill="#ef4444">Avalanche </tspan>
-                        <tspan fill="#ffffff">Team</tspan>
-                        <tspan fill="#ef4444">1</tspan>
-                    </text>
-                </g>
-            </svg>
+            <video
+                ref={videoRef}
+                src="/preloader.mp4"
+                muted
+                playsInline
+                onEnded={handleVideoEnd}
+                className="absolute inset-0 w-full h-full object-cover"
+            />
         </div>
     );
 }
