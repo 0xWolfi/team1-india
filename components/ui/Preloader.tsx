@@ -40,19 +40,19 @@ export function Preloader() {
     if (!visible) return null;
 
     return (
-        <div 
+        <div
             className={cn(
-                "fixed inset-0 z-[1000] bg-black flex items-center justify-center transition-opacity duration-700 ease-in-out", 
+                "fixed inset-0 z-[1000] bg-black flex items-center justify-center transition-opacity duration-700 ease-in-out",
                 fading ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
         >
-            <svg 
-                viewBox="0 0 800 120" 
+            <svg
+                viewBox="0 0 800 120"
                 className="w-full max-w-4xl h-auto px-4"
             >
                 <defs>
                     <clipPath id="text-fill-clip">
-                        <rect x="0" y="0" width="100%" height="100%" style={{ 
+                        <rect x="0" y="0" width="100%" height="100%" style={{
                             transform: filling ? 'scaleX(1)' : 'scaleX(0)',
                             transformOrigin: 'left',
                             transition: 'transform 1.5s ease-in-out'
@@ -65,10 +65,10 @@ export function Preloader() {
                 </defs>
 
                 {/* Outline Layer (Always Visible, drawing in) */}
-                <text 
-                    x="50%" 
-                    y="50%" 
-                    dy=".35em" 
+                <text
+                    x="50%"
+                    y="50%"
+                    dy=".35em"
                     textAnchor="middle"
                     className="text-4xl md:text-6xl font-black tracking-tighter uppercase"
                 >
@@ -79,10 +79,10 @@ export function Preloader() {
 
                 {/* Fill Layer (Clipped, Wipes Left to Right) */}
                 <g clipPath="url(#text-fill-clip)">
-                    <text 
-                        x="50%" 
-                        y="50%" 
-                        dy=".35em" 
+                    <text
+                        x="50%"
+                        y="50%"
+                        dy=".35em"
                         textAnchor="middle"
                         className="text-4xl md:text-6xl font-black tracking-tighter uppercase"
                     >

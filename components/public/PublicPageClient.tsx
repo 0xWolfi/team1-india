@@ -28,14 +28,14 @@ const statusConfig = {
 };
 
 // ── Section Header Component ──
-function SectionHeader({ icon, iconBg, iconColor, title, subtitle, action }: {
-    icon: string; iconBg: string; iconColor: string; title: string; subtitle: string; action?: React.ReactNode;
+function SectionHeader({ icon, title, subtitle, action }: {
+    icon: string; title: string; subtitle: string; action?: React.ReactNode;
 }) {
     return (
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div className="flex items-start gap-4">
-                <div className={cn("p-3 rounded-2xl border shrink-0", iconBg, iconBg.replace('/10', '/20'))}>
-                    <DynamicIcon name={icon} className={cn("w-6 h-6 ", iconColor)}/>
+                <div className="p-3 rounded-2xl border shrink-0 bg-white/5 border-white/10">
+                    <DynamicIcon name={icon} className="w-6 h-6 text-white"/>
                 </div>
                 <div>
                     <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{title}</h2>
@@ -92,8 +92,8 @@ function PublicLumaEventCard({ entry, status }: { entry: LumaEventData; status: 
                     </div>
                 ) : (
                     <div className="aspect-square flex items-center justify-center">
-                        <div className="p-3 bg-sky-500/10 rounded-xl border border-sky-500/20">
-                            <Calendar className="w-6 h-6 text-sky-400"/>
+                        <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                            <Calendar className="w-6 h-6 text-white"/>
                         </div>
                     </div>
                 )}
@@ -116,7 +116,7 @@ function PublicLumaEventCard({ entry, status }: { entry: LumaEventData; status: 
                     {entry.event.geo_address_json.city}
                 </p>
             )}
-            {status !== "PAST" && <p className="text-[11px] font-medium mt-2 text-sky-400">{getTimeLabel()}</p>}
+            {status !== "PAST" && <p className="text-[11px] font-medium mt-2 text-white/70">{getTimeLabel()}</p>}
         </a>
     );
 }
@@ -182,8 +182,6 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                 >
                     <SectionHeader
                         icon="Calendar"
-                        iconBg="bg-sky-500/10"
-                        iconColor="text-sky-400"
                         title="Activity Feed"
                         subtitle="Live, upcoming, and past events from our community"
                         action={
@@ -234,8 +232,6 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                 >
                     <SectionHeader
                         icon="BookOpen"
-                        iconBg="bg-amber-500/10"
-                        iconColor="text-amber-400"
                         title="Playbooks"
                         subtitle="Essential rules, guidelines, and strategies to build and scale"
                         action={
@@ -251,8 +247,8 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                                 <Link key={item.id} href={`/public/playbooks/${item.id}`}
                                     className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.12]", glassClass)}>
                                     <div className="flex items-start gap-3 mb-4">
-                                        <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 shrink-0">
-                                            <BookOpen className="w-5 h-5 text-amber-400"/>
+                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 shrink-0">
+                                            <BookOpen className="w-5 h-5 text-white"/>
                                         </div>
                                         <div className="min-w-0">
                                             <h3 className="font-semibold text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-100 transition-colors">{item.title}</h3>
@@ -282,8 +278,6 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                 >
                     <SectionHeader
                         icon="Rocket"
-                        iconBg="bg-violet-500/10"
-                        iconColor="text-violet-400"
                         title="Programs"
                         subtitle="Initiatives to accelerate your growth"
                         action={
@@ -299,8 +293,8 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                                 <Link key={item.id} href={`/public/programs/${item.id}`}
                                     className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.12]", glassClass)}>
                                     <div className="flex items-start gap-3 mb-4">
-                                        <div className="p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 shrink-0">
-                                            <Users className="w-5 h-5 text-violet-400"/>
+                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 shrink-0">
+                                            <Users className="w-5 h-5 text-white"/>
                                         </div>
                                         <div className="min-w-0">
                                             <h3 className="font-semibold text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-100 transition-colors">{item.title}</h3>

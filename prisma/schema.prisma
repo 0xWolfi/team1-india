@@ -588,3 +588,22 @@ model BountySubmission {
   @@index([status])
   @@index([deletedAt])
 }
+
+model LumaEvent {
+  id          String    @id @default(uuid())
+  apiId       String    @unique
+  name        String
+  startAt     DateTime
+  endAt       DateTime?
+  coverUrl    String?
+  url         String
+  timezone    String?
+  visibility  String    @default("public")
+  city        String?
+  geoData     Json?
+  syncedAt    DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+
+  @@index([startAt])
+  @@index([visibility])
+}
