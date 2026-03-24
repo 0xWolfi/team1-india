@@ -13,17 +13,17 @@ import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 import { useDrag } from "@use-gesture/react";
 
 const navItems = [
-    { label: "Activity", href: "#activity-feed", icon: "Ticket" },
-    { label: "Playbooks", href: "#playbooks", icon: "Book" },
-    { label: "Programs", href: "#programs", icon: "Rocket" },
+    { label: "Home", href: "/public", icon: "Home" },
+    { label: "Programs", href: "/public/programs", icon: "Rocket" },
+    { label: "Playbooks", href: "/public/playbooks", icon: "Book" },
     { label: "Bounties", href: "/public/bounty", icon: "Zap" },
     { label: "Leaderboard", href: "/public/leaderboard", icon: "Trophy" },
-    { label: "Contact", href: "#contact", icon: "Mail" },
-    { label: "Verify", href: "#verify-desktop", icon: "ShieldCheck" },
+    { label: "Contact", href: "/public#contact", icon: "Mail" },
 ];
 
 export function FloatingNav() {
     const { data: session } = useSession();
+    const pathname = usePathname();
     const [activeSection, setActiveSection] = useState("");
     const [isScrolled, setIsScrolled] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -105,10 +105,10 @@ export function FloatingNav() {
                     
                     {/* Logo / Home */}
                     <Link
-                        href="/public"
+                        href="/"
                         className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"
                     >
-                        <Team1Logo className="h-5 w-20 relative z-10" />
+                        <Team1Logo className="h-5 w-auto relative z-10" />
                     </Link>
 
                     {/* Divider */}
@@ -116,16 +116,20 @@ export function FloatingNav() {
 
                     {/* Center Nav (Desktop) */}
                     <nav className="hidden md:flex items-center gap-0.5">
-                        {navItems.filter(item => item.label !== 'Verify').map((item) => {
-                            const isActive = activeSection === item.href.substring(1);
+                        {navItems.map((item) => {
+                            const isActive = item.href.startsWith('#')
+                                ? activeSection === item.href.substring(1)
+                                : item.href === '/public'
+                                    ? pathname === '/public'
+                                    : pathname.startsWith(item.href);
                             return (
                                 <Link
                                     key={item.label}
                                     href={item.href}
                                     className={cn(
                                         "px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all duration-300 relative",
-                                        isActive 
-                                            ? "text-white" 
+                                        isActive
+                                            ? "text-white"
                                             : "text-zinc-500 hover:text-zinc-300"
                                     )}
                                 >
@@ -253,13 +257,13 @@ export function FloatingNav() {
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-sm bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xl">
                 {navItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeSection === item.href.substring(1);
-                    const href = item.label === "Verify" ? "#verify-mobile" : item.href;
+                    const isActive = item.href === '/public'
+                        ? pathname === '/public'
+                        : pathname.startsWith(item.href) && item.href !== '/public';
                     return (
-                        <Link 
-                            key={item.label} 
-                            href={href}
+                        <Link
+                            key={item.label}
+                            href={item.href}
                             className={cn(
                                 "flex flex-col items-center justify-center gap-1 transition-all duration-300 p-2 rounded-xl",
                                 isActive 

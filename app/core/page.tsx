@@ -210,7 +210,7 @@ export default function CorePage() {
         {/* Mobile Sticky Nav */}
         <div className="md:hidden sticky top-0 z-50 w-full px-6 py-3 bg-black/20 backdrop-blur-xl border-b border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-                     <Team1Logo className="h-5 w-20" />
+                     <Team1Logo className="h-5 w-auto" />
             </div>
             
             <div className="flex items-center gap-3">

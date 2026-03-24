@@ -191,7 +191,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                             </Link>
                         }
                     />
-                    {upcomingEvents.length > 0 ? (
+                    {(categorizedEvents.live.length > 0 || categorizedEvents.upcoming.length > 0) ? (
                         <div className="space-y-6">
                             {categorizedEvents.live.length > 0 && (
                                 <div>
@@ -220,52 +220,6 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
                             <Calendar className="w-8 h-8 text-zinc-700 mb-3"/>
                             <p className="text-zinc-600 font-medium text-sm">No events found</p>
-                        </div>
-                    )}
-                </section>
-
-                {/* ── Playbooks ── */}
-                <section
-                    id="playbooks"
-                    className="min-h-[100dvh] snap-center flex flex-col justify-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-10"
-                    style={{ scrollSnapStop: 'always' }}
-                >
-                    <SectionHeader
-                        icon="BookOpen"
-                        title="Playbooks"
-                        subtitle="Essential rules, guidelines, and strategies to build and scale"
-                        action={
-                            <Link href="/public/playbooks"
-                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all">
-                                View All <ArrowRight className="w-3.5 h-3.5"/>
-                            </Link>
-                        }
-                    />
-                    {playbooks.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {playbooks.slice(0, 6).map((item: any) => (
-                                <Link key={item.id} href={`/public/playbooks/${item.id}`}
-                                    className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.12]", glassClass)}>
-                                    <div className="flex items-start gap-3 mb-4">
-                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 shrink-0">
-                                            <BookOpen className="w-5 h-5 text-white"/>
-                                        </div>
-                                        <div className="min-w-0">
-                                            <h3 className="font-semibold text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-100 transition-colors">{item.title}</h3>
-                                            {item.description && <p className="text-xs text-zinc-600 line-clamp-2">{item.description}</p>}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.04]">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-600 group-hover:text-zinc-400 transition-colors">Read Playbook</span>
-                                        <ArrowRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-white transition-colors"/>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                            <BookOpen className="w-8 h-8 text-zinc-700 mb-3"/>
-                            <p className="text-zinc-600 font-medium text-sm">No playbooks yet</p>
                         </div>
                     )}
                 </section>
@@ -312,6 +266,52 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
                             <Users className="w-8 h-8 text-zinc-700 mb-3"/>
                             <p className="text-zinc-600 font-medium text-sm">No programs yet</p>
+                        </div>
+                    )}
+                </section>
+
+                {/* ── Playbooks ── */}
+                <section
+                    id="playbooks"
+                    className="min-h-[100dvh] snap-center flex flex-col justify-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-10"
+                    style={{ scrollSnapStop: 'always' }}
+                >
+                    <SectionHeader
+                        icon="BookOpen"
+                        title="Playbooks"
+                        subtitle="Essential rules, guidelines, and strategies to build and scale"
+                        action={
+                            <Link href="/public/playbooks"
+                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all">
+                                View All <ArrowRight className="w-3.5 h-3.5"/>
+                            </Link>
+                        }
+                    />
+                    {playbooks.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {playbooks.slice(0, 6).map((item: any) => (
+                                <Link key={item.id} href={`/public/playbooks/${item.id}`}
+                                    className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.12]", glassClass)}>
+                                    <div className="flex items-start gap-3 mb-4">
+                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 shrink-0">
+                                            <BookOpen className="w-5 h-5 text-white"/>
+                                        </div>
+                                        <div className="min-w-0">
+                                            <h3 className="font-semibold text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-100 transition-colors">{item.title}</h3>
+                                            {item.description && <p className="text-xs text-zinc-600 line-clamp-2">{item.description}</p>}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.04]">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-600 group-hover:text-zinc-400 transition-colors">Read Playbook</span>
+                                        <ArrowRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-white transition-colors"/>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
+                            <BookOpen className="w-8 h-8 text-zinc-700 mb-3"/>
+                            <p className="text-zinc-600 font-medium text-sm">No playbooks yet</p>
                         </div>
                     )}
                 </section>
