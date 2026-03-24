@@ -6,16 +6,19 @@ const prismaClientSingleton = () => {
   }).$extends({
     query: {
       $allModels: {
-        async findMany({ args, query }) {
-          if (args.where !== undefined && args.where.deletedAt === undefined) {
-             // Exclude deleted records by default unless explicitly asked for
-             (args.where as any).deletedAt = null;
+        async findMany({ model, args, query }) {
+          const noSoftDelete = ['LumaEvent', 'Setting', 'AuditLog', 'PushSubscription', 'NotificationPreference'];
+          const where = args.where as any;
+          if (where !== undefined && !noSoftDelete.includes(model) && where.deletedAt === undefined) {
+             where.deletedAt = null;
           }
           return query(args);
         },
-        async findFirst({ args, query }) {
-             if (args.where !== undefined && args.where.deletedAt === undefined) {
-                (args.where as any).deletedAt = null;
+        async findFirst({ model, args, query }) {
+             const noSoftDelete = ['LumaEvent', 'Setting', 'AuditLog', 'PushSubscription', 'NotificationPreference'];
+             const where = args.where as any;
+             if (where !== undefined && !noSoftDelete.includes(model) && where.deletedAt === undefined) {
+                where.deletedAt = null;
              }
              return query(args);
         },

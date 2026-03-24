@@ -257,20 +257,6 @@ export function MemberDashboard({
                             </div>
                         )}
 
-                        {/* Past Events */}
-                        {categorizedEvents.past.length > 0 && (
-                            <div>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-2 h-2 rounded-full bg-zinc-600" />
-                                    <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Past</span>
-                                </div>
-                                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-                                    {categorizedEvents.past.map((entry) => (
-                                        <LumaEventCard key={entry.api_id} entry={entry} status="PAST" />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 ) : (
                     <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>

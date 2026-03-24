@@ -26,10 +26,10 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
     const router = useRouter();
 
     const statCards = [
-        { label: "Events Hosted", value: stats?.totalEvents || 0, icon: "Calendar", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", href: "#activity-feed" },
-        { label: "Active Bounties", value: stats?.activeBounties || 0, icon: "Zap", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", href: "/public/bounty" },
-        { label: "Leaderboard", value: null, icon: "Trophy", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", href: "/public/leaderboard" },
-        { label: "Playbooks", value: stats?.totalPlaybooks || 0, icon: "BookOpen", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20", href: "#playbooks" },
+        { label: "Events Hosted", value: stats?.totalEvents || 0, icon: "Calendar", href: "#activity-feed" },
+        { label: "Active Bounties", value: stats?.activeBounties || 0, icon: "Zap", href: "/public/bounty" },
+        { label: "Leaderboard", value: null, icon: "Trophy", href: "/public/leaderboard" },
+        { label: "Playbooks", value: stats?.totalPlaybooks || 0, icon: "BookOpen", href: "#playbooks" },
     ];
 
     const handleStatClick = (href: string) => {
@@ -118,17 +118,17 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
                         className={cn("rounded-2xl p-4 transition-all duration-300 hover:border-white/10 text-left cursor-pointer", glassClass)}
                     >
                         <div className="flex items-center gap-2.5 mb-2">
-                            <div className={cn("p-1.5 rounded-lg border", stat.bg, stat.border)}>
-                                <DynamicIcon name={stat.icon} className={cn("w-3.5 h-3.5 ", stat.color)}/>
+                            <div className="p-1.5 rounded-lg border bg-white/5 border-white/10">
+                                <DynamicIcon name={stat.icon} className="w-3.5 h-3.5 text-white"/>
                             </div>
                             <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{stat.label}</span>
                         </div>
                         {stat.value !== null ? (
-                            <p className={cn("text-2xl font-bold tabular-nums", stat.color)}>
+                            <p className="text-2xl font-bold tabular-nums text-white">
                                 {stat.value.toLocaleString()}
                             </p>
                         ) : (
-                            <p className={cn("text-sm font-semibold mt-1", stat.color)}>
+                            <p className="text-sm font-semibold mt-1 text-white">
                                 View Rankings
                             </p>
                         )}
