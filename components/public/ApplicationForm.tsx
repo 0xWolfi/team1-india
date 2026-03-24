@@ -98,7 +98,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
           <div className="bg-zinc-900 border border-white/10 rounded-2xl p-8 text-center">
               <h3 className="text-xl font-bold text-white mb-2">Sign in to Apply</h3>
               <p className="text-zinc-500 text-sm mb-6">You must be logged in to submit an application.</p>
-              <Link href={`/auth/signin?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '/public/programs')}`}>
+              <Link href={`/auth/signin?callbackUrl=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '/public/programs')}`}>
                   <button className="bg-white text-black font-bold py-3 px-6 rounded-xl hover:bg-zinc-200 transition-colors w-full">
                       Sign In
                   </button>

@@ -1,11 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import Image from 'next/image';
-import { ArrowRight, Cpu, Edit, FileText, Globe, LayoutGrid, List, Lock, MoreHorizontal, Search, Trash2 } from "lucide-react";
-import { DynamicIcon } from "@/components/ui/DynamicIcon";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import {
+    ArrowRight,
+    Calendar,
+    Cpu,
+    Edit,
+    FileText,
+    Globe,
+    LayoutGrid,
+    List,
+    Lock,
+    MoreHorizontal,
+    Search,
+    Trash2,
+    Users,
+} from "lucide-react";
+
 interface Guide {
     id: string;
     title: string;
@@ -23,30 +38,48 @@ interface Guide {
 
 interface GuideListProps {
     guides: Guide[];
-    basePath: string; // e.g. '/core/events/guides'
+    basePath: string;
     isLoading?: boolean;
     onDelete?: (id: string) => void;
     canDelete?: boolean;
     canWrite?: boolean;
 }
 
-export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoading, onDelete, canDelete, canWrite = false }) => {
+const VISIBILITY_FILTERS = [
+    { id: "ALL", label: "All", icon: LayoutGrid },
+    { id: "CORE", label: "Core", icon: Cpu },
+    { id: "MEMBER", label: "Member", icon: Users },
+    { id: "PUBLIC", label: "Public", icon: Globe },
+] as const;
+
+type VisibilityFilter = "ALL" | "CORE" | "MEMBER" | "PUBLIC";
+
+export const GuideList: React.FC<GuideListProps> = ({
+    guides,
+    basePath,
+    isLoading,
+    onDelete,
+    canDelete,
+    canWrite = false,
+}) => {
     const effectiveCanDelete = canDelete ?? canWrite;
     const effectiveCanWrite = canWrite;
 
     const [searchTerm, setSearchTerm] = useState("");
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-    const [visibilityFilter, setVisibilityFilter] = useState<"ALL" | "CORE" | "MEMBER" | "PUBLIC">("ALL");
-    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>("ALL");
     const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
-    // Close menu when clicking outside
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    // Close menus when clicking outside
     useEffect(() => {
-        const handleClickOutside = () => {
-            setActiveMenuId(null);
-            setShowFilterMenu(false);
+        const handleClickOutside = (e: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setActiveMenuId(null);
+            }
         };
         window.addEventListener("click", handleClickOutside);
         return () => window.removeEventListener("click", handleClickOutside);
@@ -54,6 +87,7 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
 
     const handleDeleteClick = (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
+        e.preventDefault();
         setDeleteId(id);
         setShowDeleteConfirm(true);
         setActiveMenuId(null);
@@ -67,17 +101,32 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
         setDeleteId(null);
     };
 
-    const filtered = guides.filter(p => {
+    const filtered = guides.filter((p) => {
         const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = visibilityFilter === "ALL" || p.visibility === visibilityFilter;
         return matchesSearch && matchesFilter;
     });
 
+    // -- Loading Skeletons --
     if (isLoading) {
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {[1, 2, 3].map(i => (
-                    <div key={i} className="h-48 rounded-3xl bg-white/5 animate-pulse border border-white/5" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {[1, 2, 3].map((i) => (
+                    <div
+                        key={i}
+                        className="rounded-2xl bg-zinc-900/40 backdrop-blur-xl border border-white/6 overflow-hidden"
+                    >
+                        <div className="h-44 bg-zinc-800/50 animate-pulse" />
+                        <div className="p-5 space-y-3">
+                            <div className="h-5 w-3/4 bg-zinc-800/60 rounded-lg animate-pulse" />
+                            <div className="h-4 w-full bg-zinc-800/40 rounded-lg animate-pulse" />
+                            <div className="h-4 w-2/3 bg-zinc-800/30 rounded-lg animate-pulse" />
+                            <div className="pt-3 border-t border-white/4 flex items-center justify-between">
+                                <div className="h-3 w-24 bg-zinc-800/40 rounded animate-pulse" />
+                                <div className="h-3 w-16 bg-zinc-800/40 rounded animate-pulse" />
+                            </div>
+                        </div>
+                    </div>
                 ))}
             </div>
         );
@@ -85,310 +134,376 @@ export const GuideList: React.FC<GuideListProps> = ({ guides, basePath, isLoadin
 
     return (
         <div>
-            {/* Toolbar */}
-            <div className="flex flex-col md:flex-row gap-4 mb-10">
+            {/* ---- Toolbar ---- */}
+            <div className="flex flex-col md:flex-row gap-3 mb-8">
+                {/* Search */}
                 <div className="relative flex-1 group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors"/>
+                        <Search className="w-4 h-4 text-zinc-600 group-focus-within:text-zinc-300 transition-colors duration-200" />
                     </div>
-                    <input 
-                        className="w-full bg-zinc-900/50 border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/10 transition-all hover:bg-zinc-900/80"
-                        placeholder="Search by title..."
+                    <input
+                        className="w-full bg-zinc-900/40 backdrop-blur-xl border border-white/6 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/10 focus:border-white/10 hover:border-white/10 transition-all duration-200"
+                        placeholder="Search guides..."
                         value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
-                {/* Filter Dropdown */}
-                <div className="relative">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowFilterMenu(!showFilterMenu);
-                        }}
-                        className="h-full px-4 rounded-xl bg-zinc-900/50 border border-white/5 flex items-center gap-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all min-w-[140px] justify-between"
-                    >
-                        <span className="flex items-center gap-2">
-                            {visibilityFilter === "ALL" && <LayoutGrid className="w-3.5 h-3.5"/>}
-                            {visibilityFilter === "CORE" && <Cpu className="w-3.5 h-3.5"/>}
-                            {visibilityFilter === "MEMBER" && <Cpu className="w-3.5 h-3.5"/>}
-                            {visibilityFilter === "PUBLIC" && <Globe className="w-3.5 h-3.5"/>}
-                            {visibilityFilter === "ALL" ? "All Views" : 
-                             visibilityFilter.charAt(0) + visibilityFilter.slice(1).toLowerCase()}
-                        </span>
-                        <MoreHorizontal className="w-3.5 h-3.5 rotate-90"/>
-                    </button>
-
-                    {showFilterMenu && (
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100">
-                            {[
-                                { id: "ALL", label: "All Views", icon: "LayoutGrid" },
-                                { id: "CORE", label: "Core Only", icon: "Cpu" },
-                                { id: "MEMBER", label: "Members", icon: "Cpu" },
-                                { id: "PUBLIC", label: "Public", icon: "Globe" }
-                            ].map((opt) => (
-                                <button
-                                    key={opt.id}
-                                    onClick={() => {
-                                        setVisibilityFilter(opt.id as any);
-                                        setShowFilterMenu(false);
-                                    }}
-                                    className={`w-full text-left px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-2 transition-colors ${
-                                        visibilityFilter === opt.id 
-                                        ? "bg-white/10 text-white" 
-                                        : "text-zinc-400 hover:text-white hover:bg-white/5"
-                                    }`}
-                                >
-                                    <DynamicIcon name={opt.icon} className="w-3.5 h-3.5"/>
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                {/* Visibility Filter Pills */}
+                <div className="flex gap-1 bg-zinc-900/40 backdrop-blur-xl border border-white/6 p-1 rounded-xl">
+                    {VISIBILITY_FILTERS.map((filter) => (
+                        <button
+                            key={filter.id}
+                            onClick={() => setVisibilityFilter(filter.id as VisibilityFilter)}
+                            className={cn(
+                                "px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-all duration-200 flex items-center gap-1.5",
+                                visibilityFilter === filter.id
+                                    ? "bg-white/10 text-white shadow-sm"
+                                    : "text-zinc-500 hover:text-zinc-300 hover:bg-white/4"
+                            )}
+                        >
+                            <filter.icon className="w-3 h-3" />
+                            {filter.label}
+                        </button>
+                    ))}
                 </div>
 
-                <div className="flex gap-1 bg-zinc-900/50 border border-white/5 p-1 rounded-xl self-start md:self-auto backdrop-blur-sm">
-                    <button 
+                {/* Grid / List Toggle */}
+                <div className="flex gap-1 bg-zinc-900/40 backdrop-blur-xl border border-white/6 p-1 rounded-xl self-start md:self-auto">
+                    <button
                         onClick={() => setViewMode("grid")}
-                        className={`p-1.5 rounded-lg transition-all ${viewMode === "grid" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
+                        className={cn(
+                            "p-2 rounded-lg transition-all duration-200",
+                            viewMode === "grid"
+                                ? "bg-white/10 text-white shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-300"
+                        )}
                         title="Grid View"
                     >
-                        <LayoutGrid className="w-4 h-4"/>
+                        <LayoutGrid className="w-4 h-4" />
                     </button>
-                    <button 
+                    <button
                         onClick={() => setViewMode("list")}
-                        className={`p-1.5 rounded-lg transition-all ${viewMode === "list" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"}`}
+                        className={cn(
+                            "p-2 rounded-lg transition-all duration-200",
+                            viewMode === "list"
+                                ? "bg-white/10 text-white shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-300"
+                        )}
                         title="List View"
                     >
-                        <List className="w-4 h-4"/>
+                        <List className="w-4 h-4" />
                     </button>
                 </div>
             </div>
 
-            {/* Empty State */}
-            {!isLoading && filtered.length === 0 && (
-                <div className="py-32 text-center border-2 border-white/5 rounded-[2rem] border-dashed bg-white/5 backdrop-blur-sm flex flex-col items-center max-w-2xl mx-auto">
-                    <div className="w-20 h-20 rounded-full bg-black border border-white/10 flex items-center justify-center mb-6 shadow-inner">
-                        <Search className="w-8 h-8 text-zinc-600"/>
+            {/* ---- Empty State ---- */}
+            {filtered.length === 0 && (
+                <div className="py-28 text-center border border-white/6 border-dashed rounded-2xl bg-zinc-900/20 backdrop-blur-xl flex flex-col items-center max-w-xl mx-auto">
+                    <div className="w-16 h-16 rounded-2xl bg-zinc-900/60 border border-white/6 flex items-center justify-center mb-5">
+                        <FileText className="w-7 h-7 text-zinc-600" />
                     </div>
-                    <h3 className="text-zinc-200 text-xl font-bold mb-2">No guides found</h3>
-                    <p className="text-zinc-500 max-w-xs mx-auto">
-                        We couldn't find anything matching "{searchTerm}". Try a different term or create a new guide.
+                    <h3 className="text-zinc-300 text-lg font-bold mb-1.5">No guides found</h3>
+                    <p className="text-zinc-600 text-sm max-w-xs mx-auto leading-relaxed">
+                        {searchTerm
+                            ? `No results for "${searchTerm}". Try a different search term.`
+                            : "There are no guides to display yet. Create one to get started."}
                     </p>
                 </div>
             )}
 
-            {/* Grid/List */}
-            <div className={`
-                ${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" : "flex flex-col gap-4 max-w-4xl"}
-            `}>
-                {filtered.map(doc => (
-                    <div key={doc.id} className="relative group/card perspective-1000">
-                            <div className={`
-                                group relative overflow-hidden transition-all duration-500 border border-white/[0.08] hover:border-white/20
-                                ${viewMode === "grid" 
-                                    ? "bg-black/40 backdrop-blur-xl rounded-[2rem] h-full flex flex-col hover:translate-y-[-4px] hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]" 
-                                    : "bg-black/40 backdrop-blur-xl rounded-2xl p-5 flex items-center justify-between hover:bg-white/5"
-                                }
-                            `}>
-                                {/* Click Target */}
-                                <Link href={`${basePath}/${doc.id}`} className="absolute inset-0 z-20" />
-                                
-                                {/* Glowing Effect on Hover (Grid only) */}
-                                {viewMode === "grid" && (
-                                    <div className="absolute -inset-2 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl pointer-events-none" />
-                                )}
+            {/* ---- Grid View ---- */}
+            {filtered.length > 0 && viewMode === "grid" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filtered.map((doc) => (
+                        <div key={doc.id} className="relative group/card" ref={activeMenuId === doc.id ? menuRef : undefined}>
+                            <div className="relative overflow-hidden rounded-2xl bg-zinc-900/40 backdrop-blur-xl border border-white/6 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/30 h-full flex flex-col">
+                                {/* Link overlay */}
+                                <Link href={`${basePath}/${doc.id}`} className="absolute inset-0 z-10" />
 
-                                {/* Card Content */}
-                                <div className={`relative z-10 w-full ${viewMode === "list" ? "flex flex-row items-center justify-between p-6 gap-8" : "flex flex-col h-full"}`}>
-                                    
-                                    {/* Grid View: Image Top */}
-                                    {viewMode === "grid" && (
-                                        <div className="relative h-48 w-full bg-zinc-900 overflow-hidden border-b border-white/5">
-                                            {doc.coverImage ? (
-                                                <Image 
-                                                    src={doc.coverImage} 
-                                                    alt={doc.title} 
-                                                    fill
-                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-zinc-800/50">
-                                                    <FileText className="w-12 h-12 text-zinc-700 group-hover:text-zinc-600 transition-colors"/>
-                                                </div>
-                                            )}
-                                            
-                                            {/* Badges Overlay on Image */}
-                                            <div className="absolute top-4 right-4 flex gap-2">
-                                                {doc.lockedBy && (
-                                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] uppercase tracking-wider font-bold text-zinc-400">
-                                                        <Lock className="w-3 h-3"/>
-                                                        Locked
-                                                    </div>
-                                                )}
-                                                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border backdrop-blur-md text-[10px] uppercase tracking-wider font-bold ${
-                                                    doc.visibility === "PUBLIC" ? "bg-black/60 border-white/10 text-zinc-300" :
-                                                    doc.visibility === "CORE" ? "bg-black/60 border-white/10 text-white" :
-                                                    "bg-black/60 border-white/10 text-zinc-400"
-                                                }`}>
-                                                    {doc.visibility === "PUBLIC" && <Globe className="w-3 h-3"/>}
-                                                    {doc.visibility === "MEMBER" && <Cpu className="w-3 h-3"/>}
-                                                    {doc.visibility === "CORE" && <Cpu className="w-3 h-3"/>}
-                                                    <span>{doc.visibility}</span>
-                                                </div>
-                                            </div>
+                                {/* Cover Image */}
+                                <div className="relative h-44 w-full bg-zinc-900 overflow-hidden">
+                                    {doc.coverImage ? (
+                                        <>
+                                            <Image
+                                                src={doc.coverImage}
+                                                alt={doc.title}
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                className="object-cover transition-transform duration-500 group-hover/card:scale-[1.03]"
+                                            />
+                                            <div className="absolute inset-0 bg-linear-to-t from-zinc-950/80 via-transparent to-transparent" />
+                                        </>
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-zinc-900/80">
+                                            <FileText className="w-10 h-10 text-zinc-700" />
                                         </div>
                                     )}
 
-                                    {/* Text Content */}
-                                    <div className={`flex-1 flex flex-col ${viewMode === "grid" ? "bg-transparent" : "min-w-0"}`}>
-                                        {viewMode === "grid" ? (
-                                            <>
-                                                <div className="p-4 flex items-start justify-between gap-4 mb-2">
-                                                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-zinc-200 transition-colors">
-                                                        {doc.title}
-                                                    </h3>
-                                                    <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white group-hover:bg-zinc-700 transition-all flex items-center gap-2">
-                                                        Open <ArrowRight className="w-3 h-3"/>
-                                                    </div>
-                                                </div>
-
-                                                <div className="px-4 mb-3 flex-1">
-                                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed">
-                                                        {doc.body?.description || "No description provided."}
-                                                    </p>
-                                                </div>
-                                                
-                                                <div className="px-4 pb-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-zinc-500 font-medium mt-auto">
-                                                    <span className="truncate max-w-[150px]">by <span className="text-zinc-400 capitalize">{doc.createdBy?.email.split("@")[0]}</span></span>
-                                                    <span className="flex items-center gap-1.5">
-                                                        {doc.updatedAt && formatDistanceToNow(new Date(doc.updatedAt))} ago
-                                                    </span>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <h3 className="font-bold text-white text-xl truncate group-hover:text-zinc-200 transition-all duration-300">
-                                                        {doc.title}
-                                                    </h3>
-                                                    
-                                                    <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-                                                        {doc.lockedBy && (
-                                                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold text-red-500">
-                                                                <Lock className="w-3 h-3"/>
-                                                            </div>
-                                                        )}
-                                                        <div className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${
-                                                            doc.visibility === "PUBLIC" ? "bg-zinc-800/50 border-white/10 text-zinc-300" :
-                                                            doc.visibility === "CORE" ? "bg-zinc-800/50 border-white/20 text-white" :
-                                                            "bg-zinc-800/50 border-white/5 text-zinc-500"
-                                                        }`}>
-                                                            {doc.visibility}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="flex-1">
-                                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4">
-                                                        {doc.body?.description || "No description provided."}
-                                                    </p>
-                                                </div>
-
-                                                <div className="flex items-center gap-4 text-xs text-zinc-500 font-medium">
-                                                    <span className="truncate max-w-[150px] text-zinc-400">By {doc.createdBy?.email.split("@")[0]}</span>
-                                                    <span>•</span>
-                                                    <span className="flex items-center gap-1.5">
-                                                        {doc.updatedAt && formatDistanceToNow(new Date(doc.updatedAt))} ago
-                                                    </span>
-                                                </div>
-                                            </>
+                                    {/* Visibility Badge - top right */}
+                                    <div className="absolute top-3 right-3 flex gap-2 z-20">
+                                        {doc.lockedBy && (
+                                            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/8 text-[10px] uppercase tracking-wider font-bold text-zinc-400">
+                                                <Lock className="w-2.5 h-2.5" />
+                                                Locked
+                                            </div>
                                         )}
+                                        <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/8 text-[10px] uppercase tracking-wider font-bold text-zinc-300">
+                                            {doc.visibility === "PUBLIC" && <Globe className="w-2.5 h-2.5" />}
+                                            {doc.visibility === "MEMBER" && <Users className="w-2.5 h-2.5" />}
+                                            {doc.visibility === "CORE" && <Cpu className="w-2.5 h-2.5" />}
+                                            {doc.visibility}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Body */}
+                                <div className="flex flex-col flex-1 p-4">
+                                    <div className="flex items-start justify-between gap-3 mb-2">
+                                        <h3 className="text-[15px] font-bold text-white line-clamp-2 leading-snug">
+                                            {doc.title}
+                                        </h3>
                                     </div>
 
-                                    {/* List View: Image Right */}
-                                    {viewMode === "list" && doc.coverImage && (
-                                        <div className="relative w-32 h-24 rounded-lg overflow-hidden border border-white/10 flex-shrink-0">
-                                            <Image 
-                                                src={doc.coverImage} 
-                                                alt={doc.title} 
+                                    <p className="text-zinc-500 text-sm line-clamp-2 leading-relaxed mb-4 flex-1">
+                                        {doc.body?.description || "No description provided."}
+                                    </p>
+
+                                    {/* Open action */}
+                                    <div className="relative z-20 mb-3">
+                                        <Link
+                                            href={`${basePath}/${doc.id}`}
+                                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/5 border border-white/6 text-[11px] font-bold uppercase tracking-wider text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/10 transition-all duration-200"
+                                        >
+                                            Open
+                                            <ArrowRight className="w-3 h-3" />
+                                        </Link>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="pt-3 border-t border-white/4 flex items-center justify-between text-[11px] text-zinc-600 font-medium">
+                                        <span className="truncate max-w-35 flex items-center gap-1.5">
+                                            <Users className="w-3 h-3" />
+                                            <span className="text-zinc-500 capitalize">
+                                                {doc.createdBy?.email.split("@")[0] || "Unknown"}
+                                            </span>
+                                        </span>
+                                        <span className="flex items-center gap-1.5 text-zinc-600">
+                                            <Calendar className="w-3 h-3" />
+                                            {doc.updatedAt
+                                                ? formatDistanceToNow(new Date(doc.updatedAt), { addSuffix: false }) + " ago"
+                                                : "N/A"}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Actions Menu (hover reveal) */}
+                                {(effectiveCanWrite || effectiveCanDelete) && (
+                                    <div className="absolute top-3 left-3 z-30 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setActiveMenuId(activeMenuId === doc.id ? null : doc.id);
+                                            }}
+                                            className="p-1.5 rounded-lg bg-black/50 backdrop-blur-md border border-white/8 text-zinc-400 hover:text-white hover:bg-black/70 transition-all duration-200"
+                                        >
+                                            <MoreHorizontal className="w-4 h-4" />
+                                        </button>
+
+                                        {activeMenuId === doc.id && (
+                                            <div
+                                                className="absolute left-0 top-full mt-1.5 w-44 bg-zinc-900/95 backdrop-blur-xl border border-white/8 rounded-xl shadow-2xl shadow-black/40 z-50 p-1 animate-in fade-in zoom-in-95 duration-150 origin-top-left"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {effectiveCanWrite && (
+                                                    <Link
+                                                        href={`${basePath}/${doc.id}`}
+                                                        className="px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/6 rounded-lg flex items-center gap-2.5 transition-colors duration-150"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <Edit className="w-3.5 h-3.5" />
+                                                        Open Editor
+                                                    </Link>
+                                                )}
+                                                {effectiveCanWrite && effectiveCanDelete && (
+                                                    <div className="h-px bg-white/4 my-1" />
+                                                )}
+                                                {effectiveCanDelete && (
+                                                    <button
+                                                        onClick={(e) => handleDeleteClick(e, doc.id)}
+                                                        className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-400 hover:text-red-400 hover:bg-red-500/6 rounded-lg flex items-center gap-2.5 transition-colors duration-150"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                        Delete
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* ---- List View ---- */}
+            {filtered.length > 0 && viewMode === "list" && (
+                <div className="flex flex-col gap-3 max-w-4xl">
+                    {filtered.map((doc) => (
+                        <div key={doc.id} className="relative group/card" ref={activeMenuId === doc.id ? menuRef : undefined}>
+                            <div className="relative overflow-hidden rounded-2xl bg-zinc-900/40 backdrop-blur-xl border border-white/6 hover:border-white/10 transition-all duration-300 hover:bg-zinc-900/60">
+                                {/* Link overlay */}
+                                <Link href={`${basePath}/${doc.id}`} className="absolute inset-0 z-10" />
+
+                                <div className="flex items-center gap-5 p-4">
+                                    {/* Thumbnail */}
+                                    {doc.coverImage ? (
+                                        <div className="relative w-28 h-20 rounded-xl overflow-hidden border border-white/6 shrink-0">
+                                            <Image
+                                                src={doc.coverImage}
+                                                alt={doc.title}
                                                 fill
-                                                sizes="128px"
-                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                sizes="112px"
+                                                className="object-cover group-hover/card:scale-[1.03] transition-transform duration-500"
                                             />
                                         </div>
+                                    ) : (
+                                        <div className="w-28 h-20 rounded-xl bg-zinc-900/80 border border-white/6 flex items-center justify-center shrink-0">
+                                            <FileText className="w-6 h-6 text-zinc-700" />
+                                        </div>
                                     )}
+
+                                    {/* Content */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2.5 mb-1">
+                                            <h3 className="text-[15px] font-bold text-white truncate">
+                                                {doc.title}
+                                            </h3>
+                                            {doc.lockedBy && (
+                                                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-zinc-800/80 border border-white/6 text-[9px] uppercase tracking-wider font-bold text-zinc-500 shrink-0">
+                                                    <Lock className="w-2.5 h-2.5" />
+                                                </div>
+                                            )}
+                                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-800/80 border border-white/6 text-[9px] uppercase tracking-wider font-bold text-zinc-500 shrink-0">
+                                                {doc.visibility === "PUBLIC" && <Globe className="w-2.5 h-2.5" />}
+                                                {doc.visibility === "MEMBER" && <Users className="w-2.5 h-2.5" />}
+                                                {doc.visibility === "CORE" && <Cpu className="w-2.5 h-2.5" />}
+                                                {doc.visibility}
+                                            </div>
+                                        </div>
+                                        <p className="text-zinc-500 text-sm line-clamp-1 leading-relaxed mb-2">
+                                            {doc.body?.description || "No description provided."}
+                                        </p>
+                                        <div className="flex items-center gap-4 text-[11px] text-zinc-600 font-medium">
+                                            <span className="flex items-center gap-1.5">
+                                                <Users className="w-3 h-3" />
+                                                <span className="text-zinc-500 capitalize">
+                                                    {doc.createdBy?.email.split("@")[0] || "Unknown"}
+                                                </span>
+                                            </span>
+                                            <span className="text-zinc-700">|</span>
+                                            <span className="flex items-center gap-1.5">
+                                                <Calendar className="w-3 h-3" />
+                                                {doc.updatedAt
+                                                    ? formatDistanceToNow(new Date(doc.updatedAt), { addSuffix: false }) + " ago"
+                                                    : "N/A"}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Arrow */}
+                                    <div className="shrink-0 text-zinc-700 group-hover/card:text-zinc-400 transition-colors duration-200">
+                                        <ArrowRight className="w-5 h-5" />
+                                    </div>
                                 </div>
-                            </div>
 
-                        {/* Menu Actions */}
-                        {(effectiveCanWrite || effectiveCanDelete) && (
-                            <div className={`absolute z-30 ${viewMode === "grid" ? "top-4 right-4" : "top-1/2 -translate-y-1/2 right-4"}`}>
-                                <button 
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        e.preventDefault();
-                                        setActiveMenuId(activeMenuId === doc.id ? null : doc.id);
-                                    }}
-                                    className="p-2 rounded-full hover:bg-white/10 text-zinc-500 hover:text-white transition-colors opacity-0 group-hover/card:opacity-100 bg-[#121212]/50 backdrop-blur-sm border border-white/5"
-                                >
-                                    <MoreHorizontal className="w-5 h-5"/>
-                                </button>
+                                {/* Actions Menu (hover reveal) */}
+                                {(effectiveCanWrite || effectiveCanDelete) && (
+                                    <div className="absolute top-1/2 -translate-y-1/2 right-12 z-30 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setActiveMenuId(activeMenuId === doc.id ? null : doc.id);
+                                            }}
+                                            className="p-1.5 rounded-lg bg-zinc-900/80 backdrop-blur-md border border-white/8 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all duration-200"
+                                        >
+                                            <MoreHorizontal className="w-4 h-4" />
+                                        </button>
 
-                                {activeMenuId === doc.id && (
-                                    <div className="absolute right-0 top-full mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl z-50 p-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right">
-                                        {effectiveCanWrite && (
-                                            <Link 
-                                                href={`${basePath}/${doc.id}`}
-                                                className="px-3 py-2 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center gap-2"
-                                                onClick={(e) => e.stopPropagation()} 
+                                        {activeMenuId === doc.id && (
+                                            <div
+                                                className="absolute right-0 top-full mt-1.5 w-44 bg-zinc-900/95 backdrop-blur-xl border border-white/8 rounded-xl shadow-2xl shadow-black/40 z-50 p-1 animate-in fade-in zoom-in-95 duration-150 origin-top-right"
+                                                onClick={(e) => e.stopPropagation()}
                                             >
-                                                <Edit className="w-3.5 h-3.5"/> Open Editor
-                                            </Link>
-                                        )}
-                                        {effectiveCanWrite && effectiveCanDelete && <div className="h-px bg-white/5 my-1" />}
-                                        {effectiveCanDelete && (
-                                            <button 
-                                                onClick={(e) => handleDeleteClick(e, doc.id)}
-                                                className="text-left px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg flex items-center gap-2 w-full"
-                                            >
-                                                <Trash2 className="w-3.5 h-3.5"/> Delete
-                                            </button>
+                                                {effectiveCanWrite && (
+                                                    <Link
+                                                        href={`${basePath}/${doc.id}`}
+                                                        className="px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/6 rounded-lg flex items-center gap-2.5 transition-colors duration-150"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <Edit className="w-3.5 h-3.5" />
+                                                        Open Editor
+                                                    </Link>
+                                                )}
+                                                {effectiveCanWrite && effectiveCanDelete && (
+                                                    <div className="h-px bg-white/4 my-1" />
+                                                )}
+                                                {effectiveCanDelete && (
+                                                    <button
+                                                        onClick={(e) => handleDeleteClick(e, doc.id)}
+                                                        className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-400 hover:text-red-400 hover:bg-red-500/6 rounded-lg flex items-center gap-2.5 transition-colors duration-150"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                        Delete
+                                                    </button>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
                                 )}
                             </div>
-                        )}
-                    </div>
-                ))}
-            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-            {/* Delete Confirmation Modal */}
+            {/* ---- Delete Confirmation Modal ---- */}
             {showDeleteConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-[#09090b]/90 border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl scale-100 animate-in zoom-in-95 duration-200 backdrop-blur-xl ring-1 ring-white/10">
-                        <div className="flex flex-col items-center text-center gap-4">
-                            <div className="p-4 rounded-full bg-zinc-800 border border-white/10 text-zinc-400">
-                                <Trash2 className="w-8 h-8"/>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+                    <div
+                        className="bg-zinc-900/90 backdrop-blur-xl border border-white/8 rounded-2xl p-7 max-w-sm w-full shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex flex-col items-center text-center gap-5">
+                            {/* Icon */}
+                            <div className="p-4 rounded-2xl bg-red-500/8 border border-red-500/10">
+                                <Trash2 className="w-7 h-7 text-red-400/80" />
                             </div>
+
+                            {/* Text */}
                             <div>
-                                <h3 className="text-xl font-bold text-white mb-2">Delete Guide?</h3>
-                                <p className="text-sm text-zinc-400 leading-relaxed">
-                                    Are you sure you want to delete this guide? <br/>
-                                    <span className="text-zinc-500 font-medium">This action cannot be undone.</span>
+                                <h3 className="text-lg font-bold text-white mb-2">Delete Guide?</h3>
+                                <p className="text-sm text-zinc-500 leading-relaxed">
+                                    This will permanently remove this guide.
+                                    <br />
+                                    <span className="text-zinc-600 font-medium">This action cannot be undone.</span>
                                 </p>
                             </div>
-                            <div className="flex gap-3 w-full mt-2">
-                                <button 
+
+                            {/* Actions */}
+                            <div className="flex gap-3 w-full mt-1">
+                                <button
                                     onClick={() => setShowDeleteConfirm(false)}
-                                    className="flex-1 px-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-sm font-semibold hover:bg-zinc-800 transition-colors"
+                                    className="flex-1 px-4 py-2.5 rounded-xl bg-zinc-800/80 border border-white/6 text-sm font-semibold text-zinc-300 hover:text-white hover:bg-zinc-700/80 transition-all duration-200"
                                 >
                                     Cancel
                                 </button>
-                                <button 
+                                <button
                                     onClick={confirmDelete}
-                                    className="flex-1 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold transition-colors shadow-lg shadow-black/20"
+                                    className="flex-1 px-4 py-2.5 rounded-xl bg-red-500/15 border border-red-500/20 text-sm font-bold text-red-400 hover:bg-red-500/25 hover:text-red-300 transition-all duration-200"
                                 >
                                     Delete Forever
                                 </button>
