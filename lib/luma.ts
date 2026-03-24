@@ -99,7 +99,7 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
     let nextCursor: string | null = null;
     let hasMore = true;
     let pageCount = 0;
-    const MAX_PAGES = 20;
+    const MAX_PAGES = 5; // Keep low for Vercel Hobby 10s timeout
 
     while (hasMore && pageCount < MAX_PAGES) {
       const url = new URL("https://public-api.luma.com/v1/calendar/list-events");
@@ -107,84 +107,96 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
         url.searchParams.append("pagination_cursor", nextCursor);
       }
 
-      const res = await fetch(url.toString(), {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          "x-luma-api-key": apiKey,
-        },
-        cache: "no-store",
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
 
-      if (!res.ok) {
-        console.error(`Luma API error: ${res.status} ${res.statusText}`);
-        break;
-      }
+      try {
+        const res = await fetch(url.toString(), {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            "x-luma-api-key": apiKey,
+          },
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
 
-      const data = (await res.json()) as {
-        entries: LumaApiEntry[];
-        next_cursor?: string;
-        has_more?: boolean;
-      };
+        if (!res.ok) {
+          console.error(`Luma API error: ${res.status} ${res.statusText}`);
+          break;
+        }
 
-      if (data.entries && data.entries.length > 0) {
-        allEntries = allEntries.concat(data.entries);
-      } else {
-        hasMore = false;
-      }
+        const data = (await res.json()) as {
+          entries: LumaApiEntry[];
+          next_cursor?: string;
+          has_more?: boolean;
+        };
 
-      if (data.next_cursor) {
-        nextCursor = data.next_cursor;
-      } else {
-        hasMore = false;
+        if (data.entries && data.entries.length > 0) {
+          allEntries = allEntries.concat(data.entries);
+        } else {
+          hasMore = false;
+        }
+
+        if (data.next_cursor) {
+          nextCursor = data.next_cursor;
+        } else {
+          hasMore = false;
+        }
+      } catch (fetchErr) {
+        clearTimeout(timeout);
+        console.error(`Luma fetch page ${pageCount} failed:`, fetchErr);
+        break; // Stop pagination on timeout/error, save what we have
       }
 
       pageCount++;
     }
 
-    // Upsert all events into DB
-    let synced = 0;
-    let errors = 0;
-    const now = new Date();
-
-    for (const entry of allEntries) {
-      try {
-        await prisma.lumaEvent.upsert({
-          where: { apiId: entry.api_id },
-          update: {
-            name: entry.event.name,
-            startAt: new Date(entry.event.start_at),
-            endAt: entry.event.end_at ? new Date(entry.event.end_at) : null,
-            coverUrl: entry.event.cover_url || null,
-            url: entry.event.url,
-            timezone: entry.event.timezone || null,
-            visibility: entry.event.visibility,
-            city: entry.event.geo_address_json?.city || null,
-            geoData: entry.event.geo_address_json || Prisma.JsonNull,
-            syncedAt: now,
-          },
-          create: {
-            apiId: entry.api_id,
-            name: entry.event.name,
-            startAt: new Date(entry.event.start_at),
-            endAt: entry.event.end_at ? new Date(entry.event.end_at) : null,
-            coverUrl: entry.event.cover_url || null,
-            url: entry.event.url,
-            timezone: entry.event.timezone || null,
-            visibility: entry.event.visibility,
-            city: entry.event.geo_address_json?.city || null,
-            geoData: entry.event.geo_address_json || Prisma.JsonNull,
-            syncedAt: now,
-          },
-        });
-        synced++;
-      } catch (err) {
-        console.error(`Failed to upsert event ${entry.api_id}:`, err);
-        errors++;
-      }
+    if (allEntries.length === 0) {
+      return { synced: 0, errors: 0 };
     }
 
-    return { synced, errors };
+    // Batch upsert all events in a single transaction
+    const now = new Date();
+    const upsertOps = allEntries.map((entry) =>
+      prisma.lumaEvent.upsert({
+        where: { apiId: entry.api_id },
+        update: {
+          name: entry.event.name,
+          startAt: new Date(entry.event.start_at),
+          endAt: entry.event.end_at ? new Date(entry.event.end_at) : null,
+          coverUrl: entry.event.cover_url || null,
+          url: entry.event.url,
+          timezone: entry.event.timezone || null,
+          visibility: entry.event.visibility,
+          city: entry.event.geo_address_json?.city || null,
+          geoData: entry.event.geo_address_json || Prisma.JsonNull,
+          syncedAt: now,
+        },
+        create: {
+          apiId: entry.api_id,
+          name: entry.event.name,
+          startAt: new Date(entry.event.start_at),
+          endAt: entry.event.end_at ? new Date(entry.event.end_at) : null,
+          coverUrl: entry.event.cover_url || null,
+          url: entry.event.url,
+          timezone: entry.event.timezone || null,
+          visibility: entry.event.visibility,
+          city: entry.event.geo_address_json?.city || null,
+          geoData: entry.event.geo_address_json || Prisma.JsonNull,
+          syncedAt: now,
+        },
+      })
+    );
+
+    try {
+      await prisma.$transaction(upsertOps);
+      return { synced: allEntries.length, errors: 0 };
+    } catch (txErr) {
+      console.error("Batch upsert failed:", txErr);
+      return { synced: 0, errors: allEntries.length };
+    }
   } catch (error) {
     console.error("Luma sync failed:", error);
     return { synced: 0, errors: 1 };
