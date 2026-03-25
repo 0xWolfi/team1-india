@@ -1,305 +1,141 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import { useScroll, useTransform, motion, useMotionValueEvent, MotionValue } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { signIn } from "next-auth/react";
+import { Send, Volume2, VolumeX } from "lucide-react";
 
 export const HeroScroll = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  
-  /* New Ref for Video */
+  const heroRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
 
   const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
+    target: heroRef,
+    offset: ["start start", "end start"],
   });
 
-  // Animations complete by 30% of the scroll
-  const rotate = useTransform(scrollYProgress, [0, 0.3], [20, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.3], [0.7, 1]); // Tablet grows
-  const translate = useTransform(scrollYProgress, [0, 0.3], [0, 50]); // Tablet moves DOWN
-  
-  // Text animations
-  const textScale = useTransform(scrollYProgress, [0, 0.3], [1.2, 1]); // Text shrinks/settles
-  const textTranslate = useTransform(scrollYProgress, [0, 0.3], [50, -10]); // Text starts closer (40), moves UP to (-10)
+  // Parallax on video - moves up slightly as you scroll
+  const videoY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+  // Text fades out on scroll
+  const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.5], [0, -40]);
 
-  // Volume animation: Fade in [0.2 -> 0.4], Stay [0.4 -> 0.8], Fade out [0.8 -> 1.0]
-  const scrollVolume = useTransform(scrollYProgress, [0.2, 0.4, 0.8, 1.0], [0, 1, 1, 0]);
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (latest > 0.3 && !isVideoPlaying) {
-      setIsVideoPlaying(true);
-    } else if (latest <= 0.3 && isVideoPlaying) {
-      setIsVideoPlaying(false);
-    }
-  });
-
-  // Sync volume with scroll AND mute state
-  useMotionValueEvent(scrollVolume, "change", (latest) => {
-    if (videoRef.current) {
-        if (isMuted) {
-            videoRef.current.volume = 0;
-            videoRef.current.muted = true;
-        } else {
-            videoRef.current.volume = latest;
-            videoRef.current.muted = false;
-        }
-    }
-  });
-
-  // Apply mute state change immediately
   useEffect(() => {
     if (videoRef.current) {
-        videoRef.current.muted = isMuted;
-        // If unmuted, restore volume from scroll position (or default to 1 if we can't get that easily here without reading motion value, which we can)
-        videoRef.current.volume = isMuted ? 0 : scrollVolume.get();
-    }
-  }, [isMuted, scrollVolume]);
-
-  /* Effect to start loading video metadata when component mounts (lightweight) */
-  React.useEffect(() => {
-    if (videoRef.current) {
-      // Load metadata only - this is fast and doesn't download full video
-      videoRef.current.load();
-    }
-  }, []);
-
-  /* Effect to manage video playback based on active state */
-  React.useEffect(() => {
-    if (videoRef.current) {
-        if (isVideoPlaying) {
-            const playPromise = videoRef.current.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(e => console.log("Autoplay blocked:", e));
-            }
-        } else {
-            videoRef.current.pause();
-        }
-    }
-  }, [isVideoPlaying]);
-
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    // Check if window is defined (client-side)
-    if (typeof window !== "undefined") {
-      // Use standard md breakpoint (768px) to match the hidden md:block class
-      // Also checking aspect-ratio as requested "height > width" implies portrait, 
-      // but "mobile view" usually just means small screens. 
-      // Standard approach: matching the CSS breakpoint ensures consistency.
-      const checkDesktop = () => {
-        setIsDesktop(window.innerWidth >= 768);
-      };
-      
-      checkDesktop();
-      window.addEventListener("resize", checkDesktop);
-      return () => window.removeEventListener("resize", checkDesktop);
+      videoRef.current.play().catch(() => {});
     }
   }, []);
 
   return (
-    <header
-      id="hero"
-      className="min-h-[100svh] md:h-[200vh] relative"
-      ref={containerRef}
-      role="banner"
-      aria-label="Team1 India Hero Section"
-    >
-      <div className="sticky top-0 min-h-[100svh] md:h-screen flex items-center justify-center py-6 md:py-20 overflow-hidden">
-        <section
-          className="w-full relative z-10 flex flex-col items-center justify-center md:justify-start h-full"
-          style={{
-            perspective: "1000px",
-          }}
-        >
-          <Header scale={textScale} translate={textTranslate} isDesktop={isDesktop} />
-          <div className="hidden md:block w-full">
-            {isDesktop && (
-              <Card 
-                rotate={rotate} 
-                translate={translate} 
-                scale={scale} 
-                isVideoPlaying={isVideoPlaying} 
-                videoRef={videoRef}
-                isMuted={isMuted}
-                setIsMuted={setIsMuted}
-              />
-            )}
-          </div>
-          <HeroActions translate={translate} isDesktop={isDesktop} />
-        </section>
-      </div>
-    </header>
-  );
-};
-
-export const Header = ({ scale, translate, isDesktop }: { scale: MotionValue<number>; translate: MotionValue<number>; isDesktop: boolean }) => {
-  return (
-    <motion.div 
-      style={isDesktop ? { scale, translateY: translate } : {}}
-      className="max-w-5xl mx-auto text-center px-4 md:px-8 mt-0 md:mt-4 mb-6 md:mb-4 origin-center"
-      role="presentation"
-    >
-      <hgroup>
-        <h1 className="text-4xl sm:text-5xl md:text-8xl font-bold text-white tracking-tighter mb-4 md:mb-2 text-balance">
-          Team1 India
-        </h1>
-        <p className="text-base sm:text-lg md:text-2xl text-zinc-400 max-w-3xl mx-auto leading-relaxed md:leading-tight px-2 text-balance">
-          The premier builder community and accelerator for the <strong>Avalanche Ecosystem</strong> in India.
-        </p>
-      </hgroup>
-    </motion.div>
-  );
-};
-
-
-
-import { Instagram, Linkedin, Send, Volume2, VolumeX } from "lucide-react";
-// Card scale/translate logic remains, but we add max-h to prevent it from eating all vertical space
-export const Card = ({
-  rotate,
-  scale,
-  translate,
-  isVideoPlaying,
-  videoRef,
-  isMuted,
-  setIsMuted
-}: {
-  rotate: MotionValue<number>;
-  scale: MotionValue<number>;
-  translate: MotionValue<number>;
-  isVideoPlaying: boolean;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
-  isMuted: boolean;
-  setIsMuted: (muted: boolean) => void;
-}) => {
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const handleProgress = () => {
-    if (videoRef.current) {
-      const video = videoRef.current;
-      if (video.buffered.length > 0) {
-        const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-        const duration = video.duration;
-        if (duration > 0) {
-           const progress = (bufferedEnd / duration) * 100;
-           setLoadingProgress(Math.min(100, Math.round(progress)));
-        }
-      }
-    }
-  };
-
-  const handleCanPlay = () => {
-    setIsLoaded(true);
-  };
-
-  return (
-    <motion.div
-      style={{
-        rotateX: rotate,
-        scale,
-      }}
-      className="max-w-5xl mx-auto aspect-video w-full border-4 border-[#6C6C6C] p-2 md:p-6 bg-white/5 backdrop-blur-xl border-white/20 rounded-[30px] shadow-2xl max-h-[50vh] object-contain relative"
-    >
-      <div className="h-full w-full overflow-hidden rounded-2xl bg-transparent relative group">
-          
-          {/* Loader Overlay */}
-          {!isLoaded && (
-            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-700 pointer-events-none">
-               <div className="flex flex-col items-center gap-3">
-                  <div className="w-12 h-12 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                  <span className="text-white/80 font-mono text-sm tracking-wider">
-                    LOADING {loadingProgress}%
-                  </span>
-               </div>
-            </div>
-          )}
-
-          <div className="absolute inset-0 flex items-center justify-center bg-transparent">
-              <Image 
-                 src="/hero-cover.jpg" 
-                 alt="Video Thumbnail" 
-                 fill
-                 priority
-                 sizes="(max-width: 768px) 100vw, 80vw"
-                 className="absolute inset-0 object-cover object-bottom"
-               />
-               <video 
-                  ref={videoRef}
-                  loop
-                  playsInline
-                  muted={isMuted} // Ensure muted prop reflects state
-                  preload="metadata"
-                  poster="/hero-cover.jpg"
-                  onProgress={handleProgress}
-                  onCanPlayThrough={handleCanPlay}
-                  onCanPlay={handleCanPlay}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isVideoPlaying ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-               >
-                  {/* Multiple formats for better browser support and faster loading */}
-                  <source src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL || "/hero-video.webm"} type="video/webm" />
-                  <source src={process.env.NEXT_PUBLIC_HERO_VIDEO_URL_MP4 || "/hero-video.mp4"} type="video/mp4" />
-                  {/* Fallback for browsers that don't support video */}
-                  Your browser does not support the video tag.
-               </video>
-          </div>
-
-          {/* Mute/Unmute Button */}
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            className="absolute bottom-4 right-4 z-30 p-3 bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 rounded-full text-white transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 translate-y-2 group-hover:translate-y-0"
-            aria-label={isMuted ? "Unmute video" : "Mute video"}
+    <header id="hero" ref={heroRef} role="banner" className="relative">
+      {/* ── Cinematic Video Banner ── */}
+      <div className="relative w-full h-[40vh] md:h-[48vh] overflow-hidden">
+        {/* Video with parallax */}
+        <motion.div style={{ y: videoY }} className="absolute inset-0 w-full h-[120%] -top-[10%]">
+          <video
+            ref={videoRef}
+            loop
+            muted={isMuted}
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover"
           >
-            {isMuted ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
-          </button>
+            <source src="/hero-video.mp4" type="video/mp4" />
+          </video>
+        </motion.div>
+
+        {/* Top gradient for navbar blending */}
+        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
+        {/* Thin bottom fade so video doesn't have a hard cut against black */}
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-black to-transparent pointer-events-none z-10" />
+
+        {/* Mute toggle */}
+        <button
+          onClick={() => setIsMuted(!isMuted)}
+          className="absolute bottom-4 right-4 z-20 p-2 bg-black/50 hover:bg-black/70 backdrop-blur-sm border border-white/10 rounded-full text-white/50 hover:text-white transition-all duration-200"
+          aria-label={isMuted ? "Unmute" : "Mute"}
+        >
+          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+        </button>
       </div>
-    </motion.div>
-  );
-};
 
-import { signIn } from "next-auth/react";
+      {/* ── Content Section ── */}
+      <motion.div
+        style={{ opacity: textOpacity, y: textY }}
+        className="relative z-10 flex flex-col items-center text-center px-4 pt-6 md:pt-10 pb-20 md:pb-24"
+      >
+        {/* Logo + India */}
+        <motion.div
+          initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-center gap-1 md:gap-2 mb-5"
+        >
+          <div className="relative h-12 w-36 sm:h-14 sm:w-40 md:h-16 md:w-48">
+            <Image
+              src="/team1-full-logo.png"
+              alt="Team1"
+              fill
+              className="object-contain object-right"
+              sizes="200px"
+              priority
+            />
+          </div>
+          <span
+            className="text-white font-bold text-5xl sm:text-5xl md:text-6xl leading-[0.9] tracking-tight"
+            style={{ fontFamily: "var(--font-kanit)" }}
+          >
+            India
+          </span>
+        </motion.div>
 
-export const HeroActions = ({ translate, isDesktop }: { translate: MotionValue<number>; isDesktop: boolean }) => {
-  return (
-    <motion.div 
-      style={isDesktop ? { translateY: translate } : {}}
-      className="flex flex-col md:flex-row items-center justify-center gap-6 mt-4 md:-mt-6 w-full pb-24 md:pb-12 relative z-50 pointer-events-auto"
-    >
-       {/* Ensure z-50 and pointer-events-auto to stay on top */}
-        <div className="flex items-center gap-4">
-            <Link href="/public" className="group px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black">
-                <span className="block transition-transform duration-200 group-hover:scale-110">Guidebook</span>
-            </Link>
-            <button 
-                onClick={() => signIn('google', { callbackUrl: '/access-check' })}
-                className="group px-6 py-3 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md transition-all text-white font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:bg-white hover:text-black"
-            >
-                <span className="block transition-transform duration-200 group-hover:scale-110">Members</span>
-            </button>
-        </div>
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="text-sm md:text-base text-zinc-500 max-w-lg mx-auto leading-relaxed mb-7 text-balance"
+        >
+          The premier builder community and accelerator for the{" "}
+          <strong className="text-zinc-300">Avalanche Ecosystem</strong> in India.
+        </motion.p>
 
-        <div className="w-px h-8 bg-white/10 hidden md:block"></div>
-
-        <div className="flex items-center gap-4">
-            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-            </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Instagram className="w-5 h-5"/>
-            </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Linkedin className="w-5 h-5"/>
-            </a>
-            <a href="#" className="p-2 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
-                <Send className="w-5 h-5"/> {/* Telegram */}
-            </a>
-        </div>
-    </motion.div>
+        {/* CTAs + Socials */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-wrap items-center justify-center gap-3"
+        >
+          <Link
+            href="/public"
+            className="px-7 py-2.5 rounded-xl bg-white text-black font-semibold text-sm transition-all duration-200 hover:bg-zinc-200 hover:scale-[1.02]"
+          >
+            Explore
+          </Link>
+          <button
+            onClick={() => signIn("google", { callbackUrl: "/access-check" })}
+            className="px-7 py-2.5 rounded-xl bg-white/8 border border-white/12 text-white font-semibold text-sm transition-all duration-200 hover:bg-white/14 hover:scale-[1.02]"
+          >
+            Sign In
+          </button>
+          <div className="hidden sm:block w-px h-6 bg-white/10 mx-1" />
+          <div className="flex items-center gap-0.5">
+            {[
+              { href: "https://twitter.com/Team1India", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
+              { href: "https://instagram.com/team1india", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg> },
+              { href: "https://linkedin.com/company/team1india", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg> },
+              { href: "https://t.me/Team1India", icon: <Send className="w-3.5 h-3.5" /> },
+            ].map((s) => (
+              <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer" className="p-2 text-zinc-600 hover:text-white transition-colors duration-200">
+                {s.icon}
+              </a>
+            ))}
+          </div>
+        </motion.div>
+      </motion.div>
+    </header>
   );
 };
