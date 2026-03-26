@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Check, Plus, X } from "lucide-react";
+import { ArrowLeft, Check, Plus, X, RotateCcw, AlertTriangle } from "lucide-react";
 import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -29,7 +29,28 @@ export default function CoreBountyPage() {
     const [bounties, setBounties] = useState<any[]>([]);
     const [submissions, setSubmissions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showResetConfirm, setShowResetConfirm] = useState(false);
+    const [resetting, setResetting] = useState(false);
+    const [resetConfirmText, setResetConfirmText] = useState("");
 
+    const handleReset = async () => {
+        if (resetConfirmText !== "RESET") return;
+        setResetting(true);
+        try {
+            const res = await fetch("/api/bounty/reset", { method: "DELETE" });
+            if (res.ok) {
+                setShowResetConfirm(false);
+                setResetConfirmText("");
+                fetchData();
+            } else {
+                alert("Failed to reset bounty data");
+            }
+        } catch {
+            alert("Error resetting bounty data");
+        } finally {
+            setResetting(false);
+        }
+    };
 
     const fetchData = async () => {
         setLoading(true);
@@ -85,13 +106,23 @@ export default function CoreBountyPage() {
                         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Bounty Management</h1>
                         <p className="text-sm text-zinc-500 mt-1">Create bounties, review submissions</p>
                     </div>
-                    <Link
-                        href="/core/bounty/new"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all shrink-0"
-                    >
-                        <Plus className="w-4 h-4"/>
-                        New Bounty
-                    </Link>
+                    <div className="flex items-center gap-3 shrink-0">
+                        <button
+                            type="button"
+                            onClick={() => setShowResetConfirm(true)}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm font-semibold hover:bg-red-500/20 transition-all"
+                        >
+                            <RotateCcw className="w-4 h-4"/>
+                            Reset All
+                        </button>
+                        <Link
+                            href="/core/bounty/new"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all"
+                        >
+                            <Plus className="w-4 h-4"/>
+                            New Bounty
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Stats */}
@@ -209,6 +240,50 @@ export default function CoreBountyPage() {
                 )}
 
             </main>
+
+            {/* Reset Confirmation Modal */}
+            {showResetConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-md rounded-2xl bg-zinc-900 border border-white/10 p-6 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20">
+                                <AlertTriangle className="w-5 h-5 text-red-400"/>
+                            </div>
+                            <h2 className="text-lg font-bold text-white">Reset All Bounty Data</h2>
+                        </div>
+                        <p className="text-sm text-zinc-400">
+                            This will permanently delete <span className="text-white font-semibold">all bounties</span>, <span className="text-white font-semibold">all submissions</span>, and <span className="text-white font-semibold">reset all member XP to 0</span>. This action cannot be undone.
+                        </p>
+                        <div>
+                            <label className="text-xs text-zinc-500 block mb-1.5">Type <span className="text-red-400 font-bold">RESET</span> to confirm</label>
+                            <input
+                                type="text"
+                                value={resetConfirmText}
+                                onChange={(e) => setResetConfirmText(e.target.value)}
+                                placeholder="RESET"
+                                className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-red-500/50"
+                            />
+                        </div>
+                        <div className="flex items-center gap-3 pt-2">
+                            <button
+                                type="button"
+                                onClick={() => { setShowResetConfirm(false); setResetConfirmText(""); }}
+                                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-zinc-800 border border-white/10 text-zinc-300 hover:bg-zinc-700 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleReset}
+                                disabled={resetConfirmText !== "RESET" || resetting}
+                                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                                {resetting ? "Resetting..." : "Reset Everything"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
