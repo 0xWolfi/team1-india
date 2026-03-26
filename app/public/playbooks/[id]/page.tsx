@@ -1,85 +1,53 @@
-"use client";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import PublicPlaybookClient from "@/components/public/PublicPlaybookClient";
 
-import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import dynamic from "next/dynamic";
-import { MotionIcon } from "motion-icons-react";
-import { PlaybookShell } from "@/components/playbooks/PlaybookShell";
+export const revalidate = 300; // ISR: revalidate every 5 minutes
 
-// Dynamic import with NO SSR to avoid build errors with web APIs
-const Editor = dynamic(() => import("@/components/playbooks/Editor"), { ssr: false });
-
-interface Playbook {
-    id: string;
-    title: string;
-    body: string; // JSON
-    updatedAt: string;
-    createdBy?: { email: string };
-    visibility: 'PUBLIC' | 'MEMBERS' | 'CORE';
-    coverImage?: string;
+export async function generateStaticParams() {
+    const items = await prisma.playbook.findMany({
+        where: { visibility: "PUBLIC", deletedAt: null },
+        select: { id: true },
+    });
+    return items.map((item) => ({ id: item.id }));
 }
 
-export default function PublicPlaybookPage() {
-    const { id } = useParams();
-    const [playbook, setPlaybook] = useState<Playbook | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState("");
+async function getPlaybook(id: string) {
+    const playbook = await prisma.playbook.findFirst({
+        where: {
+            id,
+            deletedAt: null,
+            visibility: "PUBLIC",
+        },
+        include: {
+            createdBy: { select: { email: true, id: true } },
+        },
+    });
 
-    useEffect(() => {
-        if (!id) return;
-        fetch(`/api/public/playbooks/${id}`)
-            .then(async res => {
-                if (res.ok) {
-                    const data = await res.json();
-                    setPlaybook(data);
-                } else if (res.status === 404) {
-                    setError("Playbook not found or removed.");
-                } else if (res.status === 403) {
-                    setError("This playbook is private.");
-                } else {
-                    setError("Failed to load content.");
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                setError("Network error occurred.");
-            })
-            .finally(() => setIsLoading(false));
-    }, [id]);
+    if (!playbook) return null;
 
-    if (isLoading) return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
-            <div className="animate-pulse flex flex-col items-center gap-2">
-                <MotionIcon name="Globe" className="w-8 h-8 text-blue-500 animate-spin-slow" />
-                <span className="text-zinc-500 text-sm">Loading Public Doc...</span>
-            </div>
-        </div>
-    );
+    return {
+        id: playbook.id,
+        title: playbook.title,
+        body: typeof playbook.body === "string" ? playbook.body : JSON.stringify(playbook.body),
+        updatedAt: playbook.updatedAt.toISOString(),
+        createdBy: playbook.createdBy ? { email: playbook.createdBy.email } : undefined,
+        visibility: playbook.visibility as "PUBLIC" | "MEMBERS" | "CORE",
+        coverImage: playbook.coverImage || undefined,
+    };
+}
 
-    if (error || !playbook) return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center">
-             <div className="text-center">
-                <h1 className="text-2xl font-bold mb-2 text-white">Error</h1>
-                <p className="text-zinc-500">{error || "Something went wrong"}</p>
-                 <Link href="/public" className="mt-4 inline-flex items-center text-sm text-zinc-400 hover:text-white transition-colors">
-                    <MotionIcon name="ArrowLeft" className="w-4 h-4 mr-2" /> Back to Directory
-                </Link>
-            </div>
-        </div>
-    );
+type Props = {
+    params: Promise<{ id: string }>;
+};
 
-    return (
-        <PlaybookShell 
-            playbook={playbook} 
-            backLink="/public" 
-            backLabel="Back to Directory"
-        >
-             <Editor 
-                initialContent={playbook.body}
-                editable={false}
-                onChange={() => {}} 
-             />
-        </PlaybookShell>
-    );
+export default async function PublicPlaybookPage({ params }: Props) {
+    const { id } = await params;
+    const playbook = await getPlaybook(id);
+
+    if (!playbook) {
+        notFound();
+    }
+
+    return <PublicPlaybookClient playbook={playbook} />;
 }

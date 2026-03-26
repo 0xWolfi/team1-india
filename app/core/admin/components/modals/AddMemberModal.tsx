@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { AlertCircle, CheckCircle2, Loader2, Tag, XCircle } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { PERMISSION_SCOPES } from "../../shared";
 
 interface AddMemberModalProps {
@@ -116,7 +117,7 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                         <p className="text-zinc-500 text-xs mt-1">Assign identity and define operational scope.</p>
                     </div>
                     <button onClick={onClose} className="text-zinc-500 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
-                        <MotionIcon name="XCircle" className="w-5 h-5" />
+                        <XCircle className="w-5 h-5"/>
                     </button>
                 </div>
 
@@ -143,19 +144,19 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                     />
                                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                         {emailStatus === 'checking' && (
-                                            <MotionIcon name="Loader2" className="w-4 h-4 text-zinc-500 animate-spin" />
+                                            <Loader2 className="w-4 h-4 text-zinc-500 animate-spin"/>
                                         )}
                                         {emailStatus === 'exists' && (
-                                            <MotionIcon name="AlertCircle" className="w-4 h-4 text-red-500" />
+                                            <AlertCircle className="w-4 h-4 text-red-500"/>
                                         )}
                                         {emailStatus === 'available' && (
-                                            <MotionIcon name="CheckCircle2" className="w-4 h-4 text-emerald-500" />
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-500"/>
                                         )}
                                     </div>
                                 </div>
                                 {emailStatus === 'exists' && emailMessage && (
                                     <p className="text-xs text-red-400 flex items-center gap-1 mt-1">
-                                        <MotionIcon name="AlertCircle" className="w-3 h-3" />
+                                        <AlertCircle className="w-3 h-3"/>
                                         {emailMessage}
                                     </p>
                                 )}
@@ -166,7 +167,7 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                 <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Designation Tags</label>
                                 <div className="relative">
                                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                                        <MotionIcon name="Tag" className="w-4 h-4 text-zinc-600" />
+                                        <Tag className="w-4 h-4 text-zinc-600"/>
                                     </div>
                                     <input 
                                         type="text" 
@@ -187,7 +188,7 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                         <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-800 text-zinc-200 border border-white/10 animate-in zoom-in-90">
                                             {tag}
                                             <button type="button" onClick={() => removeTag(tag)} className="ml-1.5 text-zinc-500 hover:text-white transition-colors">
-                                                <MotionIcon name="XCircle" className="w-3 h-3" />
+                                                <XCircle className="w-3 h-3"/>
                                             </button>
                                         </span>
                                     ))}
@@ -239,7 +240,7 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                                     <div key={scope.key} className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors group">
                                                         <div className="flex items-center gap-3">
                                                             <div className={`p-2 rounded-lg border border-white/5 ${currentLevel ? 'bg-zinc-800' : 'bg-black/40'}`}>
-                                                                <MotionIcon name={scope.iconName} className={`w-4 h-4 ${currentLevel ? 'text-zinc-200' : 'text-zinc-600'}`} />
+                                                                <DynamicIcon name={scope.iconName} className={`w-4 h-4 ${currentLevel ? 'text-zinc-200' : 'text-zinc-600'}`}/>
                                                             </div>
                                                             <div>
                                                                 <div className={`text-sm font-medium ${currentLevel ? 'text-zinc-200' : 'text-zinc-500'}`}>{scope.label}</div>
@@ -292,7 +293,7 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                     disabled={isSubmitting || emailStatus === 'exists' || emailStatus === 'checking'}
                                     className="flex-1 py-3 rounded-lg text-sm font-bold bg-white text-black hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {isSubmitting ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : "Deploy Agent"}
+                                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : "Deploy Agent"}
                                 </button>
                             </div>
                         </div>

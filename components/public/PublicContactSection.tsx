@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowUpRight, FolderOpen, Mail } from "lucide-react";
 import Link from "next/link";
 // @ts-ignore
 import MemberChecker from "@/components/public/MemberChecker";
@@ -43,13 +43,13 @@ export default function PublicContactSection({ mediaItems = [] }: { mediaItems?:
                             >
                                 <div>
                                     <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4 md:mb-6 text-zinc-400 group-hover:text-white group-hover:bg-white/10 transition-colors">
-                                        <MotionIcon name="Mail" className="w-6 h-6" />
+                                        <Mail className="w-6 h-6"/>
                                     </div>
                                     <h3 className="text-2xl font-bold text-white mb-2">Contact Us</h3>
                                     <p className="text-zinc-500 text-sm leading-relaxed line-clamp-2 md:line-clamp-none">Reach out for partnerships, events, and press inquiries.</p>
                                 </div>
                                 <div className="flex items-center gap-2 text-zinc-400 group-hover:text-white mt-4 md:mt-8 text-sm font-medium">
-                                    View Options <MotionIcon name="ArrowUpRight" className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                    View Options <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"/>
                                 </div>
                             </button>
 
@@ -60,13 +60,13 @@ export default function PublicContactSection({ mediaItems = [] }: { mediaItems?:
                             >
                                 <div>
                                     <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4 md:mb-6 text-zinc-400 group-hover:text-white group-hover:bg-white/10 transition-colors">
-                                        <MotionIcon name="FolderOpen" className="w-6 h-6" />
+                                        <FolderOpen className="w-6 h-6"/>
                                     </div>
                                     <h3 className="text-2xl font-bold text-white mb-2">Media Kit</h3>
                                     <p className="text-zinc-500 text-sm leading-relaxed line-clamp-2 md:line-clamp-none">Download official logos, brand guidelines, and assets.</p>
                                 </div>
                                 <div className="flex items-center gap-2 text-zinc-400 group-hover:text-white mt-4 md:mt-8 text-sm font-medium">
-                                    Open Kit <MotionIcon name="ArrowUpRight" className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                    Open Kit <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"/>
                                 </div>
                             </button>
                         </div>

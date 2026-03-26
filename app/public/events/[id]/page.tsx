@@ -2,13 +2,23 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { MotionIcon } from "@/components/ui/ClientMotionIcon";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";
 import ReactMarkdown from 'react-markdown';
 
 import { Event, GuideBody } from "@/types/public";
+
+export const revalidate = 300; // ISR: revalidate every 5 minutes
+
+export async function generateStaticParams() {
+  const items = await prisma.guide.findMany({
+    where: { visibility: "PUBLIC", type: "EVENT", deletedAt: null },
+    select: { id: true },
+  });
+  return items.map((item) => ({ id: item.id }));
+}
 
 async function getEvent(id: string): Promise<Event | null> {
   const guide = await prisma.guide.findUnique({
@@ -75,14 +85,14 @@ export default async function PublicEventDetailPage({ params }: Props) {
                />
            ) : (
                 <div className="w-full h-full flex items-center justify-center bg-zinc-900 pattern-grid-lg">
-                    <MotionIcon name="Calendar" className="w-20 h-20 text-zinc-800" />
+                    <Calendar className="w-20 h-20 text-zinc-800"/>
                 </div>
            )}
            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
            
            <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 max-w-7xl mx-auto">
                <Link href="/public/events" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 transition-colors text-sm font-medium backdrop-blur-md bg-black/30 px-3 py-1.5 rounded-lg border border-white/5">
-                   <MotionIcon name="ArrowLeft" className="w-4 h-4" /> Back to Events
+                   <ArrowLeft className="w-4 h-4"/> Back to Events
                </Link>
                <h1 className="text-4xl md:text-6xl font-bold mb-4 max-w-4xl leading-tight">{event.title}</h1>
                <div className="flex flex-wrap items-center gap-6 text-zinc-300 font-medium">

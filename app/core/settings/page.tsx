@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { MotionIcon } from "motion-icons-react";
+import { Loader2, Settings, ToggleLeft, ToggleRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { NotificationPreferences } from "@/components/NotificationPreferences";
 
@@ -58,7 +58,7 @@ export default function SettingsPage() {
         return (
             <CoreWrapper>
                 <div className="flex items-center justify-center h-64">
-                    <MotionIcon name="Loader2" className="w-8 h-8 animate-spin text-zinc-500" />
+                    <Loader2 className="w-8 h-8 animate-spin text-zinc-500"/>
                 </div>
             </CoreWrapper>
         );
@@ -69,7 +69,7 @@ export default function SettingsPage() {
              <CorePageHeader 
                 title="System Settings" 
                 description="Manage global configuration and visibility."
-                icon={<MotionIcon name="Settings" className="w-5 h-5 text-zinc-200" />}
+                icon={<Settings className="w-5 h-5 text-zinc-200"/>}
             />
 
             <div className="mt-8 space-y-6 max-w-2xl">
@@ -133,7 +133,7 @@ function ToggleItem({ label, description, isOn, onToggle, disabled }: any) {
                 disabled={disabled}
                 className={`transition-colors focus:outline-none ${isOn ? 'text-emerald-400' : 'text-zinc-600'}`}
             >
-                {isOn ? <MotionIcon name="ToggleRight" className="w-8 h-8" /> : <MotionIcon name="ToggleLeft" className="w-8 h-8" />}
+                {isOn ? <ToggleRight className="w-8 h-8"/> : <ToggleLeft className="w-8 h-8"/>}
             </button>
         </div>
     );

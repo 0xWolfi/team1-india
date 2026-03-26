@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { MotionIcon } from "motion-icons-react";
+import { AlertCircle, CheckCircle, Eye, Globe, Plus, Users, XCircle } from "lucide-react";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { Member } from "../admin/shared"; 
 
@@ -271,19 +271,19 @@ export default function CommunityMembersPage() {
              <CorePageHeader
                 title="Community Members"
                 description="Manage the broader community roster. (CommunityMember Table)"
-                icon={<MotionIcon name="Users" className="w-5 h-5 text-emerald-400" />}
+                icon={<Users className="w-5 h-5 text-emerald-400"/>}
              >
                 <button 
                     onClick={() => setIsAddingMember(true)}
                     className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-white/5 flex items-center gap-2 active:scale-95"
                 >
-                    <MotionIcon name="Plus" className="w-4 h-4" /> Add Member
+                    <Plus className="w-4 h-4"/> Add Member
                 </button>
              </CorePageHeader>
 
              {duplicates.size > 0 && (
                 <div className="mb-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-yellow-400 text-sm flex items-center gap-2">
-                    <MotionIcon name="AlertCircle" className="w-4 h-4 flex-shrink-0" />
+                    <AlertCircle className="w-4 h-4 flex-shrink-0"/>
                     <span>
                         Warning: Found {duplicates.size} duplicate email{duplicates.size !== 1 ? 's' : ''} in the list. 
                         Please review: {Array.from(duplicates).slice(0, 3).join(', ')}{duplicates.size > 3 ? '...' : ''}
@@ -305,7 +305,7 @@ export default function CommunityMembersPage() {
                             activeTab === 'members' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-white"
                         )}
                     >
-                        <MotionIcon name="Users" className="w-3.5 h-3.5" /> Members
+                        <Users className="w-3.5 h-3.5"/> Members
                     </button>
                     <button
                         onClick={() => handleTabChange('public')}
@@ -314,7 +314,7 @@ export default function CommunityMembersPage() {
                             activeTab === 'public' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-white"
                         )}
                     >
-                        <MotionIcon name="Globe" className="w-3.5 h-3.5" /> Public
+                        <Globe className="w-3.5 h-3.5"/> Public
                     </button>
                 </div>
              </AdminToolbar>
@@ -407,9 +407,9 @@ export default function CommunityMembersPage() {
                                         </td>
                                         <td className="p-4">
                                              {member.consentLegal ? (
-                                                <MotionIcon name="CheckCircle" className="w-4 h-4 text-emerald-500/50" />
+                                                <CheckCircle className="w-4 h-4 text-emerald-500/50"/>
                                              ) : (
-                                                <MotionIcon name="XCircle" className="w-4 h-4 text-zinc-800" />
+                                                <XCircle className="w-4 h-4 text-zinc-800"/>
                                              )}
                                         </td>
                                         <td className="p-4">
@@ -430,7 +430,7 @@ export default function CommunityMembersPage() {
                                                 className="p-1.5 rounded-md hover:bg-white/10 text-zinc-600 hover:text-white transition-colors"
                                                 title="View Details"
                                             >
-                                                <MotionIcon name="Eye" className="w-4 h-4" />
+                                                <Eye className="w-4 h-4"/>
                                             </button>
                                         )}
                                         <button 
@@ -438,7 +438,7 @@ export default function CommunityMembersPage() {
                                             className="p-1.5 rounded-md hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-colors"
                                             title="Delete (Disabled for demo)"
                                         >
-                                            <MotionIcon name="XCircle" className="w-4 h-4" />
+                                            <XCircle className="w-4 h-4"/>
                                         </button>
                                     </div>
                                 </td>

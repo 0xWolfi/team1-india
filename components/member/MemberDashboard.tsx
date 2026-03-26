@@ -1,20 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-// NOTE: We intentionally use <img> for cover images here because Next/Image can
-// break for unconfigured remote hosts in some deployments (shows a broken placeholder).
+import React, { useState, useMemo } from "react";
 import { ContributionModal } from "./ContributionModal";
 import Link from "next/link";
-import Image from "next/image";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowRight, BookOpen, Calendar, MapPin, Plus, Search, User, Users, Vote } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
-import { UnifiedDashboardHeader } from "@/components/UnifiedDashboardHeader";
 import { Guide, Program, Event } from "@/types/public";
 import { DashboardCard } from "./DashboardCard";
-import { signOut } from "next-auth/react";
-// We can define Experiment type here based on Prisma client if not imported, 
-// using 'any' for now to speed up if types aren't strictly generated or exported for client.
-// Better to define an interface matching the data passed.
+import NextImage from "next/image";
+import type { LumaEventData } from "@/lib/luma";
 
 interface ExperimentMock {
     id: string;
@@ -34,6 +29,12 @@ interface CommunityMember {
     tags?: string | null;
 }
 
+interface CommunityPulse {
+    totalMembers: number;
+    eventsHosted: number;
+    citiesReached: number;
+}
+
 interface MemberDashboardProps {
     user: any;
     events: Event[];
@@ -43,13 +44,11 @@ interface MemberDashboardProps {
     experiments: ExperimentMock[];
     members: CommunityMember[];
     isProfileComplete?: boolean;
+    communityPulse?: CommunityPulse;
+    lumaEvents?: LumaEventData[];
 }
 
-type Tab = "EVENTS" | "PROGRAMS" | "CONTENT";
-type ViewFilter = "ALL" | "MEMBER" | "PUBLIC";
-
-// SAND-GLASS UTILITY CLASS
-const glassClass = "bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]";
+const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
 
 export function MemberDashboard({
     user,
@@ -59,79 +58,85 @@ export function MemberDashboard({
     playbooks = [],
     experiments = [],
     members: _members = [],
-    isProfileComplete = true
+    isProfileComplete = true,
+    communityPulse,
+    lumaEvents = [],
 }: MemberDashboardProps) {
-    const [activeTab, setActiveTab] = useState<Tab>("EVENTS");
-    const [viewFilter, setViewFilter] = useState<ViewFilter>("ALL");
-    const [searchQuery, setSearchQuery] = useState("");
     const [playbookSearch, setPlaybookSearch] = useState("");
-    
-    // Contribution Modal State
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
-    
-    // Helper for profile image cache busting
-    const getImageUrl = (url: string | null | undefined): string | undefined => {
-        if (!url) return undefined;
-        if (url.includes('.public.blob.vercel-storage.com')) {
-            const separator = url.includes('?') ? '&' : '?';
-            return `${url}${separator}t=${Date.now()}`;
-        }
-        return url;
-    };
 
-    // Filter Logic
-    const filterByView = (items: any[]) => {
-        let filtered = items;
-        if (viewFilter !== "ALL") {
-            filtered = items.filter(item => item.visibility === viewFilter);
-        }
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(item => 
-                item.title?.toLowerCase().includes(query) || 
-                item.description?.toLowerCase().includes(query)
-            );
-        }
-        return filtered;
-    };
+    // Categorize Luma events into Live, Upcoming, Past
+    const categorizedEvents = useMemo(() => {
+        const now = new Date();
+        const live: LumaEventData[] = [];
+        const upcoming: LumaEventData[] = [];
+        const past: LumaEventData[] = [];
 
-    const getActiveContent = () => {
-        switch (activeTab) {
-            case "EVENTS": return filterByView(events);
-            case "PROGRAMS": return filterByView(programs);
-            case "CONTENT": return filterByView(content);
-            default: return [];
-        }
-    };
+        lumaEvents.forEach((entry) => {
+            const startAt = new Date(entry.event.start_at);
+            const endAt = entry.event.end_at ? new Date(entry.event.end_at) : null;
 
-    const activeItems = getActiveContent();
+            if (startAt <= now && endAt && endAt > now) {
+                live.push(entry);
+            } else if (startAt > now) {
+                upcoming.push(entry);
+            } else {
+                past.push(entry);
+            }
+        });
 
-    // Filter Playbooks
-    const filteredPlaybooks = playbooks.filter(p => 
-        !playbookSearch || 
-        p.title?.toLowerCase().includes(playbookSearch.toLowerCase()) || 
+        // Sort upcoming by soonest first
+        upcoming.sort((a, b) => new Date(a.event.start_at).getTime() - new Date(b.event.start_at).getTime());
+        // Sort past by most recent first
+        past.sort((a, b) => new Date(b.event.start_at).getTime() - new Date(a.event.start_at).getTime());
+
+        return { live, upcoming, past };
+    }, [lumaEvents]);
+
+    const filteredPlaybooks = playbooks.filter(p =>
+        !playbookSearch ||
+        p.title?.toLowerCase().includes(playbookSearch.toLowerCase()) ||
         p.description?.toLowerCase().includes(playbookSearch.toLowerCase())
     );
 
-    // Proposals Split
     const proposals = experiments.filter(e => e.stage === 'proposed' || e.stage === 'discussion');
 
+    // Stats data
+    const stats = [
+        { label: "Events", value: events.length, icon: "Calendar", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
+        { label: "Programs", value: programs.length, icon: "Users", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
+        { label: "Playbooks", value: playbooks.length, icon: "BookOpen", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+        { label: "Proposals", value: proposals.length, icon: "Vote", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+    ];
+
+    // Time-based greeting
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
     return (
-        <div className="min-h-screen text-white">
-            
-            <UnifiedDashboardHeader 
-                title="Member Portal"
-                subtitle={<>Welcome back, <span className="text-white">{user?.name || 'Member'}</span>.</>}
-                user={user}
-                backLink="/public"
-            >
+        <div className="text-white max-w-[1200px] mx-auto">
+
+            {/* ── Welcome Section ── */}
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                        <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-widest">Online</span>
+                    </div>
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
+                        {greeting}, {user?.name?.split(' ')[0] || 'Member'}
+                    </h1>
+                    <p className="text-sm text-zinc-500 mt-1">Here&apos;s what&apos;s happening in your community</p>
+                </div>
                 <button
+                    type="button"
                     onClick={() => setIsContributionModalOpen(true)}
-                    className="px-4 py-2 bg-white text-black rounded-lg text-sm font-bold tracking-wide hover:bg-zinc-200 border border-white/10 shadow-lg shadow-white/5 hover:scale-[1.02] transition-all flex items-center gap-2"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all shadow-lg shadow-white/5 flex-shrink-0"
                 >
-                    submit your contributions
+                    <Plus className="w-4 h-4"/>
+                    Submit Contribution
                 </button>
-            </UnifiedDashboardHeader>
+            </div>
 
             <ContributionModal
                 isOpen={isContributionModalOpen}
@@ -139,247 +144,350 @@ export function MemberDashboard({
                 user={user}
             />
 
-            {/* Profile Incomplete Notification */}
+            {/* ── Profile Incomplete Notification ── */}
             {!isProfileComplete && (
                 <Link
                     href="/member/profile"
-                    className="mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-between gap-4 hover:bg-amber-500/20 transition-colors group backdrop-blur-md"
+                    className="mb-6 block p-4 rounded-xl bg-amber-500/[0.08] border border-amber-500/20 hover:bg-amber-500/[0.12] transition-all group"
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-amber-500/10 rounded-lg">
-                            <MotionIcon name="Users" className="w-5 h-5 text-amber-500" />
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-amber-500/10 rounded-lg">
+                                <User className="w-4 h-4 text-amber-400"/>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-white text-sm">Complete Your Profile</h3>
+                                <p className="text-xs text-zinc-500">Fill in your name, X handle, telegram, and wallet address.</p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="font-bold text-white">Complete Your Profile</h3>
-                            <p className="text-sm text-zinc-400">Please fill in your name, X handle, telegram, and wallet address to complete your profile.</p>
-                        </div>
+                        <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform flex-shrink-0"/>
                     </div>
-                    <MotionIcon name="ArrowRight" className="w-5 h-5 text-amber-500 group-hover:translate-x-1 transition-transform" />
                 </Link>
             )}
 
-            {/* Controls & Tabs */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                {/* Tabs - Sleek Segmented Control */}
-                
-                <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                    {/* Submit Contribution Button (Mobile Prominent) */}
-                    <button
-                        onClick={() => setIsContributionModalOpen(true)}
-                        className="md:hidden w-full py-2.5 bg-white text-black rounded-lg text-sm font-bold tracking-wide hover:bg-zinc-200 border border-white/10 shadow-lg shadow-white/5 flex items-center justify-center gap-2 mb-2"
+            {/* ── Stats Row ── */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+                {stats.map((stat) => (
+                    <div
+                        key={stat.label}
+                        className={cn(
+                            "p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:border-white/[0.1]",
+                            glassClass
+                        )}
                     >
-                        <MotionIcon name="Plus" className="w-4 h-4" />
-                        Submit Contribution
-                    </button>
+                        <div className={cn("inline-flex p-2 rounded-lg mb-3 border", stat.bg, stat.border)}>
+                            <DynamicIcon name={stat.icon} className={cn("w-4 h-4 ", stat.color)}/>
+                        </div>
+                        <p className="text-2xl font-bold text-white tracking-tight">{stat.value}</p>
+                        <p className="text-xs text-zinc-500 mt-0.5 font-medium">{stat.label}</p>
+                    </div>
+                ))}
+            </div>
 
-                    <div className={cn("flex p-1 rounded-lg w-full md:w-fit", glassClass)}>
-                        {(["EVENTS", "PROGRAMS", "CONTENT"] as Tab[]).map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
+            {/* ── Community Pulse ── */}
+            {communityPulse && (
+                <section className="mb-8">
+                    <h2 className="text-lg font-semibold text-white mb-4">Community Pulse</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {[
+                            { label: "Total Members", value: communityPulse.totalMembers, icon: "Users", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
+                            { label: "Events Hosted", value: communityPulse.eventsHosted, icon: "Calendar", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
+                            { label: "Cities Reached", value: communityPulse.citiesReached, icon: "MapPin", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+                        ].map((metric) => (
+                            <div
+                                key={metric.label}
                                 className={cn(
-                                    "flex-1 md:flex-none px-4 md:px-6 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all text-center",
-                                    activeTab === tab 
-                                        ? "bg-white/10 text-white shadow-sm ring-1 ring-white/20" 
-                                        : "text-zinc-500 hover:text-white hover:bg-white/5"
+                                    "p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:border-white/[0.1]",
+                                    glassClass
                                 )}
                             >
-                                {tab}
-                            </button>
+                                <div className={cn("inline-flex p-2 rounded-lg mb-3 border", metric.bg, metric.border)}>
+                                    <DynamicIcon name={metric.icon} className={cn("w-4 h-4 ", metric.color)}/>
+                                </div>
+                                <p className="text-2xl font-bold text-white tracking-tight">{metric.value}</p>
+                                <p className="text-xs text-zinc-500 mt-0.5 font-medium">{metric.label}</p>
+                            </div>
                         ))}
                     </div>
-                </div>
+                </section>
+            )}
 
-                {/* Filter & Search */}
-                <div className="flex gap-3 w-full md:w-auto">
-                    {/* Search */}
-                    <div className={cn("flex-1 md:w-64 flex items-center gap-2 rounded-lg px-3 py-2", glassClass)}>
-                        <MotionIcon name="Search" className="w-4 h-4 text-zinc-500" />
-                        <input 
-                            type="text"
-                            placeholder="Search..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none w-full"
-                        />
-                    </div>
-                    {/* Filter Toggle */}
-                    <div className={cn("flex items-center gap-3 rounded-lg p-1 px-2 shrink-0", glassClass)}>
-                        <MotionIcon name="Filter" className="w-3 h-3 text-zinc-500" />
-                        <select 
-                            value={viewFilter}
-                            onChange={(e) => setViewFilter(e.target.value as ViewFilter)}
-                            className="bg-transparent text-xs font-bold uppercase text-zinc-300 focus:outline-none cursor-pointer tracking-wider"
-                        >
-                            <option value="ALL" className="bg-zinc-900">All View</option>
-                            <option value="MEMBER" className="bg-zinc-900">Member Only</option>
-                            <option value="PUBLIC" className="bg-zinc-900">Public</option>
-                        </select>
-                    </div>
-                    {/* See All Button - Beside Filter */}
-                    <Link 
-                        href={`/member/${activeTab.toLowerCase()}`}
-                        className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
+            {/* ── Activity Feed — Luma Events ── */}
+            <section className="mb-10">
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-lg font-semibold text-white">Activity Feed</h2>
+                    <Link
+                        href="/member/events"
+                        className="text-xs font-semibold text-zinc-500 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1"
                     >
-                        See All <MotionIcon name="ArrowRight" className="w-3 h-3" />
+                        View all
+                        <ArrowRight className="w-3 h-3"/>
                     </Link>
                 </div>
-            </div>
 
-            {/* Main Content Area */}
-            <div className="mb-16">
+                {(categorizedEvents.live.length > 0 || categorizedEvents.upcoming.length > 0) ? (
+                    <div className="space-y-6">
+                        {/* Live Events */}
+                        {categorizedEvents.live.length > 0 && (
+                            <div>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                    <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">Live Now</span>
+                                </div>
+                                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+                                    {categorizedEvents.live.map((entry) => (
+                                        <LumaEventCard key={entry.api_id} entry={entry} status="LIVE" />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
+                        {/* Upcoming Events */}
+                        {categorizedEvents.upcoming.length > 0 && (
+                            <div>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-2 h-2 rounded-full bg-sky-400" />
+                                    <span className="text-xs font-semibold text-sky-400 uppercase tracking-wider">Upcoming</span>
+                                </div>
+                                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+                                    {categorizedEvents.upcoming.map((entry) => (
+                                        <LumaEventCard key={entry.api_id} entry={entry} status="UPCOMING" />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                {activeItems.length > 0 ? (
-                    <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
-                        {activeItems.slice(0, 6).map((item: any) => (
-                            <DashboardCard
-                                key={item.id}
-                                id={item.id}
-                                title={item.title || "Untitled"}
-                                description={item.description}
-                                coverImage={item.coverImage}
-                                href={`/member/${activeTab.toLowerCase()}/${item.id}`}
-                                type={activeTab === 'EVENTS' ? 'EVENT' : activeTab === 'PROGRAMS' ? 'PROGRAM' : 'CONTENT'}
-                                visibility={item.visibility}
-                            />
-                        ))}
                     </div>
                 ) : (
-                    <div className="w-full h-40 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center border-dashed">
-                        <p className="text-zinc-500 font-medium text-sm">No active {activeTab.toLowerCase()} found.</p>
+                    <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
+                        <Calendar className="w-8 h-8 text-zinc-700 mb-3"/>
+                        <p className="text-zinc-600 font-medium text-sm">No events found</p>
                     </div>
                 )}
-            </div>
+            </section>
 
-            {/* Playbooks Section */}
-            <div className="mb-16">
-                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
-                    <div className="flex items-center gap-3">
-                        <h2 className="text-2xl font-bold">Playbooks</h2>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 w-full md:w-auto">
-                        {/* Playbook Search */}
-                         <div className={cn("flex-1 md:w-64 flex items-center gap-2 rounded-lg px-3 py-1.5", glassClass)}>
-                            <MotionIcon name="Search" className="w-4 h-4 text-zinc-500" />
-                            <input 
+            {/* ── Playbooks Section ── */}
+            <section className="mb-10">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                    <h2 className="text-lg font-semibold text-white">Playbooks</h2>
+                    <div className="flex items-center gap-2">
+                        <div className={cn("flex items-center gap-2 rounded-lg px-3 py-2", glassClass)}>
+                            <Search className="w-3.5 h-3.5 text-zinc-600"/>
+                            <input
                                 type="text"
                                 placeholder="Search playbooks..."
                                 value={playbookSearch}
                                 onChange={(e) => setPlaybookSearch(e.target.value)}
-                                className="bg-transparent text-sm text-white placeholder-zinc-500 focus:outline-none w-full"
+                                className="bg-transparent text-sm text-white placeholder-zinc-600 focus:outline-none w-28 sm:w-40"
                             />
                         </div>
-
-                        <Link 
+                        <Link
                             href="/member/playbooks"
-                            className={cn("flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors px-3 py-2 rounded-lg shrink-0", glassClass)}
+                            className="text-xs font-semibold text-zinc-500 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1"
                         >
-                            View All <MotionIcon name="ArrowRight" className="w-3 h-3" />
+                            View all
+                            <ArrowRight className="w-3 h-3"/>
                         </Link>
                     </div>
                 </div>
-                
-                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:pb-0 md:mx-0 md:px-0 scrollbar-hide">
-                    {filteredPlaybooks.slice(0, 4).map((playbook: any) => (
-                        <DashboardCard
-                            key={playbook.id}
-                            id={playbook.id}
-                            title={playbook.title || "Untitled Playbook"}
-                            description={playbook.description}
-                            coverImage={playbook.coverImage}
-                            href={`/member/playbooks/${playbook.id}`}
-                            type='PLAYBOOK'
-                            // Optional: Pass visibility if Playbooks have it, or omit to follow design
-                        />
-                    ))}
-                    {filteredPlaybooks.length === 0 && (
-                         <div className="col-span-full w-full h-40 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center border-dashed">
-                            <p className="text-zinc-500 font-medium text-sm">
-                                {playbookSearch ? `No playbooks matching "${playbookSearch}".` : "No playbooks available."}
-                            </p>
-                         </div>
-                    )}
-                </div>
-            </div>
 
-            {/* New Proposals & Member Details - Side by Side */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
-
-                {/* New Proposals */}
-                <Link href="/member/experiments" className={cn("rounded-3xl p-6 md:p-8 relative overflow-hidden group flex flex-col", glassClass)}>
-                     
-                     <div className="flex items-center justify-between mb-8 relative z-10">
-                        <div className="flex items-center gap-3">
-                             <div className="p-2 bg-white/5 rounded-lg text-zinc-300 border border-white/5">
-                                <MotionIcon name="Vote" className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
-                             </div>
-                             <div>
-                                <h2 className="text-xl font-bold group-hover:text-white transition-colors">New Proposals</h2>
-                                <p className="text-xs text-zinc-500 mt-1">Vote on upcoming ideas</p>
-                             </div>
-                        </div>
-                        <div className="p-2 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors">
-                             <MotionIcon name="ArrowRight" className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
-                        </div>
+                {filteredPlaybooks.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {filteredPlaybooks.slice(0, 3).map((playbook: any) => (
+                            <DashboardCard
+                                key={playbook.id}
+                                id={playbook.id}
+                                title={playbook.title || "Untitled Playbook"}
+                                description={playbook.description}
+                                coverImage={playbook.coverImage}
+                                href={`/member/playbooks/${playbook.id}`}
+                                type="PLAYBOOK"
+                            />
+                        ))}
                     </div>
+                ) : (
+                    <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
+                        <BookOpen className="w-8 h-8 text-zinc-700 mb-3"/>
+                        <p className="text-zinc-600 font-medium text-sm">
+                            {playbookSearch ? `No playbooks matching "${playbookSearch}"` : "No playbooks available"}
+                        </p>
+                    </div>
+                )}
+            </section>
 
-                    <div className="relative z-10 flex-1 flex flex-col justify-center p-5 bg-zinc-800/30 border border-white/5 rounded-xl group-hover:bg-zinc-800/50 transition-colors">
+            {/* ── Bottom: Proposals + Directory ── */}
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10">
+                {/* Proposals Card */}
+                <Link
+                    href="/member/experiments"
+                    className={cn("rounded-2xl p-6 group transition-all duration-300 hover:border-white/[0.1]", glassClass)}
+                >
+                    <div className="flex items-center justify-between mb-5">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                                <Vote className="w-4 h-4 text-emerald-400"/>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-white text-sm">New Proposals</h3>
+                                <p className="text-[11px] text-zinc-600">Vote on upcoming ideas</p>
+                            </div>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all"/>
+                    </div>
+                    <div className="p-4 bg-white/[0.02] border border-white/[0.04] rounded-xl">
                         {proposals.length > 0 ? (
-                            <>
-                                <h4 className="font-bold text-sm text-zinc-200 group-hover:text-white transition-colors mb-2">
-                                    {proposals.length} Active Proposal{proposals.length !== 1 && 's'}
-                                </h4>
-                                <div className="space-y-2">
-                                    {proposals.slice(0, 2).map((prop) => (
-                                         <div key={prop.id} className="flex items-center gap-2 text-xs text-zinc-500">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-white/50" />
-                                            <span className="truncate">{prop.title}</span>
-                                         </div>
-                                    ))}
-                                    {proposals.length > 2 && (
-                                        <div className="text-[10px] text-zinc-600 pl-3.5">
-                                            +{proposals.length - 2} more
-                                        </div>
-                                    )}
-                                </div>
-                            </>
+                            <div className="space-y-2.5">
+                                {proposals.slice(0, 3).map((prop) => (
+                                    <div key={prop.id} className="flex items-center gap-2.5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 flex-shrink-0" />
+                                        <span className="text-xs text-zinc-400 truncate">{prop.title}</span>
+                                        <span className="ml-auto text-[10px] text-zinc-600 flex-shrink-0 tabular-nums">{prop.upvotes} votes</span>
+                                    </div>
+                                ))}
+                                {proposals.length > 3 && (
+                                    <p className="text-[10px] text-zinc-600 pl-4">+{proposals.length - 3} more</p>
+                                )}
+                            </div>
                         ) : (
-                            <p className="text-sm text-zinc-400 leading-relaxed text-center">
-                                No active proposals at the moment. Check back later or start a new discussion.
-                            </p>
+                            <p className="text-xs text-zinc-600 text-center py-2">No active proposals right now</p>
                         )}
                     </div>
                 </Link>
 
-                {/* Member Details */}
-                <Link href="/member/directory" className={cn("rounded-3xl p-6 md:p-8 relative overflow-hidden group flex flex-col", glassClass)}>
-                    
-                    <div className="flex items-center justify-between mb-8 relative z-10">
+                {/* Directory Card */}
+                <Link
+                    href="/member/directory"
+                    className={cn("rounded-2xl p-6 group transition-all duration-300 hover:border-white/[0.1]", glassClass)}
+                >
+                    <div className="flex items-center justify-between mb-5">
                         <div className="flex items-center gap-3">
-                             <div className="p-2 bg-white/5 rounded-lg text-zinc-300 border border-white/5">
-                                <MotionIcon name="Users" className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
-                             </div>
-                             <div>
-                                <h2 className="text-xl font-bold group-hover:text-white transition-colors">Member Directory</h2>
-                                <p className="text-xs text-zinc-500 mt-1">Connect with the community</p>
-                             </div>
+                            <div className="p-2 bg-violet-500/10 rounded-lg border border-violet-500/20">
+                                <Users className="w-4 h-4 text-violet-400"/>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-white text-sm">Member Directory</h3>
+                                <p className="text-[11px] text-zinc-600">Connect with the community</p>
+                            </div>
                         </div>
-                        <div className="p-2 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors">
-                             <MotionIcon name="ArrowRight" className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
-                        </div>
+                        <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all"/>
                     </div>
-
-                    <div className="relative z-10 flex-1 flex items-center p-5 bg-zinc-800/30 border border-white/5 rounded-xl group-hover:bg-zinc-800/50 transition-colors">
-                        <p className="text-sm text-zinc-400 leading-relaxed">
+                    <div className="p-4 bg-white/[0.02] border border-white/[0.04] rounded-xl">
+                        <p className="text-xs text-zinc-500 leading-relaxed">
                             Connect with other builders, mentors, and contributors. Find peers and collaborate on new ideas.
                         </p>
                     </div>
                 </Link>
-
-            </div>
-            
+            </section>
         </div>
+    );
+}
+
+// ── Luma Event Card ──
+const statusConfig = {
+    LIVE: { label: "Live", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20" },
+    UPCOMING: { label: "Upcoming", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
+    PAST: { label: "Past", color: "text-zinc-500", bg: "bg-zinc-500/10", border: "border-zinc-500/20" },
+};
+
+function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE" | "UPCOMING" | "PAST" }) {
+    const [imageError, setImageError] = useState(false);
+    const config = statusConfig[status];
+    const eventDate = new Date(entry.event.start_at);
+
+    const imageUrl = entry.event.cover_url || "";
+
+    const formatDate = (date: Date) => {
+        return date.toLocaleDateString("en-IN", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        });
+    };
+
+    const formatTime = (date: Date) => {
+        return date.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        });
+    };
+
+    const getTimeLabel = () => {
+        const now = new Date();
+        const diffMs = eventDate.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        if (status === "LIVE") return "Happening now";
+        if (diffDays === 0) return "Today";
+        if (diffDays === 1) return "Tomorrow";
+        if (diffDays > 1) return `in ${diffDays} days`;
+        return formatDate(eventDate);
+    };
+
+    return (
+        <a
+            href={entry.event.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+                "group block rounded-2xl p-4 transition-all duration-300 snap-start",
+                "w-[280px] sm:w-[320px] flex-shrink-0",
+                "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]",
+                "hover:border-white/[0.12] hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/20",
+                status === "PAST" && "opacity-70 hover:opacity-100"
+            )}
+        >
+            {/* Cover Image */}
+            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
+                {imageUrl && !imageError ? (
+                    <div className="aspect-square relative">
+                        <NextImage
+                            src={imageUrl}
+                            alt={entry.event.name}
+                            fill
+                            sizes="320px"
+                            className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
+                            onError={() => setImageError(true)}
+                        />
+                    </div>
+                ) : (
+                    <div className="aspect-square flex items-center justify-center">
+                        <div className="p-3 bg-sky-500/10 rounded-xl border border-sky-500/20">
+                            <Calendar className="w-6 h-6 text-sky-400"/>
+                        </div>
+                    </div>
+                )}
+
+                {/* Status Badge */}
+                <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                    <span className={cn(
+                        "px-2 py-0.5 rounded-md text-[10px] font-semibold backdrop-blur-md border flex items-center gap-1",
+                        config.bg, config.color, config.border
+                    )}>
+                        {status === "LIVE" && <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />}
+                        {config.label}
+                    </span>
+                </div>
+            </div>
+
+            {/* Content */}
+            <h3 className="font-semibold text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-100 transition-colors">
+                {entry.event.name}
+            </h3>
+            <div className="flex items-center gap-2 text-xs text-zinc-500">
+                <span>{formatDate(eventDate)}</span>
+                <span className="text-zinc-700">·</span>
+                <span>{formatTime(eventDate)}</span>
+            </div>
+            {entry.event.geo_address_json?.city && (
+                <p className="text-xs text-zinc-600 mt-1 flex items-center gap-1">
+                    <MapPin className="w-3 h-3"/>
+                    {entry.event.geo_address_json.city}
+                </p>
+            )}
+            {status !== "PAST" && (
+                <p className="text-[11px] font-medium mt-2 text-sky-400">{getTimeLabel()}</p>
+            )}
+        </a>
     );
 }

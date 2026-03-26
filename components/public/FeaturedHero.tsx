@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
+import Image from "next/image";
 import Link from 'next/link';
-import { MotionIcon } from "motion-icons-react";
-
+import { ArrowRight, Clock } from "lucide-react";
 interface HeroItem {
     id: string;
     title: string;
@@ -26,10 +26,11 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
             {/* Background Image */}
             <div className="absolute inset-0">
                 {item.coverImage ? (
-                    <img 
-                        src={item.coverImage} 
-                        alt={item.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    <Image
+                        src={item.coverImage}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                 ) : (
                     <div className="w-full h-full bg-zinc-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black" />
@@ -46,7 +47,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
                         </span>
                         {item.createdAt && (
                              <span className="text-zinc-300 text-xs flex items-center gap-1 font-medium bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
-                                <MotionIcon name="Clock" className="w-3 h-3" /> {new Date(item.createdAt).toLocaleDateString()}
+                                <Clock className="w-3 h-3"/> {new Date(item.createdAt).toLocaleDateString()}
                             </span>
                         )}
                     </div>
@@ -66,7 +67,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
                             href={item.href}
                             className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-zinc-200 transition-all active:scale-95"
                         >
-                            Read Now <MotionIcon name="ArrowRight" className="w-4 h-4" />
+                            Read Now <ArrowRight className="w-4 h-4"/>
                         </Link>
                     </div>
                 </div>

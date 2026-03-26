@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MotionIcon } from "motion-icons-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { Member } from "../../shared";
 
 interface DeleteMemberModalProps {
@@ -19,7 +19,7 @@ export const DeleteMemberModal: React.FC<DeleteMemberModalProps> = ({ member, on
             <div className="bg-[#09090b] border border-red-500/20 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 ring-1 ring-red-500/10" onClick={e => e.stopPropagation()}>
                 <div className="p-6 text-center">
                     <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4 text-red-500 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
-                        <MotionIcon name="AlertCircle" className="w-6 h-6" />
+                        <AlertCircle className="w-6 h-6"/>
                     </div>
                     <h3 className="text-lg font-bold text-white mb-2">Terminate Operative?</h3>
                     <p className="text-zinc-400 text-sm leading-relaxed mb-1">
@@ -39,7 +39,7 @@ export const DeleteMemberModal: React.FC<DeleteMemberModalProps> = ({ member, on
                         disabled={isSubmitting}
                         className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20 flex items-center justify-center gap-2"
                     >
-                        {isSubmitting ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : "Confirm Termination"}
+                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : "Confirm Termination"}
                     </button>
                 </div>
             </div>

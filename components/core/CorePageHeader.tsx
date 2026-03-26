@@ -2,8 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { MotionIcon } from "motion-icons-react";
-
+import { ArrowLeft, User } from "lucide-react";
 interface CorePageHeaderProps {
     title: string;
     description?: string;
@@ -16,7 +15,7 @@ interface CorePageHeaderProps {
 export const CorePageHeader: React.FC<CorePageHeaderProps> = ({ 
     title, 
     description, 
-    icon = <MotionIcon name="User" className="w-5 h-5 text-white" />, 
+    icon = <User className="w-5 h-5 text-white"/>, 
     backLink = "/core", 
     backText = "Back to Core",
     children
@@ -28,7 +27,7 @@ export const CorePageHeader: React.FC<CorePageHeaderProps> = ({
                     href={backLink} 
                     className="inline-flex items-center gap-2 text-xs text-zinc-500 hover:text-white transition-colors group"
                 >
-                    <MotionIcon name="ArrowLeft" className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                    <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform"/>
                     {backText}
                 </Link>
             </div>

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { MemberDashboard } from "@/components/member/MemberDashboard";
 import { Program, Event, Guide } from "@/types/public";
+import { getAllEvents } from "@/lib/luma";
 
 // Helper to determine type of guide
 const bucketGuides = (guides: any[]) => {
@@ -57,7 +58,7 @@ export default async function MemberPage() {
     const userEmail = session.user?.email;
 
     // Parallel Data Fetching
-    const [playbooks, rawGuides, experiments, communityMembers, userProfile] = await Promise.all([
+    const [playbooks, rawGuides, experiments, communityMembers, userProfile, allLumaEvents, totalMemberCount] = await Promise.all([
         prisma.playbook.findMany({
             where: {
                 visibility: { in: ["PUBLIC", "MEMBER"] },
@@ -111,10 +112,22 @@ export default async function MemberPage() {
             : prisma.communityMember.findUnique({
                 where: { email: userEmail || '' },
                 select: { name: true, xHandle: true, telegram: true, customFields: true }
-            })
+            }),
+        // Luma events
+        getAllEvents(),
+        // Total community members count
+        prisma.communityMember.count({ where: { status: 'active' } }),
     ]);
 
     const { programs, events, content } = bucketGuides(rawGuides);
+
+    // Compute Luma metrics
+    const totalEventsHosted = allLumaEvents.length;
+    const citiesReached = [...new Set(
+        allLumaEvents
+            .map(e => e.event.geo_address_json?.city)
+            .filter(Boolean)
+    )].length;
 
     // Check if profile is complete
     const customFields = (userProfile?.customFields as any) || {};
@@ -136,6 +149,12 @@ export default async function MemberPage() {
                 experiments={experiments}
                 members={communityMembers}
                 isProfileComplete={isProfileComplete}
+                communityPulse={{
+                    totalMembers: totalMemberCount,
+                    eventsHosted: totalEventsHosted,
+                    citiesReached: citiesReached,
+                }}
+                lumaEvents={allLumaEvents}
             />
         </MemberWrapper>
     );

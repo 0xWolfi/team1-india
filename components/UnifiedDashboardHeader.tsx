@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { MotionIcon } from "motion-icons-react";
+import { ArrowLeft, LogOut, Settings, User } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 
@@ -73,7 +73,7 @@ export function UnifiedDashboardHeader({
                         href={backLink} 
                         className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors group"
                     >
-                        <MotionIcon name="ArrowLeft" className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
+                        <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform"/>
                         {backLabel}
                     </Link>
                  </div>
@@ -85,7 +85,7 @@ export function UnifiedDashboardHeader({
                          <span className="text-[10px] font-mono text-zinc-500 tracking-widest uppercase">System Online</span>
                     </div>
                     <Link href={backLink} className="p-2 bg-white/5 rounded-lg text-zinc-400">
-                        <MotionIcon name="ArrowLeft" className="w-4 h-4" />
+                        <ArrowLeft className="w-4 h-4"/>
                     </Link>
                  </div>
 
@@ -120,7 +120,7 @@ export function UnifiedDashboardHeader({
                                 unoptimized={displayImage.startsWith('data:') || displayImage.startsWith('blob:')}
                             />
                         ) : (
-                            <MotionIcon name="User" className="w-5 h-5 text-zinc-400" />
+                            <User className="w-5 h-5 text-zinc-400"/>
                         )}
                     </div>
 
@@ -130,14 +130,14 @@ export function UnifiedDashboardHeader({
                         className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
                         title="My Profile"
                     >
-                        <MotionIcon name="Settings" className="w-4 h-4 pointer-events-none" />
+                        <Settings className="w-4 h-4"/>
                     </Link>
                     <button 
                         onClick={() => signOut({ callbackUrl: '/public' })}
                         className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center text-red-500 hover:text-red-400"
                         title="Logout"
                     >
-                        <MotionIcon name="LogOut" className="w-4 h-4" />
+                        <LogOut className="w-4 h-4"/>
                     </button>
                 </div>
             </div>

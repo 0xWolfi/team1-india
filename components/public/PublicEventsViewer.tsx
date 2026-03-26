@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { MotionIcon } from "motion-icons-react";
+import Image from "next/image";
+import { Calendar, ExternalLink, MapPin } from "lucide-react";
 import Link from 'next/link';
 import {  format } from 'date-fns';
 
@@ -76,7 +77,7 @@ export default function PublicEventsViewer() {
         <section className="space-y-8">
              <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-white/10 pb-4">
                 <h2 className="text-2xl font-bold flex items-center gap-2">
-                    <MotionIcon name="Calendar" className="w-5 h-5 text-zinc-400" /> Upcoming Events
+                    <Calendar className="w-5 h-5 text-zinc-400"/> Upcoming Events
                 </h2>
                 
                 {/* Filters */}
@@ -120,7 +121,7 @@ export default function PublicEventsViewer() {
                         <Link href={event.url} key={event.id} className="group block h-full bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col">
                             {/* Image */}
                             <div className="h-40 w-full relative">
-                                <img src={event.coverImage} alt={event.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                <Image src={event.coverImage} alt={event.title} fill className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md border border-white/10">
                                     <span className="text-xs font-bold text-white uppercase tracking-wider">
                                         {format(new Date(event.date), 'MMM d')}
@@ -135,13 +136,13 @@ export default function PublicEventsViewer() {
                                 </h3>
                                 
                                 <div className="flex items-center gap-2 text-xs text-zinc-500 mt-1">
-                                    <MotionIcon name="MapPin" className="w-3 h-3" />
+                                    <MapPin className="w-3 h-3"/>
                                     <span>{event.location}</span>
                                 </div>
 
                                 <div className="mt-auto pt-4">
                                     <span className="flex items-center gap-1 text-xs font-bold text-white group-hover:underline">
-                                        Register via Luma <MotionIcon name="ExternalLink" className="w-3 h-3" />
+                                        Register via Luma <ExternalLink className="w-3 h-3"/>
                                     </span>
                                 </div>
                             </div>

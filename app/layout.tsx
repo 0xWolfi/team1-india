@@ -1,17 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Kanit } from "next/font/google";
 import "./globals.css";
-import "motion-icons-react/style.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: 'swap',
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const kanit = Kanit({
+  variable: "--font-kanit",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: 'swap',
 });
 
@@ -68,8 +63,10 @@ import { ThemeProvider } from "./providers";
 import { DynamicBackground } from "@/components/ui/DynamicBackground";
 
 import { Analytics } from "@vercel/analytics/react";
-import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
-import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import dynamic from "next/dynamic";
+
+const PWAUpdatePrompt = dynamic(() => import("@/components/PWAUpdatePrompt"));
+const PWAInstallPrompt = dynamic(() => import("@/components/PWAInstallPrompt"));
 
 export default function RootLayout({
   children,
@@ -79,7 +76,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${kanit.variable} antialiased`}
       >
         <ThemeProvider
             attribute="class"

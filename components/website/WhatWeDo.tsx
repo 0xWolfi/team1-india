@@ -1,44 +1,44 @@
 "use client";
 
 import React from "react";
-import { MotionIcon } from "motion-icons-react";
+import { Calendar, Rocket, Shield, TrendingUp, Users, Zap } from "lucide-react";
 import { FeatureGrid, FeatureItem } from "@/components/ui/FeatureGrid";
 
 const cards: FeatureItem[] = [
     {
         title: "Idea Phase Accelerator",
         desc: "We help idea-stage startups find product-market fit. Get funding, mentorship, and resources.",
-        icon: <MotionIcon name="Rocket" className="w-6 h-6 text-zinc-400" />,
+        icon: <Rocket className="w-6 h-6 text-zinc-400"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Community",
         desc: "Vibrant ecosystem of builders and creators sharing knowledge.",
-        icon: <MotionIcon name="Users" className="w-6 h-6 text-zinc-400" />,
+        icon: <Users className="w-6 h-6 text-zinc-400"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Marketing",
         desc: "Growth strategies and visibility for your launch.",
-        icon: <MotionIcon name="TrendingUp" className="w-6 h-6 text-zinc-400" />,
+        icon: <TrendingUp className="w-6 h-6 text-zinc-400"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Dev Onboarding",
         desc: "Helping developers get started with the right tech stack.",
-        icon: <MotionIcon name="Zap" className="w-6 h-6 text-zinc-400" />,
+        icon: <Zap className="w-6 h-6 text-zinc-400"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Closed Beta",
         desc: "Test your product with a curated group of early adopters.",
-        icon: <MotionIcon name="Shield" className="w-6 h-6 text-zinc-400" />,
+        icon: <Shield className="w-6 h-6 text-zinc-400"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Events",
         desc: "High-energy hackathons and meetups.",
-        icon: <MotionIcon name="Calendar" className="w-6 h-6 text-zinc-400" />,
+        icon: <Calendar className="w-6 h-6 text-zinc-400"/>,
         colSpan: "md:col-span-1",
     }
 ];

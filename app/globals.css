@@ -2,8 +2,8 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-kanit);
+  --font-mono: var(--font-kanit);
 
   /* Global Brand Red Override (#ff394A) */
   --color-brand-50: #fff0f1;

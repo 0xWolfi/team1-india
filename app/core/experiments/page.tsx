@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from "next/image";
 import { Plus, Beaker, LayoutGrid, List as ListIcon, Loader2, MessageSquare, Search, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
@@ -173,8 +174,7 @@ function ExperimentCard({ exp }: { exp: Experiment }) {
         >
             <div className="flex items-center gap-2 mb-3">
                  {exp.createdBy?.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={exp.createdBy.image} alt={exp.createdBy.name} className="w-5 h-5 rounded-full" />
+                    <Image src={exp.createdBy.image} alt={exp.createdBy.name} width={20} height={20} className="w-5 h-5 rounded-full" />
                 ) : (
                     <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[8px] font-bold text-zinc-400">
                         {exp.createdBy?.name?.[0] || 'U'}
@@ -185,11 +185,11 @@ function ExperimentCard({ exp }: { exp: Experiment }) {
                     {new Date(exp.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </span>
             </div>
-            
+
             <h4 className="text-sm font-bold text-zinc-100 mb-2 leading-snug group-hover:text-white transition-colors line-clamp-2">
                 {exp.title}
             </h4>
-            
+
             <div className="flex items-center justify-between mt-4">
                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-zinc-500 group-hover:text-zinc-400">
                     <MessageSquare className="w-3 h-3" />
@@ -209,7 +209,7 @@ function ExperimentRow({ exp }: { exp: Experiment }) {
     };
 
     return (
-        <Link 
+        <Link
              href={`/core/experiments/${exp.id}`}
              className="grid grid-cols-12 gap-4 items-center p-4 bg-[#121212] hover:bg-[#181818] border border-white/[0.08] hover:border-white/20 rounded-xl transition-all group"
         >
@@ -226,8 +226,7 @@ function ExperimentRow({ exp }: { exp: Experiment }) {
             {/* Proposed By */}
             <div className="col-span-3 hidden md:flex items-center gap-2">
                 {exp.createdBy?.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={exp.createdBy.image} alt={exp.createdBy.name} className="w-6 h-6 rounded-full grayscale group-hover:grayscale-0 transition-all" />
+                    <Image src={exp.createdBy.image} alt={exp.createdBy.name} width={24} height={24} className="w-6 h-6 rounded-full grayscale group-hover:grayscale-0 transition-all" />
                 ) : (
                     <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-400">
                         {exp.createdBy?.name?.[0]}

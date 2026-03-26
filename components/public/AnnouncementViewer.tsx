@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { MotionIcon } from "motion-icons-react";
-
+import { ExternalLink, Megaphone } from "lucide-react";
 interface Announcement {
     id: string;
     title: string;
@@ -37,7 +36,7 @@ export function AnnouncementViewer({ audience }: { audience: 'PUBLIC' | 'MEMBER'
         <div className="w-full mb-8">
             <div className="flex items-center gap-2 mb-4">
                  <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                    <MotionIcon name="Megaphone" className="w-4 h-4 text-indigo-500" /> 
+                    <Megaphone className="w-4 h-4 text-indigo-500"/> 
                     {audience === 'MEMBER' ? 'Member Updates' : 'Announcements'}
                  </h2>
                  <div className="h-px bg-white/10 flex-1" />
@@ -55,7 +54,7 @@ export function AnnouncementViewer({ audience }: { audience: 'PUBLIC' | 'MEMBER'
                                     <span>{new Date(item.createdAt).toLocaleDateString()}</span>
                                     {item.link && (
                                         <a href={item.link} target="_blank" className="flex items-center gap-1 hover:text-white underline decoration-zinc-700 underline-offset-4">
-                                            Read more <MotionIcon name="ExternalLink" className="w-3 h-3" />
+                                            Read more <ExternalLink className="w-3 h-3"/>
                                         </a>
                                     )}
                                 </div>

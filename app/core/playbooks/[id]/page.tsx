@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { MotionIcon } from "motion-icons-react";
+import { Check, Cpu, Download, Edit3, FileText, Globe, Lock, MoreVertical, RefreshCw, Shield, Trash2 } from "lucide-react";
 // Dynamic import for canvas-confetti to avoid SSR issues
 import confetti from "canvas-confetti";
 import dynamic from "next/dynamic";
@@ -294,22 +294,22 @@ export default function PlaybookPage() {
                 : 'bg-zinc-800 border-white/10 text-zinc-400 hover:bg-zinc-700'
             } ${((!hasWriteAccess || isLockedByOther) && !isEditing) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         >
-            {playbook.visibility === 'PUBLIC' && <MotionIcon name="Globe" className="w-3.5 h-3.5" />}
-            {playbook.visibility === 'MEMBER' && <MotionIcon name="Shield" className="w-3.5 h-3.5" />}
-            {playbook.visibility === 'CORE' && <MotionIcon name="Cpu" className="w-3.5 h-3.5" />}
+            {playbook.visibility === 'PUBLIC' && <Globe className="w-3.5 h-3.5"/>}
+            {playbook.visibility === 'MEMBER' && <Shield className="w-3.5 h-3.5"/>}
+            {playbook.visibility === 'CORE' && <Cpu className="w-3.5 h-3.5"/>}
             <span>{playbook.visibility === 'CORE' ? 'Core' : playbook.visibility === 'MEMBER' ? 'Members' : 'Public'}</span>
         </button>
     ) : null;
 
     const EditAction = isLockedByOther ? (
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-medium">
-              <MotionIcon name="Lock" className="w-3 h-3" />
+              <Lock className="w-3 h-3"/>
               <span className="hidden sm:inline">Locked by {lockOwner}</span>
           </div>
       ) : isEditing ? (
           <>
              {hasUnsavedChanges && <span className="text-amber-500 text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 mr-2">Unsaved</span>}
-             {isSaving && <span className="text-zinc-500 text-xs flex items-center gap-1 mr-2"><MotionIcon name="RefreshCw" className="w-3 h-3 animate-spin"/> Saving...</span>}
+             {isSaving && <span className="text-zinc-500 text-xs flex items-center gap-1 mr-2"><RefreshCw className="w-3 h-3 animate-spin"/> Saving...</span>}
              
              <button 
                  onClick={async () => {
@@ -323,7 +323,7 @@ export default function PlaybookPage() {
                  disabled={isSaving}
                  className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-white/10 text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50"
              >
-                 <MotionIcon name="Check" className="w-3.5 h-3.5" />
+                 <Check className="w-3.5 h-3.5"/>
                  Save
              </button>
           </>
@@ -333,7 +333,7 @@ export default function PlaybookPage() {
                  onClick={handleEnterEdit}
                  className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-700 transition-colors border border-white/5"
               >
-                 <MotionIcon name="Edit3" className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Edit</span>
+                 <Edit3 className="w-3.5 h-3.5"/> <span className="hidden sm:inline">Edit</span>
               </button>
           )
       );
@@ -341,14 +341,14 @@ export default function PlaybookPage() {
     const MenuAction = (
         <div className="relative group">
             <button className="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
-                <MotionIcon name="MoreVertical" className="w-4 h-4 text-zinc-400" />
+                <MoreVertical className="w-4 h-4 text-zinc-400"/>
             </button>
             <div className="absolute right-0 top-full mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden group-hover:block z-50 animate-in fade-in zoom-in-95 duration-200 p-1">
                 <button 
                     onClick={() => window.print()}
                     className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 rounded-lg flex items-center gap-2"
                 >
-                    <MotionIcon name="Download" className="w-3.5 h-3.5" />
+                    <Download className="w-3.5 h-3.5"/>
                     Export as PDF
                 </button>
                 <button
@@ -363,7 +363,7 @@ export default function PlaybookPage() {
                     }}
                     className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 rounded-lg flex items-center gap-2"
                 >
-                    <MotionIcon name="FileText" className="w-3.5 h-3.5" />
+                    <FileText className="w-3.5 h-3.5"/>
                     Export JSON
                 </button>
                 <div className="h-px bg-white/5 my-1" />
@@ -372,7 +372,7 @@ export default function PlaybookPage() {
                         onClick={handleDelete}
                         className="w-full text-left px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-lg flex items-center gap-2 transition-colors"
                     >
-                        <MotionIcon name="Trash2" className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5"/>
                         Delete Playbook
                     </button>
                 )}
@@ -444,7 +444,7 @@ export default function PlaybookPage() {
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 transition-all text-xs font-semibold"
                         title="Create Task from Playbook"
                      >
-                        <MotionIcon name="Check" className="w-3.5 h-3.5" />
+                        <Check className="w-3.5 h-3.5"/>
                         Execute
                      </button>
                      )}

@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { GuideDetail } from '@/components/guides/GuideDetail';
-import { MotionIcon } from 'motion-icons-react';
-
+import { Loader2 } from "lucide-react";
 export default function MemberEventGuideDetailPage() {
     const params = useParams();
     const router = useRouter();
@@ -44,7 +43,7 @@ export default function MemberEventGuideDetailPage() {
         return (
             <MemberWrapper>
                 <div className="flex justify-center pt-40">
-                    <MotionIcon name="Loader2" className="w-8 h-8 animate-spin text-zinc-500" animation="spin" />
+                    <Loader2 className="w-8 h-8 animate-spin text-zinc-500"/>
                 </div>
             </MemberWrapper>
         );

@@ -1,13 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeft, Calendar, Globe, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { MotionIcon } from "@/components/ui/ClientMotionIcon";
 import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import ReactMarkdown from 'react-markdown';
 
 import { Program, GuideBody } from "@/types/public";
+
+export const revalidate = 300; // ISR: revalidate every 5 minutes
+
+export async function generateStaticParams() {
+  const items = await prisma.guide.findMany({
+    where: { visibility: "PUBLIC", type: "PROGRAM", deletedAt: null },
+    select: { id: true },
+  });
+  return items.map((item) => ({ id: item.id }));
+}
 
 async function getProgram(id: string): Promise<Program | null> {
   const guide = await prisma.guide.findUnique({
@@ -85,7 +95,7 @@ export default async function ProgramDetailPage({ params }: Props) {
             {/* Left Content */}
             <div className="lg:col-span-2">
                 <Link href="/public/programs" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
-                    <MotionIcon name="ArrowLeft" className="w-4 h-4" /> Back to Programs
+                    <ArrowLeft className="w-4 h-4"/> Back to Programs
                 </Link>
 
                 <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{program.title}</h1>
@@ -93,17 +103,17 @@ export default async function ProgramDetailPage({ params }: Props) {
                 
                 <div className="flex flex-wrap gap-4 text-sm text-zinc-500 mb-12 border-y border-white/5 py-6">
                     <div className="flex items-center gap-2">
-                        <MotionIcon name="Users" className="w-4 h-4 text-zinc-400" />
+                        <Users className="w-4 h-4 text-zinc-400"/>
                         <span>Open Enrollment</span>
                     </div>
                     <div className="w-px h-4 bg-white/10" />
                     <div className="flex items-center gap-2">
-                        <MotionIcon name="Calendar" className="w-4 h-4 text-zinc-400" />
+                        <Calendar className="w-4 h-4 text-zinc-400"/>
                         <span>Rolling Admissions</span>
                     </div>
                     <div className="w-px h-4 bg-white/10" />
                     <div className="flex items-center gap-2">
-                        <MotionIcon name="Globe" className="w-4 h-4 text-zinc-400" />
+                        <Globe className="w-4 h-4 text-zinc-400"/>
                         <span>Remote / Global</span>
                     </div>
                 </div>

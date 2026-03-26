@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MotionIcon } from "motion-icons-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { type CommunityMember } from "./ViewMemberModal";
 
 interface DeleteCommunityMemberModalProps {
@@ -19,7 +19,7 @@ export const DeleteCommunityMemberModal: React.FC<DeleteCommunityMemberModalProp
             <div className="bg-[#09090b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                 <div className="p-6">
                     <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border border-red-500/20">
-                        <MotionIcon name="AlertTriangle" className="w-6 h-6 text-red-500" />
+                        <AlertTriangle className="w-6 h-6 text-red-500"/>
                     </div>
                     
                     <h3 className="text-xl font-bold text-white mb-2">Remove Member?</h3>
@@ -40,7 +40,7 @@ export const DeleteCommunityMemberModal: React.FC<DeleteCommunityMemberModalProp
                             disabled={isSubmitting}
                             className="flex-1 py-2.5 rounded-lg text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                         >
-                            {isSubmitting ? <MotionIcon name="Loader2" className="w-4 h-4 animate-spin" /> : "Remove Member"}
+                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : "Remove Member"}
                         </button>
                     </div>
                 </div>

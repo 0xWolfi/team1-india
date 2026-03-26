@@ -7,22 +7,23 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Team1Logo } from "@/components/Team1Logo";
 import { useSession, signOut, signIn } from "next-auth/react";
-import { MotionIcon } from "motion-icons-react";
+import { LayoutDashboard, LogOut, User, X } from "lucide-react";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 import { useDrag } from "@use-gesture/react";
 
 const navItems = [
-    { label: "Attend", href: "#upcoming-events", icon: "Ticket" },
-    { label: "Playbooks", href: "#playbooks", icon: "Book" },
-    { label: "Programs", href: "#programs", icon: "Rocket" },
-    { label: "Content", href: "#content", icon: "Trophy" },
-    { label: "Events", href: "#events", icon: "Calendar" },
-    { label: "Contact", href: "#contact", icon: "Mail" },
-    { label: "Verify", href: "#verify-desktop", icon: "ShieldCheck" },
+    { label: "Home", href: "/public", icon: "Home" },
+    { label: "Programs", href: "/public/programs", icon: "Rocket" },
+    { label: "Playbooks", href: "/public/playbooks", icon: "Book" },
+    { label: "Bounties", href: "/public/bounty", icon: "Zap" },
+    { label: "Leaderboard", href: "/public/leaderboard", icon: "Trophy" },
+    { label: "Contact", href: "/public#contact", icon: "Mail" },
 ];
 
 export function FloatingNav() {
     const { data: session } = useSession();
+    const pathname = usePathname();
     const [activeSection, setActiveSection] = useState("");
     const [isScrolled, setIsScrolled] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -103,12 +104,11 @@ export function FloatingNav() {
                 <div className="flex items-center justify-between md:justify-start w-full gap-1 px-6 py-3 md:p-1.5 md:rounded-2xl md:bg-black/40 md:backdrop-blur-md md:border md:border-white/10 md:shadow-[0_8px_32px_rgba(0,0,0,0.5)] md:supports-[backdrop-filter]:bg-black/20">
                     
                     {/* Logo / Home */}
-                    <Link 
+                    <Link
                         href="/"
                         className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"
                     >
-                        <Team1Logo className="w-4 h-4 relative z-10" />
-                        <span className="font-bold text-lg md:text-sm text-zinc-300 group-hover:text-white tracking-tight transition-colors">Team1</span>
+                        <Team1Logo className="h-5 w-auto relative z-10" />
                     </Link>
 
                     {/* Divider */}
@@ -116,16 +116,20 @@ export function FloatingNav() {
 
                     {/* Center Nav (Desktop) */}
                     <nav className="hidden md:flex items-center gap-0.5">
-                        {navItems.filter(item => item.label !== 'Verify').map((item) => {
-                            const isActive = activeSection === item.href.substring(1);
+                        {navItems.map((item) => {
+                            const isActive = item.href.startsWith('#')
+                                ? activeSection === item.href.substring(1)
+                                : item.href === '/public'
+                                    ? pathname === '/public'
+                                    : pathname.startsWith(item.href);
                             return (
                                 <Link
                                     key={item.label}
                                     href={item.href}
                                     className={cn(
                                         "px-3 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all duration-300 relative",
-                                        isActive 
-                                            ? "text-white" 
+                                        isActive
+                                            ? "text-white"
                                             : "text-zinc-500 hover:text-zinc-300"
                                     )}
                                 >
@@ -164,7 +168,7 @@ export function FloatingNav() {
                                 className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-white transition-colors md:p-2 md:w-auto md:h-auto"
                                 title="Member Access"
                             >
-                                <MotionIcon name="User" className="w-5 h-5" />
+                                <User className="w-5 h-5"/>
                             </button>
                         )}
 
@@ -191,7 +195,7 @@ export function FloatingNav() {
                             onClick={() => setShowUserMenu(false)}
                             className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
                         >
-                            <MotionIcon name="X" className="w-5 h-5" />
+                            <X className="w-5 h-5"/>
                         </button>
 
                         <div className="flex items-center gap-4 mb-6">
@@ -223,7 +227,7 @@ export function FloatingNav() {
                                     href={(session?.user as any)?.role === 'CORE' ? '/core' : '/member'}
                                     className="group w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <MotionIcon name="LayoutDashboard" className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                    <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110"/> 
                                     <span className="transition-transform duration-200 group-hover:scale-105">Go to Dashboard</span>
                                 </Link>
                             )}
@@ -234,7 +238,7 @@ export function FloatingNav() {
                                     href="/public/profile"
                                     className="group w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <MotionIcon name="LayoutDashboard" className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                    <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110"/> 
                                     <span className="transition-transform duration-200 group-hover:scale-105">My Profile</span>
                                 </Link>
                             )}
@@ -243,7 +247,7 @@ export function FloatingNav() {
                                 onClick={() => signOut()}
                                 className="group w-full py-3 bg-white/5 text-zinc-400 font-bold rounded-xl hover:bg-red-500/10 hover:text-red-500 border border-white/5 hover:border-red-500/20 transition-all flex items-center justify-center gap-2"
                             >
-                                <MotionIcon name="LogOut" className="w-4 h-4 transition-transform group-hover:scale-110" /> 
+                                <LogOut className="w-4 h-4 transition-transform group-hover:scale-110"/> 
                                 <span>Sign Out</span>
                             </button>
                         </div>
@@ -253,13 +257,13 @@ export function FloatingNav() {
             {/* Mobile Bottom Dock */}
             <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-sm bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xl">
                 {navItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeSection === item.href.substring(1);
-                    const href = item.label === "Verify" ? "#verify-mobile" : item.href;
+                    const isActive = item.href === '/public'
+                        ? pathname === '/public'
+                        : pathname.startsWith(item.href) && item.href !== '/public';
                     return (
-                        <Link 
-                            key={item.label} 
-                            href={href}
+                        <Link
+                            key={item.label}
+                            href={item.href}
                             className={cn(
                                 "flex flex-col items-center justify-center gap-1 transition-all duration-300 p-2 rounded-xl",
                                 isActive 
@@ -268,7 +272,7 @@ export function FloatingNav() {
                             )}
                             title={item.label}
                         >
-                            <MotionIcon name={item.icon} className="w-5 h-5" />
+                            <DynamicIcon name={item.icon} className="w-5 h-5"/>
                         </Link>
                     )
                 })}

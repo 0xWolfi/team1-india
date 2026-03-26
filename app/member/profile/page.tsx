@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { MemberProfileClient } from "@/components/member/MemberProfileClient";
-import Link from "next/link";
 
 export default async function MemberProfilePage() {
     const session = await getServerSession(authOptions);
@@ -19,11 +18,11 @@ export default async function MemberProfilePage() {
 
     return (
         <MemberWrapper>
-            <div className="max-w-5xl mx-auto px-4 py-8">
-                <Link href="/member" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-6 group text-sm font-medium">
-                    <span aria-hidden="true">←</span>
-                    <span>Back to Dashboard</span>
-                </Link>
+            <div className="max-w-4xl mx-auto">
+                <div className="mb-6">
+                    <h1 className="text-2xl font-bold tracking-tight text-white">My Profile</h1>
+                    <p className="text-sm text-zinc-500 mt-1">Manage your profile information and preferences</p>
+                </div>
                 <MemberProfileClient role="MEMBER" />
             </div>
         </MemberWrapper>

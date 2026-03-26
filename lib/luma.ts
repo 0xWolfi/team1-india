@@ -1,10 +1,14 @@
+import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
+// Shape expected by all consumers (pages, components)
 export type LumaEventData = {
   api_id: string;
   event: {
     api_id: string;
     name: string;
     start_at: string;
+    end_at?: string;
     cover_url: string;
     url: string;
     timezone?: string;
@@ -16,154 +20,190 @@ export type LumaEventData = {
   };
 };
 
-// Fetch ALL events (including past) for calendar view
-export async function getAllEvents(): Promise<LumaEventData[]> {
-  const apiKey = process.env.LUMA_API;
-  
-  if (!apiKey) {
-    console.warn("LUMA_API environment variable is not set");
-    return [];
-  }
-
-  try {
-    let allEntries: LumaEventData[] = [];
-    let nextCursor: string | null = null;
-    let hasMore = true;
-    let pageCount = 0;
-    const MAX_PAGES = 20;
-
-    while (hasMore && pageCount < MAX_PAGES) {
-      const url = new URL("https://public-api.luma.com/v1/calendar/list-events");
-      if (nextCursor) {
-        url.searchParams.append("pagination_cursor", nextCursor);
-      }
-
-      const res = await fetch(url.toString(), {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          "x-luma-api-key": apiKey,
-        },
-        next: { revalidate: 3600 }
-      });
-
-      if (!res.ok) {
-        console.error(`Luma API error: ${res.status} ${res.statusText}`);
-        break;
-      }
-
-      const data = (await res.json()) as { entries: LumaEventData[], next_cursor?: string, has_more?: boolean };
-      
-      if (data.entries && data.entries.length > 0) {
-        allEntries = allEntries.concat(data.entries);
-      } else {
-        hasMore = false;
-      }
-
-      if (data.next_cursor) {
-        nextCursor = data.next_cursor;
-      } else {
-        hasMore = false;
-      }
-      
-      pageCount++;
-    }
-    
-    // Filter only by visibility (include all dates - past and future)
-    const publicEvents = allEntries.filter(entry => 
-      entry.event.visibility === "public"
-    );
-
-    // Sort by date (most recent first)
-    publicEvents.sort((a, b) => new Date(b.event.start_at).getTime() - new Date(a.event.start_at).getTime());
-
-    return publicEvents;
-
-  } catch (error) {
-    console.error("Failed to fetch Luma events:", error);
-    return [];
-  }
+// ── DB → LumaEventData shape converter ──
+function dbToLumaEvent(row: {
+  apiId: string;
+  name: string;
+  startAt: Date;
+  endAt: Date | null;
+  coverUrl: string | null;
+  url: string;
+  timezone: string | null;
+  visibility: string;
+  city: string | null;
+  geoData: any;
+}): LumaEventData {
+  return {
+    api_id: row.apiId,
+    event: {
+      api_id: row.apiId,
+      name: row.name,
+      start_at: row.startAt.toISOString(),
+      end_at: row.endAt?.toISOString(),
+      cover_url: row.coverUrl || "",
+      url: row.url,
+      timezone: row.timezone || undefined,
+      visibility: row.visibility,
+      geo_address_json: row.city ? { city: row.city, ...(row.geoData || {}) } : undefined,
+    },
+  };
 }
 
+// ── READ: Get all events from DB (instant, no API call) ──
+export async function getAllEvents(): Promise<LumaEventData[]> {
+  const rows = await prisma.lumaEvent.findMany({
+    where: { visibility: "public" },
+    orderBy: { startAt: "desc" },
+  });
+  return rows.map(dbToLumaEvent);
+}
+
+// ── READ: Get upcoming events from DB (instant) ──
 export async function getUpcomingEvents(): Promise<LumaEventData[]> {
+  const now = new Date();
+  const rows = await prisma.lumaEvent.findMany({
+    where: {
+      visibility: "public",
+      startAt: { gte: now },
+    },
+    orderBy: { startAt: "asc" },
+  });
+  return rows.map(dbToLumaEvent);
+}
+
+// ── SYNC: Fetch from Luma API and upsert into DB ──
+export async function syncLumaEvents(): Promise<{ synced: number; errors: number }> {
   const apiKey = process.env.LUMA_API;
-  
   if (!apiKey) {
     console.warn("LUMA_API environment variable is not set");
-    return [];
+    return { synced: 0, errors: 0 };
   }
 
   try {
-    let allEntries: LumaEventData[] = [];
+    type LumaApiEntry = {
+      api_id: string;
+      event: {
+        api_id: string;
+        name: string;
+        start_at: string;
+        end_at?: string;
+        cover_url: string;
+        url: string;
+        timezone?: string;
+        visibility: string;
+        geo_address_json?: { city: string; [key: string]: any };
+      };
+    };
+
+    let allEntries: LumaApiEntry[] = [];
     let nextCursor: string | null = null;
     let hasMore = true;
     let pageCount = 0;
-    const MAX_PAGES = 20; // Increase limit to traverse past events (2024-2026)
+    const MAX_PAGES = 5; // Keep low for Vercel Hobby 10s timeout
 
-    console.log("Fetching Luma events...");
+    // Fetch recent events (last 6 months) + all future events
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
     while (hasMore && pageCount < MAX_PAGES) {
       const url = new URL("https://public-api.luma.com/v1/calendar/list-events");
+      url.searchParams.append("after", sixMonthsAgo.toISOString());
       if (nextCursor) {
         url.searchParams.append("pagination_cursor", nextCursor);
       }
 
-      const res = await fetch(url.toString(), {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          "x-luma-api-key": apiKey,
-        },
-        next: { revalidate: 3600 } // Cache for 1 hour to prevent build errors and improve performance
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4000);
 
-      if (!res.ok) {
-        console.error(`Luma API error: ${res.status} ${res.statusText}`);
-        break;
+      try {
+        const res = await fetch(url.toString(), {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            "x-luma-api-key": apiKey,
+          },
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+
+        if (!res.ok) {
+          console.error(`Luma API error: ${res.status} ${res.statusText}`);
+          break;
+        }
+
+        const data = (await res.json()) as {
+          entries: LumaApiEntry[];
+          next_cursor?: string;
+          has_more?: boolean;
+        };
+
+        if (data.entries && data.entries.length > 0) {
+          allEntries = allEntries.concat(data.entries);
+        } else {
+          hasMore = false;
+        }
+
+        if (data.next_cursor) {
+          nextCursor = data.next_cursor;
+        } else {
+          hasMore = false;
+        }
+      } catch (fetchErr) {
+        clearTimeout(timeout);
+        console.error(`Luma fetch page ${pageCount} failed:`, fetchErr);
+        break; // Stop pagination on timeout/error, save what we have
       }
 
-      const data = (await res.json()) as { entries: LumaEventData[], next_cursor?: string, has_more?: boolean };
-      
-      if (data.entries && data.entries.length > 0) {
-        allEntries = allEntries.concat(data.entries);
-      } else {
-         // If no entries returned, likely end of list
-         hasMore = false;
-      }
-
-      if (data.next_cursor) {
-        nextCursor = data.next_cursor;
-      } else {
-        hasMore = false;
-      }
-      
       pageCount++;
     }
-    
-    // Filter for events from "Today" onwards (IST perspective)
-    const now = new Date();
-    
-    // Calculate 00:00:00 IST for the current day
-    const istOffset = 5.5 * 60 * 60 * 1000;
-    const istDate = new Date(now.getTime() + istOffset);
-    istDate.setUTCHours(0, 0, 0, 0); // Snap to start of day
-    
-    // The absolute timestamp for 00:00 IST is (Snapped IST Time - Offset)
-    const startOfTodayIST = new Date(istDate.getTime() - istOffset);
 
-    // Filter all accumulated events (Time >= Today AND Visibility == public)
-    const upcomingEvents = allEntries.filter(entry => 
-      new Date(entry.event.start_at) >= startOfTodayIST && 
-      entry.event.visibility === "public"
+    if (allEntries.length === 0) {
+      return { synced: 0, errors: 0 };
+    }
+
+    // Batch upsert all events in a single transaction
+    const now = new Date();
+    const upsertOps = allEntries.map((entry) =>
+      prisma.lumaEvent.upsert({
+        where: { apiId: entry.api_id },
+        update: {
+          name: entry.event.name,
+          startAt: new Date(entry.event.start_at),
+          endAt: entry.event.end_at ? new Date(entry.event.end_at) : null,
+          coverUrl: entry.event.cover_url || null,
+          url: entry.event.url,
+          timezone: entry.event.timezone || null,
+          visibility: entry.event.visibility,
+          city: entry.event.geo_address_json?.city || null,
+          geoData: entry.event.geo_address_json || Prisma.JsonNull,
+          syncedAt: now,
+        },
+        create: {
+          apiId: entry.api_id,
+          name: entry.event.name,
+          startAt: new Date(entry.event.start_at),
+          endAt: entry.event.end_at ? new Date(entry.event.end_at) : null,
+          coverUrl: entry.event.cover_url || null,
+          url: entry.event.url,
+          timezone: entry.event.timezone || null,
+          visibility: entry.event.visibility,
+          city: entry.event.geo_address_json?.city || null,
+          geoData: entry.event.geo_address_json || Prisma.JsonNull,
+          syncedAt: now,
+        },
+      })
     );
 
-    // Sort Descending (Future -> Present) as requested
-    upcomingEvents.sort((a, b) => new Date(b.event.start_at).getTime() - new Date(a.event.start_at).getTime());
-
-    return upcomingEvents;
-
+    try {
+      await prisma.$transaction(upsertOps);
+      return { synced: allEntries.length, errors: 0 };
+    } catch (txErr) {
+      console.error("Batch upsert failed:", txErr);
+      return { synced: 0, errors: allEntries.length };
+    }
   } catch (error) {
-    console.error("Failed to fetch Luma events:", error);
-    return [];
+    console.error("Luma sync failed:", error);
+    return { synced: 0, errors: 1 };
   }
 }

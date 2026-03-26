@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import Link from "next/link";
-import { MotionIcon } from "@/components/ui/ClientMotionIcon";
+import { ArrowLeft } from "lucide-react";
 import { DynamicBackground } from "@/components/ui/DynamicBackground";
 import { prisma } from "@/lib/prisma";
 import { ProfileDashboard } from "@/components/public/profile/ProfileDashboard";
@@ -56,7 +56,7 @@ export default async function PublicProfilePage() {
             <div className="pt-16 px-4 md:px-8 max-w-7xl mx-auto relative z-10">
                  <div className="mb-8">
                      <Link href="/public" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-6 group">
-                        <MotionIcon name="ArrowLeft" className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform"/>
                         <span className="text-sm font-medium">Back to Home</span>
                      </Link>
                      <h2 className="text-4xl font-bold tracking-tight mb-2">My Profile</h2>

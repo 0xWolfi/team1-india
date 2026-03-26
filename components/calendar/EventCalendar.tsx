@@ -3,8 +3,7 @@
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
 import { LumaEventData } from "@/lib/luma";
-import { MotionIcon } from "motion-icons-react";
-
+import { ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 interface EventCalendarProps {
   events: LumaEventData[];
 }
@@ -106,7 +105,7 @@ export function EventCalendar({ events }: EventCalendarProps) {
             onClick={goToPreviousMonth}
             className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
           >
-            <MotionIcon name="ChevronLeft" className="w-4 h-4 text-zinc-400" />
+            <ChevronLeft className="w-4 h-4 text-zinc-400"/>
           </button>
           
           <h3 className="text-base md:text-lg font-bold text-white">{monthYear}</h3>
@@ -115,7 +114,7 @@ export function EventCalendar({ events }: EventCalendarProps) {
             onClick={goToNextMonth}
             className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
           >
-            <MotionIcon name="ChevronRight" className="w-4 h-4 text-zinc-400" />
+            <ChevronRight className="w-4 h-4 text-zinc-400"/>
           </button>
         </div>
 
@@ -200,7 +199,7 @@ export function EventCalendar({ events }: EventCalendarProps) {
                 onClick={closeModal}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"
               >
-                <MotionIcon name="X" className="w-5 h-5 text-zinc-400" />
+                <X className="w-5 h-5 text-zinc-400"/>
               </button>
             </div>
 
@@ -244,7 +243,7 @@ export function EventCalendar({ events }: EventCalendarProps) {
                       className="inline-flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 bg-white text-black rounded-lg text-sm font-bold hover:bg-zinc-200 transition-colors"
                     >
                       See More Details
-                      <MotionIcon name="ExternalLink" className="w-4 h-4" />
+                      <ExternalLink className="w-4 h-4"/>
                     </a>
                   </div>
                 </div>
