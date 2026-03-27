@@ -176,7 +176,7 @@ export const HeroScroll = () => {
         >
           {/* Large "TEAM1" outline text */}
           <span
-            className="text-[12rem] sm:text-[16rem] md:text-[22rem] lg:text-[28rem] font-bold leading-none tracking-tighter whitespace-nowrap"
+            className="text-[6rem] sm:text-[12rem] md:text-[18rem] lg:text-[28rem] font-bold leading-none tracking-tighter whitespace-nowrap"
             style={{
               fontFamily: "var(--font-kanit)",
               WebkitTextStroke: "1px rgba(255, 57, 74, 0.06)",
@@ -198,7 +198,7 @@ export const HeroScroll = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2, delay: 0.8 }}
-          className="text-[8rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] font-normal leading-none tracking-wider"
+          className="text-[4rem] sm:text-[8rem] md:text-[12rem] lg:text-[18rem] font-normal leading-none tracking-wider"
           style={{
             fontFamily: "var(--font-kanit)",
             WebkitTextStroke: "1px rgba(255, 57, 74, 0.04)",
@@ -239,7 +239,7 @@ export const HeroScroll = () => {
           transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center gap-2 md:gap-3 mb-6"
         >
-          <div className="relative h-16 w-[28rem] sm:h-20 sm:w-[36rem] md:h-24 md:w-[44rem]">
+          <div className="relative h-10 w-[16rem] sm:h-16 sm:w-[28rem] md:h-20 md:w-[36rem] lg:h-24 lg:w-[44rem]">
             <Image
               src="/team1-horizontal.svg"
               alt="Team1 India"

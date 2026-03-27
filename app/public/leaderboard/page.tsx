@@ -104,18 +104,18 @@ export default function PublicLeaderboardPage() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-3 mb-8">
-                    <div className={cn("p-4 rounded-2xl", glassClass)}>
-                        <p className="text-2xl font-bold">{leaderboard.length}</p>
-                        <p className="text-xs text-zinc-500">Contributors</p>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8">
+                    <div className={cn("p-3 sm:p-4 rounded-2xl", glassClass)}>
+                        <p className="text-xl sm:text-2xl font-bold">{leaderboard.length}</p>
+                        <p className="text-[10px] sm:text-xs text-zinc-500">Contributors</p>
                     </div>
-                    <div className={cn("p-4 rounded-2xl", glassClass)}>
-                        <p className="text-2xl font-bold text-amber-400">{totalXp.toLocaleString()}</p>
-                        <p className="text-xs text-zinc-500">Total XP</p>
+                    <div className={cn("p-3 sm:p-4 rounded-2xl", glassClass)}>
+                        <p className="text-xl sm:text-2xl font-bold text-amber-400">{totalXp.toLocaleString()}</p>
+                        <p className="text-[10px] sm:text-xs text-zinc-500">Total XP</p>
                     </div>
-                    <div className={cn("p-4 rounded-2xl", glassClass)}>
-                        <p className="text-2xl font-bold text-emerald-400">{totalBounties}</p>
-                        <p className="text-xs text-zinc-500">Bounties Completed</p>
+                    <div className={cn("p-3 sm:p-4 rounded-2xl", glassClass)}>
+                        <p className="text-xl sm:text-2xl font-bold text-emerald-400">{totalBounties}</p>
+                        <p className="text-[10px] sm:text-xs text-zinc-500">Bounties Completed</p>
                     </div>
                 </div>
 

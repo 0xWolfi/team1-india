@@ -164,6 +164,17 @@ export default function CorePage() {
             items: []
         },
 
+        // Campaigns (Workshops & Hackathons)
+        {
+            title: "Campaigns",
+            key: "events",
+            link: "/core/campaigns",
+            iconName: "Megaphone",
+            description: "Create workshop & hackathon forms with shareable links.",
+            image: "/images/dashboard/planning.png",
+            items: []
+        },
+
         // Row 3: Projects & System
         {
             title: "Projects",

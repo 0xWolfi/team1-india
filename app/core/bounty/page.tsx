@@ -95,7 +95,7 @@ export default function CoreBountyPage() {
 
     return (
         <div className="min-h-screen text-white pb-20">
-            <main className="container mx-auto px-6 md:px-12 md:pt-24 pt-8">
+            <main className="container mx-auto px-4 sm:px-6 md:px-12 md:pt-24 pt-8">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
                     <div>

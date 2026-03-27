@@ -6,7 +6,7 @@ import * as z from "zod";
 
 // Validator for creating a guide
 const CreateGuideSchema = z.object({
-  type: z.enum(["EVENT", "PROGRAM", "CONTENT"]),
+  type: z.enum(["EVENT", "PROGRAM", "CONTENT", "WORKSHOP", "HACKATHON"]),
   title: z.string().min(1, "Title is required"),
   coverImage: z.string().optional(),
   visibility: z.enum(["CORE", "MEMBER", "PUBLIC"]).optional().default("CORE"),
@@ -115,10 +115,8 @@ export async function POST(req: NextRequest) {
     // Permission Check
     // @ts-ignore
     const userPermissions = session.user.permissions || {};
-    const guideType = result.data.type.toLowerCase(); // event, program, content
-
-    // Special case for 'playbook' if we ever support it via this route, though schema restricts enum.
-    // If enum is EVENT, PROGRAM, CONTENT, these map to resource keys 'event', 'program', 'content'.
+    const typeMap: Record<string, string> = { event: 'events', program: 'programs', content: 'content', workshop: 'events', hackathon: 'events' };
+    const guideType = typeMap[result.data.type.toLowerCase()] || result.data.type.toLowerCase();
     
     // @ts-ignore
     const { hasPermission } = await import("@/lib/permissions"); // Dynamic import to avoid circular dep if any, or just import at top
