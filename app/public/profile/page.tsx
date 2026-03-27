@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { DynamicBackground } from "@/components/ui/DynamicBackground";
+
 import { prisma } from "@/lib/prisma";
 import { ProfileDashboard } from "@/components/public/profile/ProfileDashboard";
 import { Footer } from "@/components/website/Footer";
@@ -49,10 +49,6 @@ export default async function PublicProfilePage() {
 
     return (
         <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200 relative">
-            <div className="fixed inset-0 z-0">
-                <DynamicBackground />
-            </div>
-            
             <div className="pt-16 px-4 md:px-8 max-w-7xl mx-auto relative z-10">
                  <div className="mb-8">
                      <Link href="/public" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-6 group">

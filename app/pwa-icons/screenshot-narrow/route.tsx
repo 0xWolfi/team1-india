@@ -32,7 +32,7 @@ export async function GET() {
               fontSize: '180px',
               fontWeight: 'bold',
               color: '#ffffff',
-              fontFamily: 'system-ui, sans-serif',
+              fontFamily: 'Kanit, system-ui, sans-serif',
               letterSpacing: '-6px',
             }}
           >
@@ -43,7 +43,7 @@ export async function GET() {
               fontSize: '48px',
               fontWeight: '600',
               color: '#818cf8',
-              fontFamily: 'system-ui, sans-serif',
+              fontFamily: 'Kanit, system-ui, sans-serif',
               marginTop: '-20px',
             }}
           >
@@ -66,7 +66,7 @@ export async function GET() {
               fontSize: '56px',
               fontWeight: 'bold',
               color: '#ffffff',
-              fontFamily: 'system-ui, sans-serif',
+              fontFamily: 'Kanit, system-ui, sans-serif',
               lineHeight: 1.2,
             }}
           >
@@ -77,7 +77,7 @@ export async function GET() {
               fontSize: '56px',
               fontWeight: 'bold',
               color: '#818cf8',
-              fontFamily: 'system-ui, sans-serif',
+              fontFamily: 'Kanit, system-ui, sans-serif',
               lineHeight: 1.2,
             }}
           >
@@ -90,7 +90,7 @@ export async function GET() {
           style={{
             fontSize: '32px',
             color: '#94a3b8',
-            fontFamily: 'system-ui, sans-serif',
+            fontFamily: 'Kanit, system-ui, sans-serif',
             textAlign: 'center',
             marginTop: '60px',
             maxWidth: '800px',

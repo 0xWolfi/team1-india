@@ -172,7 +172,7 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
             },
         },
         borderRadius: 8,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: "var(--font-kanit), sans-serif",
     } as const), []);
 
     return (
