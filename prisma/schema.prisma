@@ -178,7 +178,8 @@ enum Visibility {
 
 model Guide {
   id                   String     @id @default(uuid())
-  type                 String? // event, program, content
+  slug                 String?    @unique
+  type                 String? // event, program, content, workshop, hackathon
   title                String?
   coverImage           String?
   body                 Json?
