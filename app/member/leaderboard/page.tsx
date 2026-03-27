@@ -64,7 +64,7 @@ function PodiumCard({ entry, rank, isCurrentUser }: { entry: LeaderboardEntry; r
                 <div className={cn(
                     "rounded-full bg-zinc-800 border flex items-center justify-center mb-2",
                     config.border,
-                    isFirst ? "w-16 h-16 text-xl" : "w-12 h-12 text-base"
+                    isFirst ? "w-12 h-12 sm:w-16 sm:h-16 text-lg sm:text-xl" : "w-10 h-10 sm:w-12 sm:h-12 text-sm sm:text-base"
                 )}>
                     <span className={cn("font-bold", config.text)}>
                         {(entry.name || entry.email)[0].toUpperCase()}
@@ -74,7 +74,7 @@ function PodiumCard({ entry, rank, isCurrentUser }: { entry: LeaderboardEntry; r
                 {/* Name */}
                 <p className={cn(
                     "font-bold text-white truncate w-full",
-                    isFirst ? "text-base" : "text-sm"
+                    isFirst ? "text-xs sm:text-base" : "text-[11px] sm:text-sm"
                 )}>
                     {entry.name || "Anonymous"}
                 </p>
@@ -87,7 +87,7 @@ function PodiumCard({ entry, rank, isCurrentUser }: { entry: LeaderboardEntry; r
                 {/* XP */}
                 <div className="flex items-center gap-1.5 mt-3">
                     <Zap className={cn("text-amber-400", isFirst ? "w-4 h-4" : "w-3.5 h-3.5")} />
-                    <span className={cn("font-bold text-amber-400 tabular-nums", isFirst ? "text-xl" : "text-base")}>
+                    <span className={cn("font-bold text-amber-400 tabular-nums", isFirst ? "text-base sm:text-xl" : "text-sm sm:text-base")}>
                         {entry.totalXp}
                     </span>
                     <span className="text-xs text-zinc-600">XP</span>
@@ -186,7 +186,7 @@ export default function LeaderboardPage() {
                     <>
                         {/* ── Top 3 Podium ── */}
                         {leaderboard.length >= 3 && (
-                            <div className="grid grid-cols-3 gap-3 mb-8">
+                            <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8">
                                 {/* 2nd Place */}
                                 <PodiumCard entry={leaderboard[1]} rank={2} isCurrentUser={leaderboard[1].id === currentUserId} />
                                 {/* 1st Place */}

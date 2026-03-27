@@ -115,13 +115,13 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
                         key={stat.label}
                         type="button"
                         onClick={() => handleStatClick(stat.href)}
-                        className={cn("rounded-2xl p-4 transition-all duration-300 hover:border-white/10 text-left cursor-pointer", glassClass)}
+                        className={cn("rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:border-white/10 text-left cursor-pointer", glassClass)}
                     >
                         <div className="flex items-center gap-2.5 mb-2">
                             <div className="p-1.5 rounded-lg border bg-white/5 border-white/10">
                                 <DynamicIcon name={stat.icon} className="w-3.5 h-3.5 text-white"/>
                             </div>
-                            <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{stat.label}</span>
+                            <span className="text-[10px] sm:text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{stat.label}</span>
                         </div>
                         {stat.value !== null ? (
                             <p className="text-2xl font-bold tabular-nums text-white">

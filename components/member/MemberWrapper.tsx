@@ -307,7 +307,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
 
             {/* Main Content */}
             <div className="lg:pl-[260px] flex flex-col min-h-[100svh]">
-                <main className="flex-1 relative z-10 animate-in fade-in duration-500 px-5 md:px-8 lg:px-10 py-6 lg:py-8">
+                <main className="flex-1 relative z-10 animate-in fade-in duration-500 px-4 sm:px-5 md:px-8 lg:px-10 py-6 lg:py-8">
                     {children}
                 </main>
                 <div className="w-full">

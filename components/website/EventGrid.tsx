@@ -84,7 +84,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
             <div className="w-full px-4">
                 <p className="text-sm font-medium text-zinc-400 uppercase tracking-wider mb-4 text-center md:text-left">More events</p>
                 <div className="overflow-x-auto overflow-y-hidden pb-4 -mx-4 px-4 md:mx-0 md:px-0" style={{ scrollSnapType: "x mandatory" }}>
-                  <div className="flex gap-8 justify-start min-w-0">
+                  <div className="flex gap-4 sm:gap-8 justify-start min-w-0">
                     {filteredEvents.map(({ event, api_id }) => {
                       const fallbackGradient = "bg-gradient-to-br from-zinc-800 to-zinc-900";
                       return (

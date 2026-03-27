@@ -255,7 +255,7 @@ export function FloatingNav() {
                 </div>
             )}
             {/* Mobile Bottom Dock */}
-            <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-sm bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xl">
+            <div className="md:hidden fixed bottom-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-sm bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl px-3 py-2.5 flex items-center justify-between shadow-2xl">
                 {navItems.map((item) => {
                     const isActive = item.href === '/public'
                         ? pathname === '/public'

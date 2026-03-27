@@ -55,8 +55,9 @@ export const viewport: Viewport = {
   themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5,  // ✅ Allow zoom for accessibility
-  userScalable: true,  // ✅ Required for WCAG AA compliance
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: "cover",
 };
 
 import { ThemeProvider } from "./providers";

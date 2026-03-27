@@ -57,8 +57,8 @@ export function Impact() {
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-0 max-w-4xl mx-auto">
           {stats.map((stat, i) => (
             <React.Fragment key={stat.label}>
-              <div className="flex flex-col items-center text-center px-8 md:px-12">
-                <div className="text-6xl md:text-8xl font-bold text-white tracking-tighter mb-3">
+              <div className="flex flex-col items-center text-center px-4 sm:px-8 md:px-12">
+                <div className="text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tighter mb-3">
                   <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                 </div>
                 <p className="text-sm text-zinc-500 font-medium uppercase tracking-widest">{stat.label}</p>
