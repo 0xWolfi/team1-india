@@ -16,7 +16,7 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-5">
-            <Link href="https://t.me/team1india" target="_blank" className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
+            <Link href="https://t.me/avalanche_hi" target="_blank" className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">
                 <Send className="w-4 h-4"/>
             </Link>
             <Link href="#" className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-white transition-colors hover:scale-110 transform duration-200">

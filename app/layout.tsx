@@ -60,7 +60,6 @@ export const viewport: Viewport = {
 };
 
 import { ThemeProvider } from "./providers";
-import { DynamicBackground } from "@/components/ui/DynamicBackground";
 
 import { Analytics } from "@vercel/analytics/react";
 import dynamic from "next/dynamic";
@@ -84,10 +83,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            <div className="relative text-white min-h-[100svh]">
-                <div className="fixed inset-0 z-0 pointer-events-none">
-                    <DynamicBackground />
-                </div>
+            <div className="relative text-white min-h-[100svh] bg-black">
                 {/* JSON-LD Structured Data */}
                 {/* JSON-LD Structured Data for Knowledge Graph & AI Agents */}
                 <script
@@ -108,10 +104,10 @@ export default function RootLayout({
                                         "height": 512
                                     },
                                     "sameAs": [
-                                        "https://twitter.com/Team1India",
-                                        "https://www.linkedin.com/company/team1india",
+                                        "https://x.com/Team1IND",
+                                        "https://www.linkedin.com/company/avaxteam1",
                                         "https://github.com/Team1India",
-                                        "https://t.me/Team1India"
+                                        "https://t.me/avalanche_hi"
                                     ],
                                     "description": "The premier builder community and accelerator for the Avalanche Blockchain ecosystem in India.",
                                     "knowsAbout": [

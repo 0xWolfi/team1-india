@@ -17,23 +17,15 @@ export function Team1Logo({ className = "h-6 w-auto", iconOnly = false }: { clas
     }
 
     return (
-        <div className={`flex items-center gap-1 ${className}`}>
-            <div className="relative h-5 w-14 shrink-0">
-                <Image
-                    src="/team1-full-logo.png"
-                    alt="Team1"
-                    fill
-                    className="object-contain object-left"
-                    sizes="80px"
-                    priority
-                />
-            </div>
-            <span
-                className="text-white font-bold leading-none shrink-0 text-xl"
-                style={{ fontFamily: 'var(--font-kanit)' }}
-            >
-                India
-            </span>
+        <div className={`relative ${className} shrink-0`} style={{ aspectRatio: '5896 / 864' }}>
+            <Image
+                src="/team1-horizontal.svg"
+                alt="Team1 India"
+                fill
+                className="object-contain object-left"
+                sizes="200px"
+                priority
+            />
         </div>
     );
 }

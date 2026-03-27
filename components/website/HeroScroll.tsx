@@ -239,22 +239,16 @@ export const HeroScroll = () => {
           transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center gap-2 md:gap-3 mb-6"
         >
-          <div className="relative h-16 w-44 sm:h-20 sm:w-56 md:h-24 md:w-72">
+          <div className="relative h-16 w-[28rem] sm:h-20 sm:w-[36rem] md:h-24 md:w-[44rem]">
             <Image
-              src="/team1-full-logo.png"
-              alt="Team1"
+              src="/team1-horizontal.svg"
+              alt="Team1 India"
               fill
-              className="object-contain object-right"
-              sizes="300px"
+              className="object-contain"
+              sizes="700px"
               priority
             />
           </div>
-          <span
-            className="text-white font-normal text-6xl sm:text-7xl md:text-8xl leading-[0.85] tracking-tight"
-            style={{ fontFamily: "var(--font-kanit)" }}
-          >
-            India
-          </span>
         </motion.div>
 
         {/* Subtitle */}
@@ -298,10 +292,10 @@ export const HeroScroll = () => {
           className="flex items-center gap-1"
         >
           {[
-            { href: "https://twitter.com/Team1India", label: "X", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
+            { href: "https://x.com/Team1IND", label: "X", icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
             { href: "https://instagram.com/team1india", label: "Instagram", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg> },
-            { href: "https://linkedin.com/company/team1india", label: "LinkedIn", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg> },
-            { href: "https://t.me/Team1India", label: "Telegram", icon: <Send className="w-4 h-4" /> },
+            { href: "https://www.linkedin.com/company/avaxteam1", label: "LinkedIn", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg> },
+            { href: "https://t.me/avalanche_hi", label: "Telegram", icon: <Send className="w-4 h-4" /> },
           ].map((s) => (
             <a
               key={s.href}
