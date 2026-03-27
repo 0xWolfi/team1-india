@@ -131,14 +131,32 @@ export async function POST(req: NextRequest) {
 
     const { type, title, coverImage, body: guideBody, formSchema, audience, visibility, maxSubmissionsPublic, maxSubmissionsMember } = result.data as any;
 
+    // Generate slug for WORKSHOP/HACKATHON from city name
+    let slug: string | undefined;
+    if (type === 'WORKSHOP' || type === 'HACKATHON') {
+      const city = (guideBody as any)?.city || title || '';
+      if (city) {
+        const baseSlug = city
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .trim();
+        // Check for uniqueness
+        const existing = await prisma.guide.findUnique({ where: { slug: baseSlug } });
+        slug = existing ? `${baseSlug}-${Date.now().toString(36)}` : baseSlug;
+      }
+    }
+
     const guide = await prisma.guide.create({
       data: {
         type,
         title,
         coverImage,
         visibility,
+        slug,
         audience: audience || [],
-        body: guideBody as any, // Prisma Json type workaround
+        body: guideBody as any,
         formSchema: formSchema as any,
         maxSubmissionsPublic,
         maxSubmissionsMember,

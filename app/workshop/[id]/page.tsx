@@ -1,33 +1,23 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { CampaignClient } from "./CampaignClient";
+import { CampaignClient } from "@/app/campaign/[id]/CampaignClient";
 
 export const revalidate = 60;
 
-async function getCampaign(idOrSlug: string) {
-    // Try by slug first, then by id
+async function getWorkshop(idOrSlug: string) {
     let guide = await prisma.guide.findFirst({
-        where: {
-            slug: idOrSlug,
-            deletedAt: null,
-            type: { in: ['WORKSHOP', 'HACKATHON'] },
-        },
+        where: { slug: idOrSlug, deletedAt: null, type: 'WORKSHOP' },
     });
 
     if (!guide) {
         guide = await prisma.guide.findFirst({
-            where: {
-                id: idOrSlug,
-                deletedAt: null,
-                type: { in: ['WORKSHOP', 'HACKATHON'] },
-            },
+            where: { id: idOrSlug, deletedAt: null, type: 'WORKSHOP' },
         });
     }
 
     if (!guide) return null;
 
     const body = (guide.body as any) || {};
-
     return {
         id: guide.id,
         title: guide.title || "Untitled",
@@ -40,17 +30,11 @@ async function getCampaign(idOrSlug: string) {
     };
 }
 
-type Props = {
-    params: Promise<{ id: string }>;
-};
+type Props = { params: Promise<{ id: string }> };
 
-export default async function CampaignPage({ params }: Props) {
+export default async function WorkshopPage({ params }: Props) {
     const { id } = await params;
-    const campaign = await getCampaign(id);
-
-    if (!campaign) {
-        notFound();
-    }
-
+    const campaign = await getWorkshop(id);
+    if (!campaign) notFound();
     return <CampaignClient campaign={campaign} />;
 }

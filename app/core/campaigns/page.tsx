@@ -37,14 +37,16 @@ export default function CampaignsPage() {
 
     useEffect(() => { fetchCampaigns(); }, []);
 
-    const getPublicLink = (id: string) => {
+    const getPublicLink = (campaign: any) => {
         if (typeof window === 'undefined') return '';
-        return `${window.location.origin}/campaign/${id}`;
+        const slug = campaign.slug || campaign.id;
+        const prefix = campaign.type === 'HACKATHON' ? 'hackathon' : 'workshop';
+        return `${window.location.origin}/${prefix}/${slug}`;
     };
 
-    const copyLink = (id: string) => {
-        navigator.clipboard.writeText(getPublicLink(id));
-        setCopiedId(id);
+    const copyLink = (campaign: any) => {
+        navigator.clipboard.writeText(getPublicLink(campaign));
+        setCopiedId(campaign.id);
         setTimeout(() => setCopiedId(null), 2000);
     };
 
@@ -86,12 +88,12 @@ export default function CampaignsPage() {
                         return (
                             <div key={c.id} className={cn("rounded-xl p-4", glassClass)}>
                                 <div className="flex items-center gap-4">
-                                    <div className={cn("p-2.5 rounded-lg border shrink-0", cfg.bg, cfg.border)}>
+                                    <Link href={`/core/campaigns/${c.id}`} className={cn("p-2.5 rounded-lg border shrink-0 hover:opacity-80 transition-opacity", cfg.bg, cfg.border)}>
                                         <DynamicIcon name={cfg.icon} className={cn("w-5 h-5", cfg.color)} />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
+                                    </Link>
+                                    <Link href={`/core/campaigns/${c.id}`} className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-0.5">
-                                            <p className="text-sm font-semibold text-white truncate">{c.title}</p>
+                                            <p className="text-sm font-semibold text-white truncate hover:underline">{c.title}</p>
                                             <span className={cn("px-2 py-0.5 rounded-md text-[10px] font-bold border shrink-0", cfg.bg, cfg.color, cfg.border)}>
                                                 {cfg.label}
                                             </span>
@@ -101,10 +103,10 @@ export default function CampaignsPage() {
                                                 <MapPin className="w-3 h-3" /> {city}
                                             </p>
                                         )}
-                                    </div>
+                                    </Link>
                                     <div className="flex items-center gap-2 shrink-0">
                                         <button
-                                            onClick={() => copyLink(c.id)}
+                                            onClick={() => copyLink(c)}
                                             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-zinc-300"
                                             title="Copy shareable link"
                                         >
@@ -115,7 +117,7 @@ export default function CampaignsPage() {
                                             )}
                                         </button>
                                         <a
-                                            href={getPublicLink(c.id)}
+                                            href={getPublicLink(c)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-zinc-400 hover:text-white"
@@ -136,7 +138,7 @@ export default function CampaignsPage() {
                                 {/* Shareable Link Preview */}
                                 <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-zinc-950/50 border border-white/5 rounded-lg">
                                     <Link2 className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
-                                    <span className="text-xs text-zinc-500 truncate font-mono">{getPublicLink(c.id)}</span>
+                                    <span className="text-xs text-zinc-500 truncate font-mono">{getPublicLink(c)}</span>
                                 </div>
                             </div>
                         );

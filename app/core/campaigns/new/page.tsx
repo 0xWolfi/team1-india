@@ -35,7 +35,8 @@ export default function NewCampaignPage() {
 
             if (res.ok) {
                 const guide = await res.json();
-                setCreatedLink(`${window.location.origin}/campaign/${guide.id}`);
+                const prefix = campaignType === 'HACKATHON' ? 'hackathon' : 'workshop';
+                setCreatedLink(`${window.location.origin}/${prefix}/${guide.slug || guide.id}`);
             } else {
                 alert('Failed to create campaign');
             }
