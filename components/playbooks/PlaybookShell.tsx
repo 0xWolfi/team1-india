@@ -129,7 +129,7 @@ export function PlaybookShell({
 
 
     return (
-        <div className={cn("min-h-screen text-white selection:bg-purple-500/30 font-sans", className)}>
+        <div className={cn("min-h-screen text-white selection:bg-purple-500/30", className)}>
             
             {/* 1. Reading Progress Bar (View Mode Only) */}
             {!isEditing && (
