@@ -26,11 +26,18 @@ export default function EventFeedbackDetailPage({ params }: { params: Promise<{ 
 
     // Email state
     const [showEmailModal, setShowEmailModal] = useState(false);
-    const [emailTo, setEmailTo] = useState('');
+    const [availableHosts, setAvailableHosts] = useState<{ name?: string; email?: string }[]>([]);
+    const [selectedHostEmails, setSelectedHostEmails] = useState<string[]>([]);
     const [emailSubject, setEmailSubject] = useState('');
     const [emailBody, setEmailBody] = useState('');
     const [sendingEmail, setSendingEmail] = useState(false);
     const [emailSent, setEmailSent] = useState(false);
+
+    const toggleHostEmail = (email: string) => {
+        setSelectedHostEmails(prev =>
+            prev.includes(email) ? prev.filter(e => e !== email) : [...prev, email]
+        );
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,7 +47,13 @@ export default function EventFeedbackDetailPage({ params }: { params: Promise<{ 
                     const guideData = await gRes.json();
                     setGuide(guideData);
                     const body = guideData.body as any;
-                    setEmailTo(body?.hostEmail || '');
+                    // Load all hosts
+                    const hosts: { name?: string; email?: string }[] = Array.isArray(body?.hosts) ? body.hosts : [];
+                    if (hosts.length === 0 && body?.hostEmail) {
+                        hosts.push({ name: body.hostName, email: body.hostEmail });
+                    }
+                    setAvailableHosts(hosts);
+                    setSelectedHostEmails(hosts.filter(h => h.email).map(h => h.email!));
                     setEmailSubject(`Event Feedback - ${guideData.title}`);
                 }
 
@@ -106,8 +119,8 @@ Thank you!`
     };
 
     const handleSendEmail = async () => {
-        if (!emailTo || !emailSubject || !emailBody) {
-            alert('Please fill in all email fields');
+        if (selectedHostEmails.length === 0 || !emailSubject || !emailBody) {
+            alert('Please select at least one host and fill in all fields');
             return;
         }
         setSendingEmail(true);
@@ -115,7 +128,7 @@ Thank you!`
             const res = await fetch('/api/event-feedback/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ to: emailTo, subject: emailSubject, body: emailBody }),
+                body: JSON.stringify({ to: selectedHostEmails.join(', '), subject: emailSubject, body: emailBody }),
             });
             if (res.ok) {
                 setEmailSent(true);
@@ -151,7 +164,7 @@ Thank you!`
                 backText="Back to Event Feedback"
             >
                 <div className="flex items-center gap-2">
-                    {body.hostEmail && (
+                    {availableHosts.some(h => h.email) && (
                         <button
                             onClick={openEmailModal}
                             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/20 transition-colors text-sky-400"
@@ -322,12 +335,30 @@ Thank you!`
                         ) : (
                             <>
                                 <div>
-                                    <label className="text-xs text-zinc-500 block mb-1">To</label>
-                                    <input
-                                        value={emailTo}
-                                        onChange={e => setEmailTo(e.target.value)}
-                                        className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm focus:outline-none focus:border-white/20"
-                                    />
+                                    <label className="text-xs text-zinc-500 block mb-1.5">Select Hosts to Email</label>
+                                    <div className="space-y-2">
+                                        {availableHosts.filter(h => h.email).map((host, i) => (
+                                            <label
+                                                key={i}
+                                                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                                                    selectedHostEmails.includes(host.email!)
+                                                        ? "bg-sky-500/10 border-sky-500/20"
+                                                        : "bg-zinc-800/50 border-white/5 hover:border-white/10"
+                                                }`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedHostEmails.includes(host.email!)}
+                                                    onChange={() => toggleHostEmail(host.email!)}
+                                                    className="accent-sky-500 w-4 h-4"
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm text-white font-medium">{host.name || 'Unknown'}</p>
+                                                    <p className="text-xs text-zinc-500 truncate">{host.email}</p>
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="text-xs text-zinc-500 block mb-1">Subject</label>

@@ -16,6 +16,17 @@ export default function NewEventFeedbackPage() {
     const hostEmail = searchParams.get('hostEmail') || '';
     const city = searchParams.get('city') || '';
 
+    // Parse all hosts from URL params
+    let parsedHosts: { name?: string; email?: string }[] = [];
+    try {
+        const hostsParam = searchParams.get('hosts');
+        if (hostsParam) parsedHosts = JSON.parse(hostsParam);
+    } catch {}
+    // Fallback to single host if no hosts array
+    if (parsedHosts.length === 0 && hostEmail) {
+        parsedHosts = [{ name: hostName, email: hostEmail }];
+    }
+
     const [isSaving, setIsSaving] = useState(false);
     const [createdLink, setCreatedLink] = useState('');
     const [createdGuideId, setCreatedGuideId] = useState('');
@@ -23,7 +34,7 @@ export default function NewEventFeedbackPage() {
 
     // Email state
     const [showEmailModal, setShowEmailModal] = useState(false);
-    const [emailTo, setEmailTo] = useState(hostEmail);
+    const [selectedHostEmails, setSelectedHostEmails] = useState<string[]>(parsedHosts.filter(h => h.email).map(h => h.email!));
     const [emailSubject, setEmailSubject] = useState(`Event Feedback - ${eventName}`);
     const [emailBody, setEmailBody] = useState('');
     const [sendingEmail, setSendingEmail] = useState(false);
@@ -60,6 +71,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                     lumaEventId: eventId,
                     hostName,
                     hostEmail,
+                    hosts: parsedHosts,
                     city,
                 },
             };
@@ -91,9 +103,15 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const toggleHostEmail = (email: string) => {
+        setSelectedHostEmails(prev =>
+            prev.includes(email) ? prev.filter(e => e !== email) : [...prev, email]
+        );
+    };
+
     const handleSendEmail = async () => {
-        if (!emailTo || !emailSubject || !emailBody) {
-            alert('Please fill in all email fields');
+        if (selectedHostEmails.length === 0 || !emailSubject || !emailBody) {
+            alert('Please select at least one host and fill in all fields');
             return;
         }
         setSendingEmail(true);
@@ -101,7 +119,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
             const res = await fetch('/api/event-feedback/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ to: emailTo, subject: emailSubject, body: emailBody }),
+                body: JSON.stringify({ to: selectedHostEmails.join(', '), subject: emailSubject, body: emailBody }),
             });
             if (res.ok) {
                 setEmailSent(true);
@@ -139,7 +157,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center gap-3 justify-center pt-4">
-                        {hostEmail && (
+                        {parsedHosts.some(h => h.email) && (
                             <button
                                 onClick={() => setShowEmailModal(true)}
                                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20 hover:bg-sky-500/20 transition-colors"
@@ -179,12 +197,30 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                             ) : (
                                 <>
                                     <div>
-                                        <label className="text-xs text-zinc-500 block mb-1">To</label>
-                                        <input
-                                            value={emailTo}
-                                            onChange={e => setEmailTo(e.target.value)}
-                                            className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm focus:outline-none focus:border-white/20"
-                                        />
+                                        <label className="text-xs text-zinc-500 block mb-1.5">Select Hosts to Email</label>
+                                        <div className="space-y-2">
+                                            {parsedHosts.filter(h => h.email).map((host, i) => (
+                                                <label
+                                                    key={i}
+                                                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                                                        selectedHostEmails.includes(host.email!)
+                                                            ? "bg-sky-500/10 border-sky-500/20"
+                                                            : "bg-zinc-800/50 border-white/5 hover:border-white/10"
+                                                    }`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedHostEmails.includes(host.email!)}
+                                                        onChange={() => toggleHostEmail(host.email!)}
+                                                        className="accent-sky-500 w-4 h-4"
+                                                    />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm text-white font-medium">{host.name || 'Unknown'}</p>
+                                                        <p className="text-xs text-zinc-500 truncate">{host.email}</p>
+                                                    </div>
+                                                </label>
+                                            ))}
+                                        </div>
                                     </div>
                                     <div>
                                         <label className="text-xs text-zinc-500 block mb-1">Subject</label>

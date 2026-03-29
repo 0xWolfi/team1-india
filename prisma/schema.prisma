@@ -604,6 +604,7 @@ model LumaEvent {
   geoData     Json?
   hostName    String?
   hostEmail   String?
+  hosts       Json?
   syncedAt    DateTime  @default(now())
   createdAt   DateTime  @default(now())
 

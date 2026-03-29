@@ -167,6 +167,7 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
     const now = new Date();
     const upsertOps = allEntries.map((entry) => {
       const firstHost = entry.event.hosts?.[0];
+      const allHosts = entry.event.hosts?.map(h => ({ name: h.name || null, email: h.email || null })) || [];
       return prisma.lumaEvent.upsert({
         where: { apiId: entry.api_id },
         update: {
@@ -181,6 +182,7 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
           geoData: entry.event.geo_address_json || Prisma.JsonNull,
           hostName: firstHost?.name || null,
           hostEmail: firstHost?.email || null,
+          hosts: allHosts.length > 0 ? allHosts : Prisma.JsonNull,
           syncedAt: now,
         },
         create: {
@@ -196,6 +198,7 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
           geoData: entry.event.geo_address_json || Prisma.JsonNull,
           hostName: firstHost?.name || null,
           hostEmail: firstHost?.email || null,
+          hosts: allHosts.length > 0 ? allHosts : Prisma.JsonNull,
           syncedAt: now,
         },
       });

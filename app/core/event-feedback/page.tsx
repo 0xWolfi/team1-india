@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { Calendar, MapPin, Mail, User, Plus, Link2, Copy, Check, ClipboardList, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, Mail, User, Plus, Link2, Copy, Check, ClipboardList, ExternalLink, Send, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 
@@ -17,6 +17,79 @@ export default function EventFeedbackPage() {
     const [feedbackGuides, setFeedbackGuides] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    // Email modal state
+    const [showEmailModal, setShowEmailModal] = useState(false);
+    const [availableHosts, setAvailableHosts] = useState<{ name?: string; email?: string }[]>([]);
+    const [selectedHostEmails, setSelectedHostEmails] = useState<string[]>([]);
+    const [emailSubject, setEmailSubject] = useState('');
+    const [emailBody, setEmailBody] = useState('');
+    const [sendingEmail, setSendingEmail] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
+
+    const openEmailModal = (guide: any) => {
+        const body = guide.body as any;
+        const slug = guide.slug || guide.id;
+        const link = `${window.location.origin}/event-feedback/${slug}`;
+
+        // Collect all hosts from guide body
+        const hosts: { name?: string; email?: string }[] = Array.isArray(body?.hosts) ? body.hosts : [];
+        // Fallback: if no hosts array but single hostEmail exists
+        if (hosts.length === 0 && body?.hostEmail) {
+            hosts.push({ name: body.hostName, email: body.hostEmail });
+        }
+        setAvailableHosts(hosts);
+        // Pre-select all hosts with emails
+        setSelectedHostEmails(hosts.filter(h => h.email).map(h => h.email!));
+
+        setEmailSubject(`Event Feedback - ${guide.title}`);
+        setEmailBody(
+`Hi there,
+
+Thank you for hosting "${guide.title}" with Team1 India!
+
+We'd love to hear about your experience. Please fill out this short feedback form:
+
+${link}
+
+Just sign in with your Google account and submit the form. It only takes a few minutes.
+
+Thank you!`
+        );
+        setEmailSent(false);
+        setShowEmailModal(true);
+    };
+
+    const toggleHostEmail = (email: string) => {
+        setSelectedHostEmails(prev =>
+            prev.includes(email) ? prev.filter(e => e !== email) : [...prev, email]
+        );
+    };
+
+    const handleSendEmail = async () => {
+        if (selectedHostEmails.length === 0 || !emailSubject || !emailBody) {
+            alert('Please select at least one host and fill in all fields');
+            return;
+        }
+        setSendingEmail(true);
+        try {
+            const res = await fetch('/api/event-feedback/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ to: selectedHostEmails.join(', '), subject: emailSubject, body: emailBody }),
+            });
+            if (res.ok) {
+                setEmailSent(true);
+                setTimeout(() => setShowEmailModal(false), 1500);
+            } else {
+                alert('Failed to send email');
+            }
+        } catch {
+            alert('Error sending email');
+        } finally {
+            setSendingEmail(false);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -81,52 +154,56 @@ export default function EventFeedbackPage() {
                     <div className="space-y-3">
                         {recentEvents.map((event: any) => {
                             const existingForm = getExistingForm(event.id);
+                            const eventHosts: { name?: string; email?: string }[] = Array.isArray(event.hosts) ? event.hosts : [];
+                            const hostsParam = encodeURIComponent(JSON.stringify(eventHosts));
                             return (
-                                <div key={event.id} className={cn("rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-4", glassClass)}>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-semibold text-white mb-1">{event.name}</p>
-                                        <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-                                            <span className="flex items-center gap-1">
-                                                <Calendar className="w-3 h-3" />
-                                                {new Date(event.startAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                                            </span>
-                                            {event.city && (
+                                <div key={event.id} className={cn("rounded-xl p-4", glassClass)}>
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-semibold text-white mb-1">{event.name}</p>
+                                            <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
                                                 <span className="flex items-center gap-1">
-                                                    <MapPin className="w-3 h-3" />
-                                                    {event.city}
+                                                    <Calendar className="w-3 h-3" />
+                                                    {new Date(event.startAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                 </span>
-                                            )}
-                                            {event.hostName && (
-                                                <span className="flex items-center gap-1">
-                                                    <User className="w-3 h-3" />
-                                                    {event.hostName}
-                                                </span>
-                                            )}
-                                            {event.hostEmail && (
-                                                <span className="flex items-center gap-1">
-                                                    <Mail className="w-3 h-3" />
-                                                    {event.hostEmail}
-                                                </span>
+                                                {event.city && (
+                                                    <span className="flex items-center gap-1">
+                                                        <MapPin className="w-3 h-3" />
+                                                        {event.city}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="shrink-0">
+                                            {existingForm ? (
+                                                <Link
+                                                    href={`/core/event-feedback/${existingForm.id}`}
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
+                                                >
+                                                    <Check className="w-3.5 h-3.5" /> View Form
+                                                </Link>
+                                            ) : (
+                                                <Link
+                                                    href={`/core/event-feedback/new?eventId=${event.id}&eventName=${encodeURIComponent(event.name)}&hostName=${encodeURIComponent(event.hostName || '')}&hostEmail=${encodeURIComponent(event.hostEmail || '')}&city=${encodeURIComponent(event.city || '')}&hosts=${hostsParam}`}
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-black hover:bg-zinc-100 transition-all"
+                                                >
+                                                    <Plus className="w-3.5 h-3.5" /> Create Feedback Form
+                                                </Link>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="shrink-0">
-                                        {existingForm ? (
-                                            <Link
-                                                href={`/core/event-feedback/${existingForm.id}`}
-                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all"
-                                            >
-                                                <Check className="w-3.5 h-3.5" /> View Form
-                                            </Link>
-                                        ) : (
-                                            <Link
-                                                href={`/core/event-feedback/new?eventId=${event.id}&eventName=${encodeURIComponent(event.name)}&hostName=${encodeURIComponent(event.hostName || '')}&hostEmail=${encodeURIComponent(event.hostEmail || '')}&city=${encodeURIComponent(event.city || '')}`}
-                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-black hover:bg-zinc-100 transition-all"
-                                            >
-                                                <Plus className="w-3.5 h-3.5" /> Create Feedback Form
-                                            </Link>
-                                        )}
-                                    </div>
+                                    {/* Show all hosts */}
+                                    {eventHosts.length > 0 && (
+                                        <div className="mt-3 pt-3 border-t border-white/5 flex flex-wrap gap-2">
+                                            {eventHosts.map((host, i) => (
+                                                <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-xs text-zinc-400">
+                                                    <User className="w-3 h-3" />
+                                                    {host.name || 'Unknown'}
+                                                    {host.email && <span className="text-zinc-600">({host.email})</span>}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
@@ -164,6 +241,14 @@ export default function EventFeedbackPage() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
+                                        {body?.hostEmail && (
+                                            <button
+                                                onClick={() => openEmailModal(guide)}
+                                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/20 transition-colors text-sky-400"
+                                            >
+                                                <Mail className="w-3.5 h-3.5" /> Send Email
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => copyLink(guide)}
                                             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-zinc-300"
@@ -187,6 +272,95 @@ export default function EventFeedbackPage() {
                         <p className="text-zinc-600 text-sm">No feedback forms created yet</p>
                     </div>
                 )
+            )}
+            {/* Email Modal */}
+            {showEmailModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-lg rounded-2xl bg-zinc-900 border border-white/10 p-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                <Mail className="w-5 h-5 text-sky-400" /> Send Feedback Link
+                            </h2>
+                            <button onClick={() => setShowEmailModal(false)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                                <X className="w-4 h-4 text-zinc-400" />
+                            </button>
+                        </div>
+
+                        {emailSent ? (
+                            <div className="py-8 text-center">
+                                <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit mx-auto mb-3">
+                                    <Check className="w-6 h-6 text-emerald-400" />
+                                </div>
+                                <p className="text-sm text-emerald-400 font-semibold">Email sent successfully!</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div>
+                                    <label className="text-xs text-zinc-500 block mb-1.5">Select Hosts to Email</label>
+                                    <div className="space-y-2">
+                                        {availableHosts.filter(h => h.email).map((host, i) => (
+                                            <label
+                                                key={i}
+                                                className={cn(
+                                                    "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
+                                                    selectedHostEmails.includes(host.email!)
+                                                        ? "bg-sky-500/10 border-sky-500/20"
+                                                        : "bg-zinc-800/50 border-white/5 hover:border-white/10"
+                                                )}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedHostEmails.includes(host.email!)}
+                                                    onChange={() => toggleHostEmail(host.email!)}
+                                                    className="accent-sky-500 w-4 h-4"
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm text-white font-medium">{host.name || 'Unknown'}</p>
+                                                    <p className="text-xs text-zinc-500 truncate">{host.email}</p>
+                                                </div>
+                                            </label>
+                                        ))}
+                                        {availableHosts.filter(h => h.email).length === 0 && (
+                                            <p className="text-xs text-zinc-600 py-2">No hosts with email addresses found.</p>
+                                        )}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-zinc-500 block mb-1">Subject</label>
+                                    <input
+                                        value={emailSubject}
+                                        onChange={e => setEmailSubject(e.target.value)}
+                                        className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm focus:outline-none focus:border-white/20"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-zinc-500 block mb-1">Message</label>
+                                    <textarea
+                                        value={emailBody}
+                                        onChange={e => setEmailBody(e.target.value)}
+                                        rows={10}
+                                        className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm focus:outline-none focus:border-white/20 resize-none"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-3 pt-2">
+                                    <button
+                                        onClick={() => setShowEmailModal(false)}
+                                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-zinc-800 border border-white/10 text-zinc-300 hover:bg-zinc-700 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleSendEmail}
+                                        disabled={sendingEmail}
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-sky-500/20 border border-sky-500/30 text-sky-400 hover:bg-sky-500/30 transition-colors disabled:opacity-40"
+                                    >
+                                        {sendingEmail ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</> : <><Send className="w-4 h-4" /> Send Email</>}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
             )}
         </CoreWrapper>
     );
