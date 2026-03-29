@@ -92,6 +92,7 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
         timezone?: string;
         visibility: string;
         geo_address_json?: { city: string; [key: string]: any };
+        hosts?: Array<{ name?: string; email?: string }>;
       };
     };
 
@@ -164,8 +165,9 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
 
     // Batch upsert all events in a single transaction
     const now = new Date();
-    const upsertOps = allEntries.map((entry) =>
-      prisma.lumaEvent.upsert({
+    const upsertOps = allEntries.map((entry) => {
+      const firstHost = entry.event.hosts?.[0];
+      return prisma.lumaEvent.upsert({
         where: { apiId: entry.api_id },
         update: {
           name: entry.event.name,
@@ -177,6 +179,8 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
           visibility: entry.event.visibility,
           city: entry.event.geo_address_json?.city || null,
           geoData: entry.event.geo_address_json || Prisma.JsonNull,
+          hostName: firstHost?.name || null,
+          hostEmail: firstHost?.email || null,
           syncedAt: now,
         },
         create: {
@@ -190,10 +194,12 @@ export async function syncLumaEvents(): Promise<{ synced: number; errors: number
           visibility: entry.event.visibility,
           city: entry.event.geo_address_json?.city || null,
           geoData: entry.event.geo_address_json || Prisma.JsonNull,
+          hostName: firstHost?.name || null,
+          hostEmail: firstHost?.email || null,
           syncedAt: now,
         },
-      })
-    );
+      });
+    });
 
     try {
       await prisma.$transaction(upsertOps);

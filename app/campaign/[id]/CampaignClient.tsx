@@ -21,7 +21,12 @@ interface CampaignData {
 }
 
 function CampaignContent({ campaign }: { campaign: CampaignData }) {
-    const isWorkshop = campaign.type === "WORKSHOP";
+    const badgeConfig: Record<string, { label: string; cls: string }> = {
+        WORKSHOP: { label: "Workshop", cls: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+        HACKATHON: { label: "Hackathon", cls: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+        EVENT_FEEDBACK: { label: "Event Feedback", cls: "bg-sky-500/10 text-sky-400 border-sky-500/20" },
+    };
+    const badge = badgeConfig[campaign.type] || badgeConfig.WORKSHOP;
 
     return (
         <div className="min-h-screen bg-black text-white">
@@ -31,12 +36,8 @@ function CampaignContent({ campaign }: { campaign: CampaignData }) {
                     <Link href="/">
                         <Team1Logo className="h-5 w-auto" />
                     </Link>
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                        isWorkshop
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                    }`}>
-                        {isWorkshop ? "Workshop" : "Hackathon"}
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badge.cls}`}>
+                        {badge.label}
                     </span>
                 </div>
             </div>

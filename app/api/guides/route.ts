@@ -131,12 +131,12 @@ export async function POST(req: NextRequest) {
 
     const { type, title, coverImage, body: guideBody, formSchema, audience, visibility, maxSubmissionsPublic, maxSubmissionsMember } = result.data as any;
 
-    // Generate slug for WORKSHOP/HACKATHON from city name
+    // Generate slug for WORKSHOP/HACKATHON/EVENT_FEEDBACK from city or title
     let slug: string | undefined;
-    if (type === 'WORKSHOP' || type === 'HACKATHON') {
-      const city = (guideBody as any)?.city || title || '';
-      if (city) {
-        const baseSlug = city
+    if (type === 'WORKSHOP' || type === 'HACKATHON' || type === 'EVENT_FEEDBACK') {
+      const source = (guideBody as any)?.city || title || '';
+      if (source) {
+        const baseSlug = source
           .toLowerCase()
           .replace(/[^a-z0-9\s-]/g, '')
           .replace(/\s+/g, '-')
