@@ -5,36 +5,61 @@ import { useSearchParams } from 'next/navigation';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { GuideBuilder } from '@/components/guides/GuideBuilder';
-import { ClipboardList, X, Link2, Copy, Check, Mail, Send, Loader2 } from "lucide-react";
+import { ClipboardList, X, Link2, Copy, Check, Mail, Send, Loader2, Plus, Trash2 } from "lucide-react";
 import Link from 'next/link';
+import { cn } from "@/lib/utils";
 
 export default function NewEventFeedbackPage() {
     const searchParams = useSearchParams();
     const eventId = searchParams.get('eventId') || '';
     const eventName = searchParams.get('eventName') || '';
-    const hostName = searchParams.get('hostName') || '';
-    const hostEmail = searchParams.get('hostEmail') || '';
     const city = searchParams.get('city') || '';
-
-    // Parse all hosts from URL params
-    let parsedHosts: { name?: string; email?: string }[] = [];
-    try {
-        const hostsParam = searchParams.get('hosts');
-        if (hostsParam) parsedHosts = JSON.parse(hostsParam);
-    } catch {}
-    // Fallback to single host if no hosts array
-    if (parsedHosts.length === 0 && hostEmail) {
-        parsedHosts = [{ name: hostName, email: hostEmail }];
-    }
 
     const [isSaving, setIsSaving] = useState(false);
     const [createdLink, setCreatedLink] = useState('');
     const [createdGuideId, setCreatedGuideId] = useState('');
     const [copied, setCopied] = useState(false);
 
+    // Hosts — admin adds manually or picks from members
+    const [hosts, setHosts] = useState<{ name: string; email: string }[]>([{ name: '', email: '' }]);
+    const [members, setMembers] = useState<{ id: string; name: string; email: string }[]>([]);
+    const [activeSearchIdx, setActiveSearchIdx] = useState<number | null>(null);
+
+    // Fetch community members once for autocomplete
+    useEffect(() => {
+        fetch('/api/community-members?limit=500')
+            .then(r => r.ok ? r.json() : [])
+            .then(data => {
+                const list = Array.isArray(data) ? data : data.members || data;
+                setMembers(Array.isArray(list) ? list.filter((m: any) => m.name && m.email) : []);
+            })
+            .catch(() => {});
+    }, []);
+
+    const addHost = () => setHosts(prev => [...prev, { name: '', email: '' }]);
+    const removeHost = (idx: number) => { setHosts(prev => prev.filter((_, i) => i !== idx)); setActiveSearchIdx(null); };
+    const updateHost = (idx: number, field: 'name' | 'email', value: string) => {
+        setHosts(prev => prev.map((h, i) => i === idx ? { ...h, [field]: value } : h));
+        if (field === 'name') setActiveSearchIdx(idx);
+    };
+    const selectMember = (idx: number, member: { name: string; email: string }) => {
+        setHosts(prev => prev.map((h, i) => i === idx ? { name: member.name, email: member.email } : h));
+        setActiveSearchIdx(null);
+    };
+
+    // Filter members matching the typed name
+    const getFilteredMembers = (query: string) => {
+        if (!query || query.length < 2) return [];
+        const q = query.toLowerCase();
+        return members.filter(m => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q)).slice(0, 6);
+    };
+
+    // Valid hosts = those with at least an email
+    const validHosts = hosts.filter(h => h.email.trim());
+
     // Email state
     const [showEmailModal, setShowEmailModal] = useState(false);
-    const [selectedHostEmails, setSelectedHostEmails] = useState<string[]>(parsedHosts.filter(h => h.email).map(h => h.email!));
+    const [selectedHostEmails, setSelectedHostEmails] = useState<string[]>([]);
     const [emailSubject, setEmailSubject] = useState(`Event Feedback - ${eventName}`);
     const [emailBody, setEmailBody] = useState('');
     const [sendingEmail, setSendingEmail] = useState(false);
@@ -43,8 +68,10 @@ export default function NewEventFeedbackPage() {
     // Set default email body when link is created
     useEffect(() => {
         if (createdLink) {
+            // Pre-select all valid hosts
+            setSelectedHostEmails(validHosts.map(h => h.email));
             setEmailBody(
-`Hi ${hostName || 'there'},
+`Hi there,
 
 Thank you for hosting the "${eventName}" event with Team1 India!
 
@@ -57,11 +84,13 @@ Just sign in with your Google account and submit the form. It only takes a few m
 Thank you for your contribution to the Avalanche ecosystem in India!`
             );
         }
-    }, [createdLink, eventName, hostName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [createdLink]);
 
     const handleSave = async (data: any) => {
         setIsSaving(true);
         try {
+            const firstHost = validHosts[0];
             const payload = {
                 ...data,
                 type: 'EVENT_FEEDBACK',
@@ -69,9 +98,9 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                 body: {
                     ...data.body,
                     lumaEventId: eventId,
-                    hostName,
-                    hostEmail,
-                    hosts: parsedHosts,
+                    hostName: firstHost?.name || '',
+                    hostEmail: firstHost?.email || '',
+                    hosts: validHosts,
                     city,
                 },
             };
@@ -134,7 +163,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
         }
     };
 
-    // Success state
+    // ── Success state ──
     if (createdLink) {
         return (
             <CoreWrapper>
@@ -157,7 +186,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center gap-3 justify-center pt-4">
-                        {parsedHosts.some(h => h.email) && (
+                        {validHosts.length > 0 && (
                             <button
                                 onClick={() => setShowEmailModal(true)}
                                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20 hover:bg-sky-500/20 transition-colors"
@@ -199,19 +228,20 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                                     <div>
                                         <label className="text-xs text-zinc-500 block mb-1.5">Select Hosts to Email</label>
                                         <div className="space-y-2">
-                                            {parsedHosts.filter(h => h.email).map((host, i) => (
+                                            {validHosts.map((host, i) => (
                                                 <label
                                                     key={i}
-                                                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                                                        selectedHostEmails.includes(host.email!)
+                                                    className={cn(
+                                                        "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
+                                                        selectedHostEmails.includes(host.email)
                                                             ? "bg-sky-500/10 border-sky-500/20"
                                                             : "bg-zinc-800/50 border-white/5 hover:border-white/10"
-                                                    }`}
+                                                    )}
                                                 >
                                                     <input
                                                         type="checkbox"
-                                                        checked={selectedHostEmails.includes(host.email!)}
-                                                        onChange={() => toggleHostEmail(host.email!)}
+                                                        checked={selectedHostEmails.includes(host.email)}
+                                                        onChange={() => toggleHostEmail(host.email)}
                                                         className="accent-sky-500 w-4 h-4"
                                                     />
                                                     <div className="flex-1 min-w-0">
@@ -263,11 +293,12 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
         );
     }
 
+    // ── Creation form ──
     return (
         <CoreWrapper>
             <CorePageHeader
                 title={`Feedback: ${eventName || 'New Form'}`}
-                description={`Create a feedback form${hostName ? ` for ${hostName}` : ''}${city ? ` · ${city}` : ''}`}
+                description={`Create a feedback form${city ? ` · ${city}` : ''}`}
                 icon={<ClipboardList className="w-5 h-5 text-zinc-200" />}
                 backLink="/core/event-feedback"
                 backText="Back to Event Feedback"
@@ -279,18 +310,86 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                 </Link>
             </CorePageHeader>
 
-            {/* Event Info Banner */}
-            {eventName && (
-                <div className="max-w-4xl mx-auto mb-6 p-4 bg-zinc-900/40 border border-white/[0.06] rounded-xl">
-                    <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Event Details</p>
-                    <p className="text-sm text-white font-semibold">{eventName}</p>
-                    <div className="flex flex-wrap gap-3 mt-2 text-xs text-zinc-400">
-                        {hostName && <span>Host: {hostName}</span>}
-                        {hostEmail && <span>Email: {hostEmail}</span>}
-                        {city && <span>City: {city}</span>}
+            {/* Event Info + Hosts */}
+            <div className="max-w-4xl mx-auto space-y-6 mb-8">
+                {eventName && (
+                    <div className="p-4 bg-zinc-900/40 border border-white/[0.06] rounded-xl">
+                        <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Event Details</p>
+                        <p className="text-sm text-white font-semibold">{eventName}</p>
+                        {city && <p className="text-xs text-zinc-400 mt-1">City: {city}</p>}
                     </div>
+                )}
+
+                {/* Host inputs */}
+                <div>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Event Hosts</label>
+                    <p className="text-xs text-zinc-600 mb-3">Add the hosts who organized this event. They will receive the feedback form link via email.</p>
+                    <div className="space-y-3">
+                        {hosts.map((host, idx) => {
+                            const filtered = activeSearchIdx === idx ? getFilteredMembers(host.name) : [];
+                            return (
+                                <div key={idx} className="flex items-start gap-2">
+                                    <div className="relative flex-1">
+                                        <input
+                                            value={host.name}
+                                            onChange={e => updateHost(idx, 'name', e.target.value)}
+                                            onFocus={() => setActiveSearchIdx(idx)}
+                                            onBlur={() => setTimeout(() => setActiveSearchIdx(null), 200)}
+                                            placeholder="Host name (type to search members)"
+                                            className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20"
+                                        />
+                                        {filtered.length > 0 && (
+                                            <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-xl">
+                                                {filtered.map(m => (
+                                                    <button
+                                                        key={m.id}
+                                                        type="button"
+                                                        onMouseDown={() => selectMember(idx, m)}
+                                                        className="w-full text-left px-4 py-2.5 hover:bg-white/5 transition-colors flex items-center gap-3"
+                                                    >
+                                                        <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-zinc-400 shrink-0">
+                                                            {m.name.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-sm text-white font-medium truncate">{m.name}</p>
+                                                            <p className="text-xs text-zinc-500 truncate">{m.email}</p>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <input
+                                        value={host.email}
+                                        onChange={e => updateHost(idx, 'email', e.target.value)}
+                                        placeholder="host@email.com"
+                                        type="email"
+                                        className="flex-1 bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20"
+                                    />
+                                    {hosts.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeHost(idx)}
+                                            className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors shrink-0 mt-0.5"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <button
+                        type="button"
+                        onClick={addHost}
+                        className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+                    >
+                        <Plus className="w-3.5 h-3.5" /> Add Another Host
+                    </button>
                 </div>
-            )}
+
+                <div className="h-px bg-white/5" />
+            </div>
 
             <GuideBuilder
                 type="EVENT_FEEDBACK"

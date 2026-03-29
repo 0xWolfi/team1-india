@@ -155,7 +155,6 @@ Thank you!`
                         {recentEvents.map((event: any) => {
                             const existingForm = getExistingForm(event.id);
                             const eventHosts: { name?: string; email?: string }[] = Array.isArray(event.hosts) ? event.hosts : [];
-                            const hostsParam = encodeURIComponent(JSON.stringify(eventHosts));
                             return (
                                 <div key={event.id} className={cn("rounded-xl p-4", glassClass)}>
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -184,7 +183,7 @@ Thank you!`
                                                 </Link>
                                             ) : (
                                                 <Link
-                                                    href={`/core/event-feedback/new?eventId=${event.id}&eventName=${encodeURIComponent(event.name)}&hostName=${encodeURIComponent(event.hostName || '')}&hostEmail=${encodeURIComponent(event.hostEmail || '')}&city=${encodeURIComponent(event.city || '')}&hosts=${hostsParam}`}
+                                                    href={`/core/event-feedback/new?eventId=${event.id}&eventName=${encodeURIComponent(event.name)}&city=${encodeURIComponent(event.city || '')}`}
                                                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-black hover:bg-zinc-100 transition-all"
                                                 >
                                                     <Plus className="w-3.5 h-3.5" /> Create Feedback Form
