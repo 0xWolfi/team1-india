@@ -142,7 +142,7 @@ export default function MemberExperimentDetailPage() {
                                     </span>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-sm font-medium text-zinc-200 font-sans">
+                                    <div className="text-sm font-medium text-zinc-200">
                                         {new Date(experiment.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                     </div>
                                     <div className="text-[9px] text-zinc-600 font-medium lowercase">proposed on</div>

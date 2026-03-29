@@ -9,7 +9,7 @@ import ReactMarkdown from 'react-markdown';
 
 interface GuideBuilderProps {
     initialData?: any;
-    type: 'EVENT' | 'PROGRAM' | 'CONTENT' | 'WORKSHOP' | 'HACKATHON';
+    type: 'EVENT' | 'PROGRAM' | 'CONTENT' | 'WORKSHOP' | 'HACKATHON' | 'EVENT_FEEDBACK';
     onSave: (data: any) => Promise<void>;
     isSaving?: boolean;
 }

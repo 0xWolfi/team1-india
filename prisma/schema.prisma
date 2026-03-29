@@ -602,6 +602,9 @@ model LumaEvent {
   visibility  String    @default("public")
   city        String?
   geoData     Json?
+  hostName    String?
+  hostEmail   String?
+  hosts       Json?
   syncedAt    DateTime  @default(now())
   createdAt   DateTime  @default(now())
 

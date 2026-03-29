@@ -175,6 +175,17 @@ export default function CorePage() {
             items: []
         },
 
+        // Event Feedback
+        {
+            title: "Event Feedback",
+            key: "events",
+            link: "/core/event-feedback",
+            iconName: "ClipboardList",
+            description: "Collect post-event feedback from hosts via custom forms.",
+            image: "/images/dashboard/planning.png",
+            items: []
+        },
+
         // Row 3: Projects & System
         {
             title: "Projects",

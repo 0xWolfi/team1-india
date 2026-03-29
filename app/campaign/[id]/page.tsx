@@ -10,7 +10,7 @@ async function getCampaign(idOrSlug: string) {
         where: {
             slug: idOrSlug,
             deletedAt: null,
-            type: { in: ['WORKSHOP', 'HACKATHON'] },
+            type: { in: ['WORKSHOP', 'HACKATHON', 'EVENT_FEEDBACK'] },
         },
     });
 
@@ -19,7 +19,7 @@ async function getCampaign(idOrSlug: string) {
             where: {
                 id: idOrSlug,
                 deletedAt: null,
-                type: { in: ['WORKSHOP', 'HACKATHON'] },
+                type: { in: ['WORKSHOP', 'HACKATHON', 'EVENT_FEEDBACK'] },
             },
         });
     }

@@ -6,7 +6,7 @@ import * as z from "zod";
 
 // Validator for creating a guide
 const CreateGuideSchema = z.object({
-  type: z.enum(["EVENT", "PROGRAM", "CONTENT", "WORKSHOP", "HACKATHON"]),
+  type: z.enum(["EVENT", "PROGRAM", "CONTENT", "WORKSHOP", "HACKATHON", "EVENT_FEEDBACK"]),
   title: z.string().min(1, "Title is required"),
   coverImage: z.string().optional(),
   visibility: z.enum(["CORE", "MEMBER", "PUBLIC"]).optional().default("CORE"),
@@ -131,12 +131,12 @@ export async function POST(req: NextRequest) {
 
     const { type, title, coverImage, body: guideBody, formSchema, audience, visibility, maxSubmissionsPublic, maxSubmissionsMember } = result.data as any;
 
-    // Generate slug for WORKSHOP/HACKATHON from city name
+    // Generate slug for WORKSHOP/HACKATHON/EVENT_FEEDBACK from city or title
     let slug: string | undefined;
-    if (type === 'WORKSHOP' || type === 'HACKATHON') {
-      const city = (guideBody as any)?.city || title || '';
-      if (city) {
-        const baseSlug = city
+    if (type === 'WORKSHOP' || type === 'HACKATHON' || type === 'EVENT_FEEDBACK') {
+      const source = (guideBody as any)?.city || title || '';
+      if (source) {
+        const baseSlug = source
           .toLowerCase()
           .replace(/[^a-z0-9\s-]/g, '')
           .replace(/\s+/g, '-')
