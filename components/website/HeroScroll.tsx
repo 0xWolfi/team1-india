@@ -166,47 +166,27 @@ export const HeroScroll = () => {
       <HeroBackground />
       <GridOverlay />
 
-      {/* Background watermark illustration */}
+      {/* Rotating Mandala Background */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2, delay: 0.5 }}
-          className="relative"
-        >
-          {/* Large "TEAM1" outline text */}
-          <span
-            className="text-[6rem] sm:text-[12rem] md:text-[18rem] lg:text-[28rem] font-bold leading-none tracking-tighter whitespace-nowrap"
-            style={{
-              fontFamily: "var(--font-kanit)",
-              WebkitTextStroke: "1px rgba(255, 57, 74, 0.06)",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            TEAM1
-          </span>
-          {/* Glow behind the text */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-[60%] h-[40%] bg-red-500/[0.03] rounded-full blur-[100px]" />
-          </div>
-        </motion.div>
-      </div>
-
-      {/* "INDIA" watermark below, offset */}
-      <div className="absolute inset-0 flex items-end justify-center pb-[10%] pointer-events-none overflow-hidden select-none">
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2, delay: 0.8 }}
-          className="text-[4rem] sm:text-[8rem] md:text-[12rem] lg:text-[18rem] font-normal leading-none tracking-wider"
-          style={{
-            fontFamily: "var(--font-kanit)",
-            WebkitTextStroke: "1px rgba(255, 57, 74, 0.04)",
-            WebkitTextFillColor: "transparent",
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1, rotate: 360 }}
+          transition={{
+            opacity: { duration: 2, delay: 0.3 },
+            scale: { duration: 2, delay: 0.3 },
+            rotate: { duration: 120, repeat: Infinity, ease: "linear" },
           }}
+          className="w-[90vw] h-[90vw] sm:w-[80vw] sm:h-[80vw] md:w-[70vw] md:h-[70vw] lg:w-[60vw] lg:h-[60vw] max-w-[900px] max-h-[900px]"
         >
-          INDIA
-        </motion.span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/mandala.svg"
+            alt=""
+            className="w-full h-full opacity-[0.12]"
+          />
+        </motion.div>
+        {/* Glow behind mandala */}
+        <div className="absolute w-[40%] h-[40%] bg-red-500/[0.04] rounded-full blur-[120px]" />
       </div>
 
       {/* Noise texture */}
