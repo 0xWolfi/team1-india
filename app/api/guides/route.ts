@@ -6,7 +6,7 @@ import * as z from "zod";
 
 // Validator for creating a guide
 const CreateGuideSchema = z.object({
-  type: z.enum(["EVENT", "PROGRAM", "CONTENT", "WORKSHOP", "HACKATHON"]),
+  type: z.enum(["EVENT", "PROGRAM", "CONTENT", "WORKSHOP", "HACKATHON", "EVENT_FEEDBACK"]),
   title: z.string().min(1, "Title is required"),
   coverImage: z.string().optional(),
   visibility: z.enum(["CORE", "MEMBER", "PUBLIC"]).optional().default("CORE"),
