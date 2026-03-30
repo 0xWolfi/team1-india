@@ -1,4 +1,5 @@
 import { HeroScroll } from "@/components/website/HeroScroll";
+import { HomeNavbar } from "@/components/website/HomeNavbar";
 import { Announcements } from "@/components/website/Announcements";
 import { Footer } from "@/components/website/Footer";
 import { WhatWeDo } from "@/components/website/WhatWeDo";
@@ -23,6 +24,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white antialiased selection:bg-white selection:text-black">
       <Preloader />
+      <HomeNavbar />
       <div className="flex flex-col">
         <HeroScroll />
 
