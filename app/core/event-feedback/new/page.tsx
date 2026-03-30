@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { GuideBuilder } from '@/components/guides/GuideBuilder';
-import { ClipboardList, X, Link2, Copy, Check, Mail, Send, Loader2, Plus, Trash2 } from "lucide-react";
+import { FormBuilder, FormField } from '@/components/form-builder/FormBuilder';
+import { ClipboardList, X, Link2, Copy, Check, Mail, Send, Loader2, Plus, Trash2, Save } from "lucide-react";
 import Link from 'next/link';
 import { cn } from "@/lib/utils";
 
@@ -19,6 +19,11 @@ export default function NewEventFeedbackPage() {
     const [createdLink, setCreatedLink] = useState('');
     const [createdGuideId, setCreatedGuideId] = useState('');
     const [copied, setCopied] = useState(false);
+    const [formTitle, setFormTitle] = useState(eventName ? `Feedback: ${eventName}` : '');
+    const [formFields, setFormFields] = useState<FormField[]>([
+        { id: 'default-name', key: 'name', label: 'Name', type: 'text', required: true, isDefault: true, editable: false },
+        { id: 'default-email', key: 'email', label: 'Email', type: 'email', required: true, isDefault: true, editable: false },
+    ]);
 
     // Hosts — admin adds manually or picks from members
     const [hosts, setHosts] = useState<{ name: string; email: string }[]>([{ name: '', email: '' }]);
@@ -28,9 +33,9 @@ export default function NewEventFeedbackPage() {
     // Fetch community members once for autocomplete
     useEffect(() => {
         fetch('/api/community-members?limit=500')
-            .then(r => r.ok ? r.json() : [])
-            .then(data => {
-                const list = Array.isArray(data) ? data : data.members || data;
+            .then(r => r.ok ? r.json() : { data: [] })
+            .then(res => {
+                const list = res.data || res.members || (Array.isArray(res) ? res : []);
                 setMembers(Array.isArray(list) ? list.filter((m: any) => m.name && m.email) : []);
             })
             .catch(() => {});
@@ -87,22 +92,28 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [createdLink]);
 
-    const handleSave = async (data: any) => {
+    const handleSave = async () => {
+        if (!formTitle.trim()) {
+            alert('Please enter a form title');
+            return;
+        }
         setIsSaving(true);
         try {
             const firstHost = validHosts[0];
             const payload = {
-                ...data,
                 type: 'EVENT_FEEDBACK',
+                title: formTitle,
                 visibility: 'PUBLIC',
                 body: {
-                    ...data.body,
+                    description: '',
+                    markdown: '',
                     lumaEventId: eventId,
                     hostName: firstHost?.name || '',
                     hostEmail: firstHost?.email || '',
                     hosts: validHosts,
                     city,
                 },
+                formSchema: formFields,
             };
 
             const res = await fetch('/api/guides', {
@@ -391,11 +402,34 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                 <div className="h-px bg-white/5" />
             </div>
 
-            <GuideBuilder
-                type="EVENT_FEEDBACK"
-                onSave={handleSave}
-                isSaving={isSaving}
-            />
+            {/* Form Title + Form Builder */}
+            <div className="max-w-4xl mx-auto space-y-6">
+                <div>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Form Title</label>
+                    <input
+                        value={formTitle}
+                        onChange={e => setFormTitle(e.target.value)}
+                        placeholder="e.g., Event Feedback - Team1 Connect Pune"
+                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Form Fields</label>
+                    <p className="text-xs text-zinc-600 mb-3">Name and Email are included by default. Add custom questions for the feedback form.</p>
+                    <FormBuilder fields={formFields} onChange={setFormFields} />
+                </div>
+
+                <div className="flex justify-end pt-4 pb-8">
+                    <button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isSaving ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating...</> : <><Save className="w-4 h-4" /> Create Feedback Form</>}
+                    </button>
+                </div>
+            </div>
         </CoreWrapper>
     );
 }
