@@ -16,7 +16,7 @@ export function DashboardLayout({ title, role, children }: DashboardProps) {
             {role} View
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tighter">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
             {title}
         </h1>
         

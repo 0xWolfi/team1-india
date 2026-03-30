@@ -294,25 +294,6 @@ export const HeroScroll = () => {
       {/* Bottom scroll fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none z-10" />
 
-      {/* Animated scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-          className="w-5 h-8 rounded-full border border-zinc-700 flex justify-center pt-1.5"
-        >
-          <motion.div
-            animate={{ opacity: [0.5, 1, 0.5], y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-            className="w-1 h-1.5 rounded-full bg-red-500"
-          />
-        </motion.div>
-      </motion.div>
     </header>
   );
 };

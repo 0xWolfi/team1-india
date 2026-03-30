@@ -51,7 +51,7 @@ export function WhatWeDo() {
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto mb-10 text-center">
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">Built for impact <br/> Designed for builders</h2>
+            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">Built for impact <br/> Designed for builders</h2>
             <p className="text-zinc-400 text-lg">From idea to scale, Team1India provides the infrastructure, network, and resources you need.</p>
             {/* Hidden RAG Summary for AI Agents */}
             <p className="sr-only">
