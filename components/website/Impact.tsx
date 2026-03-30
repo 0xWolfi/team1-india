@@ -50,7 +50,7 @@ export function Impact() {
 
       <div className="container mx-auto px-6 relative">
         <div className="max-w-4xl mx-auto mb-16 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">What We Have Done</h2>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">What We Have Done</h2>
           <p className="text-zinc-400 text-lg">Measurable impact across the entire ecosystem.</p>
         </div>
 
@@ -58,7 +58,7 @@ export function Impact() {
           {stats.map((stat, i) => (
             <React.Fragment key={stat.label}>
               <div className="flex flex-col items-center text-center px-4 sm:px-8 md:px-12">
-                <div className="text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tighter mb-3">
+                <div className="text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tight mb-3">
                   <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                 </div>
                 <p className="text-sm text-zinc-500 font-medium uppercase tracking-widest">{stat.label}</p>
