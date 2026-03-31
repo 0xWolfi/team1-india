@@ -17,10 +17,10 @@ interface DashboardCardProps {
 }
 
 const typeConfig = {
-    EVENT: { icon: "Calendar", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", label: "Event" },
-    PROGRAM: { icon: "Users", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20", label: "Program" },
-    CONTENT: { icon: "FileText", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", label: "Content" },
-    PLAYBOOK: { icon: "BookOpen", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", label: "Playbook" },
+    EVENT: { icon: "Calendar", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20", label: "Event" },
+    PROGRAM: { icon: "Users", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20", label: "Program" },
+    CONTENT: { icon: "FileText", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20", label: "Content" },
+    PLAYBOOK: { icon: "BookOpen", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20", label: "Playbook" },
 };
 
 export function DashboardCard({

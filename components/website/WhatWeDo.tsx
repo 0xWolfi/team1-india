@@ -8,37 +8,37 @@ const cards: FeatureItem[] = [
     {
         title: "Idea Phase Accelerator",
         desc: "We help idea-stage startups find product-market fit. Get funding, mentorship, and resources.",
-        icon: <Rocket className="w-6 h-6 text-zinc-400"/>,
+        icon: <Rocket className="w-6 h-6 text-red-500"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Community",
         desc: "Vibrant ecosystem of builders and creators sharing knowledge.",
-        icon: <Users className="w-6 h-6 text-zinc-400"/>,
+        icon: <Users className="w-6 h-6 text-red-500"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Marketing",
         desc: "Growth strategies and visibility for your launch.",
-        icon: <TrendingUp className="w-6 h-6 text-zinc-400"/>,
+        icon: <TrendingUp className="w-6 h-6 text-red-500"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Dev Onboarding",
         desc: "Helping developers get started with the right tech stack.",
-        icon: <Zap className="w-6 h-6 text-zinc-400"/>,
+        icon: <Zap className="w-6 h-6 text-red-500"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Closed Beta",
         desc: "Test your product with a curated group of early adopters.",
-        icon: <Shield className="w-6 h-6 text-zinc-400"/>,
+        icon: <Shield className="w-6 h-6 text-red-500"/>,
         colSpan: "md:col-span-1",
     },
     {
         title: "Events",
         desc: "High-energy hackathons and meetups.",
-        icon: <Calendar className="w-6 h-6 text-zinc-400"/>,
+        icon: <Calendar className="w-6 h-6 text-red-500"/>,
         colSpan: "md:col-span-1",
     }
 ];

@@ -8,32 +8,32 @@ const programs: FeatureItem[] = [
     {
         title: "Student Lead",
         desc: "Lead the tech revolution at your campus. Organize events, build communities, and empower peers.",
-        icon: <Users className="w-6 h-6 text-zinc-400"/>
+        icon: <Users className="w-6 h-6 text-red-500"/>
     },
     {
         title: "Open Fellowship",
         desc: "3-month remote fellowship for top builders to work on high-impact open source projects.",
-        icon: <Code2 className="w-6 h-6 text-zinc-400"/>
+        icon: <Code2 className="w-6 h-6 text-red-500"/>
     },
     {
         title: "Startup Incubator",
         desc: "For idea-stage founders. We provide credits, mentorship, and a network to launch.",
-        icon: <Rocket className="w-6 h-6 text-zinc-400"/>
+        icon: <Rocket className="w-6 h-6 text-red-500"/>
     },
     {
         title: "Hackathon League",
         desc: "Compete in our national hackathon circuit. Win prizes and get recognized.",
-        icon: <Trophy className="w-6 h-6 text-zinc-400"/>
+        icon: <Trophy className="w-6 h-6 text-red-500"/>
     },
     {
         title: "Mentorship",
         desc: "1:1 guidance from industry veterans to help you navigate your career path.",
-        icon: <HeartHandshake className="w-6 h-6 text-zinc-400"/>
+        icon: <HeartHandshake className="w-6 h-6 text-red-500"/>
     },
     {
         title: "City Chapters",
         desc: "Join local chapters in your city. Meetups, workshops, and networking events.",
-        icon: <Globe className="w-6 h-6 text-zinc-400"/>
+        icon: <Globe className="w-6 h-6 text-red-500"/>
     }
 ]
 

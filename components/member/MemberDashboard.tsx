@@ -103,10 +103,10 @@ export function MemberDashboard({
 
     // Stats data
     const stats = [
-        { label: "Events", value: events.length, icon: "Calendar", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
-        { label: "Programs", value: programs.length, icon: "Users", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
-        { label: "Playbooks", value: playbooks.length, icon: "BookOpen", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-        { label: "Proposals", value: proposals.length, icon: "Vote", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+        { label: "Events", value: events.length, icon: "Calendar", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
+        { label: "Programs", value: programs.length, icon: "Users", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
+        { label: "Playbooks", value: playbooks.length, icon: "BookOpen", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
+        { label: "Proposals", value: proposals.length, icon: "Vote", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
     ];
 
     // Time-based greeting
@@ -153,14 +153,14 @@ export function MemberDashboard({
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-amber-500/10 rounded-lg">
-                                <User className="w-4 h-4 text-amber-400"/>
+                                <User className="w-4 h-4 text-red-500"/>
                             </div>
                             <div>
                                 <h3 className="font-semibold text-white text-sm">Complete Your Profile</h3>
                                 <p className="text-xs text-zinc-500">Fill in your name, X handle, telegram, and wallet address.</p>
                             </div>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform flex-shrink-0"/>
+                        <ArrowRight className="w-4 h-4 text-red-500 group-hover:translate-x-1 transition-transform flex-shrink-0"/>
                     </div>
                 </Link>
             )}
@@ -190,9 +190,9 @@ export function MemberDashboard({
                     <h2 className="text-lg font-semibold text-white mb-4">Community Pulse</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         {[
-                            { label: "Total Members", value: communityPulse.totalMembers, icon: "Users", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
-                            { label: "Events Hosted", value: communityPulse.eventsHosted, icon: "Calendar", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
-                            { label: "Cities Reached", value: communityPulse.citiesReached, icon: "MapPin", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+                            { label: "Total Members", value: communityPulse.totalMembers, icon: "Users", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
+                            { label: "Events Hosted", value: communityPulse.eventsHosted, icon: "Calendar", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
+                            { label: "Cities Reached", value: communityPulse.citiesReached, icon: "MapPin", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
                         ].map((metric) => (
                             <div
                                 key={metric.label}
@@ -324,8 +324,8 @@ export function MemberDashboard({
                 >
                     <div className="flex items-center justify-between mb-5">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
-                                <Vote className="w-4 h-4 text-emerald-400"/>
+                            <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20">
+                                <Vote className="w-4 h-4 text-red-500"/>
                             </div>
                             <div>
                                 <h3 className="font-semibold text-white text-sm">New Proposals</h3>
@@ -361,8 +361,8 @@ export function MemberDashboard({
                 >
                     <div className="flex items-center justify-between mb-5">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-violet-500/10 rounded-lg border border-violet-500/20">
-                                <Users className="w-4 h-4 text-violet-400"/>
+                            <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20">
+                                <Users className="w-4 h-4 text-red-500"/>
                             </div>
                             <div>
                                 <h3 className="font-semibold text-white text-sm">Member Directory</h3>

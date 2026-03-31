@@ -38,7 +38,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
-                        <FileText className="w-12 h-12 text-zinc-700 group-hover:text-zinc-500 transition-colors"/>
+                        <FileText className="w-12 h-12 text-red-500/50 group-hover:text-red-500 transition-colors"/>
                     </div>
                 )}
 
