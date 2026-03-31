@@ -35,7 +35,7 @@ function FeatureCard({ item, index }: { item: FeatureItem; index: number }) {
       <div className="relative z-10">
         <div className="w-12 h-12 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center mb-5 group-hover:bg-white/[0.1] group-hover:border-white/[0.15] transition-all duration-300">
           {React.isValidElement(item.icon) && React.cloneElement(item.icon as React.ReactElement<{ className?: string }>, {
-            className: "w-5 h-5 text-zinc-400 group-hover:text-white transition-colors duration-300"
+            className: "w-5 h-5 text-red-500 group-hover:text-red-400 transition-colors duration-300"
           })}
         </div>
 

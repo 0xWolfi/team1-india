@@ -119,7 +119,7 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-zinc-900/80">
                                             <div className="p-4 rounded-full bg-white/4">
-                                                <Users className="w-8 h-8 text-zinc-700" />
+                                                <Users className="w-8 h-8 text-red-500/50" />
                                             </div>
                                         </div>
                                     )}
@@ -190,7 +190,7 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                     ) : (
                                         <div className="w-full h-full min-h-30 flex items-center justify-center bg-zinc-900/80">
                                             <div className="p-3 rounded-full bg-white/4">
-                                                <Users className="w-6 h-6 text-zinc-700" />
+                                                <Users className="w-6 h-6 text-red-500/50" />
                                             </div>
                                         </div>
                                     )}
@@ -240,7 +240,7 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                 /* ───────── EMPTY STATE ───────── */
                 <div className="py-32 flex flex-col items-center justify-center gap-4 border border-dashed border-white/6 rounded-2xl">
                     <div className="p-4 rounded-full bg-white/3">
-                        <Users className="w-7 h-7 text-zinc-600" />
+                        <Users className="w-7 h-7 text-red-500/50" />
                     </div>
                     <p className="text-sm text-zinc-500">No programs found</p>
                 </div>
