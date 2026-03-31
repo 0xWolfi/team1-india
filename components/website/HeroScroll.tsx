@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
 import { Send, ArrowRight } from "lucide-react";
+import { TabletMockup } from "@/components/ui/TabletMockup";
 
 /* ── Animated background with red/black gradient orbs ── */
 function HeroBackground() {
@@ -155,20 +155,54 @@ function GridOverlay() {
 
 /* ── Main Hero ── */
 export const HeroScroll = () => {
+  const containerRef = useRef<HTMLElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Hero Vanish Effect
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.95]);
+  const heroY = useTransform(scrollYProgress, [0, 0.15], [0, -30]);
+
+  // Tablet Slide In Effect
+  const tabletY = useTransform(scrollYProgress, [0.1, 0.3], ["100vh", "0vh"]);
+  const tabletScale = useTransform(scrollYProgress, [0.1, 0.3], [0.8, 1]);
+  const tabletRotateX = useTransform(scrollYProgress, [0.1, 0.3], [20, 0]);
+  const tabletOpacity = useTransform(scrollYProgress, [0.1, 0.25], [0, 1]);
+
   return (
     <header
       id="hero"
-      className="relative min-h-svh flex flex-col items-center justify-center overflow-hidden"
+      ref={containerRef}
+      className="relative h-[300vh]"
       role="banner"
     >
-      {/* Background layers */}
-      <div className="absolute inset-0 bg-black" />
-      <HeroBackground />
-      <GridOverlay />
+      {/* Sticky container to pin the view while scrolling */}
+      <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-black [perspective:1000px]">
+        {/* Background layers */}
+        <div className="absolute inset-0 bg-black" />
+        <HeroBackground />
+        <GridOverlay />
 
-      {/* Rotating Mandala Background */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none">
-        <motion.div
+        {/* Noise texture */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.015] mix-blend-overlay z-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          }}
+        />
+
+        {/* Hero Content (Vanishes on scroll) */}
+        <motion.div 
+          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+        >
+          {/* Rotating Mandala Background */}
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden select-none">
+            <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1, rotate: 360 }}
           transition={{
@@ -176,29 +210,23 @@ export const HeroScroll = () => {
             scale: { duration: 2, delay: 0.3 },
             rotate: { duration: 120, repeat: Infinity, ease: "linear" },
           }}
-          className="w-[90vw] h-[90vw] sm:w-[80vw] sm:h-[80vw] md:w-[70vw] md:h-[70vw] lg:w-[60vw] lg:h-[60vw] max-w-[900px] max-h-[900px]"
+            className="w-[90vw] h-[90vw] sm:w-[80vw] sm:h-[80vw] md:w-[70vw] md:h-[70vw] lg:w-[60vw] lg:h-[60vw] max-w-[900px] max-h-[900px]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/mandala.svg"
+              alt=""
+              className="w-full h-full opacity-[0.12]"
+            />
+          </motion.div>
+          {/* Glow behind mandala */}
+          <div className="absolute w-[40%] h-[40%] bg-red-500/[0.04] rounded-full blur-[120px]" />
+          </div>
+
+        <motion.div
+           style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+           className="relative z-10 flex flex-col items-center text-center px-4 max-w-4xl mx-auto w-full pointer-events-auto"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/mandala.svg"
-            alt=""
-            className="w-full h-full opacity-[0.12]"
-          />
-        </motion.div>
-        {/* Glow behind mandala */}
-        <div className="absolute w-[40%] h-[40%] bg-red-500/[0.04] rounded-full blur-[120px]" />
-      </div>
-
-      {/* Noise texture */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.015] mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-4 max-w-4xl mx-auto">
         {/* Pill badge */}
         <motion.div
           initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
@@ -256,12 +284,14 @@ export const HeroScroll = () => {
             Explore
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
-          <button
-            onClick={() => signIn("google", { callbackUrl: "/access-check" })}
+          <a
+            href="https://t.me/avalanche_hi"
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-7 py-3 rounded-xl bg-white/8 border border-white/12 text-white font-semibold text-sm transition-all duration-300 hover:bg-white/14 hover:border-white/20 hover:scale-[1.02]"
           >
-            Sign In
-          </button>
+            Join
+          </a>
         </motion.div>
 
         {/* Socials */}
@@ -288,11 +318,23 @@ export const HeroScroll = () => {
               {s.icon}
             </a>
           ))}
+          </motion.div>
         </motion.div>
-      </div>
+      </motion.div>
 
-      {/* Bottom scroll fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none z-10" />
+        {/* Tablet Mockup (Slides in on scroll) */}
+        <motion.div 
+          style={{ y: tabletY, scale: tabletScale, rotateX: tabletRotateX, opacity: tabletOpacity }}
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none origin-bottom px-4 md:px-8"
+        >
+           <div className="w-full max-w-[1600px] pointer-events-auto -mt-8 md:-mt-16 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
+             <TabletMockup videoSrc="/hero-video.mp4" />
+           </div>
+        </motion.div>
+
+        {/* Bottom scroll fade (Always visible over pinned content) */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none z-30" />
+      </div>
 
     </header>
   );

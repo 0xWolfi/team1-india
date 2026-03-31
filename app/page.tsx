@@ -28,6 +28,12 @@ export default function Home() {
       <div className="flex flex-col">
         <HeroScroll />
 
+        <section id="impact" aria-label="Our Impact">
+          <Impact />
+        </section>
+
+        <SectionDivider />
+
         <section id="announcements" aria-label="Latest Updates">
           <Announcements />
         </section>
@@ -48,12 +54,6 @@ export default function Home() {
 
         <section id="programs" aria-label="Accelerator Programs">
           <Programs />
-        </section>
-
-        <SectionDivider />
-
-        <section id="impact" aria-label="Our Impact">
-          <Impact />
         </section>
 
         <SectionDivider />
