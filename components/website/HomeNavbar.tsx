@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Team1Logo } from "@/components/Team1Logo";
 import { User, X } from "lucide-react";
@@ -17,12 +16,27 @@ const navItems = [
 
 export function HomeNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    let scrollTimeout: ReturnType<typeof setTimeout>;
+    
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+      setIsScrolling(true);
+      
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    };
+    
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(scrollTimeout);
+    };
   }, []);
 
   return (
@@ -34,7 +48,8 @@ export function HomeNavbar() {
           "top-0 left-0 w-full border-b border-white/5 bg-black/20 backdrop-blur-xl",
           // Desktop: floating pill, centered
           "md:top-6 md:left-1/2 md:-translate-x-1/2 md:w-fit md:max-w-[95vw] md:bg-transparent md:border-none md:backdrop-filter-none",
-          isScrolled && "md:scale-90 md:translate-y-[-10px]"
+          isScrolled && "md:scale-90 md:translate-y-[-10px]",
+          isScrolling && isScrolled && "opacity-0 -translate-y-[150%] md:-translate-y-[150%] pointer-events-none"
         )}
       >
         <div className="flex items-center justify-between md:justify-start w-full gap-1 px-6 py-3 md:p-1.5 md:rounded-2xl md:bg-black/40 md:backdrop-blur-md md:border md:border-white/10 md:shadow-[0_8px_32px_rgba(0,0,0,0.5)] md:supports-[backdrop-filter]:bg-black/20">
@@ -70,12 +85,14 @@ export function HomeNavbar() {
             >
               Explore
             </Link>
-            <button
-              onClick={() => signIn("google", { callbackUrl: "/access-check" })}
+            <a
+              href="https://t.me/avalanche_hi"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-xs font-bold hover:bg-zinc-100 transition-all"
             >
-              Sign In
-            </button>
+              Join
+            </a>
 
             {/* Mobile hamburger */}
             <button
