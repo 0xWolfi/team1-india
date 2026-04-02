@@ -155,14 +155,14 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100]">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/70" onClick={onClose} />
 
-            {/* Modal — pinned top/bottom with margin, body scrolls */}
-            <div className="absolute top-4 bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl flex flex-col bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl">
-                {/* Header — fixed at top */}
-                <div className="p-5 border-b border-white/5">
+            {/* Modal — centered, auto-height, capped at viewport */}
+            <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl">
+                {/* Sticky header */}
+                <div className="shrink-0 p-5 border-b border-white/5">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="text-xl font-bold text-white">Bounty Details</h3>
                         <button onClick={onClose} type="button" className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
@@ -173,9 +173,9 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     <p className="text-[11px] text-zinc-500 mt-1">Sprint 1 — April 1st to April 30th 2026</p>
                 </div>
 
-                {/* Scrollable content — this WILL scroll because parent has fixed height (top-4 bottom-4) */}
-                <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0">
-                    <form onSubmit={handleSubmit} className="p-5 space-y-5">
+                {/* Scrollable body */}
+                <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
+                    <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain p-5 space-y-5">
                         {/* Name & Email */}
                         <div className="grid grid-cols-2 gap-3">
                             <div>
@@ -259,26 +259,26 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                 </div>
                             </>
                         )}
+                    </div>
 
-                        {/* Submit */}
-                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5">
-                            <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors">
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting || !questType}
-                                className="px-5 py-2 rounded-xl text-sm font-bold bg-white text-black hover:bg-zinc-100 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isSubmitting ? (
-                                    <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</>
-                                ) : (
-                                    <><Send className="w-4 h-4" /> Submit Quest</>
-                                )}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    {/* Sticky footer — always visible at bottom */}
+                    <div className="shrink-0 flex items-center justify-end gap-3 px-5 py-4 border-t border-white/5 bg-zinc-900 rounded-b-2xl">
+                        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors">
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting || !questType}
+                            className="px-5 py-2 rounded-xl text-sm font-bold bg-white text-black hover:bg-zinc-100 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isSubmitting ? (
+                                <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</>
+                            ) : (
+                                <><Send className="w-4 h-4" /> Submit Quest</>
+                            )}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );
