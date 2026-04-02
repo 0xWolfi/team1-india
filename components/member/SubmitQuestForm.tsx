@@ -29,13 +29,7 @@ const QUESTS = [
             "Post 3 quality tweets supporting Avalanche — 600-1000+ impressions, 20-30+ likes, 5-7 comments & RT",
         ],
         linkLabels: [
-            "Thread Link (X post)",
-            "Video Link (YouTube/X)",
-            "Tweet 1 Link",
-            "Tweet 2 Link",
-            "Tweet 3 Link",
-            "TG Username",
-            "Event Attended (Name & Date)",
+            "X Post Link",
         ],
     },
     {
@@ -49,11 +43,7 @@ const QUESTS = [
             "Tag @Team1IND and @AvaxTeam1",
         ],
         linkLabels: [
-            "X Profile Link",
-            "Best Post Link 1",
-            "Best Post Link 2",
-            "Best Post Link 3",
-            "Any Additional Link",
+            "X Post Link",
         ],
     },
     {
@@ -68,12 +58,7 @@ const QUESTS = [
             "Tag @Team1IND and @AvaxTeam1 + use #Team1BuildInPublic",
         ],
         linkLabels: [
-            "Project/Repo Link",
-            "Week 1 Thread",
-            "Week 2 Thread",
-            "Week 3 Thread",
-            "Week 4 Thread",
-            "Any Additional Link",
+            "X Post Link",
         ],
     },
 ];
