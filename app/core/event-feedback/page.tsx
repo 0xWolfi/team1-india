@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { Calendar, MapPin, Mail, User, Plus, Link2, Copy, Check, ClipboardList, ExternalLink, Send, X, Loader2 } from "lucide-react";
+import { Calendar, MapPin, Mail, User, Plus, Link2, Copy, Check, ClipboardList, ExternalLink, Send, X, Loader2, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 
@@ -17,6 +17,24 @@ export default function EventFeedbackPage() {
     const [feedbackGuides, setFeedbackGuides] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [copiedId, setCopiedId] = useState<string | null>(null);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    const handleDelete = async (guideId: string) => {
+        if (!confirm('Are you sure you want to delete this feedback form? This cannot be undone.')) return;
+        setDeletingId(guideId);
+        try {
+            const res = await fetch(`/api/guides/${guideId}`, { method: 'DELETE' });
+            if (res.ok) {
+                setFeedbackGuides(prev => prev.filter(g => g.id !== guideId));
+            } else {
+                alert('Failed to delete form');
+            }
+        } catch {
+            alert('Error deleting form');
+        } finally {
+            setDeletingId(null);
+        }
+    };
 
     // Email modal state
     const [showEmailModal, setShowEmailModal] = useState(false);
@@ -260,6 +278,13 @@ Thank you!`
                                         >
                                             <ExternalLink className="w-3.5 h-3.5" /> View
                                         </Link>
+                                        <button
+                                            onClick={() => handleDelete(guide.id)}
+                                            disabled={deletingId === guide.id}
+                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-colors text-red-400 disabled:opacity-50"
+                                        >
+                                            {deletingId === guide.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />} Delete
+                                        </button>
                                     </div>
                                 </div>
                             );

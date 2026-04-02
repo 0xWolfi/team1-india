@@ -297,7 +297,7 @@ model AuditLog {
 
 model Contribution {
   id                       String    @id @default(uuid())
-  type                     String // "event-host", "content", "programs", "internal-works"
+  type                     String // "event-host", "content", "programs", "internal-works", "quest-fullstack", "quest-creator", "quest-builder"
   name                     String
   email                    String
   status                   String    @default("pending") // pending, approved, rejected
@@ -306,6 +306,7 @@ model Contribution {
   contentUrl               String?
   programId                String?
   internalWorksDescription String?
+  links                    Json?     // Array of { label, url } for quest submissions
   submittedAt              DateTime  @default(now())
   deletedAt                DateTime?
 

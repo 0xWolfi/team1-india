@@ -45,15 +45,16 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
   }, [session]);
 
   // Normalize form schema if it comes in legacy object format
-  const normalizedSchema: FormField[] = Array.isArray(formSchema) 
-    ? formSchema 
+  const normalizedSchema: FormField[] = (Array.isArray(formSchema)
+    ? formSchema
     : Object.entries(formSchema || {}).map(([key, label]) => ({
         id: key,
         key,
         label: label as string,
         type: 'text',
         required: true
-      }));
+      }))
+  ).filter(field => !['name', 'email'].includes(field.key));
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

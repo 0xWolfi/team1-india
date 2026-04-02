@@ -7,7 +7,7 @@ import { log } from "@/lib/logger";
 
 // Zod validation schema for contribution submission
 const ContributionSchema = z.object({
-    type: z.enum(["event-host", "content", "programs", "internal-works"]),
+    type: z.enum(["event-host", "content", "programs", "internal-works", "quest-fullstack", "quest-creator", "quest-builder"]),
     name: z.string().min(1).max(200),
     email: z.string().email(),
     eventDate: z.string().optional(),
@@ -15,6 +15,7 @@ const ContributionSchema = z.object({
     contentUrl: z.string().url().optional(),
     programId: z.string().uuid().optional().nullable(),
     internalWorksDescription: z.string().max(5000).optional(),
+    links: z.array(z.object({ label: z.string(), url: z.string().min(1) })).optional(),
 }).refine((data) => {
     if (data.type === "event-host") {
         return data.eventDate && data.eventLocation;
@@ -27,6 +28,9 @@ const ContributionSchema = z.object({
     }
     if (data.type === "internal-works") {
         return data.internalWorksDescription && data.internalWorksDescription.length > 0;
+    }
+    if (data.type.startsWith("quest-")) {
+        return data.links && data.links.length > 0;
     }
     return true;
 }, {
@@ -92,6 +96,8 @@ export async function POST(request: NextRequest) {
             contributionData.programId = data.programId;
         } else if (data.type === "internal-works") {
             contributionData.internalWorksDescription = data.internalWorksDescription;
+        } else if (data.type.startsWith("quest-")) {
+            contributionData.links = data.links || [];
         }
 
         // Create contribution record
@@ -124,8 +130,10 @@ export async function GET(request: NextRequest) {
     // @ts-ignore
     const role = session.user.role;
     
-    // Only CORE users (superadmins) can view all contributions
-    if (role !== 'CORE') {
+    // CORE users (superadmin + admin) can view all contributions
+    const canViewAll = role === 'CORE';
+
+    if (!canViewAll) {
         try {
             // Members can only view their own contributions
             const contributions = await prisma.contribution.findMany({
@@ -137,19 +145,11 @@ export async function GET(request: NextRequest) {
             });
             return NextResponse.json(contributions);
         } catch (error) {
-            log("ERROR", "Failed to fetch member contributions", "CONTRIBUTIONS", { 
-                email: session.user.email 
+            log("ERROR", "Failed to fetch member contributions", "CONTRIBUTIONS", {
+                email: session.user.email
             }, error instanceof Error ? error : new Error(String(error)));
             return NextResponse.json({ error: "Internal Error" }, { status: 500 });
         }
-    }
-
-    // @ts-ignore
-    const userPermissions = session.user.permissions || {};
-    const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
-
-    if (!isSuperAdmin) {
-        return NextResponse.json({ error: "Only Superadmins can view all contributions" }, { status: 403 });
     }
 
     try {
