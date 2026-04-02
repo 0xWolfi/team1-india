@@ -182,7 +182,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                 </div>
 
                 {/* Scrollable Body */}
-                <div className="flex-1 overflow-y-auto overscroll-contain">
+                <div className="overflow-y-scroll overscroll-contain" style={{ maxHeight: 'calc(85vh - 120px)' }}>
                     <form onSubmit={handleSubmit} className="p-5 space-y-5">
                             {/* Name & Email (read-only) */}
                             <div className="grid grid-cols-2 gap-3">
