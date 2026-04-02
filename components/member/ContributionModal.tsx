@@ -161,7 +161,8 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
             onClick={onClose}
         >
             <div
-                className="bg-zinc-900/60 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
+                className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col animate-in zoom-in-95 duration-200"
+                style={{ maxHeight: '90vh' }}
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
@@ -180,7 +181,8 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex-1 min-h-0 space-y-5">
+                <div className="p-6 overflow-y-auto flex-1" style={{ minHeight: 0 }}>
+                <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Name & Email (read-only) */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
@@ -307,7 +309,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                         </button>
                     </div>
                 </form>
-            </div>
+                </div>
         </div>
     );
 };
