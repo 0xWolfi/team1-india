@@ -156,34 +156,34 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={onClose}>
             {/* Backdrop */}
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
 
-            {/* Modal */}
-            <div className="fixed inset-0 z-[101] overflow-y-auto" onClick={onClose}>
-                <div className="py-8 px-4 max-w-2xl mx-auto">
-                    <div
-                        className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        {/* Header */}
-                        <div className="p-6 border-b border-white/5">
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-xl font-bold text-white">Bounty Details</h3>
-                                <button
-                                    onClick={onClose}
-                                    className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
-                            </div>
-                            <p className="text-xs text-red-400 font-semibold">Only for Team1 India Members — Do not Share</p>
-                            <p className="text-[11px] text-zinc-500 mt-1">Sprint 1 — April 1st to April 30th 2026</p>
-                        </div>
+            {/* Modal Card */}
+            <div
+                className="relative bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col"
+                onClick={e => e.stopPropagation()}
+            >
+                {/* Sticky Header */}
+                <div className="p-5 border-b border-white/5 flex-none">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xl font-bold text-white">Bounty Details</h3>
+                        <button
+                            onClick={onClose}
+                            type="button"
+                            className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <p className="text-xs text-red-400 font-semibold">Only for Team1 India Members — Do not Share</p>
+                    <p className="text-[11px] text-zinc-500 mt-1">Sprint 1 — April 1st to April 30th 2026</p>
+                </div>
 
-                        {/* Form */}
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                {/* Scrollable Body */}
+                <div className="flex-1 overflow-y-auto overscroll-contain">
+                    <form onSubmit={handleSubmit} className="p-5 space-y-5">
                             {/* Name & Email (read-only) */}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
@@ -307,10 +307,9 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                     )}
                                 </button>
                             </div>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
