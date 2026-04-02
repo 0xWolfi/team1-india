@@ -161,10 +161,10 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]" onClick={onClose} />
 
             {/* Modal */}
-            <div className="fixed inset-0 z-[101] overflow-y-auto">
-                <div className="flex min-h-full items-center justify-center p-4">
+            <div className="fixed inset-0 z-[101] overflow-y-auto" onClick={onClose}>
+                <div className="py-8 px-4 max-w-2xl mx-auto">
                     <div
-                        className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl"
+                        className="bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl w-full"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Header */}
