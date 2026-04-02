@@ -61,6 +61,23 @@ export async function PATCH(
             return new NextResponse("Contribution not found", { status: 404 });
         }
 
+        // Quest types: reject = delete, approve = just record. No emails/push.
+        const isQuest = contribution.type.startsWith('quest-');
+
+        if (isQuest && status === 'rejected') {
+            // Delete the submission on reject
+            await prisma.contribution.update({
+                where: { id },
+                data: { deletedAt: new Date() },
+            });
+            log("INFO", "Quest submission rejected and deleted", "CONTRIBUTIONS", {
+                contributionId: id,
+                type: contribution.type,
+                deletedBy: session?.user?.email || "unknown"
+            });
+            return NextResponse.json({ success: true, deleted: true });
+        }
+
         const updatedContribution = await prisma.contribution.update({
             where: { id },
             data: { status },
@@ -79,91 +96,85 @@ export async function PATCH(
             }
         });
 
-        // Send email notification
-        try {
-            const contributorName = contribution.name || contribution.email.split('@')[0];
-            let emailHtml = '';
-            let emailSubject = '';
+        // Only send email/push for non-quest contribution types
+        if (!isQuest) {
+            // Send email notification
+            try {
+                const contributorName = contribution.name || contribution.email.split('@')[0];
+                let emailHtml = '';
+                let emailSubject = '';
 
-            if (status === 'approved') {
-                emailHtml = getContributionApprovalEmailTemplate(contributorName, contribution.type);
-                emailSubject = 'Your Contribution Has Been Approved';
-            } else if (status === 'rejected') {
-                emailHtml = getContributionRejectionEmailTemplate(contributorName, contribution.type);
-                emailSubject = 'Update on Your Contribution';
-            }
+                if (status === 'approved') {
+                    emailHtml = getContributionApprovalEmailTemplate(contributorName, contribution.type);
+                    emailSubject = 'Your Contribution Has Been Approved';
+                } else if (status === 'rejected') {
+                    emailHtml = getContributionRejectionEmailTemplate(contributorName, contribution.type);
+                    emailSubject = 'Update on Your Contribution';
+                }
 
-            if (emailHtml && emailSubject) {
-                await sendEmail({
-                    to: contribution.email,
-                    subject: emailSubject,
-                    html: emailHtml
-                });
-                log("INFO", "Contribution status email sent", "CONTRIBUTIONS", { 
+                if (emailHtml && emailSubject) {
+                    await sendEmail({
+                        to: contribution.email,
+                        subject: emailSubject,
+                        html: emailHtml
+                    });
+                    log("INFO", "Contribution status email sent", "CONTRIBUTIONS", {
+                        contributionId: id,
+                        status,
+                        recipientEmail: contribution.email
+                    });
+                }
+            } catch (emailError) {
+                log("ERROR", "Failed to send contribution status email", "CONTRIBUTIONS", {
                     contributionId: id,
-                    status,
                     recipientEmail: contribution.email
-                });
+                }, emailError instanceof Error ? emailError : new Error(String(emailError)));
             }
-        } catch (emailError) {
-            log("ERROR", "Failed to send contribution status email", "CONTRIBUTIONS", { 
-                contributionId: id,
-                recipientEmail: contribution.email
-            }, emailError instanceof Error ? emailError : new Error(String(emailError)));
-            // Don't fail the request if email fails
-        }
 
-        // Send Push Notification
-        try {
-             // Find member by email to get ID
-             const member = await prisma.member.findUnique({
-                where: { email: contribution.email },
-                select: { id: true }
-             });
-             
-             // If not in Member, check CommunityMember
-             let userId = member?.id;
-             if (!userId) {
-                 // @ts-ignore
-                 const communityMember = await prisma.communityMember.findUnique({
-                     where: { email: contribution.email },
-                     select: { id: true }
+            // Send Push Notification
+            try {
+                 const member = await prisma.member.findUnique({
+                    where: { email: contribution.email },
+                    select: { id: true }
                  });
-                 userId = communityMember?.id;
-             }
 
-             if (userId) {
-                 const event = 'contribution_milestone';
-                 let title = '';
-                 let body = '';
-
-                 if (status === 'approved') {
-                     title = 'Contribution Approved! 🎉';
-                     body = `Your ${contribution.type} contribution has been approved.`;
-                 } else if (status === 'rejected') {
-                     title = 'Contribution Update';
-                     body = `There is an update on your ${contribution.type} contribution.`;
-                 }
-
-                 if (title) {
-                     // Lazy load notificationManager to avoid circular deps if any
-                     const { notificationManager } = await import("@/lib/notificationManager");
-                     
-                     await notificationManager.send({
-                         userId,
-                         event,
-                         title,
-                         body,
-                         data: {
-                             id: contribution.id,
-                             url: '/member/profile?tab=contributions'
-                         }
+                 let userId = member?.id;
+                 if (!userId) {
+                     // @ts-ignore
+                     const communityMember = await prisma.communityMember.findUnique({
+                         where: { email: contribution.email },
+                         select: { id: true }
                      });
-                     log("INFO", "Push notification sent for contribution", "CONTRIBUTIONS", { userId, status });
+                     userId = communityMember?.id;
                  }
-             }
-        } catch (pushError) {
-             console.error("Failed to send push notification:", pushError);
+
+                 if (userId) {
+                     const event = 'contribution_milestone';
+                     let title = '';
+                     let body = '';
+
+                     if (status === 'approved') {
+                         title = 'Contribution Approved!';
+                         body = `Your ${contribution.type} contribution has been approved.`;
+                     } else if (status === 'rejected') {
+                         title = 'Contribution Update';
+                         body = `There is an update on your ${contribution.type} contribution.`;
+                     }
+
+                     if (title) {
+                         const { notificationManager } = await import("@/lib/notificationManager");
+                         await notificationManager.send({
+                             userId,
+                             event,
+                             title,
+                             body,
+                             data: { id: contribution.id, url: '/member/profile?tab=contributions' }
+                         });
+                     }
+                 }
+            } catch (pushError) {
+                 console.error("Failed to send push notification:", pushError);
+            }
         }
 
         log("INFO", "Contribution status updated", "CONTRIBUTIONS", { 
@@ -179,6 +190,30 @@ export async function PATCH(
             contributionId,
             email: session?.user?.email || "unknown"
         }, error instanceof Error ? error : new Error(String(error)));
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}
+
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const session = await getServerSession(authOptions);
+    const access = checkCoreAccess(session);
+    if (!access.authorized) return access.response!;
+
+    try {
+        const { id } = await params;
+        await prisma.contribution.update({
+            where: { id },
+            data: { deletedAt: new Date() },
+        });
+        log("INFO", "Contribution deleted", "CONTRIBUTIONS", {
+            contributionId: id,
+            deletedBy: session?.user?.email || "unknown"
+        });
+        return NextResponse.json({ success: true });
+    } catch (error) {
         return new NextResponse("Internal Error", { status: 500 });
     }
 }

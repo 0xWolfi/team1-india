@@ -165,7 +165,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="p-6 border-b border-white/5">
+                <div className="p-6 border-b border-white/5 shrink-0">
                     <div className="flex items-center justify-between mb-2">
                         <h3 className="text-xl font-bold text-white">Bounty Details</h3>
                         <button
@@ -260,14 +260,14 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                                 <div className="relative flex-1">
                                                     <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600" />
                                                     <input
-                                                        type="url"
+                                                        type="text"
                                                         value={link.url}
                                                         onChange={e => {
                                                             const updated = [...links];
                                                             updated[i].url = e.target.value;
                                                             setLinks(updated);
                                                         }}
-                                                        placeholder="https://..."
+                                                        placeholder={link.label.includes("Link") ? "https://..." : "Enter details..."}
                                                         className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/20"
                                                     />
                                                 </div>

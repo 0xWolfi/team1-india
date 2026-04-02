@@ -15,7 +15,7 @@ const ContributionSchema = z.object({
     contentUrl: z.string().url().optional(),
     programId: z.string().uuid().optional().nullable(),
     internalWorksDescription: z.string().max(5000).optional(),
-    links: z.array(z.object({ label: z.string(), url: z.string().url() })).optional(),
+    links: z.array(z.object({ label: z.string(), url: z.string().min(1) })).optional(),
 }).refine((data) => {
     if (data.type === "event-host") {
         return data.eventDate && data.eventLocation;
