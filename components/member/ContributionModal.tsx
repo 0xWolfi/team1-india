@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link2, Loader2, Send, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -90,21 +91,17 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
     const [email, setEmail] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [links, setLinks] = useState<{ label: string; url: string }[]>([]);
-    const scrollRef = useRef<HTMLDivElement>(null);
+    const [mounted, setMounted] = useState(false);
 
     const selectedQuest = QUESTS.find(q => q.value === questType);
+
+    useEffect(() => { setMounted(true); }, []);
 
     useEffect(() => {
         if (isOpen && session) {
             setName(user?.name || session.user?.name || "");
             setEmail(user?.email || session.user?.email || "");
         }
-        if (isOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-        return () => { document.body.style.overflow = ""; };
     }, [isOpen, session, user]);
 
     useEffect(() => {
@@ -114,15 +111,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
             setLinks([]);
         }
     }, [questType, selectedQuest]);
-
-    // Scroll to links when quest is selected
-    useEffect(() => {
-        if (selectedQuest && scrollRef.current) {
-            setTimeout(() => {
-                scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-            }, 100);
-        }
-    }, [selectedQuest]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -152,23 +140,75 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
-        <div className="fixed inset-0 z-[100]" style={{ overflow: 'hidden' }}>
-            {/* Backdrop */}
-            <div className="fixed inset-0 bg-black/70" onClick={onClose} />
+    const modalContent = (
+        <>
+            {/*
+                Inline style tag to force-show scrollbar and lock body scroll.
+                This is the most reliable cross-browser approach.
+            */}
+            <style>{`
+                body { overflow: hidden !important; }
+                .bounty-modal-scroll::-webkit-scrollbar { width: 6px; }
+                .bounty-modal-scroll::-webkit-scrollbar-track { background: transparent; }
+                .bounty-modal-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+                .bounty-modal-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+            `}</style>
 
-            {/* Scroll wrapper — the ENTIRE page scrolls this, mouse wheel works naturally */}
-            <div className="fixed inset-0 overflow-y-auto" onClick={onClose}>
-                <div className="min-h-full flex items-center justify-center p-4">
-                    {/* Modal */}
+            {/* Full-screen overlay */}
+            <div
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 9999,
+                    overflowY: "scroll",
+                    WebkitOverflowScrolling: "touch",
+                }}
+                className="bounty-modal-scroll"
+            >
+                {/* Dark backdrop */}
+                <div
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: "rgba(0,0,0,0.75)",
+                    }}
+                    onClick={onClose}
+                />
+
+                {/* Centering container — this is what actually scrolls */}
+                <div
+                    style={{
+                        position: "relative",
+                        minHeight: "100%",
+                        display: "flex",
+                        alignItems: "flex-start",
+                        justifyContent: "center",
+                        padding: "40px 16px",
+                    }}
+                >
+                    {/* The modal card */}
                     <div
-                        className="relative w-full max-w-2xl bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl my-4"
+                        style={{
+                            position: "relative",
+                            width: "100%",
+                            maxWidth: "640px",
+                            backgroundColor: "#18181b",
+                            borderRadius: "16px",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
+                        }}
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="sticky top-0 z-10 p-5 border-b border-white/5 bg-zinc-900 rounded-t-2xl">
+                        <div className="p-5 border-b border-white/5">
                             <div className="flex items-center justify-between mb-2">
                                 <h3 className="text-xl font-bold text-white">Bounty Details</h3>
                                 <button onClick={onClose} type="button" className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
@@ -179,11 +219,11 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                             <p className="text-[11px] text-zinc-500 mt-1">Sprint 1 — April 1st to April 30th 2026</p>
                         </div>
 
-                        {/* Body */}
+                        {/* Form body — NO internal scroll, the outer overlay scrolls */}
                         <form onSubmit={handleSubmit}>
-                            <div ref={scrollRef} className="p-5 space-y-5">
+                            <div className="p-5 space-y-5">
                                 {/* Name & Email */}
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
                                         <label className="block text-xs font-semibold text-zinc-500 uppercase mb-1.5">Name</label>
                                         <input type="text" value={name} readOnly disabled className="w-full bg-zinc-800 border border-white/5 rounded-lg px-3 py-2 text-sm text-zinc-400 cursor-not-allowed" />
@@ -222,7 +262,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Quest Details */}
+                                {/* Quest Details — tasks + link fields */}
                                 {selectedQuest && (
                                     <>
                                         <div className="p-4 rounded-xl bg-zinc-800/30 border border-white/5">
@@ -238,7 +278,6 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                             <p className="text-[10px] text-zinc-600 mt-3">Requirement: tag @Team1IND and @AvaxTeam1</p>
                                         </div>
 
-                                        {/* Link Fields */}
                                         <div>
                                             <label className="block text-xs font-bold text-zinc-500 uppercase mb-3">Submit Your Links</label>
                                             <div className="space-y-3">
@@ -268,7 +307,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                             </div>
 
                             {/* Footer */}
-                            <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 px-5 py-4 border-t border-white/5 bg-zinc-900 rounded-b-2xl">
+                            <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-white/5">
                                 <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors">
                                     Cancel
                                 </button>
@@ -288,6 +327,8 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
+
+    return createPortal(modalContent, document.body);
 };
