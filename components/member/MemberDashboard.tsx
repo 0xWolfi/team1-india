@@ -134,7 +134,7 @@ export function MemberDashboard({
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all shadow-lg shadow-white/5 flex-shrink-0"
                 >
                     <Plus className="w-4 h-4"/>
-                    Submit Contribution
+                    Submit Quest
                 </button>
             </div>
 

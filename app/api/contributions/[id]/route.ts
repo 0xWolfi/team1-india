@@ -20,13 +20,7 @@ export async function PATCH(
     const access = checkCoreAccess(session);
     if (!access.authorized) return access.response!;
 
-    // @ts-ignore
-    const userPermissions = session.user.permissions || {};
-    const isSuperAdmin = userPermissions['*'] === 'FULL_ACCESS';
-
-    if (!isSuperAdmin) {
-        return new NextResponse("Only Superadmins can approve/reject contributions", { status: 403 });
-    }
+    // All CORE users (superadmin + admin) can approve/reject
 
     try {
         const { id } = await params;

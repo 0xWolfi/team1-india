@@ -186,6 +186,17 @@ export default function CorePage() {
             items: []
         },
 
+        // Quest Submissions
+        {
+            title: "Quest Submissions",
+            key: "bounty",
+            link: "/core/quest-submissions",
+            iconName: "Trophy",
+            description: "Review bounty quest submissions from members.",
+            image: "/images/dashboard/data.png",
+            items: []
+        },
+
         // Row 3: Projects & System
         {
             title: "Projects",
