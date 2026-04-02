@@ -310,6 +310,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                     </div>
                 </form>
                 </div>
+            </div>
         </div>
     );
 };
