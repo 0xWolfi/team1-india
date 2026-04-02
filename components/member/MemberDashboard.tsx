@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { ContributionModal } from "./ContributionModal";
 import Link from "next/link";
 import { ArrowRight, BookOpen, Calendar, MapPin, Plus, Search, User, Users, Vote } from "lucide-react";
 import { DynamicIcon } from "@/components/ui/DynamicIcon";
@@ -63,7 +62,7 @@ export function MemberDashboard({
     lumaEvents = [],
 }: MemberDashboardProps) {
     const [playbookSearch, setPlaybookSearch] = useState("");
-    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
+
 
     // Categorize Luma events into Live, Upcoming, Past
     const categorizedEvents = useMemo(() => {
@@ -128,21 +127,15 @@ export function MemberDashboard({
                     </h1>
                     <p className="text-sm text-zinc-500 mt-1">Here&apos;s what&apos;s happening in your community</p>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => setIsContributionModalOpen(true)}
+                <Link
+                    href="/member/submit-quest"
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all shadow-lg shadow-white/5 flex-shrink-0"
                 >
                     <Plus className="w-4 h-4"/>
                     Submit Quest
-                </button>
+                </Link>
             </div>
 
-            <ContributionModal
-                isOpen={isContributionModalOpen}
-                onClose={() => setIsContributionModalOpen(false)}
-                user={user}
-            />
 
             {/* ── Profile Incomplete Notification ── */}
             {!isProfileComplete && (
