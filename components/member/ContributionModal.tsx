@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Link2, Loader2, Send, X } from "lucide-react";
+import { Link2, Loader2, Plus, Send, Trash2, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 
@@ -31,13 +31,11 @@ const QUESTS = [
             "Post 3 quality tweets supporting Avalanche — 600-1000+ impressions, 20-30+ likes, 5-7 comments & RT",
         ],
         linkLabels: [
-            "Thread Link (X post)",
-            "Video Link (YouTube/X)",
-            "Tweet 1 Link",
-            "Tweet 2 Link",
-            "Tweet 3 Link",
-            "TG Username",
-            "Event Attended (Name & Date)",
+            "X Post Link — Thread",
+            "X Post Link — Video",
+            "X Post Link — Tweet 1",
+            "X Post Link — Tweet 2",
+            "X Post Link — Tweet 3",
         ],
     },
     {
@@ -51,11 +49,10 @@ const QUESTS = [
             "Tag @Team1IND and @AvaxTeam1",
         ],
         linkLabels: [
-            "X Profile Link",
-            "Best Post Link 1",
-            "Best Post Link 2",
-            "Best Post Link 3",
-            "Any Additional Link",
+            "X Post Link — Profile",
+            "X Post Link — Best Post 1",
+            "X Post Link — Best Post 2",
+            "X Post Link — Best Post 3",
         ],
     },
     {
@@ -70,12 +67,10 @@ const QUESTS = [
             "Tag @Team1IND and @AvaxTeam1 + use #Team1BuildInPublic",
         ],
         linkLabels: [
-            "Project/Repo Link",
-            "Week 1 Thread",
-            "Week 2 Thread",
-            "Week 3 Thread",
-            "Week 4 Thread",
-            "Any Additional Link",
+            "X Post Link — Week 1 Thread",
+            "X Post Link — Week 2 Thread",
+            "X Post Link — Week 3 Thread",
+            "X Post Link — Week 4 Thread",
         ],
     },
 ];
@@ -91,6 +86,7 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
     const [email, setEmail] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [links, setLinks] = useState<{ label: string; url: string }[]>([]);
+    const [extraLinks, setExtraLinks] = useState<string[]>([]);
     const [mounted, setMounted] = useState(false);
 
     const selectedQuest = QUESTS.find(q => q.value === questType);
@@ -110,24 +106,38 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
         } else {
             setLinks([]);
         }
+        setExtraLinks([]);
     }, [questType, selectedQuest]);
+
+    const isXPostLink = (label: string) => label.startsWith("X Post Link");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!questType) { alert("Please select a quest"); return; }
         const filledLinks = links.filter(l => l.url.trim() !== "");
-        if (filledLinks.length === 0) { alert("Please add at least one link"); return; }
+        if (filledLinks.length === 0) { alert("Please add at least one X post link"); return; }
+        // Validate X post links
+        for (const link of filledLinks) {
+            if (isXPostLink(link.label) && !link.url.match(/^https?:\/\/(www\.)?(x\.com|twitter\.com)\//)) {
+                alert(`"${link.label}" must be an x.com URL (e.g. https://x.com/...)`);
+                return;
+            }
+        }
+        // Merge extra links
+        const filledExtra = extraLinks.filter(u => u.trim() !== "").map((u, i) => ({ label: `Additional Link ${i + 1}`, url: u }));
+        const allLinks = [...filledLinks, ...filledExtra];
         setIsSubmitting(true);
         try {
             const res = await fetch("/api/contributions", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ type: questType, name, email, links: filledLinks }),
+                body: JSON.stringify({ type: questType, name, email, links: allLinks }),
             });
             if (res.ok) {
                 alert("Quest submission sent successfully!");
                 setQuestType("");
                 setLinks([]);
+                setExtraLinks([]);
                 onClose();
             } else {
                 const error = await res.text();
@@ -278,8 +288,10 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                             <p className="text-[10px] text-zinc-600 mt-3">Requirement: tag @Team1IND and @AvaxTeam1</p>
                                         </div>
 
+                                        {/* X Post Links */}
                                         <div>
-                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-3">Submit Your Links</label>
+                                            <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Submit Your X Post Links</label>
+                                            <p className="text-[10px] text-zinc-600 mb-3">Only x.com URLs accepted (e.g. https://x.com/user/status/...)</p>
                                             <div className="space-y-3">
                                                 {links.map((link, i) => (
                                                     <div key={i}>
@@ -294,10 +306,54 @@ export const ContributionModal: React.FC<ContributionModalProps> = ({
                                                                     updated[i].url = e.target.value;
                                                                     setLinks(updated);
                                                                 }}
-                                                                placeholder={link.label.includes("Link") ? "https://..." : "Enter details..."}
+                                                                placeholder="https://x.com/..."
                                                                 className="w-full bg-zinc-800 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/20"
                                                             />
                                                         </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Additional Links (unrestricted) */}
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="block text-xs font-bold text-zinc-500 uppercase">Additional Links</label>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setExtraLinks(prev => [...prev, ""])}
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+                                                >
+                                                    <Plus className="w-3 h-3" /> Add Link
+                                                </button>
+                                            </div>
+                                            {extraLinks.length === 0 && (
+                                                <p className="text-[10px] text-zinc-600">Click + to add any additional links (YouTube, GitHub, etc.)</p>
+                                            )}
+                                            <div className="space-y-3">
+                                                {extraLinks.map((url, i) => (
+                                                    <div key={i} className="flex items-center gap-2">
+                                                        <div className="relative flex-1">
+                                                            <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600" />
+                                                            <input
+                                                                type="text"
+                                                                value={url}
+                                                                onChange={e => {
+                                                                    const updated = [...extraLinks];
+                                                                    updated[i] = e.target.value;
+                                                                    setExtraLinks(updated);
+                                                                }}
+                                                                placeholder="https://..."
+                                                                className="w-full bg-zinc-800 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/20"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setExtraLinks(prev => prev.filter((_, j) => j !== i))}
+                                                            className="p-2 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
                                                     </div>
                                                 ))}
                                             </div>

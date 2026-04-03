@@ -189,7 +189,7 @@ export default function CorePage() {
         // Quest Submissions
         {
             title: "Quest Submissions",
-            key: "bounty",
+            key: "events",
             link: "/core/quest-submissions",
             iconName: "Trophy",
             description: "Review bounty quest submissions from members.",
