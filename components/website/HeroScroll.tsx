@@ -1,10 +1,26 @@
 "use client";
-import React, { useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useMotionValueEvent, useSpring } from "framer-motion";
+
+function AnimatedCounter({ target, suffix = "", scrollYProg }: { target: number; suffix?: string; scrollYProg: any }) {
+  const roundedValue = useTransform(scrollYProg, [0.76, 0.84], [0, target]);
+  const displayMotionValue = useTransform(roundedValue, (latest) => {
+    return Math.round(latest) + suffix;
+  });
+  return <motion.span className="tabular-nums">{displayMotionValue}</motion.span>;
+}
+
 import Link from "next/link";
 import Image from "next/image";
-import { Send, ArrowRight } from "lucide-react";
+import { Send, ArrowRight, Calendar, School, Trophy, Rocket } from "lucide-react";
 import { TabletMockup } from "@/components/ui/TabletMockup";
+
+const impactStats = [
+  { value: 113, label: "Events", suffix: "+", icon: <Calendar className="w-6 h-6" /> },
+  { value: 15, label: "Campuses", suffix: "+", icon: <School className="w-6 h-6" /> },
+  { value: 7, label: "Hackathons", suffix: "", icon: <Trophy className="w-6 h-6" /> },
+  { value: 31, label: "Projects Building", suffix: "+", icon: <Rocket className="w-6 h-6" /> },
+];
 
 /* ── Animated background with red/black gradient orbs ── */
 function HeroBackground() {
@@ -162,22 +178,51 @@ export const HeroScroll = () => {
     offset: ["start start", "end end"],
   });
 
-  // Hero Vanish Effect
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.95]);
-  const heroY = useTransform(scrollYProgress, [0, 0.15], [0, -30]);
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 45,
+    damping: 25,
+    restDelta: 0.001
+  });
 
-  // Tablet Slide In Effect
-  const tabletY = useTransform(scrollYProgress, [0.1, 0.3], ["100vh", "0vh"]);
-  const tabletScale = useTransform(scrollYProgress, [0.1, 0.3], [0.8, 1]);
-  const tabletRotateX = useTransform(scrollYProgress, [0.1, 0.3], [20, 0]);
-  const tabletOpacity = useTransform(scrollYProgress, [0.1, 0.25], [0, 1]);
+  const [interactive, setInteractive] = useState(false);
+
+  useMotionValueEvent(smoothProgress, "change", (latest) => {
+    if (latest > 0.985) setInteractive(true);
+    else setInteractive(false);
+  });
+
+  // Hero Vanish Effect
+  const heroOpacity = useTransform(smoothProgress, [0, 0.15], [1, 0]);
+  const heroScale = useTransform(smoothProgress, [0, 0.15], [1, 0.95]);
+  const heroY = useTransform(smoothProgress, [0, 0.15], [0, -30]);
+
+  // Tablet Slide In & Out Effect
+  const tabletY = useTransform(smoothProgress, [0.1, 0.25, 0.6, 0.75], ["100vh", "0vh", "0vh", "-100vh"]);
+  const tabletScale = useTransform(smoothProgress, [0.1, 0.25, 0.6, 0.75], [0.8, 1, 1, 0.85]);
+  const tabletRotateX = useTransform(smoothProgress, [0.1, 0.25], [20, 0]);
+  const tabletOpacity = useTransform(smoothProgress, [0.1, 0.2, 0.65, 0.75], [0, 1, 1, 0]);
+
+  // Heading Slide In Effect
+  const headingOpacity = useTransform(smoothProgress, [0.68, 0.76], [0, 1]);
+  const headingScale = useTransform(smoothProgress, [0.68, 0.76], [0.85, 1]);
+
+  // Stats Slide In Effect
+  const statsOpacity = useTransform(smoothProgress, [0.76, 0.84], [0, 1]);
+  const statsScale = useTransform(smoothProgress, [0.76, 0.84], [0.85, 1]);
+
+  // Sequential Glare MotionValues
+  const card0Glow = useTransform(smoothProgress, [0.85, 0.87, 0.89], [0, 1, 0]);
+  const card1Glow = useTransform(smoothProgress, [0.88, 0.90, 0.92], [0, 1, 0]);
+  const card2Glow = useTransform(smoothProgress, [0.91, 0.93, 0.95], [0, 1, 0]);
+  const card3Glow = useTransform(smoothProgress, [0.94, 0.96, 0.98], [0, 1, 0]);
+
+  const cardGlows = [card0Glow, card1Glow, card2Glow, card3Glow];
 
   return (
     <header
       id="hero"
       ref={containerRef}
-      className="relative h-[300vh]"
+      className="relative h-[700vh]"
       role="banner"
     >
       {/* Sticky container to pin the view while scrolling */}
@@ -247,7 +292,7 @@ export const HeroScroll = () => {
           transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center gap-2 md:gap-3 mb-6"
         >
-          <div className="relative h-10 w-[16rem] sm:h-16 sm:w-[28rem] md:h-20 md:w-[36rem] lg:h-24 lg:w-[44rem]">
+          <div className="relative h-5 w-[10rem] sm:h-8 sm:w-[16rem] md:h-10 md:w-[24rem] lg:h-14 lg:w-[28rem]">
             <Image
               src="/team1-horizontal.svg"
               alt="Team1 India"
@@ -279,7 +324,7 @@ export const HeroScroll = () => {
         >
           <Link
             href="/public"
-            className="group flex items-center gap-2 px-7 py-3 rounded-xl bg-white text-black font-semibold text-sm transition-all duration-300 hover:bg-zinc-100 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:scale-[1.02]"
+            className="group flex items-center gap-2 px-7 py-3 rounded-xl bg-white text-black font-semibold text-sm transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02]"
           >
             Explore
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -288,9 +333,9 @@ export const HeroScroll = () => {
             href="https://t.me/avalanche_hi"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-7 py-3 rounded-xl bg-white/8 border border-white/12 text-white font-semibold text-sm transition-all duration-300 hover:bg-white/14 hover:border-white/20 hover:scale-[1.02]"
+            className="px-7 py-3 rounded-xl bg-white/8 border border-white/12 text-white font-semibold text-sm transition-all duration-300 hover:bg-red-500 hover:border-red-500 hover:scale-[1.02]"
           >
-            Join
+            Join Us
           </a>
         </motion.div>
 
@@ -325,11 +370,84 @@ export const HeroScroll = () => {
         {/* Tablet Mockup (Slides in on scroll) */}
         <motion.div 
           style={{ y: tabletY, scale: tabletScale, rotateX: tabletRotateX, opacity: tabletOpacity }}
-          className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none origin-bottom px-4 md:px-8"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none origin-bottom px-4 md:px-8 pt-16 pb-16 md:pt-20 md:pb-24"
         >
-           <div className="w-full max-w-[1600px] pointer-events-auto -mt-8 md:-mt-16 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
-             <TabletMockup videoSrc="/hero-video.mp4" />
+           <div className="w-full h-full max-h-[90vh] max-w-[1800px] flex justify-center pointer-events-auto shadow-[0_0_100px_rgba(0,0,0,0.8)] rounded-[1rem] md:rounded-[2rem]">
+             <TabletMockup videoSrc="/hero-video.mp4" className="w-auto h-full max-w-full aspect-[21/9]" />
            </div>
+        </motion.div>
+
+        {/* Impact Stats Phase (What We Have Done) */}
+        <motion.div
+           style={{ opacity: statsOpacity, scale: statsScale }}
+           // Pointer events restricted until the scroll sequence officially concludes
+           className={`absolute inset-0 z-20 flex flex-col items-center justify-center px-6 bg-black ${interactive ? "pointer-events-auto" : "pointer-events-none"}`}
+        >
+          <div className="w-full max-w-5xl mx-auto">
+            <motion.div 
+               style={{ opacity: headingOpacity, scale: headingScale }}
+               className="mb-16 text-center"
+            >
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-white tracking-tight">What We Have Done</h2>
+            </motion.div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+              {impactStats.map((stat, i) => {
+                const glow = cardGlows[i];
+                
+                // Drive visual colors by interpolating the glow MotionValue
+                const bgColor = useTransform(glow, [0, 1], ["rgba(24, 24, 27, 0.4)", "rgba(69, 10, 10, 0.8)"]);
+                const borderColor = useTransform(glow, [0, 1], ["rgba(255, 255, 255, 0.05)", "rgba(239, 68, 68, 0.3)"]);
+                const shadow = useTransform(glow, [0, 1], ["0 0 0px rgba(0,0,0,0)", "0 0 40px rgba(255, 57, 74, 0.15)"]);
+                const iconColor = useTransform(glow, [0, 1], ["rgba(113, 113, 122, 1)", "rgba(252, 165, 165, 1)"]);
+                const numColor = useTransform(glow, [0, 1], ["rgba(255, 255, 255, 1)", "rgba(248, 113, 113, 1)"]);
+                const textColor = useTransform(glow, [0, 1], ["rgba(161, 161, 170, 1)", "rgba(254, 202, 202, 0.9)"]);
+                const gridOpacity = useTransform(glow, [0, 1], [0.1, 0.4]);
+                const accentGlow = useTransform(glow, [0, 1], ["rgba(239, 68, 68, 0)", "rgba(239, 68, 68, 0.2)"]);
+
+                return (
+                  <motion.div 
+                    key={stat.label}
+                    style={{ backgroundColor: bgColor, borderColor: borderColor, boxShadow: shadow }}
+                    className="group relative flex flex-col justify-between p-6 md:p-8 min-h-[280px] lg:min-h-[320px] rounded-3xl overflow-hidden border transition-shadow duration-300 hover:!bg-red-950/80 hover:!border-red-500/30 hover:!shadow-[0_0_40px_rgba(255,57,74,0.15)]"
+                  >
+                    {/* Subtle Grid Pattern Overlay Faded from Left */}
+                    <motion.div 
+                      style={{ opacity: gridOpacity }}
+                      className="absolute inset-y-0 right-0 left-1/4 group-hover:!opacity-40 transition-opacity duration-300 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:16px_24px] [mask-image:linear-gradient(to_right,transparent_0%,black_100%)]" 
+                    />
+                    
+                    {/* Glowing accent - Now linked to scroll pulse too */}
+                    <motion.div 
+                      style={{ backgroundColor: accentGlow }}
+                      className="absolute top-0 right-0 w-32 h-32 group-hover:!bg-red-500/20 blur-3xl rounded-full transition-colors duration-500" 
+                    />
+
+                    <div className="relative z-10 flex items-start justify-between">
+                      <motion.div style={{ color: iconColor }} className="group-hover:!text-red-300 transition-colors duration-300">
+                        {stat.icon}
+                      </motion.div>
+                    </div>
+
+                    <div className="relative z-10 bottom-0 flex flex-col mt-auto text-left gap-1">
+                      {/* Size adjusted for 3-digit safety across viewports */}
+                      <motion.div 
+                        style={{ color: numColor }}
+                        className="text-6xl sm:text-7xl lg:text-[5.5rem] font-bold tracking-tighter group-hover:!text-red-400 transition-colors duration-300 leading-none mb-2"
+                      >
+                        <AnimatedCounter target={stat.value} suffix={stat.suffix} scrollYProg={smoothProgress} />
+                      </motion.div>
+                      <motion.p 
+                        style={{ color: textColor }}
+                        className="text-sm font-medium leading-snug max-w-[140px] group-hover:!text-red-200/90 transition-colors duration-300 sm:self-auto self-end text-right sm:text-left"
+                      >
+                        {stat.label}
+                      </motion.p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
         </motion.div>
 
         {/* Bottom scroll fade (Always visible over pinned content) */}

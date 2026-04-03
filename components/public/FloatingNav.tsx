@@ -108,7 +108,7 @@ export function FloatingNav() {
                         href="/"
                         className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"
                     >
-                        <Team1Logo className="h-5 w-auto relative z-10" />
+                        <Team1Logo className="h-3.5 w-auto relative z-10" />
                     </Link>
 
                     {/* Divider */}

@@ -169,7 +169,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
         <>
             {/* Logo */}
             <div className="h-16 flex items-center gap-3 px-5 border-b border-white/[0.06] flex-shrink-0">
-                <Team1Logo className="h-6 w-auto" />
+                <Team1Logo className="h-3.5 w-auto" />
                 <span className="ml-auto text-[10px] font-mono text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                     member
                 </span>
@@ -268,7 +268,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                     >
                         <Menu className="w-5 h-5"/>
                     </button>
-                    <Team1Logo className="h-5 w-auto" />
+                    <Team1Logo className="h-3.5 w-auto" />
                 </div>
                 <Link
                     href="/member/profile"

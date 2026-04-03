@@ -84,7 +84,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            <div className="relative text-white min-h-[100svh] bg-black">
+            <div className="relative text-white min-h-[100svh] bg-black overflow-x-hidden">
                 {/* JSON-LD Structured Data */}
                 {/* JSON-LD Structured Data for Knowledge Graph & AI Agents */}
                 <script

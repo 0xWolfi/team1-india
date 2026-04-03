@@ -7,7 +7,6 @@ import { Preloader } from "@/components/ui/Preloader";
 import dynamic from "next/dynamic";
 
 // Lazy load heavy interactive components below the fold
-const Impact = dynamic(() => import("@/components/website/Impact").then(mod => mod.Impact));
 const Events = dynamic(() => import("@/components/website/Events").then(mod => mod.Events));
 const Programs = dynamic(() => import("@/components/website/Programs").then(mod => mod.Programs));
 const GetInvolved = dynamic(() => import("@/components/website/GetInvolved").then(mod => mod.GetInvolved));
@@ -27,12 +26,6 @@ export default function Home() {
       <HomeNavbar />
       <div className="flex flex-col">
         <HeroScroll />
-
-        <section id="impact" aria-label="Our Impact">
-          <Impact />
-        </section>
-
-        <SectionDivider />
 
         <section id="announcements" aria-label="Latest Updates">
           <Announcements />

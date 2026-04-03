@@ -34,7 +34,7 @@ function CampaignContent({ campaign }: { campaign: CampaignData }) {
             <div className="border-b border-white/5 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
                 <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
                     <Link href="/">
-                        <Team1Logo className="h-5 w-auto" />
+                        <Team1Logo className="h-3.5 w-auto" />
                     </Link>
                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${badge.cls}`}>
                         {badge.label}

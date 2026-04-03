@@ -6,9 +6,10 @@ import { motion, useInView } from "framer-motion";
 interface TabletMockupProps {
   videoSrc: string;
   style?: React.CSSProperties;
+  className?: string;
 }
 
-export function TabletMockup({ videoSrc, style }: TabletMockupProps) {
+export function TabletMockup({ videoSrc, style, className }: TabletMockupProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { amount: 0.5 }); // Play when 50% in view
@@ -27,7 +28,7 @@ export function TabletMockup({ videoSrc, style }: TabletMockupProps) {
     <motion.div
       ref={containerRef}
       style={style}
-      className="relative w-full aspect-[21/9] mx-auto rounded-[1rem] md:rounded-[2rem] border border-white/10 bg-gradient-to-b from-zinc-700 via-black to-zinc-900 shadow-[0_0_100px_rgba(255,57,74,0.1)] overflow-hidden p-[2px] md:p-[4px]"
+      className={`relative mx-auto rounded-[1rem] md:rounded-[2rem] border border-white/10 bg-gradient-to-b from-zinc-700 via-black to-zinc-900 shadow-[0_0_100px_rgba(255,57,74,0.1)] overflow-hidden p-[2px] md:p-[4px] ${className || 'w-full aspect-[21/9]'}`}
     >
       {/* Glossy Bezel Highlights */}
       <div className="absolute inset-0 rounded-[1rem] md:rounded-[2rem] border-t border-white/20 pointer-events-none" />

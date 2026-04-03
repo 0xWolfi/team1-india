@@ -55,7 +55,7 @@ export function HomeNavbar() {
         <div className="flex items-center justify-between md:justify-start w-full gap-1 px-6 py-3 md:p-1.5 md:rounded-2xl md:bg-black/40 md:backdrop-blur-md md:border md:border-white/10 md:shadow-[0_8px_32px_rgba(0,0,0,0.5)] md:supports-[backdrop-filter]:bg-black/20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group">
-            <Team1Logo className="h-5 w-auto relative z-10" />
+            <Team1Logo className="h-3.5 w-auto relative z-10" />
           </Link>
 
           {/* Divider */}
@@ -89,9 +89,9 @@ export function HomeNavbar() {
               href="https://t.me/avalanche_hi"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black text-xs font-bold hover:bg-zinc-100 transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white text-black text-xs font-bold hover:bg-red-500 hover:text-white transition-all whitespace-nowrap"
             >
-              Join
+              Join Us
             </a>
 
             {/* Mobile hamburger */}

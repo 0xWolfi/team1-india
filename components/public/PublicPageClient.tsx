@@ -23,7 +23,7 @@ const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
 
 const statusConfig = {
     LIVE: { label: "Live", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20" },
-    UPCOMING: { label: "Upcoming", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20" },
+    UPCOMING: { label: "Upcoming", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
     PAST: { label: "Past", color: "text-zinc-500", bg: "bg-zinc-500/10", border: "border-zinc-500/20" },
 };
 
@@ -207,8 +207,8 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                             {categorizedEvents.upcoming.length > 0 && (
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-2 h-2 rounded-full bg-sky-400" />
-                                        <span className="text-xs font-semibold text-sky-400 uppercase tracking-wider">Upcoming</span>
+                                        <div className="w-2 h-2 rounded-full bg-red-500" />
+                                        <span className="text-xs font-semibold text-red-500 uppercase tracking-wider">Upcoming</span>
                                     </div>
                                     <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
                                         {categorizedEvents.upcoming.map((entry) => <PublicLumaEventCard key={entry.api_id} entry={entry} status="UPCOMING" />)}
