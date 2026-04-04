@@ -18,7 +18,7 @@ import { TabletMockup } from "@/components/ui/TabletMockup";
    ═══════════════════════════════════════════ */
 
 const impactStats = [
-  { value: 113, label: "Events", suffix: "+", icon: <Calendar className="w-7 h-7" /> },
+  { value: 113, label: "Events", suffix: "+", icon: <Calendar className="w-7 h-7" />, image: "/events-card.jpg" },
   { value: 15, label: "Campuses", suffix: "+", icon: <School className="w-7 h-7" /> },
   { value: 7, label: "Hackathons", suffix: "", icon: <Trophy className="w-7 h-7" /> },
   { value: 31, label: "Projects Building", suffix: "+", icon: <Rocket className="w-7 h-7" /> },
@@ -141,12 +141,37 @@ function StatCard({
   const numC = useTransform(glow, [0, 1], ["rgba(255,255,255,1)", "rgba(248,113,113,1)"]);
   const txtC = useTransform(glow, [0, 1], ["rgba(161,161,170,1)", "rgba(254,202,202,0.9)"]);
 
+  // Image effects
+  const imgGrayscale = useTransform(glow, [0, 1], ["grayscale(100%)", "grayscale(0%)"]);
+  const imgOpacity = useTransform(glow, [0, 1], [0.45, 0.9]);
+  const redOverlayOpacity = useTransform(glow, [0, 1], [0, 0.3]);
+
   return (
     <motion.div
-      style={{ backgroundColor: bg, borderColor: border, boxShadow: boxSh }}
-      className="relative flex flex-col justify-between p-6 md:p-8 lg:p-10 min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border"
+      style={{ backgroundColor: stat.image ? undefined : bg, borderColor: border, boxShadow: boxSh }}
+      className="relative flex flex-col justify-between p-6 md:p-8 lg:p-10 min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border bg-zinc-950/40"
     >
-      <div className="absolute inset-y-0 right-0 left-1/4 opacity-10 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:16px_24px] [mask-image:linear-gradient(to_right,transparent_0%,black_100%)]" />
+      {/* Background image (if provided) */}
+      {stat.image && (
+        <>
+          <motion.div
+            className="absolute inset-0"
+            style={{ filter: imgGrayscale, opacity: imgOpacity }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={stat.image} alt="" className="w-full h-full object-cover" />
+          </motion.div>
+          {/* Red hue overlay on focus */}
+          <motion.div
+            className="absolute inset-0 bg-red-600/60 mix-blend-multiply"
+            style={{ opacity: redOverlayOpacity }}
+          />
+          {/* Dark gradient for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30" />
+        </>
+      )}
+      {/* Grid overlay — always on top */}
+      <div className="absolute inset-y-0 right-0 left-1/4 opacity-10 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:16px_24px] [mask-image:linear-gradient(to_right,transparent_0%,black_100%)] z-[1]" />
       <div className="relative z-10">
         <motion.div style={{ color: iconC }}>{stat.icon}</motion.div>
       </div>
