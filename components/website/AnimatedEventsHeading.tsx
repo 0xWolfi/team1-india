@@ -18,7 +18,7 @@ export function AnimatedEventsHeading() {
     <div ref={containerRef} className="relative w-full flex justify-center mb-12">
       <motion.h2
         style={{ scale, opacity }}
-        className="text-4xl md:text-5xl font-bold text-white text-center tracking-tight whitespace-nowrap origin-center"
+        className="text-4xl md:text-6xl font-bold text-white text-center tracking-tight whitespace-nowrap origin-center"
       >
         Upcoming Events
       </motion.h2>

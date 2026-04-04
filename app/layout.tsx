@@ -84,7 +84,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-            <div className="relative text-white min-h-[100svh] bg-black overflow-x-hidden">
+            <div className="relative text-white min-h-[100svh] bg-black" style={{ overflowX: 'clip' }}>
                 {/* JSON-LD Structured Data */}
                 {/* JSON-LD Structured Data for Knowledge Graph & AI Agents */}
                 <script
