@@ -20,8 +20,8 @@ import { TabletMockup } from "@/components/ui/TabletMockup";
 const impactStats = [
   { value: 113, label: "Events", suffix: "+", icon: <Calendar className="w-7 h-7" />, image: "/events-card.jpg" },
   { value: 15, label: "Campuses", suffix: "+", icon: <School className="w-7 h-7" />, image: "/campus-card.jpg" },
-  { value: 7, label: "Hackathons", suffix: "", icon: <Trophy className="w-7 h-7" /> },
-  { value: 31, label: "Projects Building", suffix: "+", icon: <Rocket className="w-7 h-7" /> },
+  { value: 7, label: "Hackathons", suffix: "", icon: <Trophy className="w-7 h-7" />, image: "/hackathons-card.jpg" },
+  { value: 31, label: "Projects Building", suffix: "+", icon: <Rocket className="w-7 h-7" />, image: "/projects-card.jpg" },
 ];
 
 const socials = [
