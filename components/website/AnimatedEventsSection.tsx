@@ -24,11 +24,14 @@ export function AnimatedEventsSection({ children }: AnimatedEventsSectionProps) 
   const contentY = useTransform(scrollYProgress, [0.5, 1], [40, 0]);
 
   return (
-    <div ref={containerRef} className="w-full relative">
-      <div className="relative w-full flex justify-center mb-12">
+    <div ref={containerRef} className="w-full relative overflow-x-clip">
+      <div className="relative w-full flex justify-center mb-2 sm:mb-3">
         <motion.h2
-          style={{ scale, opacity: textOpacity }}
-          className="text-4xl md:text-6xl font-bold text-white text-center tracking-tight whitespace-nowrap origin-center"
+          style={{ 
+            scale: useTransform(scrollYProgress, [0, 1], [1, 0.45]),
+            opacity: textOpacity 
+          }}
+          className="text-[clamp(3rem,11.5vw,20rem)] font-black text-white text-center leading-none tracking-tighter whitespace-nowrap origin-center uppercase"
         >
           Upcoming Events
         </motion.h2>

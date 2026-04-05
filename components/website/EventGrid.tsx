@@ -33,7 +33,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
     .sort((a, b) => new Date(a.event.start_at).getTime() - new Date(b.event.start_at).getTime());
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-12">
+    <div className="w-full max-w-7xl mx-auto space-y-6">
       
       {/* Filter Bar */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-3xl mx-auto">
@@ -82,9 +82,8 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         <div className="flex flex-col items-center gap-10">
             {/* Horizontal scroll: all event cards */}
             <div className="w-full px-4">
-                <p className="text-sm font-medium text-zinc-400 uppercase tracking-wider mb-4 text-center md:text-left">More events</p>
                 <div className="overflow-x-auto overflow-y-hidden pb-4 -mx-4 px-4 md:mx-0 md:px-0" style={{ scrollSnapType: "x mandatory" }}>
-                  <div className="flex gap-4 sm:gap-8 justify-start min-w-0">
+                  <div className="flex gap-4 sm:gap-8 justify-center min-w-0">
                     {filteredEvents.map(({ event, api_id }) => {
                       const fallbackGradient = "bg-gradient-to-br from-zinc-800 to-zinc-900";
                       return (
@@ -123,6 +122,13 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                   </div>
                 </div>
             </div>
+            {/* More Events button */}
+            <a
+              href="/events"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-white/8 border border-white/12 text-white font-semibold text-sm tracking-wide uppercase transition-all duration-300 hover:bg-red-500 hover:border-red-500 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(239,68,68,0.3)]"
+            >
+              More Events
+            </a>
         </div>
       ) : (
         /* Empty State */

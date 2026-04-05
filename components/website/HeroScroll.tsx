@@ -19,7 +19,7 @@ import { TabletMockup } from "@/components/ui/TabletMockup";
 
 const impactStats = [
   { value: 113, label: "Events", suffix: "+", icon: <Calendar className="w-7 h-7" />, image: "/events-card.jpg" },
-  { value: 15, label: "Campuses", suffix: "+", icon: <School className="w-7 h-7" /> },
+  { value: 15, label: "Campuses", suffix: "+", icon: <School className="w-7 h-7" />, image: "/campus-card.jpg" },
   { value: 7, label: "Hackathons", suffix: "", icon: <Trophy className="w-7 h-7" /> },
   { value: 31, label: "Projects Building", suffix: "+", icon: <Rocket className="w-7 h-7" /> },
 ];
@@ -91,9 +91,9 @@ function TextReveal({
   return (
     <motion.div
       style={{ opacity: containerOpacity, y: containerY }}
-      className="absolute inset-0 z-[15] flex items-center justify-center pointer-events-none px-6 sm:px-10 md:px-16"
+      className="absolute inset-0 z-[15] flex items-center justify-center pointer-events-none px-4 md:px-8"
     >
-      <p className="max-w-4xl text-center text-xl sm:text-2xl md:text-3xl lg:text-[2.5rem] xl:text-[2.75rem] font-medium leading-[1.6] sm:leading-[1.5] md:leading-[1.5] lg:leading-[1.45] tracking-tight">
+      <p className="max-w-[1400px] w-full text-center text-xl sm:text-2xl md:text-3xl lg:text-[2.5rem] xl:text-[2.75rem] font-medium leading-[1.6] sm:leading-[1.5] md:leading-[1.5] lg:leading-[1.45] tracking-tight">
         {storyWords.map((word, i) => {
           const isRevealed = i <= activeIndex;
           const isCurrent = i === activeIndex;
@@ -143,7 +143,7 @@ function StatCard({
 
   // Image effects
   const imgGrayscale = useTransform(glow, [0, 1], ["grayscale(100%)", "grayscale(0%)"]);
-  const imgOpacity = useTransform(glow, [0, 1], [0.45, 0.9]);
+  const imgOpacity = useTransform(glow, [0, 1], [0.6, 0.95]);
   const redOverlayOpacity = useTransform(glow, [0, 1], [0, 0.3]);
 
   return (
@@ -272,17 +272,17 @@ function GridOverlay() {
    HeroScroll — Main
    ═══════════════════════════════════════════
 
-   Timeline (1000vh) — CONNECTED transitions:
+   Timeline (800vh) — CONNECTED transitions:
    ─────────────────────────────────────────
-   0.00–0.06  Hero holds
-   0.06–0.13  Hero fades + scales out
-   0.12–0.34  Text words reveal one-by-one
-   0.34–0.40  Text slides up ←→ Tablet rises (SIMULTANEOUS)
-   0.40–0.52  Tablet holds (video plays)
-   0.52–0.58  Tablet exits ←→ Stats enters (SIMULTANEOUS)
-   0.58–0.66  Stats heading + cards appear
-   0.68–0.84  Card glows sequentially
-   0.84–1.00  Stats hold for interaction
+   0.00–0.05  Hero holds
+   0.05–0.11  Hero fades + scales out
+   0.10–0.28  Text words reveal one-by-one
+   0.28–0.34  Text slides up ←→ Tablet rises (SIMULTANEOUS)
+   0.34–0.44  Tablet holds (video plays)
+   0.44–0.50  Tablet exits ←→ Stats enters (SIMULTANEOUS)
+   0.50–0.58  Stats heading + cards appear
+   0.58–0.86  Card glows sequentially (longer duration)
+   0.86–1.00  Stats hold for interaction
    ═══════════════════════════════════════════ */
 
 export const HeroScroll = () => {
@@ -297,40 +297,40 @@ export const HeroScroll = () => {
   useMotionValueEvent(scrollYProgress, "change", (v) => setInteractive(v > 0.82));
 
   /* ── Phase 1: Hero (fades into text) ── */
-  const heroOpacity = useTransform(scrollYProgress, [0.06, 0.13], [1, 0]);
-  const heroScale  = useTransform(scrollYProgress, [0.06, 0.13], [1, 0.88]);
-  const heroY      = useTransform(scrollYProgress, [0.06, 0.13], [0, -80]);
+  const heroOpacity = useTransform(scrollYProgress, [0.05, 0.11], [1, 0]);
+  const heroScale  = useTransform(scrollYProgress, [0.05, 0.11], [1, 0.88]);
+  const heroY      = useTransform(scrollYProgress, [0.05, 0.11], [0, -80]);
 
   /* ── Phase 2: Text (words reveal, then slides up and out) ── */
-  const textRevealRange: [number, number] = [0.14, 0.34];
-  const textExitRange: [number, number]   = [0.34, 0.40];
+  const textRevealRange: [number, number] = [0.10, 0.28];
+  const textExitRange: [number, number]   = [0.28, 0.34];
 
-  /* ── Phase 3: Tablet (follows text — same range 0.34→0.42, same 600px travel) ── */
-  const tabletOpacity = useTransform(scrollYProgress, [0.33, 0.34, 0.54, 0.60], [0, 1, 1, 0]);
-  const tabletY       = useTransform(scrollYProgress, [0.34, 0.42, 0.54, 0.60], [600, 0, 0, -400]);
-  const tabletScale   = useTransform(scrollYProgress, [0.34, 0.42, 0.54, 0.60], [0.95, 1, 1, 0.92]);
-  const tabletRotate  = useTransform(scrollYProgress, [0.34, 0.42], [3, 0]);
+  /* ── Phase 3: Tablet (follows text — same range 0.28→0.34, same 600px travel) ── */
+  const tabletOpacity = useTransform(scrollYProgress, [0.27, 0.28, 0.46, 0.52], [0, 1, 1, 0]);
+  const tabletY       = useTransform(scrollYProgress, [0.28, 0.36, 0.46, 0.52], [600, 0, 0, -400]);
+  const tabletScale   = useTransform(scrollYProgress, [0.28, 0.36, 0.46, 0.52], [0.95, 1, 1, 0.92]);
+  const tabletRotate  = useTransform(scrollYProgress, [0.28, 0.36], [3, 0]);
 
-  /* ── Phase 4: Stats (starts RIGHT when tablet is gone at 0.60) ── */
-  const statsContainerOpacity = useTransform(scrollYProgress, [0.60, 0.66], [0, 1]);
-  const headingOpacity = useTransform(scrollYProgress, [0.60, 0.66], [0, 1]);
-  const headingScale   = useTransform(scrollYProgress, [0.60, 0.66], [0.88, 1]);
-  const headingY       = useTransform(scrollYProgress, [0.60, 0.66], [40, 0]);
-  const statsOpacity   = useTransform(scrollYProgress, [0.66, 0.72], [0, 1]);
-  const statsScale     = useTransform(scrollYProgress, [0.66, 0.72], [0.92, 1]);
-  const statsY         = useTransform(scrollYProgress, [0.66, 0.72], [50, 0]);
+  /* ── Phase 4: Stats (starts RIGHT when tablet is gone at 0.52) ── */
+  const statsContainerOpacity = useTransform(scrollYProgress, [0.52, 0.58], [0, 1]);
+  const headingOpacity = useTransform(scrollYProgress, [0.52, 0.58], [0, 1]);
+  const headingScale   = useTransform(scrollYProgress, [0.52, 0.58], [0.88, 1]);
+  const headingY       = useTransform(scrollYProgress, [0.52, 0.58], [40, 0]);
+  const statsOpacity   = useTransform(scrollYProgress, [0.58, 0.64], [0, 1]);
+  const statsScale     = useTransform(scrollYProgress, [0.58, 0.64], [0.92, 1]);
+  const statsY         = useTransform(scrollYProgress, [0.58, 0.64], [50, 0]);
 
-  const counterRange: [number, number] = [0.66, 0.78];
+  const counterRange: [number, number] = [0.58, 0.66];
 
-  /* Card glows */
-  const glow0 = useTransform(scrollYProgress, [0.78, 0.81, 0.84], [0, 1, 0]);
-  const glow1 = useTransform(scrollYProgress, [0.81, 0.84, 0.87], [0, 1, 0]);
-  const glow2 = useTransform(scrollYProgress, [0.84, 0.87, 0.90], [0, 1, 0]);
-  const glow3 = useTransform(scrollYProgress, [0.87, 0.90, 0.93], [0, 1, 0]);
+  /* Card glows — strictly sequential + plateau + dim gaps between cards */
+  const glow0 = useTransform(scrollYProgress, [0.66, 0.68, 0.71, 0.72], [0, 1, 1, 0]);
+  const glow1 = useTransform(scrollYProgress, [0.73, 0.75, 0.78, 0.79], [0, 1, 1, 0]);
+  const glow2 = useTransform(scrollYProgress, [0.80, 0.82, 0.85, 0.86], [0, 1, 1, 0]);
+  const glow3 = useTransform(scrollYProgress, [0.87, 0.89, 0.92, 0.93], [0, 1, 1, 0]);
   const glows = [glow0, glow1, glow2, glow3];
 
   return (
-    <header id="hero" ref={containerRef} className="relative h-[1000vh]" role="banner">
+    <header id="hero" ref={containerRef} className="relative h-[800vh]" role="banner">
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
         {/* Background */}
         <div className="absolute inset-0 bg-black" />
@@ -419,8 +419,8 @@ export const HeroScroll = () => {
             className="absolute inset-0 bg-black"
           />
           <div className="relative w-full max-w-7xl mx-auto">
-            <motion.div style={{ opacity: headingOpacity, scale: headingScale, y: headingY }} className="mb-12 lg:mb-16 text-center">
-              <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tight">
+            <motion.div style={{ opacity: headingOpacity, scale: headingScale, y: headingY }} className="mb-6 lg:mb-8 text-center">
+              <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
                 What We Have Done
               </h2>
             </motion.div>

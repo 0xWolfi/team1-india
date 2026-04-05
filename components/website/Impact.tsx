@@ -52,7 +52,7 @@ export function Impact() {
 
       <div className="container mx-auto px-6 relative">
         <div className="max-w-4xl mx-auto mb-16 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tight">What We Have Done</h2>
+          <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight">What We Have Done</h2>
         </div>
 
         <motion.div 
