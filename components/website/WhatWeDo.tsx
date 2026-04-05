@@ -1,74 +1,228 @@
 "use client";
 
-import React from "react";
-import { Calendar, Rocket, Shield, TrendingUp, Users, Zap } from "lucide-react";
-import { FeatureGrid, FeatureItem } from "@/components/ui/FeatureGrid";
+import React, { useRef } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useMotionValueEvent,
+  AnimatePresence,
+} from "framer-motion";
+import {
+  ArrowUpRight,
+  Calendar,
+  Rocket,
+  Shield,
+  TrendingUp,
+  Users,
+  Zap,
+} from "lucide-react";
+import Link from "next/link";
 
-const cards: FeatureItem[] = [
+/* ═══════════════════════════════════════════
+   Card Data — 2 pages × 3 cards
+   ═══════════════════════════════════════════ */
+
+const pages = [
+  [
     {
-        title: "Idea Phase Accelerator",
-        desc: "We help idea-stage startups find product-market fit. Get funding, mentorship, and resources.",
-        icon: <Rocket className="w-6 h-6 text-red-500"/>,
-        colSpan: "md:col-span-1",
+      title: "Idea Phase Accelerator",
+      desc: "We help idea-stage startups find product-market fit. Get funding, mentorship, and resources to bring your vision to life.",
+      icon: <Rocket className="w-8 h-8" />,
+      cta: "Apply Now",
+      href: "/programs",
     },
     {
-        title: "Community",
-        desc: "Vibrant ecosystem of builders and creators sharing knowledge.",
-        icon: <Users className="w-6 h-6 text-red-500"/>,
-        colSpan: "md:col-span-1",
+      title: "Community",
+      desc: "A vibrant ecosystem of builders, creators, and innovators sharing knowledge and pushing boundaries together.",
+      icon: <Users className="w-8 h-8" />,
+      cta: "Join Us",
+      href: "https://t.me/avalanche_hi",
+      external: true,
     },
     {
-        title: "Marketing",
-        desc: "Growth strategies and visibility for your launch.",
-        icon: <TrendingUp className="w-6 h-6 text-red-500"/>,
-        colSpan: "md:col-span-1",
+      title: "Marketing",
+      desc: "Growth strategies and go-to-market support to give your project maximum visibility across the ecosystem.",
+      icon: <TrendingUp className="w-8 h-8" />,
+      cta: "Learn More",
+      href: "/programs",
+    },
+  ],
+  [
+    {
+      title: "Dev Onboarding",
+      desc: "Helping developers get started with the right tech stack, tooling, and guidance on the Avalanche network.",
+      icon: <Zap className="w-8 h-8" />,
+      cta: "Start Building",
+      href: "/programs",
     },
     {
-        title: "Dev Onboarding",
-        desc: "Helping developers get started with the right tech stack.",
-        icon: <Zap className="w-6 h-6 text-red-500"/>,
-        colSpan: "md:col-span-1",
+      title: "Closed Beta",
+      desc: "Test your product with a curated group of early adopters. Get real feedback before you go live.",
+      icon: <Shield className="w-8 h-8" />,
+      cta: "Learn More",
+      href: "/programs",
     },
     {
-        title: "Closed Beta",
-        desc: "Test your product with a curated group of early adopters.",
-        icon: <Shield className="w-6 h-6 text-red-500"/>,
-        colSpan: "md:col-span-1",
+      title: "Events",
+      desc: "High-energy hackathons, workshops, and meetups across India. Build, learn, and connect in person.",
+      icon: <Calendar className="w-8 h-8" />,
+      cta: "View Events",
+      href: "/events",
     },
-    {
-        title: "Events",
-        desc: "High-energy hackathons and meetups.",
-        icon: <Calendar className="w-6 h-6 text-red-500"/>,
-        colSpan: "md:col-span-1",
-    }
+  ],
 ];
 
-export function WhatWeDo() {
-  return (
-    <section id="what-we-do" className="py-10 relative overflow-hidden">
-      {/* Background Decorator */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/[0.02] rounded-full blur-[120px] pointer-events-none" />
+type CardData = (typeof pages)[0][0];
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mx-auto mb-10 text-center">
-            <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">Built for impact <br/> Designed for builders</h2>
-            <p className="text-zinc-400 text-lg">From idea to scale, Team1India provides the infrastructure, network, and resources you need.</p>
+/* ═══════════════════════════════════════════
+   Single Card
+   ═══════════════════════════════════════════ */
+
+function Card({ card, index }: { card: CardData; index: number }) {
+  const isExternal = "external" in card && card.external;
+  const LinkTag = isExternal ? "a" : Link;
+  const linkProps = isExternal
+    ? { target: "_blank", rel: "noopener noreferrer" }
+    : {};
+
+  return (
+    <motion.div
+      initial={{ rotateY: -90, opacity: 0 }}
+      animate={{ rotateY: 0, opacity: 1 }}
+      exit={{ rotateY: 90, opacity: 0 }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.12,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
+    >
+    <div className="group relative flex flex-col rounded-2xl border border-white/[0.08] bg-black/60 backdrop-blur-xl overflow-hidden h-full">
+      {/* Inner glass effect */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none" />
+
+      {/* Top: Title + Description */}
+      <div className="relative z-10 p-6 md:p-8 flex-1">
+        <h3 className="text-xl md:text-2xl font-bold text-white/90 mb-3 tracking-tight">
+          {card.title}
+        </h3>
+        <p className="text-sm md:text-[15px] text-zinc-500 leading-relaxed group-hover:text-zinc-400 transition-colors duration-300">
+          {card.desc}
+        </p>
+      </div>
+
+      {/* Middle: Icon illustration area */}
+      <div className="relative flex items-center justify-center h-44 md:h-56">
+        {/* Subtle grid */}
+        <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:20px_20px]" />
+        {/* Glow */}
+        <div className="absolute w-28 h-28 rounded-full bg-red-500/[0.06] blur-[50px] group-hover:bg-red-500/[0.14] transition-all duration-700" />
+        {/* Icon */}
+        <div className="relative z-10 text-zinc-600 group-hover:text-red-400 transition-colors duration-500">
+          {card.icon}
+        </div>
+      </div>
+
+      {/* Bottom: CTA Button */}
+      <div className="relative z-10 p-6 md:p-8 pt-0">
+        <LinkTag
+          href={card.href}
+          {...linkProps}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/[0.1] text-xs font-semibold text-zinc-400 uppercase tracking-widest transition-all duration-300 hover:bg-white hover:text-black hover:border-white"
+        >
+          {card.cta}
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        </LinkTag>
+      </div>
+    </div>
+    </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   WhatWeDo — Scroll-pinned rotating cards
+   ═══════════════════════════════════════════ */
+
+export function WhatWeDo() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [activePage, setActivePage] = React.useState(0);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Map scroll to page index: first half = page 0, second half = page 1
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    if (v < 0.45) setActivePage(0);
+    else setActivePage(1);
+  });
+
+  // Heading animations
+  const headingOpacity = useTransform(scrollYProgress, [0, 0.12], [0, 1]);
+  const headingY = useTransform(scrollYProgress, [0, 0.12], [60, 0]);
+  const headingScale = useTransform(scrollYProgress, [0, 0.12], [0.9, 1]);
+
+  return (
+    <section
+      id="what-we-do"
+      ref={containerRef}
+      className="relative h-[300vh]"
+    >
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-black">
+        {/* Background decorator */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/[0.015] rounded-full blur-[120px] pointer-events-none" />
+
+        {/* Content */}
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
+          {/* Heading — always visible */}
+          <div className="mb-8 md:mb-10 text-center">
+            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.3]">
+              Built for impact <br /> Designed for builders
+            </h2>
             {/* Hidden RAG Summary for AI Agents */}
             <p className="sr-only">
-                Team1 India offers a comprehensive suite of services for the blockchain ecosystem:
-                1. Idea Phase Accelerator: Funding and mentorship for early startups.
-                2. Community: A network of builders sharing knowledge.
-                3. Marketing Support: Go-to-market strategies for web3 products.
-                4. Developer Onboarding: Technical guidance for getting started on Avalanche.
-                5. Closed Beta Testing: Access to early adopters for product validation.
-                6. Events: Hackathons and meetups across India.
+              Team1 India offers a comprehensive suite of services for the
+              blockchain ecosystem: 1. Idea Phase Accelerator: Funding and
+              mentorship for early startups. 2. Community: A network of
+              builders sharing knowledge. 3. Marketing Support: Go-to-market
+              strategies for web3 products. 4. Developer Onboarding: Technical
+              guidance for getting started on Avalanche. 5. Closed Beta
+              Testing: Access to early adopters for product validation. 6.
+              Events: Hackathons and meetups across India.
             </p>
-        </div>
+          </div>
 
-        <FeatureGrid items={cards} />
+          {/* Rotating Cards */}
+          <div className="relative w-full min-h-[480px] md:min-h-[520px]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activePage}
+                className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-2xl overflow-hidden"
+              >
+                {pages[activePage].map((card, i) => (
+                  <Card key={card.title} card={card} index={i} />
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Page indicator dots */}
+          <div className="flex items-center justify-center gap-2 mt-8">
+            {pages.map((_, i) => (
+              <div
+                key={i}
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${
+                  i === activePage
+                    ? "bg-red-500 w-6"
+                    : "bg-zinc-700"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
 }
-
-
