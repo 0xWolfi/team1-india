@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -12,6 +12,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Send, ArrowRight, Calendar, School, Trophy, Rocket } from "lucide-react";
 import { TabletMockup } from "@/components/ui/TabletMockup";
+import { useTheme } from "next-themes";
 
 /* ═══════════════════════════════════════════
    Data
@@ -58,10 +59,12 @@ function TextReveal({
   progress,
   revealRange,
   exitRange,
+  isDark,
 }: {
   progress: MotionValue<number>;
   revealRange: [number, number];
   exitRange: [number, number];
+  isDark: boolean;
 }) {
   const [activeIndex, setActiveIndex] = useState(-1);
   const totalWords = storyWords.length;
@@ -105,10 +108,10 @@ function TextReveal({
               style={{
                 marginRight: "0.28em",
                 color: isRevealed
-                  ? "#ffffff"
+                  ? isDark ? "#ffffff" : "#000000"
                   : isNear
-                  ? "rgba(255,255,255,0.18)"
-                  : "rgba(255,255,255,0.08)",
+                  ? isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.18)"
+                  : isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
                 textShadow: isCurrent
                   ? "0 0 40px rgba(255,57,74,0.5), 0 0 80px rgba(255,57,74,0.15)"
                   : "none",
@@ -130,14 +133,14 @@ function TextReveal({
    ═══════════════════════════════════════════ */
 
 function StatCard({
-  stat, glow, progress, counterRange,
+  stat, glow, progress, counterRange, isDark,
 }: {
-  stat: (typeof impactStats)[0]; glow: MotionValue<number>; progress: MotionValue<number>; counterRange: [number, number];
+  stat: (typeof impactStats)[0]; glow: MotionValue<number>; progress: MotionValue<number>; counterRange: [number, number]; isDark: boolean;
 }) {
-  const bg = useTransform(glow, [0, 1], ["rgba(24,24,27,0.4)", "rgba(69,10,10,0.8)"]);
-  const border = useTransform(glow, [0, 1], ["rgba(255,255,255,0.05)", "rgba(239,68,68,0.3)"]);
+  const bg = useTransform(glow, [0, 1], [isDark ? "rgba(24,24,27,0.4)" : "rgba(244,244,245,0.6)", "rgba(69,10,10,0.8)"]);
+  const border = useTransform(glow, [0, 1], [isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)", "rgba(239,68,68,0.3)"]);
   const boxSh = useTransform(glow, [0, 1], ["0 0 0px rgba(0,0,0,0)", "0 0 40px rgba(255,57,74,0.15)"]);
-  const iconC = useTransform(glow, [0, 1], ["rgba(113,113,122,1)", "rgba(252,165,165,1)"]);
+  const iconC = useTransform(glow, [0, 1], ["rgba(255,255,255,1)", "rgba(252,165,165,1)"]);
   const numC = useTransform(glow, [0, 1], ["rgba(255,255,255,1)", "rgba(248,113,113,1)"]);
   const txtC = useTransform(glow, [0, 1], ["rgba(161,161,170,1)", "rgba(254,202,202,0.9)"]);
 
@@ -149,7 +152,7 @@ function StatCard({
   return (
     <motion.div
       style={{ backgroundColor: stat.image ? undefined : bg, borderColor: border, boxShadow: boxSh }}
-      className="relative flex flex-col justify-between p-6 md:p-8 lg:p-10 min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border bg-zinc-950/40"
+      className="relative flex flex-col justify-between p-6 md:p-8 lg:p-10 min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border bg-zinc-100/60 dark:bg-zinc-950/40"
     >
       {/* Background image (if provided) */}
       {stat.image && (
@@ -171,7 +174,7 @@ function StatCard({
         </>
       )}
       {/* Grid overlay — always on top */}
-      <div className="absolute inset-y-0 right-0 left-1/4 opacity-10 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:16px_24px] [mask-image:linear-gradient(to_right,transparent_0%,black_100%)] z-[1]" />
+      <div className={`absolute inset-y-0 right-0 left-1/4 opacity-10 bg-[size:16px_24px] [mask-image:linear-gradient(to_right,transparent_0%,black_100%)] z-[1] ${isDark ? "bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]" : "bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)]"}`} />
       <div className="relative z-10">
         <motion.div style={{ color: iconC }}>{stat.icon}</motion.div>
       </div>
@@ -191,7 +194,7 @@ function StatCard({
    HeroBackground
    ═══════════════════════════════════════════ */
 
-function HeroBackground() {
+function HeroBackground({ isDark }: { isDark: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const c = ref.current;
@@ -205,12 +208,13 @@ function HeroBackground() {
       ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.scale(d, d);
     };
     resize(); window.addEventListener("resize", resize);
+    const orbAlpha = isDark ? 1 : 0.7;
     const orbs = [
-      { x: 0.3, y: 0.2, r: 350, col: "rgba(255,57,74,0.08)", s: 0.3, p: 0 },
-      { x: 0.7, y: 0.6, r: 300, col: "rgba(255,57,74,0.06)", s: 0.4, p: 2 },
-      { x: 0.5, y: 0.8, r: 400, col: "rgba(200,20,40,0.05)", s: 0.2, p: 4 },
-      { x: 0.15, y: 0.7, r: 250, col: "rgba(255,100,110,0.04)", s: 0.5, p: 1 },
-      { x: 0.85, y: 0.3, r: 280, col: "rgba(255,57,74,0.05)", s: 0.3, p: 3 },
+      { x: 0.3, y: 0.2, r: 350, col: `rgba(255,57,74,${0.08 * orbAlpha})`, s: 0.3, p: 0 },
+      { x: 0.7, y: 0.6, r: 300, col: `rgba(255,57,74,${0.06 * orbAlpha})`, s: 0.4, p: 2 },
+      { x: 0.5, y: 0.8, r: 400, col: `rgba(200,20,40,${0.05 * orbAlpha})`, s: 0.2, p: 4 },
+      { x: 0.15, y: 0.7, r: 250, col: `rgba(255,100,110,${0.04 * orbAlpha})`, s: 0.5, p: 1 },
+      { x: 0.85, y: 0.3, r: 280, col: `rgba(255,57,74,${0.05 * orbAlpha})`, s: 0.3, p: 3 },
     ];
     const pts: { x: number; y: number; vx: number; vy: number; r: number; a: number }[] = [];
     for (let i = 0; i < 45; i++) {
@@ -245,7 +249,7 @@ function HeroBackground() {
     };
     loop();
     return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(raf); };
-  }, []);
+  }, [isDark]);
   return <canvas ref={ref} className="absolute inset-0 w-full h-full" />;
 }
 
@@ -253,11 +257,12 @@ function HeroBackground() {
    GridOverlay
    ═══════════════════════════════════════════ */
 
-function GridOverlay() {
+function GridOverlay({ isDark }: { isDark: boolean }) {
+  const lineColor = isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.3)";
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.5) 80px)" }} />
-      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.5) 80px)" }} />
+      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 79px, ${lineColor} 80px)` }} />
+      <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 79px, ${lineColor} 80px)` }} />
       <motion.div
         className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2"
         style={{ background: "linear-gradient(to bottom, transparent, rgba(255,57,74,0.15), transparent)" }}
@@ -287,6 +292,10 @@ function GridOverlay() {
 
 export const HeroScroll = () => {
   const containerRef = useRef<HTMLElement>(null);
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isDark = !mounted || resolvedTheme === "dark";
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -331,11 +340,11 @@ export const HeroScroll = () => {
 
   return (
     <header id="hero" ref={containerRef} className="relative h-[800vh]" role="banner">
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-[var(--background)]">
         {/* Background */}
-        <div className="absolute inset-0 bg-black" />
-        <HeroBackground />
-        <GridOverlay />
+        <div className="absolute inset-0 bg-[var(--background)]" />
+        <HeroBackground isDark={isDark} />
+        <GridOverlay isDark={isDark} />
         <div className="absolute inset-0 pointer-events-none opacity-[0.015] mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }} />
 
         {/* ═══ Phase 1: Hero ═══ */}
@@ -351,7 +360,7 @@ export const HeroScroll = () => {
               className="w-[90vw] h-[90vw] sm:w-[80vw] sm:h-[80vw] md:w-[70vw] md:h-[70vw] lg:w-[60vw] lg:h-[60vw] max-w-[900px] max-h-[900px]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/mandala.svg" alt="" className="w-full h-full opacity-[0.12]" />
+              <img src="/mandala.svg" alt="" className="w-full h-full opacity-[0.15] dark:opacity-[0.12]" />
             </motion.div>
             <div className="absolute w-[40%] h-[40%] bg-red-500/[0.04] rounded-full blur-[120px]" />
           </div>
@@ -366,35 +375,36 @@ export const HeroScroll = () => {
 
             <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }} className="mb-8">
               <div className="relative h-8 w-[14rem] sm:h-12 sm:w-[20rem] md:h-14 md:w-[28rem] lg:h-[4.5rem] lg:w-[34rem]">
-                <Image src="/team1-horizontal.svg" alt="Team1 India" fill className="object-contain" sizes="700px" priority />
+                <Image src="/team1-horizontal.svg" alt="Team1 India" fill className="object-contain hidden dark:block" sizes="700px" priority />
+                <Image src="/team1-horizontal-light.svg" alt="Team1 India" fill className="object-contain block dark:hidden" sizes="700px" priority />
               </div>
             </motion.div>
 
-            <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }} className="text-lg md:text-xl lg:text-2xl text-zinc-400 max-w-2xl mx-auto leading-relaxed mb-12 text-balance">
+            <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }} className="text-lg md:text-xl lg:text-2xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed mb-12 text-balance">
               The premier builder community and accelerator for the{" "}
-              <strong className="text-zinc-200">Avalanche Ecosystem</strong> in India.
+              <strong className="text-zinc-800 dark:text-zinc-200">Avalanche Ecosystem</strong> in India.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }} className="flex flex-col sm:flex-row items-center gap-4 mb-10">
-              <Link href="/public" className="group flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-black font-semibold text-base transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02]">
+              <Link href="/public" className="group flex items-center gap-2 px-8 py-3.5 rounded-xl bg-black dark:bg-white text-white dark:text-black font-semibold text-base transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02]">
                 Explore
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </Link>
-              <a href="https://t.me/avalanche_hi" target="_blank" rel="noopener noreferrer" className="px-8 py-3.5 rounded-xl bg-white/8 border border-white/12 text-white font-semibold text-base transition-all duration-300 hover:bg-red-500 hover:border-red-500 hover:scale-[1.02]">
+              <a href="https://t.me/avalanche_hi" target="_blank" rel="noopener noreferrer" className="px-8 py-3.5 rounded-xl bg-black/8 dark:bg-white/8 border border-black/12 dark:border-white/12 text-black dark:text-white font-semibold text-base transition-all duration-300 hover:bg-red-500 hover:border-red-500 hover:text-white hover:scale-[1.02]">
                 Join Us
               </a>
             </motion.div>
 
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }} className="flex items-center gap-1">
               {socials.map((s) => (
-                <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer" className="p-2.5 text-zinc-600 hover:text-red-400 transition-colors duration-200" aria-label={s.label}>{s.icon}</a>
+                <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer" className="p-2.5 text-zinc-400 dark:text-zinc-600 hover:text-red-400 transition-colors duration-200" aria-label={s.label}>{s.icon}</a>
               ))}
             </motion.div>
           </div>
         </motion.div>
 
         {/* ═══ Phase 2: Text Reveal ═══ */}
-        <TextReveal progress={scrollYProgress} revealRange={textRevealRange} exitRange={textExitRange} />
+        <TextReveal progress={scrollYProgress} revealRange={textRevealRange} exitRange={textExitRange} isDark={isDark} />
 
         {/* ═══ Phase 3: Tablet ═══ */}
         <motion.div
@@ -416,11 +426,11 @@ export const HeroScroll = () => {
           {/* Separate bg so it doesn't exist when opacity is 0 */}
           <motion.div
             style={{ opacity: statsContainerOpacity }}
-            className="absolute inset-0 bg-black"
+            className="absolute inset-0 bg-[var(--background)]"
           />
           <div className="relative w-full max-w-7xl mx-auto">
             <motion.div style={{ opacity: headingOpacity, scale: headingScale, y: headingY }} className="mb-6 lg:mb-8 text-center">
-              <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight">
+              <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight">
                 What We Have Done
               </h2>
             </motion.div>
@@ -429,14 +439,14 @@ export const HeroScroll = () => {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 xl:gap-6 w-full"
             >
               {impactStats.map((stat, i) => (
-                <StatCard key={stat.label} stat={stat} glow={glows[i]} progress={scrollYProgress} counterRange={counterRange} />
+                <StatCard key={stat.label} stat={stat} glow={glows[i]} progress={scrollYProgress} counterRange={counterRange} isDark={isDark} />
               ))}
             </motion.div>
           </div>
         </motion.div>
 
         {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none z-40" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none z-40" />
       </div>
     </header>
   );

@@ -98,16 +98,16 @@ function Card({ card, index }: { card: CardData; index: number }) {
       }}
       style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
     >
-    <div className="group relative flex flex-col rounded-2xl border border-white/[0.08] bg-black/60 backdrop-blur-xl overflow-hidden h-full">
+    <div className="group relative flex flex-col rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white/60 dark:bg-black/60 backdrop-blur-xl overflow-hidden h-full">
       {/* Inner glass effect */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/[0.02] dark:from-white/[0.04] to-transparent pointer-events-none" />
 
       {/* Top: Title + Description */}
       <div className="relative z-10 p-6 md:p-8 flex-1">
-        <h3 className="text-xl md:text-2xl font-bold text-white/90 mb-3 tracking-tight">
+        <h3 className="text-xl md:text-2xl font-bold text-black/90 dark:text-white/90 mb-3 tracking-tight">
           {card.title}
         </h3>
-        <p className="text-sm md:text-[15px] text-zinc-500 leading-relaxed group-hover:text-zinc-400 transition-colors duration-300">
+        <p className="text-sm md:text-[15px] text-zinc-500 leading-relaxed group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors duration-300">
           {card.desc}
         </p>
       </div>
@@ -115,11 +115,11 @@ function Card({ card, index }: { card: CardData; index: number }) {
       {/* Middle: Icon illustration area */}
       <div className="relative flex items-center justify-center h-44 md:h-56">
         {/* Subtle grid */}
-        <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:20px_20px]" />
+        <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:20px_20px]" />
         {/* Glow */}
         <div className="absolute w-28 h-28 rounded-full bg-red-500/[0.06] blur-[50px] group-hover:bg-red-500/[0.14] transition-all duration-700" />
         {/* Icon */}
-        <div className="relative z-10 text-zinc-600 group-hover:text-red-400 transition-colors duration-500">
+        <div className="relative z-10 text-zinc-400 dark:text-zinc-600 group-hover:text-red-400 transition-colors duration-500">
           {card.icon}
         </div>
       </div>
@@ -129,7 +129,7 @@ function Card({ card, index }: { card: CardData; index: number }) {
         <LinkTag
           href={card.href}
           {...linkProps}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/[0.1] text-xs font-semibold text-zinc-400 uppercase tracking-widest transition-all duration-300 hover:bg-white hover:text-black hover:border-white"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-black/[0.1] dark:border-white/[0.1] text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest transition-all duration-300 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black hover:border-black dark:hover:border-white"
         >
           {card.cta}
           <ArrowUpRight className="w-3.5 h-3.5" />
@@ -170,15 +170,15 @@ export function WhatWeDo() {
       ref={containerRef}
       className="relative h-[300vh]"
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-black">
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-[var(--background)]">
         {/* Background decorator */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/[0.015] rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-black/[0.015] dark:bg-white/[0.015] rounded-full blur-[120px] pointer-events-none" />
 
         {/* Content */}
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
           {/* Heading — always visible */}
           <div className="mb-8 md:mb-10 text-center">
-            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.3]">
+            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.3]">
               Built for impact <br /> Designed for builders
             </h2>
             {/* Hidden RAG Summary for AI Agents */}
@@ -216,7 +216,7 @@ export function WhatWeDo() {
                 className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${
                   i === activePage
                     ? "bg-red-500 w-6"
-                    : "bg-zinc-700"
+                    : "bg-zinc-300 dark:bg-zinc-700"
                 }`}
               />
             ))}

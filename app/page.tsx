@@ -14,14 +14,14 @@ const GetInvolved = dynamic(() => import("@/components/website/GetInvolved").the
 function SectionDivider() {
   return (
     <div className="flex items-center justify-center py-4">
-      <div className="w-24 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="w-24 h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent" />
     </div>
   );
 }
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white antialiased selection:bg-white selection:text-black">
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
       <Preloader />
       <HomeNavbar />
       <div className="flex flex-col">

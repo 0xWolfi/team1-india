@@ -31,7 +31,7 @@ export function AnimatedEventsSection({ children }: AnimatedEventsSectionProps) 
             scale: useTransform(scrollYProgress, [0, 1], [1, 0.45]),
             opacity: textOpacity 
           }}
-          className="text-[clamp(3rem,11.5vw,20rem)] font-black text-white text-center leading-none tracking-tighter whitespace-nowrap origin-center uppercase"
+          className="text-[clamp(3rem,11.5vw,20rem)] font-black text-black dark:text-white text-center leading-none tracking-tighter whitespace-nowrap origin-center uppercase"
         >
           Upcoming Events
         </motion.h2>

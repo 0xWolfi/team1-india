@@ -58,7 +58,7 @@ export function Preloader() {
     return (
         <div
             className={cn(
-                "fixed inset-0 z-[1000] bg-black transition-opacity duration-700 ease-in-out",
+                "fixed inset-0 z-[1000] bg-[var(--background)] transition-opacity duration-700 ease-in-out",
                 fading ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
         >
