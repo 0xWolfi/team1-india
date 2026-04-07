@@ -9,7 +9,7 @@ export function ThemeProvider({
   ...props
 }: React.ComponentProps<typeof NextThemesProvider>) {
   return (
-    <ReactLenis root>
+    <ReactLenis root options={{ lerp: 0.08, duration: 1.4, smoothWheel: true }}>
       <SessionProvider>
         <NextThemesProvider {...props}>{children}</NextThemesProvider>
       </SessionProvider>

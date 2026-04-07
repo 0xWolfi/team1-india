@@ -91,11 +91,53 @@ function TextReveal({
     setActiveIndex(Math.floor(t * totalWords));
   });
 
+  // Image animations - left image fades in early, right image fades in near end
+  const leftImageOpacity = useTransform(
+    progress,
+    [revealRange[0], revealRange[0] + 0.03, exitRange[0], exitRange[0] + (exitRange[1] - exitRange[0]) * 0.98],
+    [0, 1, 1, 0]
+  );
+  const leftImageScale = useTransform(
+    progress,
+    [revealRange[0], revealRange[0] + 0.04],
+    [0.9, 1]
+  );
+  const rightImageOpacity = useTransform(
+    progress,
+    [revealRange[0] + (revealRange[1] - revealRange[0]) * 0.6, revealRange[1], exitRange[0], exitRange[0] + (exitRange[1] - exitRange[0]) * 0.98],
+    [0, 1, 1, 0]
+  );
+  const rightImageScale = useTransform(
+    progress,
+    [revealRange[0] + (revealRange[1] - revealRange[0]) * 0.6, revealRange[1]],
+    [0.9, 1]
+  );
+
   return (
     <motion.div
       style={{ opacity: containerOpacity, y: containerY }}
       className="absolute inset-0 z-[15] flex items-center justify-center pointer-events-none px-4 md:px-8"
     >
+      {/* Left image - top left, visible on md+ */}
+      <motion.div
+        style={{ opacity: leftImageOpacity, scale: leftImageScale }}
+        className="absolute top-8 left-4 md:top-12 md:left-8 lg:top-16 lg:left-12 hidden md:block"
+      >
+        <div className="w-40 lg:w-52 xl:w-60 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 dark:border-white/10 shadow-2xl shadow-black/20">
+          <img src="/story-left.jpg" alt="" className="w-full h-full object-cover" />
+        </div>
+      </motion.div>
+
+      {/* Right image - bottom right, visible on md+ */}
+      <motion.div
+        style={{ opacity: rightImageOpacity, scale: rightImageScale }}
+        className="absolute bottom-36 right-4 md:bottom-40 md:right-8 lg:bottom-44 lg:right-12 hidden md:block"
+      >
+        <div className="w-40 lg:w-52 xl:w-60 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 dark:border-white/10 shadow-2xl shadow-black/20">
+          <img src="/story-right.jpg" alt="" className="w-full h-full object-cover" />
+        </div>
+      </motion.div>
+
       <p className="max-w-[1400px] w-full text-center text-xl sm:text-2xl md:text-3xl lg:text-[2.5rem] xl:text-[2.75rem] font-medium leading-[1.6] sm:leading-[1.5] md:leading-[1.5] lg:leading-[1.45] tracking-tight">
         {storyWords.map((word, i) => {
           const isRevealed = i <= activeIndex;
@@ -448,6 +490,11 @@ export const HeroScroll = () => {
         {/* Bottom fade */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none z-40" />
       </div>
+
+      {/* Anchor for #about nav link — positioned at ~10% where the story text reveal begins */}
+      <div id="about" className="absolute top-[10%] left-0" aria-hidden="true" />
+      {/* Anchor for #impact nav link — positioned at ~86% of the scroll container so it lands on the stats phase */}
+      <div id="impact" className="absolute bottom-[14%] left-0" aria-hidden="true" />
     </header>
   );
 };

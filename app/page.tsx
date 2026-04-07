@@ -14,7 +14,7 @@ const GetInvolved = dynamic(() => import("@/components/website/GetInvolved").the
 
 function SectionDivider() {
   return (
-    <div className="flex items-center justify-center py-4">
+    <div className="flex items-center justify-center py-10 md:py-16">
       <div className="w-24 h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent" />
     </div>
   );

@@ -68,7 +68,7 @@ function ProgramRow({
 }: {
   step: (typeof programs)[0];
   index: number;
-  onHover: (index: number) => void;
+  onHover: (index: number, e: React.MouseEvent) => void;
   onLeave: () => void;
   onMouseMove: (e: React.MouseEvent) => void;
 }) {
@@ -78,9 +78,9 @@ function ProgramRow({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.5 }}
-      transition={{ duration: 0.4, delay: index * 0.06, ease: "easeOut" }}
-      onMouseEnter={() => onHover(index)}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.5, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={(e) => onHover(index, e)}
       onMouseLeave={onLeave}
       onMouseMove={onMouseMove}
       className="group relative cursor-default"
@@ -181,10 +181,23 @@ function CursorImage({
 export function Programs() {
   const [hoveredIndex, setHoveredIndex] = useState(-1);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [hasMouseMoved, setHasMouseMoved] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
+    if (!hasMouseMoved) setHasMouseMoved(true);
+  }, [hasMouseMoved]);
+
+  const handleHover = useCallback((index: number, e: React.MouseEvent) => {
+    // Capture position immediately on enter so image doesn't flash at (0,0)
+    setMousePos({ x: e.clientX, y: e.clientY });
+    setHasMouseMoved(true);
+    setHoveredIndex(index);
+  }, []);
+
+  const handleLeave = useCallback(() => {
+    setHoveredIndex(-1);
   }, []);
 
   return (
@@ -215,8 +228,8 @@ export function Programs() {
               key={step.title}
               step={step}
               index={i}
-              onHover={setHoveredIndex}
-              onLeave={() => setHoveredIndex(-1)}
+              onHover={handleHover}
+              onLeave={handleLeave}
               onMouseMove={handleMouseMove}
             />
           ))}
@@ -227,7 +240,7 @@ export function Programs() {
       <CursorImage
         activeIndex={hoveredIndex}
         position={mousePos}
-        visible={hoveredIndex >= 0}
+        visible={hoveredIndex >= 0 && hasMouseMoved}
       />
     </section>
   );
