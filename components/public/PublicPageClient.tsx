@@ -19,7 +19,7 @@ import { useSession } from "next-auth/react";
 import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 import { PublicConsentModal } from "@/components/public/auth/PublicConsentModal";
 
-const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
+const glassClass = "bg-zinc-100/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]";
 
 const statusConfig = {
     LIVE: { label: "Live", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20" },
@@ -34,11 +34,11 @@ function SectionHeader({ icon, title, subtitle, action }: {
     return (
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div className="flex items-start gap-4">
-                <div className="p-3 rounded-2xl border shrink-0 bg-white/5 border-white/10">
-                    <DynamicIcon name={icon} className="w-6 h-6 text-white"/>
+                <div className="p-3 rounded-2xl border shrink-0 bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10">
+                    <DynamicIcon name={icon} className="w-6 h-6 text-black dark:text-white"/>
                 </div>
                 <div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{title}</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-black dark:text-white tracking-tight">{title}</h2>
                     <p className="text-sm text-zinc-500 mt-1">{subtitle}</p>
                 </div>
             </div>
@@ -79,11 +79,11 @@ function PublicLumaEventCard({ entry, status }: { entry: LumaEventData; status: 
                 "group block rounded-2xl p-4 transition-all duration-300 snap-start",
                 "w-[280px] sm:w-[320px] flex-shrink-0",
                 glassClass,
-                "hover:border-white/[0.12] hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/20",
+                "hover:border-black/[0.12] dark:hover:border-white/[0.12] hover:bg-zinc-100/80 dark:hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/20",
                 status === "PAST" && "opacity-70 hover:opacity-100"
             )}
         >
-            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
+            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-200/50 dark:bg-zinc-800/50">
                 {imageUrl && !imageError ? (
                     <div className="aspect-square relative">
                         <NextImage src={imageUrl} alt={entry.event.name} fill sizes="320px"
@@ -92,8 +92,8 @@ function PublicLumaEventCard({ entry, status }: { entry: LumaEventData; status: 
                     </div>
                 ) : (
                     <div className="aspect-square flex items-center justify-center">
-                        <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                            <Calendar className="w-6 h-6 text-white"/>
+                        <div className="p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-black/10 dark:border-white/10">
+                            <Calendar className="w-6 h-6 text-black dark:text-white"/>
                         </div>
                     </div>
                 )}
@@ -104,10 +104,10 @@ function PublicLumaEventCard({ entry, status }: { entry: LumaEventData; status: 
                     </span>
                 </div>
             </div>
-            <h3 className="font-semibold text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-100 transition-colors">{entry.event.name}</h3>
+            <h3 className="font-semibold text-black dark:text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-100 transition-colors">{entry.event.name}</h3>
             <div className="flex items-center gap-2 text-xs text-zinc-500">
                 <span>{formatDate(eventDate)}</span>
-                <span className="text-zinc-700">&middot;</span>
+                <span className="text-zinc-400 dark:text-zinc-700">&middot;</span>
                 <span>{formatTime(eventDate)}</span>
             </div>
             {entry.event.geo_address_json?.city && (
@@ -116,7 +116,7 @@ function PublicLumaEventCard({ entry, status }: { entry: LumaEventData; status: 
                     {entry.event.geo_address_json.city}
                 </p>
             )}
-            {status !== "PAST" && <p className="text-[11px] font-medium mt-2 text-white/70">{getTimeLabel()}</p>}
+            {status !== "PAST" && <p className="text-[11px] font-medium mt-2 text-black/70 dark:text-white/70">{getTimeLabel()}</p>}
         </a>
     );
 }
@@ -150,7 +150,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
     const { playbooks, programs, upcomingEvents, mediaItems, bountyCount, categorizedEvents } = data;
 
     return (
-        <main className="h-[100dvh] w-full overflow-y-scroll overflow-x-hidden snap-y snap-mandatory md:h-auto md:w-auto md:overflow-visible md:snap-none text-white selection:bg-zinc-800 selection:text-zinc-200 supports-[height:100svh]:h-[100svh]">
+        <main className="h-[100dvh] w-full overflow-y-scroll overflow-x-hidden snap-y snap-mandatory md:h-auto md:w-auto md:overflow-visible md:snap-none text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-800 dark:selection:text-zinc-200 supports-[height:100svh]:h-[100svh]">
             <FloatingNav />
             <PublicLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
             {session?.user?.role === 'PUBLIC' && session?.user?.consent === false && (
@@ -186,7 +186,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         subtitle="Live, upcoming, and past events from our community"
                         action={
                             <Link href="https://lu.ma/Team1India" target="_blank"
-                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all">
+                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all">
                                 See All on Luma <ArrowUpRight className="w-3.5 h-3.5"/>
                             </Link>
                         }
@@ -218,8 +218,8 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         </div>
                     ) : (
                         <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                            <Calendar className="w-8 h-8 text-zinc-700 mb-3"/>
-                            <p className="text-zinc-600 font-medium text-sm">No events found</p>
+                            <Calendar className="w-8 h-8 text-zinc-400 dark:text-zinc-700 mb-3"/>
+                            <p className="text-zinc-500 dark:text-zinc-600 font-medium text-sm">No events found</p>
                         </div>
                     )}
                 </section>
@@ -236,7 +236,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         subtitle="Initiatives to accelerate your growth"
                         action={
                             <Link href="/public/programs"
-                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all">
+                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all">
                                 View All <ArrowRight className="w-3.5 h-3.5"/>
                             </Link>
                         }
@@ -245,27 +245,27 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {programs.slice(0, 6).map((item: any) => (
                                 <Link key={item.id} href={`/public/programs/${item.id}`}
-                                    className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.12]", glassClass)}>
+                                    className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-black/[0.12] dark:hover:border-white/[0.12]", glassClass)}>
                                     <div className="flex items-start gap-3 mb-4">
-                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 shrink-0">
-                                            <Users className="w-5 h-5 text-white"/>
+                                        <div className="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 shrink-0">
+                                            <Users className="w-5 h-5 text-black dark:text-white"/>
                                         </div>
                                         <div className="min-w-0">
-                                            <h3 className="font-semibold text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-100 transition-colors">{item.title}</h3>
-                                            {item.description && <p className="text-xs text-zinc-600 line-clamp-2">{item.description}</p>}
+                                            <h3 className="font-semibold text-black dark:text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-100 transition-colors">{item.title}</h3>
+                                            {item.description && <p className="text-xs text-zinc-500 dark:text-zinc-600 line-clamp-2">{item.description}</p>}
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.04]">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-600 group-hover:text-zinc-400 transition-colors">View Program</span>
-                                        <ArrowRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-white transition-colors"/>
+                                    <div className="flex items-center justify-between pt-3 border-t border-black/[0.04] dark:border-white/[0.04]">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-600 group-hover:text-zinc-700 dark:group-hover:text-zinc-400 transition-colors">View Program</span>
+                                        <ArrowRight className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-700 group-hover:text-black dark:group-hover:text-white transition-colors"/>
                                     </div>
                                 </Link>
                             ))}
                         </div>
                     ) : (
                         <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                            <Users className="w-8 h-8 text-zinc-700 mb-3"/>
-                            <p className="text-zinc-600 font-medium text-sm">No programs yet</p>
+                            <Users className="w-8 h-8 text-zinc-400 dark:text-zinc-700 mb-3"/>
+                            <p className="text-zinc-500 dark:text-zinc-600 font-medium text-sm">No programs yet</p>
                         </div>
                     )}
                 </section>
@@ -282,7 +282,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         subtitle="Essential rules, guidelines, and strategies to build and scale"
                         action={
                             <Link href="/public/playbooks"
-                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20 transition-all">
+                                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all">
                                 View All <ArrowRight className="w-3.5 h-3.5"/>
                             </Link>
                         }
@@ -291,27 +291,27 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {playbooks.slice(0, 6).map((item: any) => (
                                 <Link key={item.id} href={`/public/playbooks/${item.id}`}
-                                    className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-white/[0.12]", glassClass)}>
+                                    className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-black/[0.12] dark:hover:border-white/[0.12]", glassClass)}>
                                     <div className="flex items-start gap-3 mb-4">
-                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 shrink-0">
-                                            <BookOpen className="w-5 h-5 text-white"/>
+                                        <div className="p-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 shrink-0">
+                                            <BookOpen className="w-5 h-5 text-black dark:text-white"/>
                                         </div>
                                         <div className="min-w-0">
-                                            <h3 className="font-semibold text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-100 transition-colors">{item.title}</h3>
-                                            {item.description && <p className="text-xs text-zinc-600 line-clamp-2">{item.description}</p>}
+                                            <h3 className="font-semibold text-black dark:text-white text-sm leading-snug mb-1 line-clamp-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-100 transition-colors">{item.title}</h3>
+                                            {item.description && <p className="text-xs text-zinc-500 dark:text-zinc-600 line-clamp-2">{item.description}</p>}
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.04]">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-600 group-hover:text-zinc-400 transition-colors">Read Playbook</span>
-                                        <ArrowRight className="w-3.5 h-3.5 text-zinc-700 group-hover:text-white transition-colors"/>
+                                    <div className="flex items-center justify-between pt-3 border-t border-black/[0.04] dark:border-white/[0.04]">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-600 group-hover:text-zinc-700 dark:group-hover:text-zinc-400 transition-colors">Read Playbook</span>
+                                        <ArrowRight className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-700 group-hover:text-black dark:group-hover:text-white transition-colors"/>
                                     </div>
                                 </Link>
                             ))}
                         </div>
                     ) : (
                         <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                            <BookOpen className="w-8 h-8 text-zinc-700 mb-3"/>
-                            <p className="text-zinc-600 font-medium text-sm">No playbooks yet</p>
+                            <BookOpen className="w-8 h-8 text-zinc-400 dark:text-zinc-700 mb-3"/>
+                            <p className="text-zinc-500 dark:text-zinc-600 font-medium text-sm">No playbooks yet</p>
                         </div>
                     )}
                 </section>

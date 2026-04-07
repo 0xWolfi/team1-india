@@ -45,8 +45,8 @@ export function HomeNavbar() {
       <div
         className={cn(
           "fixed z-50 transition-all duration-300 ease-out",
-          // Mobile: full width, top
-          "top-0 left-0 w-full border-b border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/20 backdrop-blur-xl",
+          // Mobile: full width, top, safe area
+          "top-0 left-0 w-full pt-[env(safe-area-inset-top)] border-b border-black/5 dark:border-white/5 bg-white/60 dark:bg-black/20 backdrop-blur-xl",
           // Desktop: floating pill, centered
           "md:top-6 md:left-1/2 md:-translate-x-1/2 md:w-fit md:max-w-[95vw] md:bg-transparent md:border-none md:backdrop-filter-none",
           isScrolled && "md:scale-90 md:translate-y-[-10px]",
@@ -55,7 +55,16 @@ export function HomeNavbar() {
       >
         <div className="flex items-center justify-between md:justify-start w-full gap-1 px-6 py-3 md:p-1.5 md:rounded-2xl md:bg-white/60 dark:md:bg-black/40 md:backdrop-blur-md md:border md:border-black/10 dark:md:border-white/10 md:shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:md:shadow-[0_8px_32px_rgba(0,0,0,0.5)] md:supports-[backdrop-filter]:bg-white/40 dark:md:supports-[backdrop-filter]:bg-black/20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group">
+          <Link
+            href="/"
+            onClick={(e) => {
+              if (window.location.pathname === "/") {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+            className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"
+          >
             <Team1Logo className="h-3.5 w-auto relative z-10" />
           </Link>
 

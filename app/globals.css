@@ -100,8 +100,6 @@ body {
   color: var(--foreground);
   font-family: var(--font-kanit), 'Kanit', sans-serif;
   overflow-x: clip;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
@@ -163,4 +161,22 @@ html {
 @keyframes textshine {
   0% { background-position: 100% 50%; }
   100% { background-position: -100% 50%; }
+}
+
+/* Members showcase infinite scroll */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-scroll-left {
+  animation: scroll-left 30s linear infinite;
+  width: max-content;
+}
+.animate-scroll-right {
+  animation: scroll-right 30s linear infinite;
+  width: max-content;
 }

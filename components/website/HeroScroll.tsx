@@ -152,7 +152,7 @@ function StatCard({
   return (
     <motion.div
       style={{ backgroundColor: stat.image ? undefined : bg, borderColor: border, boxShadow: boxSh }}
-      className="relative flex flex-col justify-between p-6 md:p-8 lg:p-10 min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border bg-zinc-100/60 dark:bg-zinc-950/40"
+      className="relative flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10 min-h-[200px] sm:min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border bg-zinc-100/60 dark:bg-zinc-950/40"
     >
       {/* Background image (if provided) */}
       {stat.image && (
@@ -179,7 +179,7 @@ function StatCard({
         <motion.div style={{ color: iconC }}>{stat.icon}</motion.div>
       </div>
       <div className="relative z-10 flex flex-col mt-auto text-left gap-1">
-        <motion.div style={{ color: numC }} className="text-6xl sm:text-7xl lg:text-[6rem] xl:text-[7rem] font-bold tracking-tighter leading-none mb-2">
+        <motion.div style={{ color: numC }} className="text-4xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7rem] font-bold tracking-tighter leading-none mb-2">
           <AnimatedCounter target={stat.value} suffix={stat.suffix} progress={progress} range={counterRange} />
         </motion.div>
         <motion.p style={{ color: txtC }} className="text-sm lg:text-base font-medium leading-snug max-w-[160px] sm:self-auto self-end text-right sm:text-left">
@@ -339,8 +339,8 @@ export const HeroScroll = () => {
   const glows = [glow0, glow1, glow2, glow3];
 
   return (
-    <header id="hero" ref={containerRef} className="relative h-[800vh]" role="banner">
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-[var(--background)]">
+    <header id="hero" ref={containerRef} className="relative h-[500vh] md:h-[800vh]" role="banner">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[var(--background)]">
         {/* Background */}
         <div className="absolute inset-0 bg-[var(--background)]" />
         <HeroBackground isDark={isDark} />
@@ -421,7 +421,7 @@ export const HeroScroll = () => {
         {/* ═══ Phase 4: Stats ═══ */}
         <motion.div
           style={{ opacity: statsContainerOpacity }}
-          className={`absolute inset-0 z-30 flex flex-col items-center justify-center px-6 ${interactive ? "pointer-events-auto" : "pointer-events-none"}`}
+          className={`absolute inset-0 z-30 flex flex-col items-center justify-center px-4 sm:px-6 ${interactive ? "pointer-events-auto" : "pointer-events-none"}`}
         >
           {/* Separate bg so it doesn't exist when opacity is 0 */}
           <motion.div
@@ -430,7 +430,7 @@ export const HeroScroll = () => {
           />
           <div className="relative w-full max-w-7xl mx-auto">
             <motion.div style={{ opacity: headingOpacity, scale: headingScale, y: headingY }} className="mb-6 lg:mb-8 text-center">
-              <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight">
                 What We Have Done
               </h2>
             </motion.div>

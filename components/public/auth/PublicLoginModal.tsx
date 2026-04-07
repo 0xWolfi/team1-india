@@ -28,22 +28,22 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div 
-        className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div
+        className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <button 
+        <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
         >
           <X className="w-5 h-5"/>
         </button>
 
         <div className="p-8">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Welcome</h2>
-            <p className="text-zinc-400">Sign in to access the public guidebook and profile.</p>
+            <h2 className="text-2xl font-bold text-black dark:text-white mb-2">Welcome</h2>
+            <p className="text-zinc-500 dark:text-zinc-400">Sign in to access the public guidebook and profile.</p>
           </div>
 
           <div className="space-y-6">

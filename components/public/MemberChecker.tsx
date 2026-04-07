@@ -47,7 +47,7 @@ export default function MemberChecker() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Row 1 */}
                         <div>
-                            <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">Email Address</label>
+                            <label className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-1 ml-1">Email Address</label>
                             <input
                                 type="email"
                                 value={email}
@@ -60,11 +60,11 @@ export default function MemberChecker() {
                                     }
                                 }}
                                 placeholder="name@example.com"
-                                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-black/50 dark:focus:border-white/50 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">X Handle</label>
+                            <label className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-1 ml-1">X Handle</label>
                             <div className="relative">
                                 <span className="absolute left-3 top-2.5 text-zinc-500 text-sm">@</span>
                                 <input
@@ -79,14 +79,14 @@ export default function MemberChecker() {
                                         }
                                     }}
                                     placeholder="username"
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                    className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-black/50 dark:focus:border-white/50 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                                 />
                             </div>
                         </div>
                         
                         {/* Row 2 */}
                         <div>
-                            <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">Telegram Handle</label>
+                            <label className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-1 ml-1">Telegram Handle</label>
                             <div className="relative">
                                 <span className="absolute left-3 top-2.5 text-zinc-500 text-sm">@</span>
                                 <input
@@ -101,12 +101,12 @@ export default function MemberChecker() {
                                         }
                                     }}
                                     placeholder="username"
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                    className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-black/50 dark:focus:border-white/50 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                                 />
                             </div>
                         </div>
                         <div>
-                             <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1 ml-1">Discord ID</label>
+                             <label className="block text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase mb-1 ml-1">Discord ID</label>
                             <div className="relative">
                                 <span className="absolute left-3 top-2.5 text-zinc-500 text-sm">@</span>
                                 <input
@@ -121,7 +121,7 @@ export default function MemberChecker() {
                                         }
                                     }}
                                     placeholder="username"
-                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-500"
+                                    className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg pl-7 pr-3 py-2 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-black/50 dark:focus:border-white/50 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                                 />
                             </div>
                         </div>
@@ -130,7 +130,7 @@ export default function MemberChecker() {
                     <button
                         type="submit"
                         disabled={status === 'LOADING' || (!email && !xHandle && !telegram && !discord)}
-                        className="w-full bg-white/5 hover:bg-white/10 border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed text-zinc-400 hover:text-white font-medium text-sm py-2 rounded-lg transition-all flex items-center justify-center gap-2"
+                        className="w-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 disabled:opacity-50 disabled:cursor-not-allowed text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white font-medium text-sm py-2 rounded-lg transition-all flex items-center justify-center gap-2"
                     >
                         {status === 'LOADING' ? (
                             <>
@@ -150,13 +150,13 @@ export default function MemberChecker() {
                         <div className="flex items-center gap-3 text-emerald-400 bg-emerald-500/10 px-4 py-3 rounded-xl border border-emerald-500/20 w-full justify-center">
                             <CheckCircle2 className="w-5 h-5 shrink-0"/>
                             <span className="font-medium text-sm">
-                                Yes, <strong className="text-white">{result.name}</strong> is a <span className="capitalize">{result.role}</span>.
+                                Yes, <strong className="text-black dark:text-white">{result.name}</strong> is a <span className="capitalize">{result.role}</span>.
                             </span>
                         </div>
                     )}
 
                     {status === 'NOT_FOUND' && (
-                        <div className="flex items-center gap-3 text-zinc-400 bg-zinc-800/50 px-4 py-3 rounded-xl border border-white/5 w-full justify-center">
+                        <div className="flex items-center gap-3 text-zinc-500 dark:text-zinc-400 bg-zinc-100/50 dark:bg-zinc-800/50 px-4 py-3 rounded-xl border border-black/5 dark:border-white/5 w-full justify-center">
                             <XCircle className="w-5 h-5 shrink-0"/>
                             <span className="font-medium text-sm">No member found with these details.</span>
                         </div>

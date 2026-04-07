@@ -25,7 +25,7 @@ export function GetInvolved() {
           </div>
 
           <div className="relative z-10 p-8 md:p-16 text-center">
-            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white mb-6 tracking-tight">
+            <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white mb-6 tracking-tight">
               Ready to Make an Impact?
             </h2>
             <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">

@@ -4,6 +4,7 @@ import { Announcements } from "@/components/website/Announcements";
 import { Footer } from "@/components/website/Footer";
 import { WhatWeDo } from "@/components/website/WhatWeDo";
 import { Preloader } from "@/components/ui/Preloader";
+import { ScrollReset } from "@/components/website/ScrollReset";
 import dynamic from "next/dynamic";
 
 // Lazy load heavy interactive components below the fold
@@ -22,6 +23,7 @@ function SectionDivider() {
 export default function Home() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+      <ScrollReset />
       <Preloader />
       <HomeNavbar />
       <div className="flex flex-col">
