@@ -12,7 +12,7 @@ const navItems = [
   { label: "About", href: "#about" },
   { label: "Programs", href: "#programs" },
   { label: "Impact", href: "#impact" },
-  { label: "Community", href: "#get-involved" },
+  { label: "Community", href: "#members" },
 ];
 
 export function HomeNavbar() {
@@ -61,6 +61,7 @@ export function HomeNavbar() {
               if (window.location.pathname === "/") {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: "smooth" });
+                history.replaceState(null, "", "/");
               }
             }}
             className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"

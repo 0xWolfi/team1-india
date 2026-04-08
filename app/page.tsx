@@ -11,6 +11,8 @@ import dynamic from "next/dynamic";
 const Events = dynamic(() => import("@/components/website/Events").then(mod => mod.Events));
 const Programs = dynamic(() => import("@/components/website/Programs").then(mod => mod.Programs));
 const GetInvolved = dynamic(() => import("@/components/website/GetInvolved").then(mod => mod.GetInvolved));
+const Members = dynamic(() => import("@/components/website/Members").then(mod => mod.Members));
+const Gallery = dynamic(() => import("@/components/website/Gallery").then(mod => mod.Gallery));
 
 function SectionDivider() {
   return (
@@ -49,6 +51,18 @@ export default function Home() {
 
         <section id="programs" aria-label="Accelerator Programs">
           <Programs />
+        </section>
+
+        <SectionDivider />
+
+        <section id="members" aria-label="Our Members">
+          <Members />
+        </section>
+
+        <SectionDivider />
+
+        <section id="gallery" aria-label="Event Gallery">
+          <Gallery />
         </section>
 
         <SectionDivider />

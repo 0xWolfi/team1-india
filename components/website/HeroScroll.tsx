@@ -91,25 +91,30 @@ function TextReveal({
     setActiveIndex(Math.floor(t * totalWords));
   });
 
-  // Image animations - left image fades in early, right image fades in near end
-  const leftImageOpacity = useTransform(
-    progress,
-    [revealRange[0], revealRange[0] + 0.03, exitRange[0], exitRange[0] + (exitRange[1] - exitRange[0]) * 0.98],
-    [0, 1, 1, 0]
-  );
-  const leftImageScale = useTransform(
-    progress,
-    [revealRange[0], revealRange[0] + 0.04],
-    [0.9, 1]
-  );
+  // Image animations — right image shows first, then crossfades to left image
+  const midpoint = revealRange[0] + (revealRange[1] - revealRange[0]) * 0.55;
+
+  // Right image (bottom-right): visible from start, fades out at midpoint
   const rightImageOpacity = useTransform(
     progress,
-    [revealRange[0] + (revealRange[1] - revealRange[0]) * 0.6, revealRange[1], exitRange[0], exitRange[0] + (exitRange[1] - exitRange[0]) * 0.98],
+    [revealRange[0], revealRange[0] + 0.03, midpoint - 0.02, midpoint],
     [0, 1, 1, 0]
   );
   const rightImageScale = useTransform(
     progress,
-    [revealRange[0] + (revealRange[1] - revealRange[0]) * 0.6, revealRange[1]],
+    [revealRange[0], revealRange[0] + 0.04],
+    [0.9, 1]
+  );
+
+  // Left image (top-left): fades in at midpoint, stays until exit
+  const leftImageOpacity = useTransform(
+    progress,
+    [midpoint, midpoint + 0.03, exitRange[0], exitRange[0] + (exitRange[1] - exitRange[0]) * 0.98],
+    [0, 1, 1, 0]
+  );
+  const leftImageScale = useTransform(
+    progress,
+    [midpoint, midpoint + 0.04],
     [0.9, 1]
   );
 
@@ -123,7 +128,7 @@ function TextReveal({
         style={{ opacity: leftImageOpacity, scale: leftImageScale }}
         className="absolute top-8 left-4 md:top-12 md:left-8 lg:top-16 lg:left-12 hidden md:block"
       >
-        <div className="w-40 lg:w-52 xl:w-60 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 dark:border-white/10 shadow-2xl shadow-black/20">
+        <div className="w-56 lg:w-72 xl:w-80 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 dark:border-white/10 shadow-2xl shadow-black/20">
           <img src="/story-left.jpg" alt="" className="w-full h-full object-cover" />
         </div>
       </motion.div>
@@ -133,7 +138,7 @@ function TextReveal({
         style={{ opacity: rightImageOpacity, scale: rightImageScale }}
         className="absolute bottom-36 right-4 md:bottom-40 md:right-8 lg:bottom-44 lg:right-12 hidden md:block"
       >
-        <div className="w-40 lg:w-52 xl:w-60 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 dark:border-white/10 shadow-2xl shadow-black/20">
+        <div className="w-56 lg:w-72 xl:w-80 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 dark:border-white/10 shadow-2xl shadow-black/20">
           <img src="/story-right.jpg" alt="" className="w-full h-full object-cover" />
         </div>
       </motion.div>
