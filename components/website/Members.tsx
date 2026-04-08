@@ -15,7 +15,7 @@ function getTwitterUrl(handle: string) {
 
 function getAvatarUrl(handle: string) {
   const clean = handle.replace(/^@/, "").replace(/https?:\/\/(www\.)?(twitter|x)\.com\//, "").split("/")[0].split("?")[0];
-  return `https://unavatar.io/x/${clean}`;
+  return `/api/avatar?handle=${encodeURIComponent(clean)}`;
 }
 
 function MemberAvatar({ member, index }: { member: MemberData; index: number }) {
