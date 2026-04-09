@@ -201,19 +201,15 @@ export function Programs() {
   }, []);
 
   return (
-    <section className="py-16 md:py-24 bg-[var(--background)]" ref={containerRef}>
+    <section className="py-10 md:py-16 bg-[var(--background)]" ref={containerRef}>
       <div className="max-w-6xl mx-auto px-5 md:px-8">
         {/* Heading */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white tracking-tight mb-4">
-            Programs designed for
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white tracking-tight uppercase leading-[1.1]">
+            PROGRAMS DESIGNED FOR
             <br />
-            every stage of your journey
+            EVERY STAGE OF YOUR JOURNEY
           </h2>
-          <p className="text-zinc-500 dark:text-zinc-500 text-sm md:text-lg max-w-2xl mx-auto">
-            Whether you are a student, a builder, or a founder, we have a
-            place for you.
-          </p>
           <p className="sr-only">
             Our accelerator offers specific tracks for different stages:
             Student Leads, Open Fellowship, Startup Incubator, Hackathon

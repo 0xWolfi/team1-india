@@ -180,3 +180,19 @@ html {
   animation: scroll-right 30s linear infinite;
   width: max-content;
 }
+
+/* Gallery marquee — variable speed via inline animationDuration */
+.gallery-marquee-left {
+  animation: scroll-left linear infinite;
+  width: max-content;
+  will-change: transform;
+}
+.gallery-marquee-right {
+  animation: scroll-right linear infinite;
+  width: max-content;
+  will-change: transform;
+}
+.gallery-marquee-left:hover,
+.gallery-marquee-right:hover {
+  animation-play-state: paused;
+}

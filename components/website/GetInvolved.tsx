@@ -10,7 +10,7 @@ export function GetInvolved() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="involved" className="py-20 md:py-28 relative overflow-hidden">
+    <section id="involved" className="py-12 md:py-16 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10 flex justify-center">
         <motion.div
           ref={ref}
@@ -25,8 +25,8 @@ export function GetInvolved() {
           </div>
 
           <div className="relative z-10 p-8 md:p-16 text-center">
-            <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white mb-6 tracking-tight">
-              Ready to Make an Impact?
+            <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white mb-6 tracking-tight uppercase leading-[1.1]">
+              READY TO MAKE AN IMPACT?
             </h2>
             <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
               Join a community of builders, innovators, and change-makers. Whether you are a student, professional, or partner, there is a place for you.

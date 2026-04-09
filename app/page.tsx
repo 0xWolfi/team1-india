@@ -12,11 +12,11 @@ const Events = dynamic(() => import("@/components/website/Events").then(mod => m
 const Programs = dynamic(() => import("@/components/website/Programs").then(mod => mod.Programs));
 const GetInvolved = dynamic(() => import("@/components/website/GetInvolved").then(mod => mod.GetInvolved));
 const Members = dynamic(() => import("@/components/website/Members").then(mod => mod.Members));
-const Gallery = dynamic(() => import("@/components/website/Gallery").then(mod => mod.Gallery));
+const Gallery = dynamic(() => import("@/components/website/GalleryWrapper").then(mod => mod.GalleryWrapper));
 
 function SectionDivider() {
   return (
-    <div className="flex items-center justify-center py-10 md:py-16">
+    <div className="flex items-center justify-center py-3 md:py-5">
       <div className="w-24 h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent" />
     </div>
   );

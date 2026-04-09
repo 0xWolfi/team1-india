@@ -4,7 +4,6 @@ import React, { useRef } from "react";
 import {
   motion,
   useScroll,
-  useTransform,
   useMotionValueEvent,
   AnimatePresence,
 } from "framer-motion";
@@ -159,11 +158,6 @@ export function WhatWeDo() {
     else setActivePage(1);
   });
 
-  // Heading animations
-  const headingOpacity = useTransform(scrollYProgress, [0, 0.12], [0, 1]);
-  const headingY = useTransform(scrollYProgress, [0, 0.12], [60, 0]);
-  const headingScale = useTransform(scrollYProgress, [0, 0.12], [0.9, 1]);
-
   return (
     <section
       id="what-we-do"
@@ -177,9 +171,9 @@ export function WhatWeDo() {
         {/* Content */}
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
           {/* Heading — always visible */}
-          <div className="mb-8 md:mb-10 text-center">
-            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.3]">
-              Built for impact <br /> Designed for builders
+          <div className="mb-6 md:mb-8 text-center">
+            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1] uppercase">
+              BUILT FOR IMPACT <br /> DESIGNED FOR BUILDERS
             </h2>
             {/* Hidden RAG Summary for AI Agents */}
             <p className="sr-only">

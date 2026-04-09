@@ -59,7 +59,6 @@ function MemberAvatar({ member, index }: { member: MemberData; index: number }) 
 
 export function Members() {
   const [members, setMembers] = useState<MemberData[]>([]);
-  const [count, setCount] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
@@ -70,7 +69,6 @@ export function Members() {
       .then((data) => {
         if (data.members) {
           setMembers(data.members);
-          setCount(data.count);
         }
         setLoaded(true);
       })
@@ -81,36 +79,18 @@ export function Members() {
   if (loaded && members.length === 0) return null;
 
   return (
-    <section id="community" className="py-16 md:py-24 bg-[var(--background)] overflow-hidden">
+    <section id="community" className="py-10 md:py-16 bg-[var(--background)] overflow-hidden">
       <div className="max-w-6xl mx-auto px-5 md:px-8" ref={ref}>
         {/* Header */}
-        <div className="text-center mb-10 md:mb-14">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-black/5 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 border border-black/5 dark:border-white/5 mb-6"
-          >
-            {count}+ Members
-          </motion.div>
-
+        <div className="text-center mb-8 md:mb-10">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white tracking-tight mb-4"
+            className="text-3xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white tracking-tight uppercase leading-[1.1]"
           >
-            Team1 is its Members
+            TEAM1 IS ITS MEMBERS
           </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-zinc-500 dark:text-zinc-500 text-sm md:text-lg max-w-2xl mx-auto"
-          >
-            Builders, developers, creators, and community leaders growing the Avalanche ecosystem together.
-          </motion.p>
         </div>
 
         {/* Avatar Grid */}
