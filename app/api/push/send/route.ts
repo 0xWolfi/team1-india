@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
 
 // Lazy initialization of VAPID details
@@ -34,12 +35,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { userId, notification } = await request.json();
+
+    // IDOR check: only allow sending to self or if CORE
+    if (userId !== session.user.id && session.user.role !== 'CORE') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     // Get all subscriptions for user
     // @ts-ignore

@@ -45,6 +45,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 });
+    if (session.user.role !== 'CORE') return new NextResponse("Forbidden", { status: 403 });
 
     try {
         const body = await request.json();

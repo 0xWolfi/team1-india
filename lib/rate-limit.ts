@@ -4,10 +4,13 @@ import { prisma } from "@/lib/prisma";
 /**
  * DB-backed Rate Limiter using Prisma
  * Works in Serverless environments (Vercel)
+ *
+ * Uses atomic conditional updates to prevent TOCTOU race conditions.
+ * Fails CLOSED on DB errors (rejects request) for security.
  */
 
 /**
- * Rate limit check
+ * Rate limit check — atomic, race-safe
  * @param request - Next.js request object
  * @param limit - Maximum number of requests
  * @param windowMs - Time window in milliseconds
@@ -21,30 +24,43 @@ export async function checkRateLimit(
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
                request.headers.get('x-real-ip') ||
                'unknown';
-    
-    if (ip === 'unknown') {
-        // Fallback for local/dev if headers missing, though risky in prod
-        // In prod, Next.js usually provides these.
-    }
 
     const key = `rate_limit:${ip}`;
     const now = Date.now();
-    const windowStart = now - windowMs;
 
     try {
-        // Clean up old entries (Lazy cleanup on write)
-        // Optimization: Do this rarely or rely on Cron, but for now strict safety:
-        // Or better: Upsert logic.
-        
-        let record = await prisma.rateLimit.findUnique({ where: { key } });
+        // Step 1: Try atomic increment within the current window
+        // This only succeeds if: record exists AND window hasn't expired AND count < limit
+        const incremented = await prisma.rateLimit.updateMany({
+            where: {
+                key,
+                resetAt: { gt: BigInt(now) },
+                count: { lt: limit },
+            },
+            data: { count: { increment: 1 } }
+        });
 
-        // If no record or expired, reset
-        if (!record || Number(record.resetAt) < now) {
-            record = await prisma.rateLimit.upsert({
+        if (incremented.count > 0) {
+            // Successfully incremented within limits
+            const record = await prisma.rateLimit.findUnique({ where: { key } });
+            return {
+                allowed: true,
+                remaining: Math.max(0, limit - (record?.count ?? limit)),
+                resetAt: Number(record?.resetAt ?? now + windowMs)
+            };
+        }
+
+        // Step 2: updateMany matched 0 rows. Either:
+        // (a) no record exists yet, (b) window expired, or (c) count >= limit
+        const existing = await prisma.rateLimit.findUnique({ where: { key } });
+
+        // Case (a) or (b): no record or window expired — reset the counter
+        if (!existing || Number(existing.resetAt) <= now) {
+            await prisma.rateLimit.upsert({
                 where: { key },
                 update: {
                     count: 1,
-                    resetAt: BigInt(now + windowMs) 
+                    resetAt: BigInt(now + windowMs)
                 },
                 create: {
                     key,
@@ -55,36 +71,21 @@ export async function checkRateLimit(
             return {
                 allowed: true,
                 remaining: limit - 1,
-                resetAt: Number(record.resetAt)
+                resetAt: now + windowMs
             };
         }
 
-        // Check limit
-        if (record.count >= limit) {
-             return {
-                allowed: false,
-                remaining: 0,
-                resetAt: Number(record.resetAt)
-            };
-        }
-
-        // Increment
-        record = await prisma.rateLimit.update({
-            where: { key },
-            data: { count: { increment: 1 } }
-        });
-
+        // Case (c): count >= limit and window hasn't expired — reject
         return {
-            allowed: true,
-            remaining: Math.max(0, limit - record.count),
-            resetAt: Number(record.resetAt)
+            allowed: false,
+            remaining: 0,
+            resetAt: Number(existing.resetAt)
         };
 
     } catch (error) {
         console.error("Rate Limit Error:", error);
-        // Fail open (allow) if DB is down, to avoid blocking legit users during outage
-        // But log critical error
-        return { allowed: true, remaining: 1, resetAt: now + windowMs };
+        // Fail CLOSED: reject request on DB error to prevent abuse during outages
+        return { allowed: false, remaining: 0, resetAt: now + windowMs };
     }
 }
 
@@ -97,10 +98,10 @@ export function withRateLimit(
 ) {
     return async (request: NextRequest): Promise<Response | null> => {
         const result = await checkRateLimit(request, limit, windowMs);
-        
+
         if (!result.allowed) {
             return new Response(
-                JSON.stringify({ 
+                JSON.stringify({
                     error: "Too many requests. Please try again later.",
                     retryAfter: Math.ceil((result.resetAt - Date.now()) / 1000)
                 }),
@@ -116,7 +117,7 @@ export function withRateLimit(
                 }
             );
         }
-        
+
         return null; // Continue with request
     };
 }

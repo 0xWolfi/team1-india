@@ -1,7 +1,14 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth-options';
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id || session.user.role !== 'CORE') {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
   try {
     const { to, subject, body } = await request.json();
 

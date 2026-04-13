@@ -1,13 +1,20 @@
 import { NextResponse } from 'next/server';
 import { list, del } from '@vercel/blob';
 import { prisma } from '@/lib/prisma';
+import crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-    // Basic authorization
-    const authHeader = request.headers.get('authorization');
-    if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    // Authorization — fail closed when CRON_SECRET is missing
+    const authHeader = request.headers.get('authorization') ?? '';
+    const secret = process.env.CRON_SECRET;
+    const expected = `Bearer ${secret}`;
+    if (
+        !secret ||
+        authHeader.length !== expected.length ||
+        !crypto.timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected))
+    ) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
 

@@ -8,7 +8,7 @@ Scope: Next.js 15 App Router codebase at `/Users/sarnavo/Development/Team1India`
 
 **The edge layer is dead.** `app/proxy.ts` exists and uses `next-auth/middleware` `withAuth`, but Next.js only loads middleware from `middleware.ts` (or `src/middleware.ts`) at project root. No such file exists. **The proxy file is never executed.** Every protection you think is happening at the edge — the `/api/*` 401 check, the `/api/upload` role gate, the `/api/member` role gate, the `/core` UI block — is not running. Every route stands on its own in-handler checks.
 
-**"Authenticated" means anyone with a Google account.** `lib/auth-options.ts:58-73` auto-creates a `PublicUser` row on first sign-in. There is no email allowlist. Any Google user on Earth can become a logged-in PUBLIC user. Routes that "only check session exists" are effectively world-writable with a one-click sign-in.
+**"Authenticated" means anyone with a Google account.** `lib/auth-options.ts:58-73` auto-creates a `PublicUser` row on first sign-in. There is no email allowlist. Any Google user on Earth can become a logged-in PUBLIC user. aRoutes that "only check session exists" are effectively world-writable with a one-click sign-in.
 
 **Cookies are fine:** `httpOnly=true`, `sameSite=lax`, `secure=true` in prod, `__Host-`/`__Secure-` prefixes. JWT strategy, HS256 with `NEXTAUTH_SECRET`. No `alg:none`, no `localStorage`. CSRF covered by NextAuth for `/api/auth/*` and by `sameSite=lax` for custom routes (weak — see M1).
 

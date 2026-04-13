@@ -3,6 +3,23 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 
+// Field allowlists — block permissions, status, role, deletedAt, etc.
+const ALLOWED_FIELDS: Record<string, string[]> = {
+    members: ['name', 'tags', 'customFields', 'xHandle', 'twitterUrl', 'bio'],
+    projects: ['name', 'description', 'status', 'tags', 'links', 'coverImage'],
+    partners: ['name', 'description', 'status', 'tags', 'links', 'logo', 'website'],
+};
+
+function sanitizeBody(table: string, body: Record<string, any>): Record<string, any> {
+    const allowed = ALLOWED_FIELDS[table];
+    if (!allowed) return body;
+    const sanitized: Record<string, any> = {};
+    for (const key of allowed) {
+        if (key in body) sanitized[key] = body[key];
+    }
+    return sanitized;
+}
+
 const getDelegate = (tableName: string) => {
     switch (tableName) {
         // @ts-ignore
@@ -33,10 +50,9 @@ export async function PATCH(
 
     try {
         const body = await request.json();
-        
-        // Data Handling
-        let data = { ...body };
-        // Removed: special handling for tags array conversion (now scalar)
+
+        // Sanitize: only allow safe fields, block permissions/status/role/deletedAt
+        const data = sanitizeBody(table, body);
 
         const updated = await (delegate as any).update({
             where: { id },
@@ -67,9 +83,10 @@ export async function DELETE(
     if (!delegate) return new NextResponse('Invalid table', { status: 400 });
 
     try {
-        // Hard delete
-        const deleted = await (delegate as any).delete({
-            where: { id }
+        // Soft delete instead of hard delete to prevent data loss
+        const deleted = await (delegate as any).update({
+            where: { id },
+            data: { deletedAt: new Date() }
         });
 
         return NextResponse.json(deleted);
