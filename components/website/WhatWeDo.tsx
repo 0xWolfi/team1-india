@@ -91,8 +91,8 @@ function Card({ card, index }: { card: CardData; index: number }) {
       animate={{ rotateY: 0, opacity: 1 }}
       exit={{ rotateY: 90, opacity: 0 }}
       transition={{
-        duration: 0.6,
-        delay: index * 0.12,
+        duration: 0.35,
+        delay: index * 0.06,
         ease: [0.22, 1, 0.36, 1],
       }}
       style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
@@ -162,7 +162,7 @@ export function WhatWeDo() {
     <section
       id="what-we-do"
       ref={containerRef}
-      className="relative h-[300vh]"
+      className="relative h-[200vh]"
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-[var(--background)]">
         {/* Background decorator */}

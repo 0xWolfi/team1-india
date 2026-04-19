@@ -36,7 +36,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
     <div className="w-full max-w-7xl mx-auto space-y-6">
       
       {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-3xl mx-auto">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-start gap-4 w-full">
         {/* Search */}
         <div className="relative w-full md:w-64 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -79,11 +79,11 @@ export function EventGrid({ initialEvents }: EventGridProps) {
       </div>
 
       {filteredEvents.length > 0 ? (
-        <div className="flex flex-col items-center gap-10">
+        <div className="flex flex-col items-start gap-10">
             {/* Horizontal scroll: all event cards */}
             <div className="w-full px-4">
                 <div className="overflow-x-auto overflow-y-hidden pb-4 -mx-4 px-4 md:mx-0 md:px-0" style={{ scrollSnapType: "x mandatory" }}>
-                  <div className="flex gap-4 sm:gap-8 justify-center min-w-0">
+                  <div className="flex gap-4 sm:gap-8 justify-start min-w-0">
                     {filteredEvents.map(({ event, api_id }) => {
                       const fallbackGradient = "bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-900";
                       return (
@@ -108,7 +108,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                                 </div>
                               )}
                             </div>
-                          <div className="space-y-2 text-center">
+                          <div className="space-y-2 text-left">
                             <h3 className="text-xl font-bold text-black dark:text-white leading-tight line-clamp-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors">
                               {event.name}
                             </h3>

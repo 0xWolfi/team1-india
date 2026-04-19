@@ -36,15 +36,17 @@ export function GetInvolved() {
                 href="/public"
                 className="group px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-base font-bold rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all w-full sm:w-auto flex items-center justify-center gap-2"
               >
-                Guidebook
+                Explore
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link
-                href="mailto:hello@team1india.com"
+              <a
+                href="https://t.me/avalanche_hi"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group px-8 py-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white text-base font-bold rounded-xl hover:bg-black/10 dark:hover:bg-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all w-full sm:w-auto"
               >
-                Contact Us
-              </Link>
+                Join Us
+              </a>
             </div>
           </div>
         </motion.div>

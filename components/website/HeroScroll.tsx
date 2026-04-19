@@ -10,8 +10,7 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Send, ArrowRight, Calendar, School, Trophy, Rocket } from "lucide-react";
-import { TabletMockup } from "@/components/ui/TabletMockup";
+import { Send, ArrowRight, Calendar, School, Trophy, Rocket, X, Play } from "lucide-react";
 import { useTheme } from "next-themes";
 
 /* ═══════════════════════════════════════════
@@ -76,7 +75,7 @@ function TextReveal({
     [fadeInStart, revealRange[0], exitRange[0], exitRange[0] + (exitRange[1] - exitRange[0]) * 0.98],
     [0, 1, 1, 0]
   );
-  // During exit: slides UP — clipped by overflow:hidden, no gap before tablet
+  // During exit: slides UP
   const containerY = useTransform(
     progress,
     [fadeInStart, revealRange[0], exitRange[0], exitRange[1]],
@@ -87,62 +86,14 @@ function TextReveal({
     if (v < revealRange[0]) { setActiveIndex(-1); return; }
     if (v > revealRange[1]) { setActiveIndex(totalWords); return; }
     const t = (v - revealRange[0]) / (revealRange[1] - revealRange[0]);
-    // Ease-out curve so words accelerate slightly as we scroll
     setActiveIndex(Math.floor(t * totalWords));
   });
-
-  // Image animations — right image shows first, then crossfades to left image
-  const midpoint = revealRange[0] + (revealRange[1] - revealRange[0]) * 0.55;
-
-  // Right image (bottom-right): visible from start, fades out at midpoint
-  const rightImageOpacity = useTransform(
-    progress,
-    [revealRange[0], revealRange[0] + 0.03, midpoint - 0.02, midpoint],
-    [0, 1, 1, 0]
-  );
-  const rightImageScale = useTransform(
-    progress,
-    [revealRange[0], revealRange[0] + 0.04],
-    [0.9, 1]
-  );
-
-  // Left image (top-left): fades in at midpoint, stays until exit
-  const leftImageOpacity = useTransform(
-    progress,
-    [midpoint, midpoint + 0.03, exitRange[0], exitRange[0] + (exitRange[1] - exitRange[0]) * 0.98],
-    [0, 1, 1, 0]
-  );
-  const leftImageScale = useTransform(
-    progress,
-    [midpoint, midpoint + 0.04],
-    [0.9, 1]
-  );
 
   return (
     <motion.div
       style={{ opacity: containerOpacity, y: containerY }}
       className="absolute inset-0 z-[15] flex items-center justify-center pointer-events-none px-4 md:px-8"
     >
-      {/* Left image - top left, visible on md+ */}
-      <motion.div
-        style={{ opacity: leftImageOpacity, scale: leftImageScale }}
-        className="absolute top-8 left-4 md:top-12 md:left-8 lg:top-16 lg:left-12 hidden md:block"
-      >
-        <div className="w-56 lg:w-72 xl:w-80 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 dark:border-white/10 shadow-2xl shadow-black/20">
-          <img src="/story-left.jpg" alt="" className="w-full h-full object-cover" />
-        </div>
-      </motion.div>
-
-      {/* Right image - bottom right, visible on md+ */}
-      <motion.div
-        style={{ opacity: rightImageOpacity, scale: rightImageScale }}
-        className="absolute bottom-36 right-4 md:bottom-40 md:right-8 lg:bottom-44 lg:right-12 hidden md:block"
-      >
-        <div className="w-56 lg:w-72 xl:w-80 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 dark:border-white/10 shadow-2xl shadow-black/20">
-          <img src="/story-right.jpg" alt="" className="w-full h-full object-cover" />
-        </div>
-      </motion.div>
-
       <p className="max-w-[1400px] w-full text-center text-xl sm:text-2xl md:text-3xl lg:text-[2.5rem] xl:text-[2.75rem] font-medium leading-[1.6] sm:leading-[1.5] md:leading-[1.5] lg:leading-[1.45] tracking-tight">
         {storyWords.map((word, i) => {
           const isRevealed = i <= activeIndex;
@@ -172,6 +123,141 @@ function TextReveal({
         })}
       </p>
     </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   CursorVideo — follows cursor, expands on click
+   ═══════════════════════════════════════════ */
+
+function CursorVideo({
+  progress,
+  visibleRange,
+}: {
+  progress: MotionValue<number>;
+  visibleRange: [number, number];
+}) {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const expandedVideoRef = useRef<HTMLVideoElement>(null);
+
+  useMotionValueEvent(progress, "change", (v) => {
+    setIsVisible(v >= visibleRange[0] && v <= visibleRange[1]);
+  });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    if (isExpanded && expandedVideoRef.current) {
+      expandedVideoRef.current.play().catch(() => {});
+    }
+  }, [isExpanded]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isExpanded) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsExpanded(false);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [isExpanded]);
+
+  if (!isVisible && !isExpanded) return null;
+
+  return (
+    <>
+      {/* Cursor-influenced thumbnail — anchored right, subtle parallax from cursor */}
+      {isVisible && !isExpanded && (
+        <motion.div
+          className="fixed z-[100] pointer-events-auto cursor-pointer hidden md:block"
+          style={{ right: 24, top: "50%", y: "-50%" }}
+          animate={{
+            x: ((mousePos.x / (typeof window !== "undefined" ? window.innerWidth || 1 : 1)) - 0.5) * 14,
+            y: ((mousePos.y / (typeof window !== "undefined" ? window.innerHeight || 1 : 1)) - 0.5) * 14,
+            scale: isHovered ? 1.06 : 1,
+          }}
+          transition={{ type: "spring", damping: 30, stiffness: 180, mass: 0.4 }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={() => setIsExpanded(true)}
+        >
+          <div className="relative w-28 lg:w-32 aspect-video rounded-lg overflow-hidden border border-white/15 shadow-xl shadow-black/30 group">
+            <video
+              ref={videoRef}
+              src="/hero-video.mp4"
+              className="w-full h-full object-cover"
+              muted
+              loop
+              playsInline
+              poster="/hero-cover.jpg"
+            />
+            {/* Play icon overlay */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors duration-300">
+              <div className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Play className="w-3.5 h-3.5 text-black fill-black ml-0.5" />
+              </div>
+            </div>
+            {/* Red glow border on hover */}
+            <motion.div
+              className="absolute inset-0 rounded-lg border border-red-500/0 pointer-events-none"
+              animate={{ borderColor: isHovered ? "rgba(239,68,68,0.5)" : "rgba(239,68,68,0)" }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+        </motion.div>
+      )}
+
+      {/* Expanded video modal */}
+      {isExpanded && (
+        <motion.div
+          className="fixed inset-0 z-[200] flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {/* Backdrop */}
+          <motion.div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={() => setIsExpanded(false)}
+          />
+          {/* Video container */}
+          <motion.div
+            className="relative w-[90vw] max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-black/60 z-10"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          >
+            <video
+              ref={expandedVideoRef}
+              src="/hero-video.mp4"
+              className="w-full h-full object-cover"
+              controls
+              autoPlay
+              playsInline
+            />
+            {/* Close button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); setIsExpanded(false); }}
+              className="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 hover:bg-red-500 text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-sm border border-white/10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </>
   );
 }
 
@@ -328,12 +414,10 @@ function GridOverlay({ isDark }: { isDark: boolean }) {
    ─────────────────────────────────────────
    0.00–0.05  Hero holds
    0.05–0.11  Hero fades + scales out
-   0.10–0.28  Text words reveal one-by-one
-   0.28–0.34  Text slides up ←→ Tablet rises (SIMULTANEOUS)
-   0.34–0.44  Tablet holds (video plays)
-   0.44–0.50  Tablet exits ←→ Stats enters (SIMULTANEOUS)
-   0.50–0.58  Stats heading + cards appear
-   0.58–0.86  Card glows sequentially (longer duration)
+   0.10–0.28  Text words reveal (cursor video follows mouse)
+   0.28–0.38  Text slides up → Stats enters
+   0.38–0.46  Stats heading + cards appear
+   0.46–0.86  Card glows sequentially
    0.86–1.00  Stats hold for interaction
    ═══════════════════════════════════════════ */
 
@@ -359,30 +443,27 @@ export const HeroScroll = () => {
 
   /* ── Phase 2: Text (words reveal, then slides up and out) ── */
   const textRevealRange: [number, number] = [0.10, 0.28];
-  const textExitRange: [number, number]   = [0.28, 0.34];
+  const textExitRange: [number, number]   = [0.28, 0.38];
 
-  /* ── Phase 3: Tablet (follows text — same range 0.28→0.34, same 600px travel) ── */
-  const tabletOpacity = useTransform(scrollYProgress, [0.27, 0.28, 0.46, 0.52], [0, 1, 1, 0]);
-  const tabletY       = useTransform(scrollYProgress, [0.28, 0.36, 0.46, 0.52], [600, 0, 0, -400]);
-  const tabletScale   = useTransform(scrollYProgress, [0.28, 0.36, 0.46, 0.52], [0.95, 1, 1, 0.92]);
-  const tabletRotate  = useTransform(scrollYProgress, [0.28, 0.36], [3, 0]);
+  /* ── Cursor video visible during text reveal ── */
+  const cursorVideoRange: [number, number] = [0.10, 0.34];
 
-  /* ── Phase 4: Stats (starts RIGHT when tablet is gone at 0.52) ── */
-  const statsContainerOpacity = useTransform(scrollYProgress, [0.52, 0.58], [0, 1]);
-  const headingOpacity = useTransform(scrollYProgress, [0.52, 0.58], [0, 1]);
-  const headingScale   = useTransform(scrollYProgress, [0.52, 0.58], [0.88, 1]);
-  const headingY       = useTransform(scrollYProgress, [0.52, 0.58], [40, 0]);
-  const statsOpacity   = useTransform(scrollYProgress, [0.58, 0.64], [0, 1]);
-  const statsScale     = useTransform(scrollYProgress, [0.58, 0.64], [0.92, 1]);
-  const statsY         = useTransform(scrollYProgress, [0.58, 0.64], [50, 0]);
+  /* ── Phase 3: Stats (enters after text exits) ── */
+  const statsContainerOpacity = useTransform(scrollYProgress, [0.36, 0.42], [0, 1]);
+  const headingOpacity = useTransform(scrollYProgress, [0.36, 0.42], [0, 1]);
+  const headingScale   = useTransform(scrollYProgress, [0.36, 0.42], [0.88, 1]);
+  const headingY       = useTransform(scrollYProgress, [0.36, 0.42], [40, 0]);
+  const statsOpacity   = useTransform(scrollYProgress, [0.42, 0.48], [0, 1]);
+  const statsScale     = useTransform(scrollYProgress, [0.42, 0.48], [0.92, 1]);
+  const statsY         = useTransform(scrollYProgress, [0.42, 0.48], [50, 0]);
 
-  const counterRange: [number, number] = [0.58, 0.66];
+  const counterRange: [number, number] = [0.42, 0.50];
 
   /* Card glows — strictly sequential + plateau + dim gaps between cards */
-  const glow0 = useTransform(scrollYProgress, [0.66, 0.68, 0.71, 0.72], [0, 1, 1, 0]);
-  const glow1 = useTransform(scrollYProgress, [0.73, 0.75, 0.78, 0.79], [0, 1, 1, 0]);
-  const glow2 = useTransform(scrollYProgress, [0.80, 0.82, 0.85, 0.86], [0, 1, 1, 0]);
-  const glow3 = useTransform(scrollYProgress, [0.87, 0.89, 0.92, 0.93], [0, 1, 1, 0]);
+  const glow0 = useTransform(scrollYProgress, [0.52, 0.54, 0.57, 0.58], [0, 1, 1, 0]);
+  const glow1 = useTransform(scrollYProgress, [0.60, 0.62, 0.65, 0.66], [0, 1, 1, 0]);
+  const glow2 = useTransform(scrollYProgress, [0.68, 0.70, 0.73, 0.74], [0, 1, 1, 0]);
+  const glow3 = useTransform(scrollYProgress, [0.76, 0.78, 0.81, 0.82], [0, 1, 1, 0]);
   const glows = [glow0, glow1, glow2, glow3];
 
   return (
@@ -433,7 +514,7 @@ export const HeroScroll = () => {
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }} className="flex flex-col sm:flex-row items-center gap-4 mb-10">
-              <Link href="/public" className="group flex items-center gap-2 px-8 py-3.5 rounded-xl bg-black dark:bg-white text-white dark:text-black font-semibold text-base transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02]">
+              <Link href="/public" className="group flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white dark:bg-white text-black dark:text-black font-semibold text-base border border-black/10 transition-all duration-300 hover:bg-red-500 hover:text-white hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02]">
                 Explore
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </Link>
@@ -453,19 +534,10 @@ export const HeroScroll = () => {
         {/* ═══ Phase 2: Text Reveal ═══ */}
         <TextReveal progress={scrollYProgress} revealRange={textRevealRange} exitRange={textExitRange} isDark={isDark} />
 
-        {/* ═══ Phase 3: Tablet ═══ */}
-        <motion.div
-          style={{ opacity: tabletOpacity, y: tabletY, scale: tabletScale }}
-          className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none px-4 md:px-8"
-        >
-          <div className="w-full max-w-[1400px] pointer-events-auto" style={{ perspective: "1200px" }}>
-            <motion.div style={{ rotateX: tabletRotate }} className="origin-bottom">
-              <TabletMockup videoSrc="/hero-video.mp4" className="w-full aspect-[21/9]" />
-            </motion.div>
-          </div>
-        </motion.div>
+        {/* ═══ Cursor-following Video ═══ */}
+        <CursorVideo progress={scrollYProgress} visibleRange={cursorVideoRange} />
 
-        {/* ═══ Phase 4: Stats ═══ */}
+        {/* ═══ Phase 3: Stats ═══ */}
         <motion.div
           style={{ opacity: statsContainerOpacity }}
           className={`absolute inset-0 z-30 flex flex-col items-center justify-center px-4 sm:px-6 ${interactive ? "pointer-events-auto" : "pointer-events-none"}`}
