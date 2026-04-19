@@ -135,12 +135,12 @@ function CursorImage({
   visible: boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  // Position image in the right gap area, just left of the arrow
+  // Position image just left of the arrow button
   const getTargetX = () => {
-    if (!containerRef.current) return position.x + 40;
+    if (!containerRef.current) return position.x;
     const rect = containerRef.current.getBoundingClientRect();
-    // Place it towards the right side of the container, leaving room for the arrow
-    return rect.right - 320;
+    // arrow is ~56px from right edge, image sits just left of it
+    return rect.right - 56 - 220;
   };
 
   return (

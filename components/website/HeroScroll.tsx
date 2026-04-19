@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Send, ArrowRight, Calendar, School, Trophy, Rocket, X, Play } from "lucide-react";
+import { Send, ArrowRight, Calendar, School, Trophy, Rocket, X, Play, Volume2, VolumeX } from "lucide-react";
 import { useTheme } from "next-themes";
 
 /* ═══════════════════════════════════════════
@@ -127,24 +127,21 @@ function TextReveal({
 }
 
 /* ═══════════════════════════════════════════
-   CursorVideo — follows cursor, falls & expands on click
+   CursorVideo — follows cursor, expands in-place on click
    ═══════════════════════════════════════════ */
 
 function CursorVideo({
   progress,
   visibleRange,
-  containerRef,
 }: {
   progress: MotionValue<number>;
   visibleRange: [number, number];
-  containerRef: React.RefObject<HTMLElement | null>;
 }) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [clickPos, setClickPos] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const expandedVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -177,43 +174,15 @@ function CursorVideo({
   }, [isExpanded]);
 
   const handleClick = () => {
-    if (isScrolling) return;
-    setClickPos({ x: mousePos.x + 24, y: mousePos.y + 16 });
-
-    // Scroll to end of text section, then expand
-    const container = containerRef.current;
-    if (container) {
-      const containerTop = container.offsetTop;
-      const containerHeight = container.scrollHeight;
-      // Scroll to ~0.35 of the scroll container (end of text, before stats)
-      const targetScroll = containerTop + containerHeight * 0.35;
-
-      setIsScrolling(true);
-      window.scrollTo({ top: targetScroll, behavior: "smooth" });
-
-      // Wait for scroll to finish, then expand
-      const checkScroll = () => {
-        const currentScroll = window.scrollY;
-        if (Math.abs(currentScroll - targetScroll) < 50) {
-          setIsScrolling(false);
-          setIsExpanded(true);
-        } else {
-          requestAnimationFrame(checkScroll);
-        }
-      };
-      // Give scroll a moment to start
-      setTimeout(() => requestAnimationFrame(checkScroll), 100);
-    } else {
-      setIsExpanded(true);
-    }
+    setIsExpanded(true);
   };
 
-  if (!isVisible && !isExpanded && !isScrolling) return null;
+  if (!isVisible && !isExpanded) return null;
 
   return (
     <>
       {/* Cursor-following video thumbnail */}
-      {(isVisible || isScrolling) && !isExpanded && (
+      {isVisible && !isExpanded && (
         <motion.div
           className="fixed z-[100] pointer-events-auto cursor-pointer hidden md:block"
           animate={{
@@ -253,94 +222,58 @@ function CursorVideo({
         </motion.div>
       )}
 
-      {/* Cinematic expanded video — falls from cursor, expands to center */}
+      {/* Expanded video — covers the text area in-place */}
       {isExpanded && (
         <motion.div
-          className="fixed inset-0 z-[200] flex items-end justify-center pb-[8vh]"
+          className="absolute inset-0 z-[25] flex items-center justify-center pointer-events-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.3 }}
         >
-          {/* Backdrop — cinematic black with slow fade */}
+          {/* Video expands from thumbnail size to fill the text area */}
           <motion.div
-            className="absolute inset-0 bg-black"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.92 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            onClick={() => setIsExpanded(false)}
-          />
-
-          {/* Cinematic letterbox bars */}
-          <motion.div
-            className="absolute top-0 left-0 right-0 bg-black z-20 pointer-events-none"
-            initial={{ height: 0 }}
-            animate={{ height: "6vh" }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          />
-          <motion.div
-            className="absolute bottom-0 left-0 right-0 bg-black z-20 pointer-events-none"
-            initial={{ height: 0 }}
-            animate={{ height: "6vh" }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          />
-
-          {/* Video — starts at click position, falls + expands to center-bottom */}
-          <motion.div
-            className="relative z-10 w-[92vw] max-w-6xl aspect-video rounded-2xl overflow-hidden"
-            initial={{
-              x: clickPos.x - (typeof window !== "undefined" ? window.innerWidth / 2 : 0),
-              y: clickPos.y - (typeof window !== "undefined" ? window.innerHeight * 0.8 : 0),
-              scale: 0.2,
-              opacity: 0,
-              rotateX: 15,
-              rotateZ: -3,
-            }}
-            animate={{
-              x: 0,
-              y: 0,
-              scale: 1,
-              opacity: 1,
-              rotateX: 0,
-              rotateZ: 0,
-            }}
+            className="relative w-full h-full"
+            initial={{ scale: 0.15, borderRadius: 16, opacity: 0 }}
+            animate={{ scale: 1, borderRadius: 0, opacity: 1 }}
             transition={{
-              duration: 0.9,
+              duration: 0.6,
               ease: [0.16, 1, 0.3, 1],
-              opacity: { duration: 0.3 },
-              rotateX: { duration: 0.7, delay: 0.1 },
-              rotateZ: { duration: 0.6, delay: 0.05 },
+              opacity: { duration: 0.2 },
             }}
-            style={{ perspective: "1200px" }}
           >
-            {/* Cinematic glow behind video */}
-            <motion.div
-              className="absolute -inset-4 rounded-3xl bg-red-500/20 blur-[40px] pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.2, delay: 0.4 }}
+            <video
+              ref={expandedVideoRef}
+              src="/hero-video.mp4"
+              className="w-full h-full object-cover"
+              autoPlay
+              loop
+              playsInline
+              muted={isMuted}
             />
 
-            {/* Video frame */}
-            <div className="relative w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8),0_0_40px_rgba(239,68,68,0.15)]">
-              <video
-                ref={expandedVideoRef}
-                src="/hero-video.mp4"
-                className="w-full h-full object-cover"
-                controls
-                autoPlay
-                playsInline
-              />
-            </div>
-
-            {/* Close button — fades in after expansion */}
+            {/* X close button — top right */}
             <motion.button
-              onClick={(e) => { e.stopPropagation(); setIsExpanded(false); }}
-              className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 hover:bg-red-500 text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-md border border-white/10 z-30"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.3 }}
+              onClick={() => setIsExpanded(false)}
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 hover:bg-red-500 text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-sm border border-white/10 z-10"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.25 }}
             >
               <X className="w-5 h-5" />
+            </motion.button>
+
+            {/* Mute/unmute button — bottom right */}
+            <motion.button
+              onClick={() => {
+                setIsMuted(!isMuted);
+                if (expandedVideoRef.current) expandedVideoRef.current.muted = !isMuted;
+              }}
+              className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/50 hover:bg-white/20 text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-sm border border-white/10 z-10"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.25 }}
+            >
+              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </motion.button>
           </motion.div>
         </motion.div>
@@ -623,7 +556,7 @@ export const HeroScroll = () => {
         <TextReveal progress={scrollYProgress} revealRange={textRevealRange} exitRange={textExitRange} isDark={isDark} />
 
         {/* ═══ Cursor-following Video ═══ */}
-        <CursorVideo progress={scrollYProgress} visibleRange={cursorVideoRange} containerRef={containerRef} />
+        <CursorVideo progress={scrollYProgress} visibleRange={cursorVideoRange} />
 
         {/* ═══ Phase 3: Stats ═══ */}
         <motion.div
