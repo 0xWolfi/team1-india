@@ -36,7 +36,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
     <div className="w-full max-w-7xl mx-auto space-y-6">
       
       {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-start gap-4 w-full">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-3xl mx-auto">
         {/* Search */}
         <div className="relative w-full md:w-64 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -79,7 +79,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
       </div>
 
       {filteredEvents.length > 0 ? (
-        <div className="flex flex-col items-start gap-10">
+        <div className="flex flex-col items-center gap-10">
             {/* Horizontal scroll: all event cards */}
             <div className="w-full px-4">
                 <div className="overflow-x-auto overflow-y-hidden pb-4 -mx-4 px-4 md:mx-0 md:px-0" style={{ scrollSnapType: "x mandatory" }}>

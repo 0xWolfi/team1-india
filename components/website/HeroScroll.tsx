@@ -127,19 +127,23 @@ function TextReveal({
 }
 
 /* ═══════════════════════════════════════════
-   CursorVideo — follows cursor, expands on click
+   CursorVideo — follows cursor, falls & expands on click
    ═══════════════════════════════════════════ */
 
 function CursorVideo({
   progress,
   visibleRange,
+  containerRef,
 }: {
   progress: MotionValue<number>;
   visibleRange: [number, number];
+  containerRef: React.RefObject<HTMLElement | null>;
 }) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [clickPos, setClickPos] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const expandedVideoRef = useRef<HTMLVideoElement>(null);
@@ -172,23 +176,55 @@ function CursorVideo({
     return () => window.removeEventListener("keydown", handleKey);
   }, [isExpanded]);
 
-  if (!isVisible && !isExpanded) return null;
+  const handleClick = () => {
+    if (isScrolling) return;
+    setClickPos({ x: mousePos.x + 24, y: mousePos.y + 16 });
+
+    // Scroll to end of text section, then expand
+    const container = containerRef.current;
+    if (container) {
+      const containerTop = container.offsetTop;
+      const containerHeight = container.scrollHeight;
+      // Scroll to ~0.35 of the scroll container (end of text, before stats)
+      const targetScroll = containerTop + containerHeight * 0.35;
+
+      setIsScrolling(true);
+      window.scrollTo({ top: targetScroll, behavior: "smooth" });
+
+      // Wait for scroll to finish, then expand
+      const checkScroll = () => {
+        const currentScroll = window.scrollY;
+        if (Math.abs(currentScroll - targetScroll) < 50) {
+          setIsScrolling(false);
+          setIsExpanded(true);
+        } else {
+          requestAnimationFrame(checkScroll);
+        }
+      };
+      // Give scroll a moment to start
+      setTimeout(() => requestAnimationFrame(checkScroll), 100);
+    } else {
+      setIsExpanded(true);
+    }
+  };
+
+  if (!isVisible && !isExpanded && !isScrolling) return null;
 
   return (
     <>
       {/* Cursor-following video thumbnail */}
-      {isVisible && !isExpanded && (
+      {(isVisible || isScrolling) && !isExpanded && (
         <motion.div
           className="fixed z-[100] pointer-events-auto cursor-pointer hidden md:block"
           animate={{
-            x: mousePos.x + 24,
-            y: mousePos.y + 16,
+            x: mousePos.x + 40,
+            y: mousePos.y - 50,
             scale: isHovered ? 1.05 : 1,
           }}
           transition={{ type: "spring", damping: 28, stiffness: 220, mass: 0.4 }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          onClick={() => setIsExpanded(true)}
+          onClick={handleClick}
           style={{ top: 0, left: 0 }}
         >
           <div className="relative w-44 lg:w-52 aspect-video rounded-xl overflow-hidden border border-white/15 shadow-2xl shadow-black/40 group">
@@ -217,43 +253,95 @@ function CursorVideo({
         </motion.div>
       )}
 
-      {/* Expanded video modal */}
+      {/* Cinematic expanded video — falls from cursor, expands to center */}
       {isExpanded && (
         <motion.div
-          className="fixed inset-0 z-[200] flex items-center justify-center"
+          className="fixed inset-0 z-[200] flex items-end justify-center pb-[8vh]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          {/* Backdrop */}
+          {/* Backdrop — cinematic black with slow fade */}
           <motion.div
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-black"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 0.92 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             onClick={() => setIsExpanded(false)}
           />
-          {/* Video container */}
+
+          {/* Cinematic letterbox bars */}
           <motion.div
-            className="relative w-[90vw] max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl shadow-black/60 z-10"
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="absolute top-0 left-0 right-0 bg-black z-20 pointer-events-none"
+            initial={{ height: 0 }}
+            animate={{ height: "6vh" }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          />
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 bg-black z-20 pointer-events-none"
+            initial={{ height: 0 }}
+            animate={{ height: "6vh" }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          />
+
+          {/* Video — starts at click position, falls + expands to center-bottom */}
+          <motion.div
+            className="relative z-10 w-[92vw] max-w-6xl aspect-video rounded-2xl overflow-hidden"
+            initial={{
+              x: clickPos.x - (typeof window !== "undefined" ? window.innerWidth / 2 : 0),
+              y: clickPos.y - (typeof window !== "undefined" ? window.innerHeight * 0.8 : 0),
+              scale: 0.2,
+              opacity: 0,
+              rotateX: 15,
+              rotateZ: -3,
+            }}
+            animate={{
+              x: 0,
+              y: 0,
+              scale: 1,
+              opacity: 1,
+              rotateX: 0,
+              rotateZ: 0,
+            }}
+            transition={{
+              duration: 0.9,
+              ease: [0.16, 1, 0.3, 1],
+              opacity: { duration: 0.3 },
+              rotateX: { duration: 0.7, delay: 0.1 },
+              rotateZ: { duration: 0.6, delay: 0.05 },
+            }}
+            style={{ perspective: "1200px" }}
           >
-            <video
-              ref={expandedVideoRef}
-              src="/hero-video.mp4"
-              className="w-full h-full object-cover"
-              controls
-              autoPlay
-              playsInline
+            {/* Cinematic glow behind video */}
+            <motion.div
+              className="absolute -inset-4 rounded-3xl bg-red-500/20 blur-[40px] pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, delay: 0.4 }}
             />
-            {/* Close button */}
-            <button
+
+            {/* Video frame */}
+            <div className="relative w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8),0_0_40px_rgba(239,68,68,0.15)]">
+              <video
+                ref={expandedVideoRef}
+                src="/hero-video.mp4"
+                className="w-full h-full object-cover"
+                controls
+                autoPlay
+                playsInline
+              />
+            </div>
+
+            {/* Close button — fades in after expansion */}
+            <motion.button
               onClick={(e) => { e.stopPropagation(); setIsExpanded(false); }}
-              className="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 hover:bg-red-500 text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-sm border border-white/10"
+              className="absolute -top-12 right-0 w-10 h-10 rounded-full bg-white/10 hover:bg-red-500 text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-md border border-white/10 z-30"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.3 }}
             >
               <X className="w-5 h-5" />
-            </button>
+            </motion.button>
           </motion.div>
         </motion.div>
       )}
@@ -434,40 +522,40 @@ export const HeroScroll = () => {
   });
 
   const [interactive, setInteractive] = useState(false);
-  useMotionValueEvent(scrollYProgress, "change", (v) => setInteractive(v > 0.82));
+  useMotionValueEvent(scrollYProgress, "change", (v) => setInteractive(v > 0.90));
 
   /* ── Phase 1: Hero (fades into text) ── */
-  const heroOpacity = useTransform(scrollYProgress, [0.05, 0.11], [1, 0]);
-  const heroScale  = useTransform(scrollYProgress, [0.05, 0.11], [1, 0.88]);
-  const heroY      = useTransform(scrollYProgress, [0.05, 0.11], [0, -80]);
+  const heroOpacity = useTransform(scrollYProgress, [0.06, 0.14], [1, 0]);
+  const heroScale  = useTransform(scrollYProgress, [0.06, 0.14], [1, 0.88]);
+  const heroY      = useTransform(scrollYProgress, [0.06, 0.14], [0, -80]);
 
   /* ── Phase 2: Text (words reveal, then slides up and out) ── */
-  const textRevealRange: [number, number] = [0.10, 0.28];
-  const textExitRange: [number, number]   = [0.28, 0.38];
+  const textRevealRange: [number, number] = [0.12, 0.36];
+  const textExitRange: [number, number]   = [0.36, 0.46];
 
   /* ── Cursor video visible during text reveal ── */
-  const cursorVideoRange: [number, number] = [0.10, 0.34];
+  const cursorVideoRange: [number, number] = [0.12, 0.42];
 
   /* ── Phase 3: Stats (enters after text exits) ── */
-  const statsContainerOpacity = useTransform(scrollYProgress, [0.36, 0.42], [0, 1]);
-  const headingOpacity = useTransform(scrollYProgress, [0.36, 0.42], [0, 1]);
-  const headingScale   = useTransform(scrollYProgress, [0.36, 0.42], [0.88, 1]);
-  const headingY       = useTransform(scrollYProgress, [0.36, 0.42], [40, 0]);
-  const statsOpacity   = useTransform(scrollYProgress, [0.42, 0.48], [0, 1]);
-  const statsScale     = useTransform(scrollYProgress, [0.42, 0.48], [0.92, 1]);
-  const statsY         = useTransform(scrollYProgress, [0.42, 0.48], [50, 0]);
+  const statsContainerOpacity = useTransform(scrollYProgress, [0.44, 0.52], [0, 1]);
+  const headingOpacity = useTransform(scrollYProgress, [0.44, 0.52], [0, 1]);
+  const headingScale   = useTransform(scrollYProgress, [0.44, 0.52], [0.88, 1]);
+  const headingY       = useTransform(scrollYProgress, [0.44, 0.52], [40, 0]);
+  const statsOpacity   = useTransform(scrollYProgress, [0.52, 0.58], [0, 1]);
+  const statsScale     = useTransform(scrollYProgress, [0.52, 0.58], [0.92, 1]);
+  const statsY         = useTransform(scrollYProgress, [0.52, 0.58], [50, 0]);
 
-  const counterRange: [number, number] = [0.42, 0.50];
+  const counterRange: [number, number] = [0.52, 0.62];
 
-  /* Card glows — strictly sequential + plateau + dim gaps between cards */
-  const glow0 = useTransform(scrollYProgress, [0.52, 0.54, 0.57, 0.58], [0, 1, 1, 0]);
-  const glow1 = useTransform(scrollYProgress, [0.60, 0.62, 0.65, 0.66], [0, 1, 1, 0]);
-  const glow2 = useTransform(scrollYProgress, [0.68, 0.70, 0.73, 0.74], [0, 1, 1, 0]);
-  const glow3 = useTransform(scrollYProgress, [0.76, 0.78, 0.81, 0.82], [0, 1, 1, 0]);
+  /* Card glows — strictly sequential, ends near 0.95 */
+  const glow0 = useTransform(scrollYProgress, [0.64, 0.66, 0.69, 0.70], [0, 1, 1, 0]);
+  const glow1 = useTransform(scrollYProgress, [0.72, 0.74, 0.77, 0.78], [0, 1, 1, 0]);
+  const glow2 = useTransform(scrollYProgress, [0.80, 0.82, 0.85, 0.86], [0, 1, 1, 0]);
+  const glow3 = useTransform(scrollYProgress, [0.88, 0.90, 0.93, 0.94], [0, 1, 1, 0]);
   const glows = [glow0, glow1, glow2, glow3];
 
   return (
-    <header id="hero" ref={containerRef} className="relative h-[500vh] md:h-[800vh]" role="banner">
+    <header id="hero" ref={containerRef} className="relative h-[400vh] md:h-[600vh]" role="banner">
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[var(--background)]">
         {/* Background */}
         <div className="absolute inset-0 bg-[var(--background)]" />
@@ -535,7 +623,7 @@ export const HeroScroll = () => {
         <TextReveal progress={scrollYProgress} revealRange={textRevealRange} exitRange={textExitRange} isDark={isDark} />
 
         {/* ═══ Cursor-following Video ═══ */}
-        <CursorVideo progress={scrollYProgress} visibleRange={cursorVideoRange} />
+        <CursorVideo progress={scrollYProgress} visibleRange={cursorVideoRange} containerRef={containerRef} />
 
         {/* ═══ Phase 3: Stats ═══ */}
         <motion.div

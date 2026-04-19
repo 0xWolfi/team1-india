@@ -34,7 +34,7 @@ export function GetInvolved() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/public"
-                className="group px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-base font-bold rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all w-full sm:w-auto flex items-center justify-center gap-2"
+                className="group px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-base font-bold rounded-xl hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2"
               >
                 Explore
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -43,7 +43,7 @@ export function GetInvolved() {
                 href="https://t.me/avalanche_hi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group px-8 py-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white text-base font-bold rounded-xl hover:bg-black/10 dark:hover:bg-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all w-full sm:w-auto"
+                className="group px-8 py-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white text-base font-bold rounded-xl hover:bg-red-500 hover:text-white hover:border-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.3)] hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto"
               >
                 Join Us
               </a>

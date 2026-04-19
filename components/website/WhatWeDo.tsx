@@ -152,9 +152,9 @@ export function WhatWeDo() {
     offset: ["start start", "end end"],
   });
 
-  // Map scroll to page index: first half = page 0, second half = page 1
+  // Page 0 holds until 55%, giving cards plenty of time to be visible
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (v < 0.45) setActivePage(0);
+    if (v < 0.55) setActivePage(0);
     else setActivePage(1);
   });
 
@@ -162,7 +162,7 @@ export function WhatWeDo() {
     <section
       id="what-we-do"
       ref={containerRef}
-      className="relative h-[200vh]"
+      className="relative h-[300vh]"
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-[var(--background)]">
         {/* Background decorator */}

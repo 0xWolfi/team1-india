@@ -128,41 +128,51 @@ function CursorImage({
   activeIndex,
   position,
   visible,
+  containerRef,
 }: {
   activeIndex: number;
   position: { x: number; y: number };
   visible: boolean;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
+  // Position image in the right gap area, just left of the arrow
+  const getTargetX = () => {
+    if (!containerRef.current) return position.x + 40;
+    const rect = containerRef.current.getBoundingClientRect();
+    // Place it towards the right side of the container, leaving room for the arrow
+    return rect.right - 320;
+  };
+
   return (
     <AnimatePresence>
       {visible && activeIndex >= 0 && (
         <motion.div
           className="fixed pointer-events-none z-50 hidden lg:block"
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.85, y: 10 }}
           animate={{
             opacity: 1,
             scale: 1,
-            x: position.x + 20,
-            y: position.y - 100,
+            x: getTargetX(),
+            y: position.y - 90,
           }}
-          exit={{ opacity: 0, scale: 0.8 }}
+          exit={{ opacity: 0, scale: 0.85 }}
           transition={{
             opacity: { duration: 0.2 },
-            scale: { duration: 0.2 },
-            x: { duration: 0.15, ease: "easeOut" },
+            scale: { duration: 0.25, ease: [0.22, 1, 0.36, 1] },
+            x: { duration: 0.3, ease: "easeOut" },
             y: { duration: 0.15, ease: "easeOut" },
           }}
           style={{ top: 0, left: 0 }}
         >
-          <div className="w-64 xl:w-72 aspect-[4/3] rounded-2xl overflow-hidden border border-white/20 shadow-2xl shadow-black/30">
+          <div className="w-52 xl:w-60 aspect-[4/3] rounded-2xl overflow-hidden border border-white/15 shadow-2xl shadow-black/40">
             <AnimatePresence mode="wait">
               <motion.img
                 key={activeIndex}
                 src={programs[activeIndex].image}
                 alt=""
                 className="w-full h-full object-cover"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, scale: 1.05 }}
+                animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               />
@@ -237,6 +247,7 @@ export function Programs() {
         activeIndex={hoveredIndex}
         position={mousePos}
         visible={hoveredIndex >= 0 && hasMouseMoved}
+        containerRef={containerRef}
       />
     </section>
   );
