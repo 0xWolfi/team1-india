@@ -176,22 +176,22 @@ function CursorVideo({
 
   return (
     <>
-      {/* Cursor-influenced thumbnail — anchored right, subtle parallax from cursor */}
+      {/* Cursor-following video thumbnail */}
       {isVisible && !isExpanded && (
         <motion.div
           className="fixed z-[100] pointer-events-auto cursor-pointer hidden md:block"
-          style={{ right: 24, top: "50%", y: "-50%" }}
           animate={{
-            x: ((mousePos.x / (typeof window !== "undefined" ? window.innerWidth || 1 : 1)) - 0.5) * 14,
-            y: ((mousePos.y / (typeof window !== "undefined" ? window.innerHeight || 1 : 1)) - 0.5) * 14,
-            scale: isHovered ? 1.06 : 1,
+            x: mousePos.x + 24,
+            y: mousePos.y + 16,
+            scale: isHovered ? 1.05 : 1,
           }}
-          transition={{ type: "spring", damping: 30, stiffness: 180, mass: 0.4 }}
+          transition={{ type: "spring", damping: 28, stiffness: 220, mass: 0.4 }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onClick={() => setIsExpanded(true)}
+          style={{ top: 0, left: 0 }}
         >
-          <div className="relative w-28 lg:w-32 aspect-video rounded-lg overflow-hidden border border-white/15 shadow-xl shadow-black/30 group">
+          <div className="relative w-44 lg:w-52 aspect-video rounded-xl overflow-hidden border border-white/15 shadow-2xl shadow-black/40 group">
             <video
               ref={videoRef}
               src="/hero-video.mp4"
@@ -203,13 +203,13 @@ function CursorVideo({
             />
             {/* Play icon overlay */}
             <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors duration-300">
-              <div className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Play className="w-3.5 h-3.5 text-black fill-black ml-0.5" />
+              <div className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Play className="w-4 h-4 text-black fill-black ml-0.5" />
               </div>
             </div>
             {/* Red glow border on hover */}
             <motion.div
-              className="absolute inset-0 rounded-lg border border-red-500/0 pointer-events-none"
+              className="absolute inset-0 rounded-xl border-2 border-red-500/0 pointer-events-none"
               animate={{ borderColor: isHovered ? "rgba(239,68,68,0.5)" : "rgba(239,68,68,0)" }}
               transition={{ duration: 0.3 }}
             />
