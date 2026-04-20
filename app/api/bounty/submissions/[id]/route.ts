@@ -43,9 +43,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
         const xpAwarded = status === 'approved' ? submission.bounty.xpReward : 0;
 
-        // Update submission
-        const updated = await prisma.bountySubmission.update({
-            where: { id },
+        // Atomic conditional update: only transition if still 'pending'
+        // This prevents double-credit via concurrent approval requests
+        const result = await prisma.bountySubmission.updateMany({
+            where: { id, status: 'pending', deletedAt: null },
             data: {
                 status,
                 reviewNote: reviewNote || null,
@@ -55,13 +56,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
             }
         });
 
-        // If approved, increment the submitter's totalXp
+        if (result.count === 0) {
+            return NextResponse.json({ error: "Submission already reviewed" }, { status: 409 });
+        }
+
+        // Only award XP after a guaranteed successful state transition
         if (status === 'approved' && submission.submittedById) {
             await prisma.communityMember.update({
                 where: { id: submission.submittedById },
                 data: { totalXp: { increment: xpAwarded } }
             });
         }
+
+        const updated = await prisma.bountySubmission.findUnique({ where: { id } });
 
         log("INFO", `Bounty submission ${status}`, "BOUNTY", {
             submissionId: id,

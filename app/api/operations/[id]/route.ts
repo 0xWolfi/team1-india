@@ -9,9 +9,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     if (!session || !session.user?.email) {
         return new NextResponse("Unauthorized", { status: 401 });
     }
+    if (session.user.role !== 'CORE') {
+        return new NextResponse("Forbidden", { status: 403 });
+    }
 
     const { id } = await params;
-    
+
     try {
         const body = await request.json();
         const user = await prisma.member.findUnique({ where: { email: session.user.email } });
@@ -52,6 +55,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     if (!session || !session.user?.email) {
         return new NextResponse("Unauthorized", { status: 401 });
     }
+    if (session.user.role !== 'CORE') {
+        return new NextResponse("Forbidden", { status: 403 });
+    }
 
     const { id } = await params;
 
@@ -59,7 +65,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         const user = await prisma.member.findUnique({ where: { email: session.user.email } });
         if (!user) return new NextResponse("User not found", { status: 404 });
 
-        await prisma.operation.delete({ where: { id } });
+        await prisma.operation.update({ where: { id }, data: { deletedAt: new Date() } as any });
 
         // Audit Log
         const { logAudit } = await import('@/lib/audit');

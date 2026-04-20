@@ -46,17 +46,17 @@ export function PublicConsentModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl animate-in fade-in duration-300">
-      <div className="w-full max-w-md bg-zinc-900/40 border border-white/10 rounded-2xl shadow-2xl p-8 animate-in zoom-in-95 duration-300 backdrop-blur-2xl ring-1 ring-white/5">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 dark:bg-black/60 backdrop-blur-xl animate-in fade-in duration-300">
+      <div className="w-full max-w-md bg-white/90 dark:bg-zinc-900/40 border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl p-8 animate-in zoom-in-95 duration-300 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/5">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-white mb-2">Final Step</h2>
-          <p className="text-zinc-400">Please review and accept our terms to access your account.</p>
+          <h2 className="text-2xl font-bold text-black dark:text-white mb-2">Final Step</h2>
+          <p className="text-zinc-500 dark:text-zinc-400">Please review and accept our terms to access your account.</p>
         </div>
 
         <div className="space-y-6">
             <div className="space-y-4">
               <label className="flex items-start gap-3 cursor-pointer group">
-                <div className={`mt-0.5 min-w-5 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all ${agreedNewsletter ? 'bg-white border-white text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'border-white/10 bg-black/20 group-hover:border-white/30 group-hover:bg-black/40'}`}>
+                <div className={`mt-0.5 min-w-5 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all ${agreedNewsletter ? 'bg-white border-white text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'border-black/10 dark:border-white/10 bg-black/5 dark:bg-black/20 group-hover:border-black/30 dark:group-hover:border-white/30 group-hover:bg-black/10 dark:group-hover:bg-black/40'}`}>
                    {agreedNewsletter && <Check className="w-3.5 h-3.5 stroke-[3]"/>}
                 </div>
                 <input 
@@ -65,13 +65,13 @@ export function PublicConsentModal() {
                   checked={agreedNewsletter}
                   onChange={(e) => setAgreedNewsletter(e.target.checked)}
                 />
-                <span className="text-sm text-zinc-400 leading-relaxed">
+                <span className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                   I agree to receive Team1 updates and promotional communications. I can opt out anytime.
                 </span>
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer group">
-                <div className={`mt-0.5 min-w-5 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all ${agreedLegal ? 'bg-white border-white text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'border-white/10 bg-black/20 group-hover:border-white/30 group-hover:bg-black/40'}`}>
+                <div className={`mt-0.5 min-w-5 w-5 h-5 rounded-md border flex-shrink-0 flex items-center justify-center transition-all ${agreedLegal ? 'bg-white border-white text-black shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'border-black/10 dark:border-white/10 bg-black/5 dark:bg-black/20 group-hover:border-black/30 dark:group-hover:border-white/30 group-hover:bg-black/10 dark:group-hover:bg-black/40'}`}>
                    {agreedLegal && <Check className="w-3.5 h-3.5 stroke-[3]"/>}
                 </div>
                 <input 
@@ -80,8 +80,8 @@ export function PublicConsentModal() {
                   checked={agreedLegal}
                   onChange={(e) => setAgreedLegal(e.target.checked)}
                 />
-                <span className="text-sm text-zinc-400 leading-relaxed">
-                  I agree to the <Link href="https://www.avax.network/privacy-policy" target="_blank" className="text-white hover:underline decoration-yellow-500/50">Privacy Policy</Link> and <Link href="https://www.avax.network/legal" target="_blank" className="text-white hover:underline decoration-yellow-500/50">Legal Terms</Link>.
+                <span className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                  I agree to the <Link href="https://www.avax.network/privacy-policy" target="_blank" className="text-black dark:text-white hover:underline decoration-yellow-500/50">Privacy Policy</Link> and <Link href="https://www.avax.network/legal" target="_blank" className="text-black dark:text-white hover:underline decoration-yellow-500/50">Legal Terms</Link>.
                 </span>
               </label>
             </div>
@@ -91,8 +91,8 @@ export function PublicConsentModal() {
               disabled={!isFormValid || isLoading}
               className={`group w-full py-3 px-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2 overflow-hidden
                 ${isFormValid && !isLoading
-                  ? 'bg-white text-black hover:bg-zinc-200' 
-                  : 'bg-zinc-800/50 text-zinc-500 cursor-not-allowed border border-white/5'}
+                  ? 'bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200'
+                  : 'bg-zinc-200/50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-500 cursor-not-allowed border border-black/5 dark:border-white/5'}
               `}
             >
               {isLoading ? (

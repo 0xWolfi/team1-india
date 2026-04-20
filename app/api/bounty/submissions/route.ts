@@ -138,7 +138,13 @@ export async function POST(request: NextRequest) {
 
         log("INFO", "Bounty submission created", "BOUNTY", { submissionId: submission.id, bountyId, role });
         return NextResponse.json(submission, { status: 201 });
-    } catch (error) {
+    } catch (error: any) {
+        // Handle unique constraint violation (race condition dedup backstop)
+        // NOTE: Add @@unique([bountyId, submittedById]) and @@unique([bountyId, publicUserId])
+        // to BountySubmission in prisma/schema.prisma for a DB-level guarantee
+        if (error?.code === 'P2002') {
+            return NextResponse.json({ error: "You have already submitted for this bounty" }, { status: 409 });
+        }
         log("ERROR", "Failed to submit bounty", "BOUNTY", {}, error instanceof Error ? error : new Error(String(error)));
         return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     }

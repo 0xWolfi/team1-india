@@ -51,6 +51,7 @@ function dbToLumaEvent(row: {
 
 // ── READ: Get all events from DB (instant, no API call) ──
 export async function getAllEvents(): Promise<LumaEventData[]> {
+  if (!process.env.DATABASE_URL) return [];
   const rows = await prisma.lumaEvent.findMany({
     where: { visibility: "public" },
     orderBy: { startAt: "desc" },
@@ -60,6 +61,7 @@ export async function getAllEvents(): Promise<LumaEventData[]> {
 
 // ── READ: Get upcoming events from DB (instant) ──
 export async function getUpcomingEvents(): Promise<LumaEventData[]> {
+  if (!process.env.DATABASE_URL) return [];
   const now = new Date();
   const rows = await prisma.lumaEvent.findMany({
     where: {

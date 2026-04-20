@@ -3,6 +3,23 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options'; // Fixed path
 
+// Field allowlists per table — only these fields can be written via DataGrid
+const ALLOWED_FIELDS: Record<string, string[]> = {
+    members: ['name', 'tags', 'customFields', 'xHandle', 'twitterUrl', 'bio'],
+    projects: ['name', 'description', 'status', 'tags', 'links', 'coverImage'],
+    partners: ['name', 'description', 'status', 'tags', 'links', 'logo', 'website'],
+};
+
+function sanitizeBody(table: string, body: Record<string, any>): Record<string, any> {
+    const allowed = ALLOWED_FIELDS[table];
+    if (!allowed) return body; // unknown table will be rejected by getDelegate anyway
+    const sanitized: Record<string, any> = {};
+    for (const key of allowed) {
+        if (key in body) sanitized[key] = body[key];
+    }
+    return sanitized;
+}
+
 // Helper to map route slug to Prisma model delegate
 const getDelegate = (tableName: string) => {
     switch (tableName) {
@@ -89,11 +106,10 @@ export async function POST(
              const created = await Promise.all(body.map(async (item) => {
                 return (delegate as any).create({
                     data: {
-                        ...item,
-                        // Ensure relation connection if needed (e.g. createdBy)
-                        ...(table !== 'members' ? { 
+                        ...sanitizeBody(table, item),
+                        ...(table !== 'members' ? {
                             // @ts-ignore
-                            createdBy: { connect: { email: session.user.email } } 
+                            createdBy: { connect: { email: session.user.email } }
                         } : {})
                     }
                 });
@@ -104,10 +120,10 @@ export async function POST(
         // Single creation
         const newItem = await (delegate as any).create({
             data: {
-                ...body,
-                 ...(table !== 'members' ? { 
+                ...sanitizeBody(table, body),
+                 ...(table !== 'members' ? {
                     // @ts-ignore
-                    createdBy: { connect: { email: session.user.email } } 
+                    createdBy: { connect: { email: session.user.email } }
                 } : {})
             }
         });

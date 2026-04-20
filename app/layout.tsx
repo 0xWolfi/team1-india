@@ -52,7 +52,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -82,9 +85,8 @@ export default function RootLayout({
             attribute="class"
             defaultTheme="dark"
             enableSystem
-            disableTransitionOnChange
         >
-            <div className="relative text-white min-h-[100svh] bg-black">
+            <div className="relative min-h-[100svh] text-[var(--foreground)] bg-[var(--background)] theme-transition" style={{ overflowX: 'clip' }}>
                 {/* JSON-LD Structured Data */}
                 {/* JSON-LD Structured Data for Knowledge Graph & AI Agents */}
                 <script

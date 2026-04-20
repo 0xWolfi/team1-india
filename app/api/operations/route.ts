@@ -37,6 +37,9 @@ export async function POST(request: Request) {
     if (!session || !session.user?.email) {
         return new NextResponse("Unauthorized", { status: 401 });
     }
+    if (session.user.role !== 'CORE') {
+        return new NextResponse("Forbidden", { status: 403 });
+    }
 
     try {
         const body = await request.json();

@@ -36,20 +36,20 @@ export function MediaKitModal({ isOpen, onClose, mediaItems }: MediaKitModalProp
                                 key={item.id}
                                 href={item.links[0] || '#'}
                                 target="_blank"
-                                className="p-5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all group flex flex-col justify-between text-left gap-3 min-h-[140px] hover:-translate-y-1 cursor-pointer"
+                                className="p-5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 transition-all group flex flex-col justify-between text-left gap-3 min-h-[140px] hover:-translate-y-1 cursor-pointer"
                             >
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2.5 bg-white/5 rounded-lg group-hover:bg-white/10 transition-colors flex-shrink-0">
-                                        <DynamicIcon name={IconName} className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors"/>
+                                    <div className="p-2.5 bg-black/5 dark:bg-white/5 rounded-lg group-hover:bg-black/10 dark:group-hover:bg-white/10 transition-colors flex-shrink-0">
+                                        <DynamicIcon name={IconName} className="w-5 h-5 text-zinc-500 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors"/>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-bold text-white group-hover:text-white line-clamp-2 leading-snug mb-1">{item.title}</h4>
+                                        <h4 className="text-sm font-bold text-black dark:text-white line-clamp-2 leading-snug mb-1">{item.title}</h4>
                                         {item.description && (
-                                            <p className="text-[11px] text-zinc-500 group-hover:text-zinc-400 line-clamp-2 leading-relaxed">{item.description}</p>
+                                            <p className="text-[11px] text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 line-clamp-2 leading-relaxed">{item.description}</p>
                                         )}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1.5 text-zinc-400 group-hover:text-white transition-colors pt-2 border-t border-white/5">
+                                <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors pt-2 border-t border-black/5 dark:border-white/5">
                                     <ExternalLink className="w-3.5 h-3.5"/>
                                     <span className="text-[10px] font-bold uppercase tracking-wider">Open in Drive</span>
                                 </div>
@@ -62,12 +62,12 @@ export function MediaKitModal({ isOpen, onClose, mediaItems }: MediaKitModalProp
                         No media assets available.
                     </div>
                 )}
-                
-                <div className="p-5 rounded-xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-colors">
-                    <div className="flex items-center gap-2 mb-3 text-zinc-400 text-[10px] uppercase tracking-widest font-bold">
+
+                <div className="p-5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 group hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                    <div className="flex items-center gap-2 mb-3 text-zinc-500 dark:text-zinc-400 text-[10px] uppercase tracking-widest font-bold">
                         <FileText className="w-3 h-3"/> Press One-Liner
                     </div>
-                    <p className="text-sm text-zinc-300 italic leading-relaxed font-serif group-hover:text-white transition-colors">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-300 italic leading-relaxed font-serif group-hover:text-black dark:group-hover:text-white transition-colors">
                         "Team1 India is the largest decentralized community of builders, founders, and students driving the web3 ecosystem forward."
                     </p>
                 </div>

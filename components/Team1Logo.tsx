@@ -22,7 +22,15 @@ export function Team1Logo({ className = "h-6 w-auto", iconOnly = false }: { clas
                 src="/team1-horizontal.svg"
                 alt="Team1 India"
                 fill
-                className="object-contain object-left"
+                className="object-contain object-left hidden dark:block"
+                sizes="200px"
+                priority
+            />
+            <Image
+                src="/team1-horizontal-light.svg"
+                alt="Team1 India"
+                fill
+                className="object-contain object-left block dark:hidden"
                 sizes="200px"
                 priority
             />

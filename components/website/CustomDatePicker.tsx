@@ -77,41 +77,41 @@ export function CustomDatePicker({ events, selectedDate, onChange }: CustomDateP
       {/* Trigger */}
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center gap-3 pl-3 pr-4 py-2.5 bg-white/5 border rounded-xl text-sm transition-all cursor-pointer select-none ${isOpen ? 'border-white/30 bg-white/10' : 'border-white/10 hover:border-white/20'}`}
+        className={`w-full flex items-center gap-3 pl-3 pr-4 py-2.5 bg-black/5 dark:bg-white/5 border rounded-xl text-sm transition-all cursor-pointer select-none ${isOpen ? 'border-black/30 dark:border-white/30 bg-black/10 dark:bg-white/10' : 'border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20'}`}
       >
-         <Calendar className={`w-4 h-4 transition-colors ${selectedDate ? 'text-white' : 'text-zinc-500'}`}/>
-         <span className={`flex-1 truncate ${selectedDate ? 'text-white' : 'text-zinc-400'}`}>
+         <Calendar className={`w-4 h-4 transition-colors ${selectedDate ? 'text-black dark:text-white' : 'text-zinc-500'}`}/>
+         <span className={`flex-1 truncate ${selectedDate ? 'text-black dark:text-white' : 'text-zinc-500 dark:text-zinc-400'}`}>
             {selectedDate ? new Date(selectedDate).toLocaleDateString('en-GB') : "Select Date"}
          </span>
          {selectedDate && (
-            <div 
+            <div
                 onClick={(e) => {
                     e.stopPropagation();
                     onChange("");
                 }}
-                className="p-0.5 hover:bg-white/20 rounded-full transition-colors"
+                className="p-0.5 hover:bg-black/20 dark:hover:bg-white/20 rounded-full transition-colors"
              >
-                <X className="w-3 h-3 text-zinc-400 hover:text-white"/>
+                <X className="w-3 h-3 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white"/>
             </div>
          )}
       </div>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-black/40 backdrop-blur-3xl backdrop-saturate-150 border border-white/10 rounded-2xl p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-white/60 dark:bg-black/40 backdrop-blur-3xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-2xl p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-200">
            {/* Header */}
            <div className="flex items-center justify-between mb-4">
-              <button 
+              <button
                 onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
-                className="p-1 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
                 type="button"
               >
                 <ChevronLeft className="w-4 h-4"/>
               </button>
-              <span className="text-white font-bold text-sm tracking-wide">{monthYear}</span>
-              <button 
+              <span className="text-black dark:text-white font-bold text-sm tracking-wide">{monthYear}</span>
+              <button
                 onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
-                className="p-1 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
                 type="button"
               >
                 <ChevronRight className="w-4 h-4"/>
@@ -127,13 +127,13 @@ export function CustomDatePicker({ events, selectedDate, onChange }: CustomDateP
            <div className="grid grid-cols-7 gap-1">
               {calendarDays.map((day, idx) => {
                   if (!day) return <div key={idx} />;
-                  
+
                   // Construct local date string for check
                   const year = day.getFullYear();
                   const month = String(day.getMonth() + 1).padStart(2, '0');
                   const d = String(day.getDate()).padStart(2, '0');
                   const dateStr = `${year}-${month}-${d}`;
-                  
+
                   const hasEvent = eventDates.has(dateStr);
                   const isSelected = selectedDate === dateStr;
                   const isToday = new Date().toISOString().split('T')[0] === dateStr;
@@ -146,9 +146,9 @@ export function CustomDatePicker({ events, selectedDate, onChange }: CustomDateP
                         type="button"
                         className={`
                             h-8 w-8 rounded-lg flex items-center justify-center text-xs relative transition-all
-                            ${!hasEvent ? 'text-zinc-700 cursor-default' : 'hover:bg-white/10 cursor-pointer text-white'}
-                            ${isSelected ? 'bg-white text-black font-bold hover:bg-white hover:text-black shadow-[0_0_10px_rgba(255,255,255,0.3)]' : ''}
-                            ${isToday && !isSelected ? 'ring-1 ring-white/20' : ''}
+                            ${!hasEvent ? 'text-zinc-300 dark:text-zinc-700 cursor-default' : 'hover:bg-black/10 dark:hover:bg-white/10 cursor-pointer text-black dark:text-white'}
+                            ${isSelected ? 'bg-black dark:bg-white text-white dark:text-black font-bold hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black shadow-[0_0_10px_rgba(0,0,0,0.2)] dark:shadow-[0_0_10px_rgba(255,255,255,0.3)]' : ''}
+                            ${isToday && !isSelected ? 'ring-1 ring-black/20 dark:ring-white/20' : ''}
                         `}
                       >
                          {day.getDate()}

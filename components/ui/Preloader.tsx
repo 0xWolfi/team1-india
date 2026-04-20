@@ -4,18 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function Preloader() {
-    const [visible, setVisible] = useState(() => {
-        if (typeof window !== "undefined") {
-            return !sessionStorage.getItem("preloader_shown");
-        }
-        return true;
-    });
+    const [visible, setVisible] = useState(true);
     const [fading, setFading] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
     const fallbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
-        if (!visible) return;
+        // Check sessionStorage on client only to avoid hydration mismatch
+        if (sessionStorage.getItem("preloader_shown")) {
+            setVisible(false);
+            return;
+        }
 
         sessionStorage.setItem("preloader_shown", "1");
         document.body.style.overflow = "hidden";
@@ -58,7 +57,7 @@ export function Preloader() {
     return (
         <div
             className={cn(
-                "fixed inset-0 z-[1000] bg-black transition-opacity duration-700 ease-in-out",
+                "fixed inset-0 z-[1000] bg-[var(--background)] transition-opacity duration-700 ease-in-out",
                 fading ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
         >

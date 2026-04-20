@@ -50,13 +50,13 @@ export function DashboardCard({
             href={href}
             className={cn(
                 "group block rounded-2xl p-4 transition-all duration-300",
-                "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]",
-                "hover:border-white/[0.12] hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/20",
+                "bg-zinc-100/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]",
+                "hover:border-black/[0.12] dark:hover:border-white/[0.12] hover:bg-zinc-100/80 dark:hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/20",
                 className
             )}
         >
             {/* Image */}
-            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
+            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-200/50 dark:bg-zinc-800/50">
                 {coverImage && !imageError ? (
                     <div className="aspect-[16/9]">
                         <img
@@ -96,7 +96,7 @@ export function DashboardCard({
             </div>
 
             {/* Content */}
-            <h3 className="font-semibold text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-100 transition-colors">
+            <h3 className="font-semibold text-black dark:text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-100 transition-colors">
                 {title}
             </h3>
             <p className="text-xs text-zinc-600 leading-relaxed line-clamp-2">

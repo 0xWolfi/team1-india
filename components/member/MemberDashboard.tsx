@@ -47,7 +47,7 @@ interface MemberDashboardProps {
     lumaEvents?: LumaEventData[];
 }
 
-const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
+const glassClass = "bg-zinc-100/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]";
 
 export function MemberDashboard({
     user,
@@ -113,7 +113,7 @@ export function MemberDashboard({
     const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
     return (
-        <div className="text-white max-w-[1200px] mx-auto">
+        <div className="text-black dark:text-white max-w-[1200px] mx-auto">
 
             {/* ── Welcome Section ── */}
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
@@ -122,14 +122,14 @@ export function MemberDashboard({
                         <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
                         <span className="text-[11px] font-mono text-zinc-600 uppercase tracking-widest">Online</span>
                     </div>
-                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-black dark:text-white">
                         {greeting}, {user?.name?.split(' ')[0] || 'Member'}
                     </h1>
                     <p className="text-sm text-zinc-500 mt-1">Here&apos;s what&apos;s happening in your community</p>
                 </div>
                 <Link
                     href="/member/submit-quest"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all shadow-lg shadow-white/5 flex-shrink-0"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-black dark:bg-white text-white dark:text-black rounded-xl text-sm font-semibold hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all shadow-lg shadow-black/5 dark:shadow-white/5 flex-shrink-0"
                 >
                     <Plus className="w-4 h-4"/>
                     Submit Quest
@@ -149,7 +149,7 @@ export function MemberDashboard({
                                 <User className="w-4 h-4 text-red-500"/>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-white text-sm">Complete Your Profile</h3>
+                                <h3 className="font-semibold text-black dark:text-white text-sm">Complete Your Profile</h3>
                                 <p className="text-xs text-zinc-500">Fill in your name, X handle, telegram, and wallet address.</p>
                             </div>
                         </div>
@@ -164,14 +164,14 @@ export function MemberDashboard({
                     <div
                         key={stat.label}
                         className={cn(
-                            "p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:border-white/[0.1]",
+                            "p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:border-black/[0.1] dark:hover:border-white/[0.1]",
                             glassClass
                         )}
                     >
                         <div className={cn("inline-flex p-2 rounded-lg mb-3 border", stat.bg, stat.border)}>
                             <DynamicIcon name={stat.icon} className={cn("w-4 h-4 ", stat.color)}/>
                         </div>
-                        <p className="text-2xl font-bold text-white tracking-tight">{stat.value}</p>
+                        <p className="text-2xl font-bold text-black dark:text-white tracking-tight">{stat.value}</p>
                         <p className="text-xs text-zinc-500 mt-0.5 font-medium">{stat.label}</p>
                     </div>
                 ))}
@@ -180,7 +180,7 @@ export function MemberDashboard({
             {/* ── Community Pulse ── */}
             {communityPulse && (
                 <section className="mb-8">
-                    <h2 className="text-lg font-semibold text-white mb-4">Community Pulse</h2>
+                    <h2 className="text-lg font-semibold text-black dark:text-white mb-4">Community Pulse</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         {[
                             { label: "Total Members", value: communityPulse.totalMembers, icon: "Users", color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
@@ -190,14 +190,14 @@ export function MemberDashboard({
                             <div
                                 key={metric.label}
                                 className={cn(
-                                    "p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:border-white/[0.1]",
+                                    "p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:border-black/[0.1] dark:hover:border-white/[0.1]",
                                     glassClass
                                 )}
                             >
                                 <div className={cn("inline-flex p-2 rounded-lg mb-3 border", metric.bg, metric.border)}>
                                     <DynamicIcon name={metric.icon} className={cn("w-4 h-4 ", metric.color)}/>
                                 </div>
-                                <p className="text-2xl font-bold text-white tracking-tight">{metric.value}</p>
+                                <p className="text-2xl font-bold text-black dark:text-white tracking-tight">{metric.value}</p>
                                 <p className="text-xs text-zinc-500 mt-0.5 font-medium">{metric.label}</p>
                             </div>
                         ))}
@@ -208,10 +208,10 @@ export function MemberDashboard({
             {/* ── Activity Feed — Luma Events ── */}
             <section className="mb-10">
                 <div className="flex items-center justify-between mb-5">
-                    <h2 className="text-lg font-semibold text-white">Activity Feed</h2>
+                    <h2 className="text-lg font-semibold text-black dark:text-white">Activity Feed</h2>
                     <Link
                         href="/member/events"
-                        className="text-xs font-semibold text-zinc-500 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1"
+                        className="text-xs font-semibold text-zinc-500 hover:text-black dark:hover:text-white transition-colors whitespace-nowrap flex items-center gap-1"
                     >
                         View all
                         <ArrowRight className="w-3 h-3"/>
@@ -253,8 +253,8 @@ export function MemberDashboard({
                     </div>
                 ) : (
                     <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                        <Calendar className="w-8 h-8 text-zinc-700 mb-3"/>
-                        <p className="text-zinc-600 font-medium text-sm">No events found</p>
+                        <Calendar className="w-8 h-8 text-zinc-400 dark:text-zinc-700 mb-3"/>
+                        <p className="text-zinc-500 dark:text-zinc-600 font-medium text-sm">No events found</p>
                     </div>
                 )}
             </section>
@@ -262,7 +262,7 @@ export function MemberDashboard({
             {/* ── Playbooks Section ── */}
             <section className="mb-10">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-                    <h2 className="text-lg font-semibold text-white">Playbooks</h2>
+                    <h2 className="text-lg font-semibold text-black dark:text-white">Playbooks</h2>
                     <div className="flex items-center gap-2">
                         <div className={cn("flex items-center gap-2 rounded-lg px-3 py-2", glassClass)}>
                             <Search className="w-3.5 h-3.5 text-zinc-600"/>
@@ -271,12 +271,12 @@ export function MemberDashboard({
                                 placeholder="Search playbooks..."
                                 value={playbookSearch}
                                 onChange={(e) => setPlaybookSearch(e.target.value)}
-                                className="bg-transparent text-sm text-white placeholder-zinc-600 focus:outline-none w-28 sm:w-40"
+                                className="bg-transparent text-sm text-black dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none w-28 sm:w-40"
                             />
                         </div>
                         <Link
                             href="/member/playbooks"
-                            className="text-xs font-semibold text-zinc-500 hover:text-white transition-colors whitespace-nowrap flex items-center gap-1"
+                            className="text-xs font-semibold text-zinc-500 hover:text-black dark:hover:text-white transition-colors whitespace-nowrap flex items-center gap-1"
                         >
                             View all
                             <ArrowRight className="w-3 h-3"/>
@@ -300,8 +300,8 @@ export function MemberDashboard({
                     </div>
                 ) : (
                     <div className={cn("w-full py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                        <BookOpen className="w-8 h-8 text-zinc-700 mb-3"/>
-                        <p className="text-zinc-600 font-medium text-sm">
+                        <BookOpen className="w-8 h-8 text-zinc-400 dark:text-zinc-700 mb-3"/>
+                        <p className="text-zinc-500 dark:text-zinc-600 font-medium text-sm">
                             {playbookSearch ? `No playbooks matching "${playbookSearch}"` : "No playbooks available"}
                         </p>
                     </div>
@@ -313,7 +313,7 @@ export function MemberDashboard({
                 {/* Proposals Card */}
                 <Link
                     href="/member/experiments"
-                    className={cn("rounded-2xl p-6 group transition-all duration-300 hover:border-white/[0.1]", glassClass)}
+                    className={cn("rounded-2xl p-6 group transition-all duration-300 hover:border-black/[0.1] dark:hover:border-white/[0.1]", glassClass)}
                 >
                     <div className="flex items-center justify-between mb-5">
                         <div className="flex items-center gap-3">
@@ -321,13 +321,13 @@ export function MemberDashboard({
                                 <Vote className="w-4 h-4 text-red-500"/>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-white text-sm">New Proposals</h3>
+                                <h3 className="font-semibold text-black dark:text-white text-sm">New Proposals</h3>
                                 <p className="text-[11px] text-zinc-600">Vote on upcoming ideas</p>
                             </div>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all"/>
+                        <ArrowRight className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover:text-black dark:group-hover:text-white group-hover:translate-x-0.5 transition-all"/>
                     </div>
-                    <div className="p-4 bg-white/[0.02] border border-white/[0.04] rounded-xl">
+                    <div className="p-4 bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
                         {proposals.length > 0 ? (
                             <div className="space-y-2.5">
                                 {proposals.slice(0, 3).map((prop) => (
@@ -350,7 +350,7 @@ export function MemberDashboard({
                 {/* Directory Card */}
                 <Link
                     href="/member/directory"
-                    className={cn("rounded-2xl p-6 group transition-all duration-300 hover:border-white/[0.1]", glassClass)}
+                    className={cn("rounded-2xl p-6 group transition-all duration-300 hover:border-black/[0.1] dark:hover:border-white/[0.1]", glassClass)}
                 >
                     <div className="flex items-center justify-between mb-5">
                         <div className="flex items-center gap-3">
@@ -358,13 +358,13 @@ export function MemberDashboard({
                                 <Users className="w-4 h-4 text-red-500"/>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-white text-sm">Member Directory</h3>
+                                <h3 className="font-semibold text-black dark:text-white text-sm">Member Directory</h3>
                                 <p className="text-[11px] text-zinc-600">Connect with the community</p>
                             </div>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all"/>
+                        <ArrowRight className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover:text-black dark:group-hover:text-white group-hover:translate-x-0.5 transition-all"/>
                     </div>
-                    <div className="p-4 bg-white/[0.02] border border-white/[0.04] rounded-xl">
+                    <div className="p-4 bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-xl">
                         <p className="text-xs text-zinc-500 leading-relaxed">
                             Connect with other builders, mentors, and contributors. Find peers and collaborate on new ideas.
                         </p>
@@ -425,13 +425,13 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
             className={cn(
                 "group block rounded-2xl p-4 transition-all duration-300 snap-start",
                 "w-[280px] sm:w-[320px] flex-shrink-0",
-                "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]",
-                "hover:border-white/[0.12] hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/20",
+                "bg-zinc-100/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]",
+                "hover:border-black/[0.12] dark:hover:border-white/[0.12] hover:bg-zinc-100/80 dark:hover:bg-zinc-900/60 hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/20",
                 status === "PAST" && "opacity-70 hover:opacity-100"
             )}
         >
             {/* Cover Image */}
-            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-800/50">
+            <div className="relative mb-3 rounded-xl overflow-hidden bg-zinc-200/50 dark:bg-zinc-800/50">
                 {imageUrl && !imageError ? (
                     <div className="aspect-square relative">
                         <NextImage
@@ -464,7 +464,7 @@ function LumaEventCard({ entry, status }: { entry: LumaEventData; status: "LIVE"
             </div>
 
             {/* Content */}
-            <h3 className="font-semibold text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-100 transition-colors">
+            <h3 className="font-semibold text-black dark:text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-100 transition-colors">
                 {entry.event.name}
             </h3>
             <div className="flex items-center gap-2 text-xs text-zinc-500">

@@ -7,7 +7,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-transparent border-b border-white/10">
       <div className="flex items-center gap-2">
         <Link href="/">
-          <Team1Logo className="h-6 w-auto" />
+          <Team1Logo className="h-3.5 w-auto" />
         </Link>
       </div>
 

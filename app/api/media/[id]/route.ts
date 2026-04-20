@@ -15,13 +15,18 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         // Allow partial updates
         const validatedData = MediaItemSchema.parse(body);
 
-        // Fetch current status
+        // Fetch current item and check ownership
         const currentItem = await prisma.mediaItem.findUnique({
             where: { id },
-            select: { status: true }
+            select: { status: true, createdById: true }
         });
 
         if (!currentItem) return new NextResponse("Not Found", { status: 404 });
+
+        // Only the creator or CORE users can edit
+        if (currentItem.createdById !== session.user.id && session.user.role !== 'CORE') {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
 
         // Only allow edits in Draft or Needs Edit
         const editableStatuses = ['draft', 'needs_edit'];
@@ -109,6 +114,16 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const { id } = await params;
 
     try {
+        // Check ownership
+        const item = await prisma.mediaItem.findUnique({
+            where: { id },
+            select: { createdById: true }
+        });
+        if (!item) return new NextResponse("Not Found", { status: 404 });
+        if (item.createdById !== session.user.id && session.user.role !== 'CORE') {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
+
         await prisma.mediaItem.update({
             where: { id },
             data: { deletedAt: new Date() }

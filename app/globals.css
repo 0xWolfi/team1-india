@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Class-based dark mode for next-themes */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: var(--font-kanit);
   --font-mono: var(--font-kanit);
@@ -56,13 +59,36 @@
   --color-blue-950: var(--color-brand-950);
 }
 
+/* Light mode (default) */
 :root {
-  --background: #000000;
-  --foreground: #ededed;
+  --background: #ffffff;
+  --foreground: #000000;
+  --surface: #f4f4f5;
+  --surface-hover: #e4e4e7;
+  --muted: #71717a;
+  --muted-foreground: #52525b;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --card-bg: rgba(0, 0, 0, 0.03);
+  --card-hover-bg: rgba(0, 0, 0, 0.06);
+  --overlay-bg: rgba(255, 255, 255, 0.8);
 }
 
+/* Dark mode */
 .dark {
   --background: #000000;
+  --foreground: #ededed;
+  --surface: #18181b;
+  --surface-hover: #27272a;
+  --muted: #a1a1aa;
+  --muted-foreground: #71717a;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(0, 0, 0, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-hover-bg: rgba(255, 255, 255, 0.06);
+  --overlay-bg: rgba(0, 0, 0, 0.8);
 }
 
 *, *::before, *::after {
@@ -73,9 +99,100 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-kanit), 'Kanit', sans-serif;
-  overflow-x: hidden;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  overflow-x: clip;
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+html {
+  overflow-x: clip;
+}
+
+/* Smooth theme transitions for key properties */
+.theme-transition,
+.theme-transition *:not(canvas):not(video):not(img) {
+  transition: background-color 300ms ease-in-out, color 300ms ease-in-out, border-color 300ms ease-in-out, box-shadow 300ms ease-in-out;
+}
+
+/* Chrome text shine on Explore nav link */
+.nav-shine-text {
+  background: linear-gradient(
+    90deg,
+    #a1a1aa 0%,
+    #a1a1aa 40%,
+    #ffffff 50%,
+    #a1a1aa 60%,
+    #a1a1aa 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textshine 2s ease-in-out infinite;
+}
+
+.dark .nav-shine-text {
+  background: linear-gradient(
+    90deg,
+    #71717a 0%,
+    #71717a 40%,
+    #ffffff 50%,
+    #71717a 60%,
+    #71717a 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes textshine {
+  0% { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
+}
+
+/* Members showcase infinite scroll */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.animate-scroll-left {
+  animation: scroll-left 30s linear infinite;
+  width: max-content;
+}
+.animate-scroll-right {
+  animation: scroll-right 30s linear infinite;
+  width: max-content;
+}
+
+/* Gallery marquee — variable speed via inline animationDuration */
+.gallery-marquee-left {
+  animation: scroll-left linear infinite;
+  width: max-content;
+  will-change: transform;
+}
+.gallery-marquee-right {
+  animation: scroll-right linear infinite;
+  width: max-content;
+  will-change: transform;
+}
+.gallery-marquee-left:hover,
+.gallery-marquee-right:hover {
+  animation-play-state: paused;
 }

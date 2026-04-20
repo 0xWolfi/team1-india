@@ -10,7 +10,7 @@ export function GetInvolved() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="involved" className="py-20 md:py-28 relative overflow-hidden">
+    <section id="involved" className="py-12 md:py-16 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10 flex justify-center">
         <motion.div
           ref={ref}
@@ -20,31 +20,33 @@ export function GetInvolved() {
           className="max-w-5xl w-full relative rounded-3xl overflow-hidden"
         >
           {/* Gradient border effect */}
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-px">
-            <div className="w-full h-full rounded-3xl bg-zinc-950/80 backdrop-blur-xl" />
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-black/10 dark:from-white/10 via-black/5 dark:via-white/5 to-transparent p-px">
+            <div className="w-full h-full rounded-3xl bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-xl" />
           </div>
 
           <div className="relative z-10 p-8 md:p-16 text-center">
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-              Ready to Make an Impact?
+            <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white mb-6 tracking-tight uppercase leading-[1.1]">
+              READY TO MAKE AN IMPACT?
             </h2>
-            <p className="text-lg md:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
               Join a community of builders, innovators, and change-makers. Whether you are a student, professional, or partner, there is a place for you.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/public"
-                className="group px-8 py-4 bg-white text-black text-base font-bold rounded-xl hover:bg-zinc-200 transition-all w-full sm:w-auto flex items-center justify-center gap-2"
+                className="group px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-base font-bold rounded-xl hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2"
               >
-                Guidebook
+                Explore
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link
-                href="mailto:hello@team1india.com"
-                className="group px-8 py-4 bg-white/5 border border-white/10 text-white text-base font-bold rounded-xl hover:bg-white/10 hover:border-white/20 transition-all w-full sm:w-auto"
+              <a
+                href="https://t.me/avalanche_hi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group px-8 py-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black dark:text-white text-base font-bold rounded-xl hover:bg-red-500 hover:text-white hover:border-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.3)] hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto"
               >
-                Contact Us
-              </Link>
+                Join Us
+              </a>
             </div>
           </div>
         </motion.div>

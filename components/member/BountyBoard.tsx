@@ -33,7 +33,7 @@ interface Submission {
 type Tab = "active" | "submissions";
 type TypeFilter = "all" | "tweet" | "thread" | "blog" | "video" | "developer";
 
-const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
+const glassClass = "bg-zinc-100/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]";
 
 const typeConfig: Record<string, { icon: string; color: string; bg: string; border: string; label: string; gradient: string }> = {
     tweet:     { icon: "Twitter",  color: "text-sky-400",     bg: "bg-sky-500/10",     border: "border-sky-500/20",     label: "Tweet",     gradient: "from-sky-500/20 to-sky-500/0" },

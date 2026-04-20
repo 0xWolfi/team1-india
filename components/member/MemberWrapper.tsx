@@ -142,7 +142,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
 
     if (requireAuth && status === "loading") {
         return (
-            <div className="min-h-screen pt-32 px-12 font-mono text-zinc-500 animate-pulse bg-black">
+            <div className="min-h-screen pt-32 px-12 font-mono text-zinc-500 animate-pulse bg-white dark:bg-black">
                 Loading Member Portal...
             </div>
         );
@@ -168,8 +168,8 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
     const NavContent = () => (
         <>
             {/* Logo */}
-            <div className="h-16 flex items-center gap-3 px-5 border-b border-white/[0.06] flex-shrink-0">
-                <Team1Logo className="h-6 w-auto" />
+            <div className="h-16 flex items-center gap-3 px-5 border-b border-black/[0.06] dark:border-white/[0.06] flex-shrink-0">
+                <Team1Logo className="h-3.5 w-auto" />
                 <span className="ml-auto text-[10px] font-mono text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                     member
                 </span>
@@ -186,11 +186,11 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                             className={cn(
                                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 group",
                                 active
-                                    ? "bg-white/[0.08] text-white"
-                                    : "text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]"
+                                    ? "bg-black/[0.08] dark:bg-white/[0.08] text-black dark:text-white"
+                                    : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
                             )}
                         >
-                            <DynamicIcon name={item.icon} className={cn( "w-[18px] h-[18px] transition-colors", active ? "text-white" : "text-zinc-600 group-hover:text-zinc-400" )}/>
+                            <DynamicIcon name={item.icon} className={cn( "w-[18px] h-[18px] transition-colors", active ? "text-black dark:text-white" : "text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-400" )}/>
                             <span>{item.label}</span>
                             {active && (
                                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)]" />
@@ -201,17 +201,17 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
             </nav>
 
             {/* Profile & Logout */}
-            <div className="px-3 py-3 border-t border-white/[0.06] space-y-0.5 flex-shrink-0">
+            <div className="px-3 py-3 border-t border-black/[0.06] dark:border-white/[0.06] space-y-0.5 flex-shrink-0">
                 <Link
                     href="/member/profile"
                     className={cn(
                         "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group",
                         pathname === "/member/profile"
-                            ? "bg-white/[0.08] text-white"
-                            : "text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]"
+                            ? "bg-black/[0.08] dark:bg-white/[0.08] text-black dark:text-white"
+                            : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
                     )}
                 >
-                    <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-white/10 bg-zinc-800 flex-shrink-0 relative [&>div]:!relative [&>div]:!w-full [&>div]:!h-full">
+                    <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-black/10 dark:ring-white/10 bg-zinc-200 dark:bg-zinc-800 flex-shrink-0 relative [&>div]:!relative [&>div]:!w-full [&>div]:!h-full">
                         {displayImage && !profileImageError ? (
                             <div className="relative w-full h-full">
                                 <Image
@@ -247,32 +247,32 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
     );
 
     return (
-        <div className="min-h-[100svh] text-white relative selection:bg-white/20">
+        <div className="min-h-[100svh] text-black dark:text-white relative selection:bg-black/20 dark:selection:bg-white/20">
             {/* Background Effects */}
-            <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-black/80 via-black/50 to-transparent pointer-events-none z-0" />
-            <div className="fixed -top-[200px] right-0 w-[600px] h-[600px] bg-zinc-900/05 blur-[120px] rounded-full pointer-events-none -z-10" />
+            <div className="fixed top-0 left-0 w-full h-[500px] bg-gradient-to-b from-white/80 dark:from-black/80 via-white/50 dark:via-black/50 to-transparent pointer-events-none z-0" />
+            <div className="fixed -top-[200px] right-0 w-[600px] h-[600px] bg-zinc-100/05 dark:bg-zinc-900/05 blur-[120px] rounded-full pointer-events-none -z-10" />
 
             {/* Desktop Sidebar */}
-            <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[260px] z-40 flex-col bg-black/50 backdrop-blur-2xl border-r border-white/[0.06]">
+            <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[260px] z-40 flex-col bg-white/50 dark:bg-black/50 backdrop-blur-2xl border-r border-black/[0.06] dark:border-white/[0.06]">
                 <NavContent />
             </aside>
 
             {/* Mobile Header */}
-            <header className="lg:hidden sticky top-0 z-50 px-4 py-3 bg-black/40 backdrop-blur-2xl border-b border-white/[0.06] flex items-center justify-between">
+            <header className="lg:hidden sticky top-0 z-50 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] bg-white/40 dark:bg-black/40 backdrop-blur-2xl border-b border-black/[0.06] dark:border-white/[0.06] flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
                         onClick={() => setMobileMenuOpen(true)}
-                        className="p-2 -ml-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                        className="p-2 -ml-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                         aria-label="Open navigation menu"
                     >
                         <Menu className="w-5 h-5"/>
                     </button>
-                    <Team1Logo className="h-5 w-auto" />
+                    <Team1Logo className="h-3.5 w-auto" />
                 </div>
                 <Link
                     href="/member/profile"
-                    className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10 bg-zinc-800 flex items-center justify-center relative [&>div]:!relative [&>div]:!w-full [&>div]:!h-full"
+                    className="w-8 h-8 rounded-full overflow-hidden ring-1 ring-black/10 dark:ring-white/10 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center relative [&>div]:!relative [&>div]:!w-full [&>div]:!h-full"
                     title="My Profile"
                 >
                     {displayImage && !profileImageError ? (
@@ -299,7 +299,7 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
                         onClick={() => setMobileMenuOpen(false)}
                     />
-                    <aside className="absolute left-0 top-0 bottom-0 w-[280px] flex flex-col bg-zinc-950/95 backdrop-blur-2xl border-r border-white/[0.06] animate-in fade-in duration-200">
+                    <aside className="absolute left-0 top-0 bottom-0 w-[280px] flex flex-col bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl border-r border-black/[0.06] dark:border-white/[0.06] animate-in fade-in duration-200">
                         <NavContent />
                     </aside>
                 </div>

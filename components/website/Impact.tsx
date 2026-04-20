@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import { useInView } from "framer-motion";
+import { useInView, motion } from "framer-motion";
 
-function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+function AnimatedCounter({ target, suffix = "", inView }: { target: number; suffix?: string; inView: boolean }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!inView) return;
 
     const duration = 1500;
     const startTime = performance.now();
@@ -27,22 +25,26 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
     }
 
     requestAnimationFrame(update);
-  }, [isInView, target]);
+  }, [inView, target]);
 
   return (
-    <span ref={ref} className="tabular-nums">
+    <span className="tabular-nums">
       {count}{suffix}
     </span>
   );
 }
 
 const stats = [
-  { value: 113, label: "Community Events", suffix: "+" },
-  { value: 7, label: "Hackathons Hosted", suffix: "" },
+  { value: 113, label: "Events", suffix: "+" },
+  { value: 15, label: "Campus Connect", suffix: "+" },
+  { value: 7, label: "Hackathons", suffix: "" },
   { value: 31, label: "Projects Building", suffix: "+" },
 ];
 
 export function Impact() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isSectionInView = useInView(sectionRef, { once: true, margin: "-150px" });
+
   return (
     <section id="impact" className="py-20 md:py-28 relative z-10 overflow-hidden">
       {/* Background accent */}
@@ -50,16 +52,21 @@ export function Impact() {
 
       <div className="container mx-auto px-6 relative">
         <div className="max-w-4xl mx-auto mb-16 text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">What We Have Done</h2>
-          <p className="text-zinc-400 text-lg">Measurable impact across the entire ecosystem.</p>
+          <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight">What We Have Done</h2>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-0 max-w-4xl mx-auto">
+        <motion.div 
+          ref={sectionRef}
+          initial={{ scale: 0.85, opacity: 0, y: 40 }}
+          animate={isSectionInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col md:flex-row flex-wrap items-center justify-center gap-8 md:gap-0 max-w-5xl mx-auto"
+        >
           {stats.map((stat, i) => (
             <React.Fragment key={stat.label}>
-              <div className="flex flex-col items-center text-center px-4 sm:px-8 md:px-12">
-                <div className="text-4xl sm:text-6xl md:text-8xl font-bold text-white tracking-tight mb-3">
-                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+              <div className="flex flex-col items-center text-center px-2 sm:px-4 md:px-8">
+                <div className="text-4xl sm:text-5xl md:text-7xl font-bold text-white tracking-tight mb-3">
+                  <AnimatedCounter target={stat.value} suffix={stat.suffix} inView={isSectionInView} />
                 </div>
                 <p className="text-sm text-zinc-500 font-medium uppercase tracking-widest">{stat.label}</p>
               </div>
@@ -71,7 +78,7 @@ export function Impact() {
               )}
             </React.Fragment>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

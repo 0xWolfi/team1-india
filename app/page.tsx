@@ -4,35 +4,32 @@ import { Announcements } from "@/components/website/Announcements";
 import { Footer } from "@/components/website/Footer";
 import { WhatWeDo } from "@/components/website/WhatWeDo";
 import { Preloader } from "@/components/ui/Preloader";
+import { ScrollReset } from "@/components/website/ScrollReset";
 import dynamic from "next/dynamic";
 
 // Lazy load heavy interactive components below the fold
-const Impact = dynamic(() => import("@/components/website/Impact").then(mod => mod.Impact));
 const Events = dynamic(() => import("@/components/website/Events").then(mod => mod.Events));
 const Programs = dynamic(() => import("@/components/website/Programs").then(mod => mod.Programs));
 const GetInvolved = dynamic(() => import("@/components/website/GetInvolved").then(mod => mod.GetInvolved));
+const Members = dynamic(() => import("@/components/website/Members").then(mod => mod.Members));
+const Gallery = dynamic(() => import("@/components/website/GalleryWrapper").then(mod => mod.GalleryWrapper));
 
 function SectionDivider() {
   return (
-    <div className="flex items-center justify-center py-4">
-      <div className="w-24 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    <div className="flex items-center justify-center py-3 md:py-5">
+      <div className="w-24 h-px bg-gradient-to-r from-transparent via-black/10 dark:via-white/10 to-transparent" />
     </div>
   );
 }
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white antialiased selection:bg-white selection:text-black">
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+      <ScrollReset />
       <Preloader />
       <HomeNavbar />
       <div className="flex flex-col">
         <HeroScroll />
-
-        <section id="impact" aria-label="Our Impact">
-          <Impact />
-        </section>
-
-        <SectionDivider />
 
         <section id="announcements" aria-label="Latest Updates">
           <Announcements />
@@ -54,6 +51,18 @@ export default function Home() {
 
         <section id="programs" aria-label="Accelerator Programs">
           <Programs />
+        </section>
+
+        <SectionDivider />
+
+        <section id="members" aria-label="Our Members">
+          <Members />
+        </section>
+
+        <SectionDivider />
+
+        <section id="gallery" aria-label="Event Gallery">
+          <Gallery />
         </section>
 
         <SectionDivider />
