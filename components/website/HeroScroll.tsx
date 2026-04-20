@@ -10,7 +10,8 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Send, ArrowRight, Calendar, School, Trophy, Rocket, X, Play, Volume2, VolumeX } from "lucide-react";
+import { Send, ArrowRight, Calendar, School, Trophy, Rocket } from "lucide-react";
+import { TabletMockup } from "@/components/ui/TabletMockup";
 import { useTheme } from "next-themes";
 
 /* ═══════════════════════════════════════════
@@ -123,162 +124,6 @@ function TextReveal({
         })}
       </p>
     </motion.div>
-  );
-}
-
-/* ═══════════════════════════════════════════
-   CursorVideo — follows cursor, expands in-place on click
-   ═══════════════════════════════════════════ */
-
-function CursorVideo({
-  progress,
-  visibleRange,
-}: {
-  progress: MotionValue<number>;
-  visibleRange: [number, number];
-}) {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isVisible, setIsVisible] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const expandedVideoRef = useRef<HTMLVideoElement>(null);
-
-  useMotionValueEvent(progress, "change", (v) => {
-    setIsVisible(v >= visibleRange[0] && v <= visibleRange[1]);
-  });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  useEffect(() => {
-    if (isExpanded && expandedVideoRef.current) {
-      expandedVideoRef.current.play().catch(() => {});
-    }
-  }, [isExpanded]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!isExpanded) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsExpanded(false);
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [isExpanded]);
-
-  const handleClick = () => {
-    setIsExpanded(true);
-  };
-
-  if (!isVisible && !isExpanded) return null;
-
-  return (
-    <>
-      {/* Cursor-following video thumbnail */}
-      {isVisible && !isExpanded && (
-        <motion.div
-          className="fixed z-[100] pointer-events-auto cursor-pointer hidden md:block"
-          animate={{
-            x: mousePos.x + 40,
-            y: mousePos.y - 50,
-            scale: isHovered ? 1.05 : 1,
-          }}
-          transition={{ type: "spring", damping: 28, stiffness: 220, mass: 0.4 }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onClick={handleClick}
-          style={{ top: 0, left: 0 }}
-        >
-          <div className="relative w-44 lg:w-52 aspect-video rounded-xl overflow-hidden border border-white/15 shadow-2xl shadow-black/40 group">
-            <video
-              ref={videoRef}
-              src="/hero-video.mp4"
-              className="w-full h-full object-cover"
-              muted
-              loop
-              playsInline
-              poster="/hero-cover.jpg"
-            />
-            {/* Play icon overlay */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors duration-300">
-              <div className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Play className="w-4 h-4 text-black fill-black ml-0.5" />
-              </div>
-            </div>
-            {/* Red glow border on hover */}
-            <motion.div
-              className="absolute inset-0 rounded-xl border-2 border-red-500/0 pointer-events-none"
-              animate={{ borderColor: isHovered ? "rgba(239,68,68,0.5)" : "rgba(239,68,68,0)" }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-        </motion.div>
-      )}
-
-      {/* Expanded video — covers the text area in-place */}
-      {isExpanded && (
-        <motion.div
-          className="absolute inset-0 z-[25] flex items-center justify-center pointer-events-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          {/* Video expands from thumbnail size to fill the text area */}
-          <motion.div
-            className="relative w-full h-full"
-            initial={{ scale: 0.15, borderRadius: 16, opacity: 0 }}
-            animate={{ scale: 1, borderRadius: 0, opacity: 1 }}
-            transition={{
-              duration: 0.6,
-              ease: [0.16, 1, 0.3, 1],
-              opacity: { duration: 0.2 },
-            }}
-          >
-            <video
-              ref={expandedVideoRef}
-              src="/hero-video.mp4"
-              className="w-full h-full object-cover"
-              autoPlay
-              loop
-              playsInline
-              muted={isMuted}
-            />
-
-            {/* X close button — top right */}
-            <motion.button
-              onClick={() => setIsExpanded(false)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 hover:bg-red-500 text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-sm border border-white/10 z-10"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.25 }}
-            >
-              <X className="w-5 h-5" />
-            </motion.button>
-
-            {/* Mute/unmute button — bottom right */}
-            <motion.button
-              onClick={() => {
-                setIsMuted(!isMuted);
-                if (expandedVideoRef.current) expandedVideoRef.current.muted = !isMuted;
-              }}
-              className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-black/50 hover:bg-white/20 text-white flex items-center justify-center transition-colors duration-200 backdrop-blur-sm border border-white/10 z-10"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.25 }}
-            >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </motion.button>
-          </motion.div>
-        </motion.div>
-      )}
-    </>
   );
 }
 
@@ -435,10 +280,12 @@ function GridOverlay({ isDark }: { isDark: boolean }) {
    ─────────────────────────────────────────
    0.00–0.05  Hero holds
    0.05–0.11  Hero fades + scales out
-   0.10–0.28  Text words reveal (cursor video follows mouse)
-   0.28–0.38  Text slides up → Stats enters
-   0.38–0.46  Stats heading + cards appear
-   0.46–0.86  Card glows sequentially
+   0.10–0.28  Text words reveal one-by-one
+   0.28–0.34  Text slides up ←→ Tablet rises (SIMULTANEOUS)
+   0.34–0.44  Tablet holds (video plays)
+   0.44–0.50  Tablet exits ←→ Stats enters (SIMULTANEOUS)
+   0.50–0.58  Stats heading + cards appear
+   0.58–0.86  Card glows sequentially
    0.86–1.00  Stats hold for interaction
    ═══════════════════════════════════════════ */
 
@@ -455,40 +302,43 @@ export const HeroScroll = () => {
   });
 
   const [interactive, setInteractive] = useState(false);
-  useMotionValueEvent(scrollYProgress, "change", (v) => setInteractive(v > 0.90));
+  useMotionValueEvent(scrollYProgress, "change", (v) => setInteractive(v > 0.86));
 
   /* ── Phase 1: Hero (fades into text) ── */
-  const heroOpacity = useTransform(scrollYProgress, [0.06, 0.14], [1, 0]);
-  const heroScale  = useTransform(scrollYProgress, [0.06, 0.14], [1, 0.88]);
-  const heroY      = useTransform(scrollYProgress, [0.06, 0.14], [0, -80]);
+  const heroOpacity = useTransform(scrollYProgress, [0.05, 0.11], [1, 0]);
+  const heroScale  = useTransform(scrollYProgress, [0.05, 0.11], [1, 0.88]);
+  const heroY      = useTransform(scrollYProgress, [0.05, 0.11], [0, -80]);
 
   /* ── Phase 2: Text (words reveal, then slides up and out) ── */
-  const textRevealRange: [number, number] = [0.12, 0.36];
-  const textExitRange: [number, number]   = [0.36, 0.46];
+  const textRevealRange: [number, number] = [0.10, 0.28];
+  const textExitRange: [number, number]   = [0.28, 0.34];
 
-  /* ── Cursor video visible during text reveal ── */
-  const cursorVideoRange: [number, number] = [0.12, 0.42];
+  /* ── Phase 3: Tablet (follows text — same range 0.28→0.34, same 600px travel) ── */
+  const tabletOpacity = useTransform(scrollYProgress, [0.27, 0.28, 0.46, 0.52], [0, 1, 1, 0]);
+  const tabletY       = useTransform(scrollYProgress, [0.28, 0.36, 0.46, 0.52], [600, 0, 0, -400]);
+  const tabletScale   = useTransform(scrollYProgress, [0.28, 0.36, 0.46, 0.52], [0.95, 1, 1, 0.92]);
+  const tabletRotate  = useTransform(scrollYProgress, [0.28, 0.36], [3, 0]);
 
-  /* ── Phase 3: Stats (enters after text exits) ── */
-  const statsContainerOpacity = useTransform(scrollYProgress, [0.44, 0.52], [0, 1]);
-  const headingOpacity = useTransform(scrollYProgress, [0.44, 0.52], [0, 1]);
-  const headingScale   = useTransform(scrollYProgress, [0.44, 0.52], [0.88, 1]);
-  const headingY       = useTransform(scrollYProgress, [0.44, 0.52], [40, 0]);
-  const statsOpacity   = useTransform(scrollYProgress, [0.52, 0.58], [0, 1]);
-  const statsScale     = useTransform(scrollYProgress, [0.52, 0.58], [0.92, 1]);
-  const statsY         = useTransform(scrollYProgress, [0.52, 0.58], [50, 0]);
+  /* ── Phase 4: Stats (starts RIGHT when tablet is gone at 0.52) ── */
+  const statsContainerOpacity = useTransform(scrollYProgress, [0.52, 0.58], [0, 1]);
+  const headingOpacity = useTransform(scrollYProgress, [0.52, 0.58], [0, 1]);
+  const headingScale   = useTransform(scrollYProgress, [0.52, 0.58], [0.88, 1]);
+  const headingY       = useTransform(scrollYProgress, [0.52, 0.58], [40, 0]);
+  const statsOpacity   = useTransform(scrollYProgress, [0.58, 0.64], [0, 1]);
+  const statsScale     = useTransform(scrollYProgress, [0.58, 0.64], [0.92, 1]);
+  const statsY         = useTransform(scrollYProgress, [0.58, 0.64], [50, 0]);
 
-  const counterRange: [number, number] = [0.52, 0.62];
+  const counterRange: [number, number] = [0.58, 0.66];
 
-  /* Card glows — strictly sequential, ends near 0.95 */
-  const glow0 = useTransform(scrollYProgress, [0.64, 0.66, 0.69, 0.70], [0, 1, 1, 0]);
-  const glow1 = useTransform(scrollYProgress, [0.72, 0.74, 0.77, 0.78], [0, 1, 1, 0]);
+  /* Card glows — strictly sequential + plateau + dim gaps between cards */
+  const glow0 = useTransform(scrollYProgress, [0.66, 0.68, 0.71, 0.72], [0, 1, 1, 0]);
+  const glow1 = useTransform(scrollYProgress, [0.73, 0.75, 0.78, 0.79], [0, 1, 1, 0]);
   const glow2 = useTransform(scrollYProgress, [0.80, 0.82, 0.85, 0.86], [0, 1, 1, 0]);
-  const glow3 = useTransform(scrollYProgress, [0.88, 0.90, 0.93, 0.94], [0, 1, 1, 0]);
+  const glow3 = useTransform(scrollYProgress, [0.87, 0.89, 0.92, 0.93], [0, 1, 1, 0]);
   const glows = [glow0, glow1, glow2, glow3];
 
   return (
-    <header id="hero" ref={containerRef} className="relative h-[400vh] md:h-[600vh]" role="banner">
+    <header id="hero" ref={containerRef} className="relative h-[500vh] md:h-[800vh]" role="banner">
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-[var(--background)]">
         {/* Background */}
         <div className="absolute inset-0 bg-[var(--background)]" />
@@ -555,10 +405,19 @@ export const HeroScroll = () => {
         {/* ═══ Phase 2: Text Reveal ═══ */}
         <TextReveal progress={scrollYProgress} revealRange={textRevealRange} exitRange={textExitRange} isDark={isDark} />
 
-        {/* ═══ Cursor-following Video ═══ */}
-        <CursorVideo progress={scrollYProgress} visibleRange={cursorVideoRange} />
+        {/* ═══ Phase 3: Tablet ═══ */}
+        <motion.div
+          style={{ opacity: tabletOpacity, y: tabletY, scale: tabletScale }}
+          className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none px-4 md:px-8"
+        >
+          <div className="w-full max-w-[1400px] pointer-events-auto" style={{ perspective: "1200px" }}>
+            <motion.div style={{ rotateX: tabletRotate }} className="origin-bottom">
+              <TabletMockup videoSrc="/hero-video.mp4" className="w-full aspect-[21/9]" />
+            </motion.div>
+          </div>
+        </motion.div>
 
-        {/* ═══ Phase 3: Stats ═══ */}
+        {/* ═══ Phase 4: Stats ═══ */}
         <motion.div
           style={{ opacity: statsContainerOpacity }}
           className={`absolute inset-0 z-30 flex flex-col items-center justify-center px-4 sm:px-6 ${interactive ? "pointer-events-auto" : "pointer-events-none"}`}
