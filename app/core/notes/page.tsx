@@ -134,7 +134,7 @@ export default function NotesPage() {
                     placeholder="Search past meetings..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors"
+                    className="w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-red-500/50 transition-colors"
                 />
             </div>
 
@@ -143,7 +143,7 @@ export default function NotesPage() {
                 {loading ? (
                     <div className="col-span-full text-center py-24 text-zinc-500">Loading notes...</div>
                 ) : filteredNotes.length === 0 ? (
-                    <div className="col-span-full flex flex-col items-center justify-center py-24 text-zinc-500 border border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
+                    <div className="col-span-full flex flex-col items-center justify-center py-24 text-zinc-500 border border-dashed border-black/10 dark:border-white/10 rounded-3xl bg-black/[0.02] dark:bg-white/[0.02]">
                         <FileText className="w-12 h-12 mb-4 opacity-20"/>
                         <p>No meeting notes found.</p>
                     </div>
@@ -152,10 +152,10 @@ export default function NotesPage() {
                         <div 
                             key={note.id} 
                             onClick={() => setSelectedNote(note)}
-                            className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl p-6 cursor-pointer hover:border-red-500/30 hover:bg-black/40 transition-all group flex flex-col h-[200px]"
+                            className="bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-2xl p-6 cursor-pointer hover:border-red-500/30 hover:bg-white/40 dark:hover:bg-black/40 transition-all group flex flex-col h-[200px]"
                         >
                             <div className="flex justify-between items-start mb-4">
-                                <div className="p-2 bg-white/5 rounded-lg text-red-400 group-hover:text-red-500 transition-colors">
+                                <div className="p-2 bg-black/5 dark:bg-white/5 rounded-lg text-red-400 group-hover:text-red-500 transition-colors">
                                     <FileText className="w-5 h-5"/>
                                 </div>
                                 <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${
@@ -166,12 +166,12 @@ export default function NotesPage() {
                                     {note.customFields?.visibility || 'CORE'}
                                 </span>
                             </div>
-                            <h3 className="text-lg font-bold text-white mb-1 line-clamp-1">{note.title}</h3>
+                            <h3 className="text-lg font-bold text-black dark:text-white mb-1 line-clamp-1">{note.title}</h3>
                             <div className="text-sm text-zinc-500 mb-4 flex items-center gap-2">
                                 <Calendar className="w-3 h-3"/>
                                 {new Date(note.customFields?.date || note.createdAt).toLocaleDateString()}
                             </div>
-                            <p className="text-xs text-zinc-600 line-clamp-3 leading-relaxed flex-1">
+                            <p className="text-xs text-zinc-400 dark:text-zinc-600 line-clamp-3 leading-relaxed flex-1">
                                 {note.content.replace(/[#*`_]/g, '')}
                             </p>
                         </div>
@@ -182,19 +182,19 @@ export default function NotesPage() {
             {/* Create Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
-                    <div className={`bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 rounded-3xl w-full ${modalStep === 2 ? 'max-w-4xl h-[80vh]' : 'max-w-md'} flex flex-col shadow-2xl shadow-red-500/5 animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-white/5 transition-all`}>
+                    <div className={`bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-3xl w-full ${modalStep === 2 ? 'max-w-4xl h-[80vh]' : 'max-w-md'} flex flex-col shadow-2xl shadow-red-500/5 animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-black/5 dark:ring-white/5 transition-all`}>
                         
                         {/* Header */}
-                        <div className="p-8 border-b border-white/5 flex items-start justify-between">
+                        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-start justify-between">
                             <div>
-                                <h2 className="text-2xl font-bold text-white mb-2">
+                                <h2 className="text-2xl font-bold text-black dark:text-white mb-2">
                                     {modalStep === 1 ? "New Note Details" : "Write Content"}
                                 </h2>
-                                <p className="text-zinc-300 text-sm">
+                                <p className="text-zinc-600 dark:text-zinc-300 text-sm">
                                     {modalStep === 1 ? "Set the context for your meeting note." : `Documenting "${formData.title}"`}
                                 </p>
                             </div>
-                            <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
+                            <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-full border border-black/5 dark:border-white/5">
                                 <div className={`w-2.5 h-2.5 rounded-full ${modalStep >= 1 ? 'bg-red-500' : 'bg-white/10'}`} />
                                 <div className={`w-6 h-0.5 rounded-full ${modalStep >= 2 ? 'bg-red-500' : 'bg-white/10'}`} />
                                 <div className={`w-2 h-2 rounded-full ${modalStep >= 2 ? 'bg-red-500' : 'bg-white/10'}`} />
@@ -213,16 +213,16 @@ export default function NotesPage() {
                                             placeholder="e.g. Q4 Strategy Review"
                                             value={formData.title}
                                             onChange={e => setFormData({...formData, title: e.target.value})}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-red-500/50 focus:bg-white/10 transition-all font-medium"
+                                            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-4 text-black dark:text-white focus:outline-none focus:border-red-500/50 focus:bg-black/10 dark:focus:bg-white/10 transition-all font-medium"
                                         />
                                     </div>
                                     <div className="space-y-3">
                                         <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Date</label>
-                                        <input 
-                                            type="date" 
+                                        <input
+                                            type="date"
                                             value={formData.date}
                                             onChange={e => setFormData({...formData, date: e.target.value})}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-red-500/50 focus:bg-white/10 transition-all font-medium custom-date-input"
+                                            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-4 text-black dark:text-white focus:outline-none focus:border-red-500/50 focus:bg-black/10 dark:focus:bg-white/10 transition-all font-medium custom-date-input"
                                         />
                                     </div>
                                     <div className="space-y-3">
@@ -231,9 +231,9 @@ export default function NotesPage() {
                                             <button 
                                                 onClick={() => setFormData({...formData, visibility: 'CORE'})}
                                                 className={`p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all ${
-                                                    formData.visibility === 'CORE' 
-                                                        ? 'bg-red-500/10 border-red-500 text-white' 
-                                                        : 'bg-white/5 border-white/5 text-zinc-500 hover:bg-white/10'
+                                                    formData.visibility === 'CORE'
+                                                        ? 'bg-red-500/10 border-red-500 text-black dark:text-white'
+                                                        : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 text-zinc-500 hover:bg-black/10 dark:hover:bg-white/10'
                                                 }`}
                                             >
                                                 <Lock className="w-5 h-5"/>
@@ -242,9 +242,9 @@ export default function NotesPage() {
                                             <button 
                                                 onClick={() => setFormData({...formData, visibility: 'MEMBER'})}
                                                 className={`p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all ${
-                                                    formData.visibility === 'MEMBER' 
-                                                        ? 'bg-blue-500/10 border-blue-500 text-white' 
-                                                        : 'bg-white/5 border-white/5 text-zinc-500 hover:bg-white/10'
+                                                    formData.visibility === 'MEMBER'
+                                                        ? 'bg-blue-500/10 border-blue-500 text-black dark:text-white'
+                                                        : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 text-zinc-500 hover:bg-black/10 dark:hover:bg-white/10'
                                                 }`}
                                             >
                                                 <Globe className="w-5 h-5"/>
@@ -262,22 +262,22 @@ export default function NotesPage() {
                                             value={formData.content}
                                             onChange={e => setFormData({...formData, content: e.target.value})}
                                             placeholder="# Meeting Agenda&#10;&#10;1. Review Updates&#10;2. Brainstorming..."
-                                            className="w-full h-full bg-white/5 border border-white/10 rounded-2xl p-6 text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-red-500/20 font-mono resize-none leading-relaxed"
+                                            className="w-full h-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-6 text-zinc-700 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-red-500/20 font-mono resize-none leading-relaxed"
                                         />
-                                        <div className="absolute top-4 right-6 text-xs text-zinc-600 pointer-events-none font-bold uppercase tracking-wider">Markdown Supported</div>
+                                        <div className="absolute top-4 right-6 text-xs text-zinc-400 dark:text-zinc-600 pointer-events-none font-bold uppercase tracking-wider">Markdown Supported</div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
                         {/* Footer */}
-                        <div className="p-6 border-t border-white/5 flex justify-end gap-3">
-                            <button 
+                        <div className="p-6 border-t border-black/5 dark:border-white/5 flex justify-end gap-3">
+                            <button
                                 onClick={() => {
                                     setIsModalOpen(false);
                                     setModalStep(1);
                                 }}
-                                className="px-6 py-3 rounded-xl text-sm font-bold text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+                                className="px-6 py-3 rounded-xl text-sm font-bold text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all"
                             >
                                 Cancel
                             </button>
@@ -306,13 +306,13 @@ export default function NotesPage() {
             {/* View Note Modal */}
             {selectedNote && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
-                    <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-white/5 overflow-hidden">
+                    <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-white/5 overflow-hidden">
                         
-                        <div className="p-8 border-b border-white/5 flex items-start justify-between">
+                        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-start justify-between">
                             <div>
-                                <h2 className="text-3xl font-bold text-white mb-2">{selectedNote.title}</h2>
+                                <h2 className="text-3xl font-bold text-black dark:text-white mb-2">{selectedNote.title}</h2>
                                 <div className="flex items-center gap-3 text-sm text-zinc-400">
-                                    <span className="flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg">
+                                    <span className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg">
                                         <Calendar className="w-3.5 h-3.5"/>
                                         {new Date(selectedNote.customFields?.date || selectedNote.createdAt).toLocaleDateString(undefined, {
                                             weekday: 'long', 
@@ -332,19 +332,19 @@ export default function NotesPage() {
                             </div>
                             <button 
                                 onClick={() => setSelectedNote(null)}
-                                className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white"
+                                className="p-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-black dark:hover:text-white"
                             >
                                 <Eye className="w-5 h-5"/>
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-black/10">
-                            <article className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-p:text-zinc-300 prose-a:text-red-400 prose-strong:text-white prose-code:text-red-300 prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl">
+                        <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-white/10 dark:bg-black/10">
+                            <article className="prose dark:prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-black dark:prose-headings:text-white prose-p:text-zinc-600 dark:prose-p:text-zinc-300 prose-a:text-red-400 prose-strong:text-black dark:prose-strong:text-white prose-code:text-red-300 prose-pre:bg-white/50 dark:prose-pre:bg-black/50 prose-pre:border prose-pre:border-black/10 dark:prose-pre:border-white/10 prose-pre:rounded-xl">
                                 <ReactMarkdown>{selectedNote.content}</ReactMarkdown>
                             </article>
                         </div>
 
-                        <div className="p-6 border-t border-white/5 flex justify-between items-center">
+                        <div className="p-6 border-t border-black/5 dark:border-white/5 flex justify-between items-center">
                             {canManage && (
                                 <button 
                                     onClick={() => setShowDeleteConfirm(true)}
@@ -355,7 +355,7 @@ export default function NotesPage() {
                             )}
                             <button 
                                 onClick={() => setSelectedNote(null)}
-                                className="px-6 py-2.5 text-sm font-bold text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors"
+                                className="px-6 py-2.5 text-sm font-bold text-zinc-400 hover:text-black dark:hover:text-white bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl transition-colors"
                             >
                                 Close View
                             </button>
@@ -367,21 +367,21 @@ export default function NotesPage() {
             {/* Delete Confirm */}
             {showDeleteConfirm && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
-                    <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-red-500/20 rounded-3xl w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-red-500/10">
+                    <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-red-500/20 rounded-3xl w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-red-500/10">
                          <div className="flex flex-col items-center text-center gap-6">
                             <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
                                 <Trash2 className="w-8 h-8"/>
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-white">Delete Note?</h3>
-                                <p className="text-sm text-zinc-300 mt-2 leading-relaxed">
-                                    Are you sure you want to permanently delete <br/><span className="text-white font-bold">"{selectedNote?.title}"</span>?
+                                <h3 className="text-xl font-bold text-black dark:text-white">Delete Note?</h3>
+                                <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-2 leading-relaxed">
+                                    Are you sure you want to permanently delete <br/><span className="text-black dark:text-white font-bold">"{selectedNote?.title}"</span>?
                                 </p>
                             </div>
                             <div className="flex items-center gap-3 w-full mt-2">
                                 <button 
                                     onClick={() => setShowDeleteConfirm(false)}
-                                    className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl font-bold text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
+                                    className="flex-1 px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl font-bold text-zinc-600 dark:text-zinc-300 hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors"
                                 >
                                     Cancel
                                 </button>

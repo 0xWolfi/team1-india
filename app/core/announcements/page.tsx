@@ -102,15 +102,15 @@ export default function AnnouncementsPage() {
         <CoreWrapper>
             {/* Limit Reached Modal */}
             {conflictItems && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div className="bg-zinc-900 border border-white/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-300">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-sm p-4">
+                    <div className="bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl p-6 w-full max-w-lg shadow-2xl animate-in fade-in zoom-in duration-300">
                         <div className="flex items-start gap-4 mb-4">
                             <div className="p-3 bg-red-500/10 rounded-full text-red-500">
                                 <Megaphone className="w-6 h-6"/>
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-white mb-1">Limit Reached</h2>
-                                <p className="text-zinc-400 text-sm">{conflictError}</p>
+                                <h2 className="text-xl font-bold text-black dark:text-white mb-1">Limit Reached</h2>
+                                <p className="text-zinc-500 dark:text-zinc-400 text-sm">{conflictError}</p>
                                 <p className="text-zinc-500 text-xs mt-1">Please select an old announcement to replace with your new one.</p>
                             </div>
                         </div>
@@ -121,11 +121,11 @@ export default function AnnouncementsPage() {
                                     key={item.id}
                                     onClick={() => handleReplace(item.id)}
                                     disabled={isLoading}
-                                    className="w-full text-left p-3 rounded-xl bg-black/20 hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 transition-all group flex items-center justify-between"
+                                    className="w-full text-left p-3 rounded-xl bg-white/20 dark:bg-black/20 hover:bg-red-500/10 border border-black/5 dark:border-white/5 hover:border-red-500/20 transition-all group flex items-center justify-between"
                                 >
                                     <div>
-                                        <div className="font-bold text-sm text-zinc-300 group-hover:text-red-400">{item.title}</div>
-                                        <div className="text-[10px] text-zinc-600 mt-1">{new Date(item.createdAt).toLocaleDateString()}</div>
+                                        <div className="font-bold text-sm text-zinc-600 dark:text-zinc-300 group-hover:text-red-400">{item.title}</div>
+                                        <div className="text-[10px] text-zinc-400 dark:text-zinc-600 mt-1">{new Date(item.createdAt).toLocaleDateString()}</div>
                                     </div>
                                     <span className="text-xs font-bold text-zinc-500 group-hover:text-red-400 uppercase tracking-wider">Replace</span>
                                 </button>
@@ -135,7 +135,7 @@ export default function AnnouncementsPage() {
                         <div className="flex justify-end">
                             <button 
                                 onClick={() => setConflictItems(null)}
-                                className="px-4 py-2 text-sm font-bold text-zinc-400 hover:text-white transition-colors"
+                                className="px-4 py-2 text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
                             >
                                 Cancel
                             </button>
@@ -160,7 +160,7 @@ export default function AnnouncementsPage() {
             </CorePageHeader>
 
             {isCreating && (
-                <div className="mb-8 p-6 bg-zinc-900/50 backdrop-blur-md border border-white/10 rounded-2xl animate-in slide-in-from-top-4 fade-in">
+                <div className="mb-8 p-6 bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-2xl animate-in slide-in-from-top-4 fade-in">
                     <h2 className="text-lg font-bold mb-4">Create Announcement</h2>
                     <form onSubmit={handleCreate} className="space-y-4">
                         <div>
@@ -170,7 +170,7 @@ export default function AnnouncementsPage() {
                                 required
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
-                                className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm focus:border-indigo-500/50 outline-none"
+                                className="w-full bg-white/20 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2 text-sm focus:border-indigo-500/50 outline-none"
                                 placeholder="e.g. Community Call starting in 10 mins!"
                             />
                         </div>
@@ -181,7 +181,7 @@ export default function AnnouncementsPage() {
                                     type="url" 
                                     value={link}
                                     onChange={e => setLink(e.target.value)}
-                                    className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm focus:border-indigo-500/50 outline-none"
+                                    className="w-full bg-white/20 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2 text-sm focus:border-indigo-500/50 outline-none"
                                     placeholder="https://..."
                                 />
                             </div>
@@ -190,7 +190,7 @@ export default function AnnouncementsPage() {
                                 <select 
                                     value={audience}
                                     onChange={e => setAudience(e.target.value)}
-                                    className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm focus:border-indigo-500/50 outline-none text-white"
+                                    className="w-full bg-white/20 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2 text-sm focus:border-indigo-500/50 outline-none text-black dark:text-white"
                                 >
                                     <option value="ALL">Everyone (Public & Members)</option>
                                     <option value="PUBLIC">Public Only</option>
@@ -205,7 +205,7 @@ export default function AnnouncementsPage() {
                                         value={expiresAt}
                                         onChange={e => setExpiresAt(e.target.value)}
                                         disabled={isNoLimit}
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-sm focus:border-indigo-500/50 outline-none text-white disabled:opacity-50"
+                                        className="w-full bg-white/20 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2 text-sm focus:border-indigo-500/50 outline-none text-black dark:text-white disabled:opacity-50"
                                     />
                                     <label className="flex items-center gap-2 whitespace-nowrap cursor-pointer text-sm text-zinc-400 select-none">
                                         <input 
@@ -215,7 +215,7 @@ export default function AnnouncementsPage() {
                                                 setIsNoLimit(e.target.checked);
                                                 if(e.target.checked) setExpiresAt("");
                                             }}
-                                            className="w-4 h-4 rounded border-white/20 bg-white/5 text-indigo-500 focus:ring-indigo-500/50"
+                                            className="w-4 h-4 rounded border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5 text-indigo-500 focus:ring-indigo-500/50"
                                         />
                                         No Limit
                                     </label>
@@ -226,7 +226,7 @@ export default function AnnouncementsPage() {
                                 <button 
                                 type="button"
                                 onClick={() => setIsCreating(false)}
-                                className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white"
+                                className="px-4 py-2 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                             >
                                 Cancel
                             </button>
@@ -244,13 +244,13 @@ export default function AnnouncementsPage() {
 
             <div className="grid gap-3">
                     {(!Array.isArray(announcements) || announcements.length === 0) ? (
-                    <div className="flex flex-col items-center justify-center text-zinc-500 h-64 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+                    <div className="flex flex-col items-center justify-center text-zinc-500 h-64 border border-dashed border-black/10 dark:border-white/10 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02]">
                         <Megaphone className="w-12 h-12 mb-4 opacity-20"/>
                         <p>No active announcements.</p>
                     </div>
                     ) : (
                     announcements.map(item => (
-                        <div key={item.id} className="flex items-center justify-between p-4 bg-zinc-900/50 border border-white/5 rounded-xl group hover:border-white/10 transition-all">
+                        <div key={item.id} className="flex items-center justify-between p-4 bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/5 dark:border-white/5 rounded-xl group hover:border-black/10 dark:hover:border-white/10 transition-all">
                             <div className="flex items-center gap-4">
                                 <div className={`p-2 rounded-lg ${
                                     item.audience === 'PUBLIC' ? 'bg-blue-500/10 text-blue-400' :
@@ -260,16 +260,16 @@ export default function AnnouncementsPage() {
                                     <Megaphone className="w-5 h-5"/>
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-white flex items-center gap-2">
+                                    <h3 className="font-bold text-black dark:text-white flex items-center gap-2">
                                         {item.title}
                                         {item.link && (
-                                            <a href={item.link} target="_blank" className="text-zinc-500 hover:text-white">
+                                            <a href={item.link} target="_blank" className="text-zinc-500 hover:text-black dark:hover:text-white">
                                                 <ExternalLink className="w-3 h-3"/>
                                             </a>
                                         )}
                                     </h3>
                                     <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
-                                        <span className="bg-white/5 px-2 py-0.5 rounded border border-white/5 uppercase tracking-wider font-mono">
+                                        <span className="bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded border border-black/5 dark:border-white/5 uppercase tracking-wider font-mono">
                                             {item.audience}
                                         </span>
                                         <span>
@@ -286,7 +286,7 @@ export default function AnnouncementsPage() {
                             {canManage && (
                                 <button 
                                     onClick={() => handleDelete(item.id)}
-                                    className="p-2 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                    className="p-2 text-zinc-400 dark:text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
                                 >
                                     <Trash2 className="w-4 h-4"/>
                                 </button>

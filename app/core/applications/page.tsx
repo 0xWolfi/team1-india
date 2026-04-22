@@ -133,14 +133,14 @@ export default function ApplicationsPage() {
                 description="Review and manage incoming membership, program, and event applications."
                 icon={<ClipboardList className="w-5 h-5 text-red-500" />}
             >
-                <div className="text-sm text-zinc-500 font-medium px-4 py-2 bg-white/5 rounded-lg border border-white/5">
+                <div className="text-sm text-zinc-500 font-medium px-4 py-2 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5">
                     {activeTab === 'CONTRIBUTIONS' ? filteredContributions.length : filteredApps.length} Pending
                 </div>
             </CorePageHeader>
 
             <div className="space-y-8">
                 {/* Tabs */}
-                <div className="flex gap-2 border-b border-white/5 pb-1 overflow-x-auto">
+                <div className="flex gap-2 border-b border-black/5 dark:border-white/5 pb-1 overflow-x-auto">
                     {TABS.map(tab => {
                         // Only show Contributions tab to superadmins
                         if (tab.id === 'CONTRIBUTIONS' && !isSuperAdmin) return null;
@@ -154,8 +154,8 @@ export default function ApplicationsPage() {
                                 }}
                                 className={`px-4 py-2 text-sm font-medium transition-all relative whitespace-nowrap ${
                                     activeTab === tab.id 
-                                    ? 'text-white' 
-                                    : 'text-zinc-500 hover:text-zinc-300'
+                                    ? 'text-black dark:text-white'
+                                    : 'text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
                                 }`}
                             >
                                 {tab.label}
@@ -173,7 +173,7 @@ export default function ApplicationsPage() {
                         {activeTab === 'CONTRIBUTIONS' ? (
                             <>
                                 {filteredContributions.length === 0 && (
-                                    <div className="text-zinc-500 py-12 text-center border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
+                                    <div className="text-zinc-500 py-12 text-center border border-dashed border-black/10 dark:border-white/10 rounded-xl bg-black/[0.02] dark:bg-white/[0.02]">
                                         <Briefcase className="w-8 h-8 mx-auto mb-3 opacity-20" />
                                         No pending contributions.
                                     </div>
@@ -184,13 +184,13 @@ export default function ApplicationsPage() {
                                         onClick={() => setSelectedContribution(contrib)}
                                         className={`p-5 rounded-xl border cursor-pointer transition-all group relative overflow-hidden ${
                                             selectedContribution?.id === contrib.id 
-                                            ? 'bg-white/5 border-red-500/50 shadow-lg shadow-red-500/10' 
-                                            : 'bg-zinc-900/30 border-white/5 hover:border-white/10 hover:bg-white/[0.02]'
+                                            ? 'bg-black/5 dark:bg-white/5 border-red-500/50 shadow-lg shadow-red-500/10'
+                                            : 'bg-zinc-100/30 dark:bg-zinc-900/30 border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'
                                         }`}
                                     >
                                         <div className="flex justify-between items-start mb-3 relative z-10">
                                             <div>
-                                                <h3 className={`font-bold text-base ${selectedContribution?.id === contrib.id ? 'text-white' : 'text-zinc-300 group-hover:text-white transition-colors'}`}>
+                                                <h3 className={`font-bold text-base ${selectedContribution?.id === contrib.id ? 'text-black dark:text-white' : 'text-zinc-600 dark:text-zinc-300 group-hover:text-black dark:group-hover:text-white transition-colors'}`}>
                                                     {contrib.name}
                                                 </h3>
                                                 <div className="text-xs text-zinc-500 mt-1 capitalize">
@@ -203,7 +203,7 @@ export default function ApplicationsPage() {
                                             <div className="text-xs text-zinc-500 flex items-center gap-2">
                                                 <Mail className="w-3.5 h-3.5" /> {contrib.email}
                                             </div>
-                                            <div className="text-xs text-zinc-600 flex items-center gap-2">
+                                            <div className="text-xs text-zinc-400 dark:text-zinc-600 flex items-center gap-2">
                                                 <Calendar className="w-3.5 h-3.5" /> {new Date(contrib.submittedAt).toLocaleDateString()}
                                             </div>
                                         </div>
@@ -213,7 +213,7 @@ export default function ApplicationsPage() {
                         ) : (
                             <>
                                 {filteredApps.length === 0 && (
-                                    <div className="text-zinc-500 py-12 text-center border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
+                                    <div className="text-zinc-500 py-12 text-center border border-dashed border-black/10 dark:border-white/10 rounded-xl bg-black/[0.02] dark:bg-white/[0.02]">
                                         <ClipboardList className="w-8 h-8 mx-auto mb-3 opacity-20" />
                                         No pending applications.
                                     </div>
@@ -224,13 +224,13 @@ export default function ApplicationsPage() {
                                 onClick={() => setSelectedApp(app)}
                                 className={`p-5 rounded-xl border cursor-pointer transition-all group relative overflow-hidden ${
                                     selectedApp?.id === app.id 
-                                    ? 'bg-white/5 border-red-500/50 shadow-lg shadow-red-500/10' 
-                                    : 'bg-zinc-900/30 border-white/5 hover:border-white/10 hover:bg-white/[0.02]'
+                                    ? 'bg-black/5 dark:bg-white/5 border-red-500/50 shadow-lg shadow-red-500/10'
+                                    : 'bg-zinc-100/30 dark:bg-zinc-900/30 border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'
                                 }`}
                             >
                                 <div className="flex justify-between items-start mb-3 relative z-10">
                                     <div>
-                                        <h3 className={`font-bold text-base ${selectedApp?.id === app.id ? 'text-white' : 'text-zinc-300 group-hover:text-white transition-colors'}`}>
+                                        <h3 className={`font-bold text-base ${selectedApp?.id === app.id ? 'text-black dark:text-white' : 'text-zinc-600 dark:text-zinc-300 group-hover:text-black dark:group-hover:text-white transition-colors'}`}>
                                             {app.data?.name || 'Unknown Candidate'}
                                         </h3>
                                         {(app.guide || app.program) ? (
@@ -238,7 +238,7 @@ export default function ApplicationsPage() {
                                                 via <span className="text-zinc-400 font-medium truncate max-w-[150px]">{app.guide?.title || app.program?.title}</span>
                                             </div>
                                         ) : (
-                                            <div className="text-xs text-zinc-600 mt-1">General Application</div>
+                                            <div className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">General Application</div>
                                         )}
                                     </div>
                                 </div>
@@ -247,7 +247,7 @@ export default function ApplicationsPage() {
                                     <div className="text-xs text-zinc-500 flex items-center gap-2">
                                         <Mail className="w-3.5 h-3.5" /> {app.applicantEmail}
                                     </div>
-                                    <div className="text-xs text-zinc-600 flex items-center gap-2">
+                                    <div className="text-xs text-zinc-400 dark:text-zinc-600 flex items-center gap-2">
                                         <Calendar className="w-3.5 h-3.5" /> {new Date(app.submittedAt).toLocaleDateString()}
                                     </div>
                                 </div>
@@ -260,19 +260,19 @@ export default function ApplicationsPage() {
                     {/* Detail View */}
                     <div className="lg:col-span-2">
                         {activeTab === 'CONTRIBUTIONS' && selectedContribution ? (
-                            <div className="bg-zinc-900/50 border border-white/10 rounded-2xl p-8 space-y-8 sticky top-24 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-2xl">
-                                <div className="flex justify-between items-start border-b border-white/5 pb-8">
+                            <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-2xl p-8 space-y-8 sticky top-24 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-2xl">
+                                <div className="flex justify-between items-start border-b border-black/5 dark:border-white/5 pb-8">
                                     <div className="space-y-4">
                                         <div>
-                                            <h2 className="text-3xl font-bold text-white mb-1">{selectedContribution.name}</h2>
-                                            <div className="text-base text-zinc-400 capitalize">{selectedContribution.type.replace('-', ' ')}</div>
+                                            <h2 className="text-3xl font-bold text-black dark:text-white mb-1">{selectedContribution.name}</h2>
+                                            <div className="text-base text-zinc-500 dark:text-zinc-400 capitalize">{selectedContribution.type.replace('-', ' ')}</div>
                                         </div>
                                         
                                         <div className="flex flex-wrap gap-3 text-sm">
-                                            <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-zinc-300 flex items-center gap-2">
+                                            <div className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300 flex items-center gap-2">
                                                 <Mail className="w-4 h-4 text-zinc-500" /> {selectedContribution.email}
                                             </div>
-                                            <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-zinc-300 flex items-center gap-2">
+                                            <div className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300 flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-zinc-500" /> {new Date(selectedContribution.submittedAt).toLocaleDateString()}
                                             </div>
                                         </div>
@@ -306,13 +306,13 @@ export default function ApplicationsPage() {
                                                 <Calendar className="w-4 h-4 text-emerald-400" /> Event Details
                                             </h4>
                                             <div className="grid grid-cols-2 gap-4">
-                                                <div className="p-4 bg-black/20 rounded-xl border border-white/5">
+                                                <div className="p-4 bg-white/20 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5">
                                                     <div className="text-xs text-zinc-500 mb-1">Date</div>
-                                                    <div className="text-white">{selectedContribution.eventDate || 'N/A'}</div>
+                                                    <div className="text-black dark:text-white">{selectedContribution.eventDate || 'N/A'}</div>
                                                 </div>
-                                                <div className="p-4 bg-black/20 rounded-xl border border-white/5">
+                                                <div className="p-4 bg-white/20 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5">
                                                     <div className="text-xs text-zinc-500 mb-1">Location</div>
-                                                    <div className="text-white">{selectedContribution.eventLocation || 'N/A'}</div>
+                                                    <div className="text-black dark:text-white">{selectedContribution.eventLocation || 'N/A'}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -323,7 +323,7 @@ export default function ApplicationsPage() {
                                             <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                                                 <FileText className="w-4 h-4 text-purple-400" /> Content URL
                                             </h4>
-                                            <a href={selectedContribution.contentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors group text-sm">
+                                            <a href={selectedContribution.contentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl border border-black/5 dark:border-white/5 transition-colors group text-sm">
                                                 <ExternalLink className="w-4 h-4 text-purple-400" /> 
                                                 <span className="text-purple-400 group-hover:text-purple-300 font-medium break-all">{selectedContribution.contentUrl}</span>
                                             </a>
@@ -333,26 +333,26 @@ export default function ApplicationsPage() {
                                 </div>
                             </div>
                         ) : selectedApp ? (
-                            <div className="bg-zinc-900/50 border border-white/10 rounded-2xl p-8 space-y-8 sticky top-24 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-2xl">
+                            <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-2xl p-8 space-y-8 sticky top-24 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-2xl">
                                 {/* Header */}
-                                <div className="flex justify-between items-start border-b border-white/5 pb-8">
+                                <div className="flex justify-between items-start border-b border-black/5 dark:border-white/5 pb-8">
                                     <div className="space-y-4">
                                         <div>
-                                            <h2 className="text-3xl font-bold text-white mb-1">{selectedApp.data?.name}</h2>
-                                            <div className="text-base text-zinc-400">{selectedApp.data?.about ? selectedApp.data.about.slice(0, 100) + '...' : 'No bio available'}</div>
+                                            <h2 className="text-3xl font-bold text-black dark:text-white mb-1">{selectedApp.data?.name}</h2>
+                                            <div className="text-base text-zinc-500 dark:text-zinc-400">{selectedApp.data?.about ? selectedApp.data.about.slice(0, 100) + '...' : 'No bio available'}</div>
                                         </div>
                                         
                                         <div className="flex flex-wrap gap-3 text-sm">
-                                             <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-zinc-300 flex items-center gap-2">
+                                             <div className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300 flex items-center gap-2">
                                                 <Mail className="w-4 h-4 text-zinc-500" /> {selectedApp.applicantEmail}
                                              </div>
                                              {selectedApp.data?.telegram && (
-                                                <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-zinc-300 flex items-center gap-2">
+                                                <div className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300 flex items-center gap-2">
                                                     <span className="text-zinc-500 text-xs">TG</span> {selectedApp.data.telegram}
                                                 </div>
                                              )}
                                              {selectedApp.data?.country && (
-                                                <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-zinc-300 flex items-center gap-2">
+                                                <div className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300 flex items-center gap-2">
                                                     <span className="text-zinc-500 text-xs">LOC</span> {selectedApp.data.country}
                                                 </div>
                                              )}
@@ -378,7 +378,7 @@ export default function ApplicationsPage() {
                                                 <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" /> About Candidate
                                                 </h4>
-                                                <p className="text-zinc-300 leading-relaxed whitespace-pre-wrap text-sm bg-black/20 p-4 rounded-xl border border-white/5">
+                                                <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap text-sm bg-white/20 dark:bg-black/20 p-4 rounded-xl border border-black/5 dark:border-white/5">
                                                     {selectedApp.data.about}
                                                 </p>
                                             </div>
@@ -390,15 +390,15 @@ export default function ApplicationsPage() {
                                             </h4>
                                             <div className="space-y-2">
                                                 {selectedApp.data?.resumeLink && (
-                                                    <a href={selectedApp.data.resumeLink} target="_blank" className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors group text-sm">
+                                                    <a href={selectedApp.data.resumeLink} target="_blank" className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl border border-black/5 dark:border-white/5 transition-colors group text-sm">
                                                         <ExternalLink className="w-4 h-4 text-emerald-400" /> 
                                                         <span className="text-emerald-400 group-hover:text-emerald-300 font-medium">Resume / Portfolio</span>
                                                     </a>
                                                 )}
                                                 {selectedApp.data?.github && (
-                                                    <a href={`https://${selectedApp.data.github}`} target="_blank" className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors group text-sm">
-                                                        <ExternalLink className="w-4 h-4 text-zinc-400" /> 
-                                                        <span className="text-zinc-300 group-hover:text-white">GitHub Profile</span>
+                                                    <a href={`https://${selectedApp.data.github}`} target="_blank" className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl border border-black/5 dark:border-white/5 transition-colors group text-sm">
+                                                        <ExternalLink className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                                                        <span className="text-zinc-600 dark:text-zinc-300 group-hover:text-black dark:group-hover:text-white">GitHub Profile</span>
                                                     </a>
                                                 )}
                                             </div>
@@ -426,13 +426,13 @@ export default function ApplicationsPage() {
                                              {selectedApp.data?.q_whyJoin && (
                                                  <div className="space-y-2">
                                                     <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Why Join?</h4>
-                                                    <p className="text-zinc-400 text-sm italic border-l-2 border-white/10 pl-4 py-1">{selectedApp.data.q_whyJoin}</p>
+                                                    <p className="text-zinc-500 dark:text-zinc-400 text-sm italic border-l-2 border-black/10 dark:border-white/10 pl-4 py-1">{selectedApp.data.q_whyJoin}</p>
                                                 </div>
                                              )}
                                              {selectedApp.data?.q_howHelp && (
                                                  <div className="space-y-2">
                                                     <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest">How to Help?</h4>
-                                                    <p className="text-zinc-400 text-sm italic border-l-2 border-white/10 pl-4 py-1">{selectedApp.data.q_howHelp}</p>
+                                                    <p className="text-zinc-500 dark:text-zinc-400 text-sm italic border-l-2 border-black/10 dark:border-white/10 pl-4 py-1">{selectedApp.data.q_howHelp}</p>
                                                 </div>
                                              )}
                                          </div>
@@ -440,8 +440,8 @@ export default function ApplicationsPage() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="h-96 flex flex-col items-center justify-center text-zinc-500 border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
-                                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                            <div className="h-96 flex flex-col items-center justify-center text-zinc-500 border border-dashed border-black/10 dark:border-white/10 rounded-2xl bg-black/[0.01] dark:bg-white/[0.01]">
+                                <div className="w-16 h-16 bg-black/5 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
                                     {activeTab === 'CONTRIBUTIONS' ? (
                                         <Briefcase className="w-8 h-8 opacity-20" />
                                     ) : (
@@ -449,7 +449,7 @@ export default function ApplicationsPage() {
                                     )}
                                 </div>
                                 <p className="font-medium">Select {activeTab === 'CONTRIBUTIONS' ? 'a contribution' : 'an application'}</p>
-                                <p className="text-xs text-zinc-600 mt-1">View details{activeTab !== 'CONTRIBUTIONS' && ', answers, and approve/reject candidates'}</p>
+                                <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">View details{activeTab !== 'CONTRIBUTIONS' && ', answers, and approve/reject candidates'}</p>
                             </div>
                         )}
                     </div>

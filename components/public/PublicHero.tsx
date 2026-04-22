@@ -65,7 +65,7 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         {!isAuthenticated ? (
                             <>
                                 <button
@@ -109,7 +109,7 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
             </div>
 
             {/* Stats Strip */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
                 {statCards.map((stat) => (
                     <button
                         key={stat.label}

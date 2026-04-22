@@ -165,7 +165,7 @@ export default function AttendancePage() {
                     placeholder="Search past meetings..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-zinc-900 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors"
+                    className="w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-red-500/50 transition-colors"
                 />
             </div>
 
@@ -174,7 +174,7 @@ export default function AttendancePage() {
                 {loadingHistory ? (
                     <div className="text-center py-12 text-zinc-500">Loading history...</div>
                 ) : filteredHistory.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-24 text-zinc-500 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
+                    <div className="flex flex-col items-center justify-center py-24 text-zinc-500 border border-dashed border-black/10 dark:border-white/10 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02]">
                         <Calendar className="w-12 h-12 mb-4 opacity-20"/>
                         <p>No attendance logs found.</p>
                     </div>
@@ -183,10 +183,10 @@ export default function AttendancePage() {
                         <div 
                             key={record.id} 
                             onClick={() => setSelectedRecord(record)}
-                            className="p-5 bg-zinc-900/50 backdrop-blur border border-white/5 rounded-xl flex items-center justify-between group hover:border-red-500/30 transition-all cursor-pointer"
+                            className="p-5 bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur border border-black/5 dark:border-white/5 rounded-xl flex items-center justify-between group hover:border-red-500/30 transition-all cursor-pointer"
                         >
                             <div>
-                                <h3 className="text-lg font-bold text-white group-hover:text-red-400 transition-colors">
+                                <h3 className="text-lg font-bold text-black dark:text-white group-hover:text-red-400 transition-colors">
                                     {record.note || "Untitled Meeting"}
                                 </h3>
                                 <div className="flex items-center gap-2 text-sm text-zinc-500 mt-1">
@@ -201,15 +201,15 @@ export default function AttendancePage() {
                             </div>
                             <div className="flex items-center gap-6">
                                 <div className="text-right">
-                                    <div className="text-2xl font-bold text-white mb-1">
+                                    <div className="text-2xl font-bold text-black dark:text-white mb-1">
                                         {record.presentMemberIds.length}
                                     </div>
-                                    <div className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+                                    <div className="text-[10px] font-bold text-zinc-400 dark:text-zinc-600 uppercase tracking-widest">
                                         Attendees
                                     </div>
                                 </div>
-                                <div className="w-1 h-8 bg-white/5 rounded-full" />
-                                <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-xs text-zinc-400 font-mono">
+                                <div className="w-1 h-8 bg-black/5 dark:bg-white/5 rounded-full" />
+                                <div className="px-3 py-1 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                                     LOG
                                 </div>
                             </div>
@@ -222,12 +222,12 @@ export default function AttendancePage() {
             
             {/* View Details Modal */}
             {selectedRecord && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
-                    <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-white/5">
-                        <div className="p-8 border-b border-white/5 flex items-center justify-between">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
+                    <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
+                        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
                             <div>
-                                <h2 className="text-2xl font-bold text-white mb-1">{selectedRecord.note || "Untitled Meeting"}</h2>
-                                <div className="flex items-center gap-2 text-sm text-zinc-300">
+                                <h2 className="text-2xl font-bold text-black dark:text-white mb-1">{selectedRecord.note || "Untitled Meeting"}</h2>
+                                <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300">
                                     <Calendar className="w-4 h-4"/>
                                     {new Date(selectedRecord.date).toLocaleDateString(undefined, {
                                         weekday: 'long', 
@@ -235,13 +235,13 @@ export default function AttendancePage() {
                                         month: 'long', 
                                         day: 'numeric' 
                                     })}
-                                    <span className="text-zinc-600 mx-1">•</span>
-                                    <span className="text-white font-bold">{selectedRecord.presentMemberIds.length}</span> present
+                                    <span className="text-zinc-400 dark:text-zinc-600 mx-1">•</span>
+                                    <span className="text-black dark:text-white font-bold">{selectedRecord.presentMemberIds.length}</span> present
                                 </div>
                             </div>
                             <button 
                                 onClick={() => setSelectedRecord(null)}
-                                className="p-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white"
+                                className="p-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl transition-colors text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                             >
                                 <Users className="w-5 h-5"/>
                             </button>
@@ -249,19 +249,19 @@ export default function AttendancePage() {
                         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {getAttendees(selectedRecord).map(member => (
-                                    <div key={member.id} className="p-3 bg-white/5 border border-white/5 rounded-2xl flex items-center gap-4 hover:bg-white/10 transition-colors">
+                                    <div key={member.id} className="p-3 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl flex items-center gap-4 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                                         <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 font-bold text-sm ring-1 ring-red-500/20">
                                             {member.name?.[0] || "?"}
                                         </div>
                                         <div className="overflow-hidden">
-                                            <div className="text-sm font-bold text-white truncate">{member.name || "Unknown"}</div>
-                                            <div className="text-[10px] text-zinc-300 truncate font-mono">{member.email}</div>
+                                            <div className="text-sm font-bold text-black dark:text-white truncate">{member.name || "Unknown"}</div>
+                                            <div className="text-[10px] text-zinc-600 dark:text-zinc-300 truncate font-mono">{member.email}</div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="p-6 border-t border-white/5 flex justify-between items-center">
+                        <div className="p-6 border-t border-black/5 dark:border-white/5 flex justify-between items-center">
                             {canManage && (
                                 <button 
                                     onClick={() => setShowDeleteConfirm(true)}
@@ -272,7 +272,7 @@ export default function AttendancePage() {
                             )}
                             <button 
                                 onClick={() => setSelectedRecord(null)}
-                                className="px-6 py-2.5 text-sm font-bold text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors"
+                                className="px-6 py-2.5 text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl transition-colors"
                             >
                                 Close View
                             </button>
@@ -283,23 +283,23 @@ export default function AttendancePage() {
 
             {/* Create Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
-                    <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 rounded-3xl w-full max-w-xl flex flex-col shadow-2xl shadow-red-500/5 animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-white/5">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
+                    <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-xl flex flex-col shadow-2xl shadow-red-500/5 animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
                         
                         {/* Modal Header */}
-                        <div className="p-8 border-b border-white/5 flex items-start justify-between">
+                        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-start justify-between">
                             <div>
-                                <h2 className="text-2xl font-bold text-white mb-2">
+                                <h2 className="text-2xl font-bold text-black dark:text-white mb-2">
                                     {modalStep === 1 ? "New Session" : "Mark Attendance"}
                                 </h2>
-                                <p className="text-zinc-300">
+                                <p className="text-zinc-600 dark:text-zinc-300">
                                     {modalStep === 1 ? "Enter meeting details to create a new log." : `Select members present for "${meetingName}"`}
                                 </p>
                             </div>
-                            <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
-                                <div className={`w-2.5 h-2.5 rounded-full transition-all ${modalStep >= 1 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-white/10'}`} />
-                                <div className={`w-6 h-0.5 rounded-full transition-all ${modalStep >= 2 ? 'bg-red-500' : 'bg-white/10'}`} />
-                                <div className={`w-2 h-2 rounded-full transition-all ${modalStep >= 2 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-white/10'}`} />
+                            <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-full border border-black/5 dark:border-white/5">
+                                <div className={`w-2.5 h-2.5 rounded-full transition-all ${modalStep >= 1 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-black/10 dark:bg-white/10'}`} />
+                                <div className={`w-6 h-0.5 rounded-full transition-all ${modalStep >= 2 ? 'bg-red-500' : 'bg-black/10 dark:bg-white/10'}`} />
+                                <div className={`w-2 h-2 rounded-full transition-all ${modalStep >= 2 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-black/10 dark:bg-white/10'}`} />
                             </div>
                         </div>
 
@@ -308,7 +308,7 @@ export default function AttendancePage() {
                             {modalStep === 1 && (
                                 <div className="space-y-6">
                                     <div className="space-y-3">
-                                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Meeting Name</label>
+                                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Meeting Name</label>
                                         <div className="group relative">
                                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                                                 <Users className="w-5 h-5 text-zinc-500 group-focus-within:text-red-500 transition-colors"/>
@@ -319,12 +319,12 @@ export default function AttendancePage() {
                                                 placeholder="e.g. Weekly Priority Sync"
                                                 value={meetingName}
                                                 onChange={e => setMeetingName(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-red-500/50 focus:bg-white/10 transition-all font-medium"
+                                                className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-red-500/50 focus:bg-black/10 dark:focus:bg-white/10 transition-all font-medium"
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-3">
-                                        <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Date</label>
+                                        <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Date</label>
                                         <div className="group relative">
                                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                                                 <Calendar className="w-5 h-5 text-zinc-500 group-focus-within:text-red-500 transition-colors"/>
@@ -333,7 +333,7 @@ export default function AttendancePage() {
                                                 type="date" 
                                                 value={meetingDate}
                                                 onChange={e => setMeetingDate(e.target.value)}
-                                                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-red-500/50 focus:bg-white/10 transition-all font-medium custom-date-input"
+                                                className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-black dark:text-white focus:outline-none focus:border-red-500/50 focus:bg-black/10 dark:focus:bg-white/10 transition-all font-medium custom-date-input"
                                             />
                                         </div>
                                     </div>
@@ -349,16 +349,16 @@ export default function AttendancePage() {
                                             placeholder="Search members..." 
                                             value={memberSearch}
                                             onChange={e => setMemberSearch(e.target.value)}
-                                            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-red-500/50 focus:bg-white/10 transition-all"
+                                            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-black dark:text-white focus:outline-none focus:border-red-500/50 focus:bg-black/10 dark:focus:bg-white/10 transition-all"
                                         />
                                     </div>
-                                    <div className="border border-white/5 rounded-2xl overflow-hidden bg-white/[0.02] h-[300px] overflow-y-auto custom-scrollbar">
+                                    <div className="border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden bg-black/[0.02] dark:bg-white/[0.02] h-[300px] overflow-y-auto custom-scrollbar">
                                         {filteredMembers.map(member => (
                                             <div 
                                                 key={member.id} 
                                                 onClick={() => toggleMember(member.id)}
-                                                className={`p-4 flex items-center gap-4 transition-all cursor-pointer border-b border-white/5 last:border-0 ${
-                                                    selectedMembers.has(member.id) ? 'bg-red-500/10 hover:bg-red-500/20' : 'hover:bg-white/5'
+                                                className={`p-4 flex items-center gap-4 transition-all cursor-pointer border-b border-black/5 dark:border-white/5 last:border-0 ${
+                                                    selectedMembers.has(member.id) ? 'bg-red-500/10 hover:bg-red-500/20' : 'hover:bg-black/5 dark:hover:bg-white/5'
                                                 }`}
                                             >
                                                 <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
@@ -370,10 +370,10 @@ export default function AttendancePage() {
                                                 </div>
                                                 <div className="flex-1">
                                                      <div className="flex items-center gap-2">
-                                                        <h3 className={`font-bold text-sm transition-colors ${selectedMembers.has(member.id) ? 'text-white' : 'text-zinc-300'}`}>
+                                                        <h3 className={`font-bold text-sm transition-colors ${selectedMembers.has(member.id) ? 'text-black dark:text-white' : 'text-zinc-600 dark:text-zinc-300'}`}>
                                                             {member.name || 'Unknown'}
                                                         </h3>
-                                                        <span className="text-[10px] bg-white/5 px-1.5 py-0.5 rounded text-zinc-500 uppercase font-bold">{member.type}</span>
+                                                        <span className="text-[10px] bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded text-zinc-500 uppercase font-bold">{member.type}</span>
                                                     </div>
                                                     <div className="text-xs text-zinc-500">{member.email}</div>
                                                 </div>
@@ -385,13 +385,13 @@ export default function AttendancePage() {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="p-6 border-t border-white/5 flex justify-end gap-3">
+                        <div className="p-6 border-t border-black/5 dark:border-white/5 flex justify-end gap-3">
                             <button 
                                 onClick={() => {
                                     setIsModalOpen(false);
                                     setModalStep(1);
                                 }}
-                                className="px-6 py-3 rounded-xl text-sm font-bold text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+                                className="px-6 py-3 rounded-xl text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all"
                             >
                                 Cancel
                             </button>
@@ -422,22 +422,22 @@ export default function AttendancePage() {
             )}
             {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
-                    <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-red-500/20 rounded-3xl w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-red-500/10">
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
+                    <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-red-500/20 rounded-3xl w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-red-500/10">
                         <div className="flex flex-col items-center text-center gap-6">
                             <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
                                 <Trash2 className="w-8 h-8"/>
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-white">Delete Log?</h3>
-                                <p className="text-sm text-zinc-300 mt-2 leading-relaxed">
-                                    Are you sure you want to permanently remove <br/><span className="text-white font-bold">"{selectedRecord?.note}"</span>?
+                                <h3 className="text-xl font-bold text-black dark:text-white">Delete Log?</h3>
+                                <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-2 leading-relaxed">
+                                    Are you sure you want to permanently remove <br/><span className="text-black dark:text-white font-bold">"{selectedRecord?.note}"</span>?
                                 </p>
                             </div>
                             <div className="flex items-center gap-3 w-full mt-2">
-                                <button 
+                                <button
                                     onClick={() => setShowDeleteConfirm(false)}
-                                    className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl font-bold text-zinc-300 hover:bg-white/10 hover:text-white transition-colors"
+                                    className="flex-1 px-4 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl font-bold text-zinc-600 dark:text-zinc-300 hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors"
                                 >
                                     Cancel
                                 </button>

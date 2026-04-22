@@ -134,7 +134,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
 
                 {/* Meeting Title */}
                 <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wide">
+                    <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5 uppercase tracking-wide">
                         Meeting Title *
                     </label>
                     <div className="relative">
@@ -147,14 +147,14 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="e.g. Weekly Team Sync"
-                            className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all placeholder:text-zinc-600"
+                            className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg pl-11 pr-4 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                         />
                     </div>
                 </div>
 
                 {/* Description */}
                 <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wide">
+                    <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5 uppercase tracking-wide">
                         Description (Optional)
                     </label>
                     <textarea
@@ -162,14 +162,14 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Meeting agenda, topics to discuss..."
                         rows={3}
-                        className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all placeholder:text-zinc-600 resize-none"
+                        className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600 resize-none"
                     />
                 </div>
 
                 {/* Date and Time */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wide">
+                        <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5 uppercase tracking-wide">
                             Date *
                         </label>
                         <div className="relative">
@@ -182,12 +182,12 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                                 value={date}
                                 onChange={(e) => setDate(e.target.value)}
                                 min={new Date().toISOString().split('T')[0]}
-                                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all custom-date-input"
+                                className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg pl-11 pr-4 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all custom-date-input"
                             />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wide">
+                        <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5 uppercase tracking-wide">
                             Time *
                         </label>
                         <div className="relative">
@@ -199,7 +199,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                                 type="time"
                                 value={time}
                                 onChange={(e) => setTime(e.target.value)}
-                                className="w-full bg-zinc-900/50 border border-white/10 rounded-lg pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all"
+                                className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg pl-11 pr-4 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all"
                             />
                         </div>
                     </div>
@@ -207,13 +207,13 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
 
                 {/* Duration */}
                 <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wide">
+                    <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5 uppercase tracking-wide">
                         Duration (minutes) *
                     </label>
                     <select
                         value={duration}
                         onChange={(e) => setDuration(e.target.value)}
-                        className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all"
+                        className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all"
                     >
                         <option value="15">15 minutes</option>
                         <option value="30">30 minutes</option>
@@ -225,7 +225,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
 
                 {/* Member Selection */}
                 <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wide">
+                    <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5 uppercase tracking-wide">
                         Invite Members *
                     </label>
                     <div className="space-y-3">
@@ -235,8 +235,8 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                                 onClick={() => setMemberSelection('all')}
                                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
                                     memberSelection === 'all'
-                                        ? 'bg-white/10 border-white/20 text-white'
-                                        : 'bg-zinc-900/50 border-white/10 text-zinc-400 hover:text-white hover:bg-white/5'
+                                        ? 'bg-black/10 dark:bg-white/10 border-black/20 dark:border-white/20 text-black dark:text-white'
+                                        : 'bg-zinc-100/50 dark:bg-zinc-900/50 border-black/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                 }`}
                             >
                                 All Members
@@ -246,8 +246,8 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                                 onClick={() => setMemberSelection('individual')}
                                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
                                     memberSelection === 'individual'
-                                        ? 'bg-white/10 border-white/20 text-white'
-                                        : 'bg-zinc-900/50 border-white/10 text-zinc-400 hover:text-white hover:bg-white/5'
+                                        ? 'bg-black/10 dark:bg-white/10 border-black/20 dark:border-white/20 text-black dark:text-white'
+                                        : 'bg-zinc-100/50 dark:bg-zinc-900/50 border-black/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                 }`}
                             >
                                 Select Individual
@@ -262,10 +262,10 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                                         placeholder="Search members..."
                                         value={memberSearch}
                                         onChange={(e) => setMemberSearch(e.target.value)}
-                                        className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all placeholder:text-zinc-600"
+                                        className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                                     />
                                 </div>
-                                <div className="max-h-64 overflow-y-auto custom-scrollbar space-y-2 border border-white/10 rounded-lg p-3 bg-zinc-900/30">
+                                <div className="max-h-64 overflow-y-auto custom-scrollbar space-y-2 border border-black/10 dark:border-white/10 rounded-lg p-3 bg-zinc-100/30 dark:bg-zinc-900/30">
                                     {loadingMembers ? (
                                         <div className="text-center py-8 text-zinc-500 text-sm">Loading members...</div>
                                     ) : filteredMembers.length === 0 ? (
@@ -278,21 +278,21 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                                                 onClick={() => toggleMemberSelection(member.id)}
                                                 className={`w-full p-3 rounded-lg text-left transition-all border ${
                                                     selectedMemberIds.has(member.id)
-                                                        ? 'bg-white/10 border-white/20'
-                                                        : 'bg-zinc-900/50 border-white/5 hover:bg-white/5'
+                                                        ? 'bg-black/10 dark:bg-white/10 border-black/20 dark:border-white/20'
+                                                        : 'bg-zinc-100/50 dark:bg-zinc-900/50 border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5'
                                                 }`}
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <div>
-                                                        <div className="text-sm font-medium text-white">
+                                                        <div className="text-sm font-medium text-black dark:text-white">
                                                             {member.name || 'Unknown'}
                                                         </div>
-                                                        <div className="text-xs text-zinc-400 mt-0.5">
+                                                        <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                                                             {member.email}
                                                         </div>
                                                     </div>
                                                     {selectedMemberIds.has(member.id) && (
-                                                        <CheckCircle2 className="w-5 h-5 text-white"/>
+                                                        <CheckCircle2 className="w-5 h-5 text-black dark:text-white"/>
                                                     )}
                                                 </div>
                                             </button>
@@ -300,7 +300,7 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                                     )}
                                 </div>
                                 {selectedMemberIds.size > 0 && (
-                                    <div className="text-xs text-zinc-400">
+                                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
                                         {selectedMemberIds.size} member{selectedMemberIds.size !== 1 ? 's' : ''} selected
                                     </div>
                                 )}
@@ -310,19 +310,19 @@ export function ScheduleMeetingModal({ isOpen, onClose, onSuccess }: ScheduleMee
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-3 pt-4 border-t border-white/5">
+                <div className="flex gap-3 pt-4 border-t border-black/5 dark:border-white/5">
                     <button
                         type="button"
                         onClick={onClose}
                         disabled={loading}
-                        className="flex-1 px-4 py-2.5 text-sm font-medium text-zinc-400 hover:text-white bg-zinc-900/50 hover:bg-white/5 rounded-lg transition-all border border-white/10"
+                        className="flex-1 px-4 py-2.5 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white bg-zinc-100/50 dark:bg-zinc-900/50 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-all border border-black/10 dark:border-white/10"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={loading || !title || !date || !time || (memberSelection === 'individual' && selectedMemberIds.size === 0)}
-                        className="flex-1 px-4 py-2.5 text-sm font-medium bg-white hover:bg-zinc-200 text-black rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 px-4 py-2.5 text-sm font-medium bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <>

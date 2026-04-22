@@ -81,19 +81,19 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
 
     return (
         <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" 
+            className="fixed inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" 
             onClick={onClose}
         >
             <div 
-                className="bg-[#09090b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200" 
+                className="bg-white dark:bg-[#09090b] border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200" 
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                    <h3 className="text-2xl font-bold text-white">Member Details</h3>
+                <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+                    <h3 className="text-2xl font-bold text-black dark:text-white">Member Details</h3>
                     <button 
                         onClick={onClose}
-                        className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors"
+                        className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
                     >
                         <X className="w-5 h-5"/>
                     </button>
@@ -103,12 +103,12 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                 <div className="overflow-y-auto max-h-[calc(90vh-200px)] p-6">
                     {/* Profile Picture & Basic Info */}
                     <div className="flex items-start gap-6 mb-8">
-                        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-3xl font-bold text-zinc-400 flex-shrink-0">
+                        <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-zinc-200 dark:from-zinc-800 to-white dark:to-black border border-black/10 dark:border-white/10 flex items-center justify-center text-3xl font-bold text-zinc-500 dark:text-zinc-400 flex-shrink-0">
                             {getInitials(memberData.name, memberData.email)}
                         </div>
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-1">
-                                <h4 className="text-xl font-bold text-white">
+                                <h4 className="text-xl font-bold text-black dark:text-white">
                                     {memberData.name || "Unknown"}
                                 </h4>
                                 <button
@@ -123,15 +123,15 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                                     View in Detail
                                 </button>
                             </div>
-                            <p className="text-sm text-zinc-400 mb-3">{memberData.email}</p>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-3">{memberData.email}</p>
                             <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium bg-zinc-900/50 text-zinc-400 border border-white/5 uppercase">
+                                <span className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium bg-zinc-100/50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border border-black/5 dark:border-white/5 uppercase">
                                     {memberData.tags || 'member'}
                                 </span>
                                 <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium ${
                                     memberData.status === 'active' 
                                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                                        : 'bg-zinc-900/50 text-zinc-500 border border-white/5'
+                                        : 'bg-zinc-100/50 dark:bg-zinc-900/50 text-zinc-500 border border-black/5 dark:border-white/5'
                                 }`}>
                                     {memberData.status}
                                 </span>
@@ -140,8 +140,8 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                     </div>
 
                     {/* Change Role Section */}
-                    <div className="mb-8 p-4 bg-zinc-900/30 border border-white/5 rounded-xl">
-                        <label className="block text-sm font-semibold text-zinc-300 mb-3 flex items-center gap-2">
+                    <div className="mb-8 p-4 bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-xl">
+                        <label className="block text-sm font-semibold text-zinc-600 dark:text-zinc-300 mb-3 flex items-center gap-2">
                             <Tag className="w-4 h-4"/>
                             Change Role
                         </label>
@@ -149,10 +149,10 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                             <select
                                 value={selectedRole}
                                 onChange={(e) => setSelectedRole(e.target.value)}
-                                className="flex-1 bg-zinc-900/50 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500/50"
+                                className="flex-1 bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2 text-sm text-black dark:text-white focus:outline-none focus:border-indigo-500/50"
                             >
-                                <option value="member" className="bg-zinc-900">Member</option>
-                                <option value="collaborator" className="bg-zinc-900">Collaborator</option>
+                                <option value="member" className="bg-zinc-100 dark:bg-zinc-900">Member</option>
+                                <option value="collaborator" className="bg-zinc-100 dark:bg-zinc-900">Collaborator</option>
                             </select>
                             <button
                                 onClick={handleRoleChange}
@@ -173,42 +173,42 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
 
                     {/* Contact Information */}
                     <div className="mb-6">
-                        <h5 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Contact Information</h5>
+                        <h5 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4">Contact Information</h5>
                         <div className="space-y-3">
-                            <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
+                            <div className="flex items-start gap-3 p-3 bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-lg">
                                 <Mail className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                 <div className="flex-1 min-w-0">
                                     <div className="text-xs text-zinc-500 mb-1">Email</div>
-                                    <div className="text-sm text-white break-all">{memberData.email}</div>
+                                    <div className="text-sm text-black dark:text-white break-all">{memberData.email}</div>
                                 </div>
                             </div>
 
                             {memberData.xHandle && (
-                                <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
+                                <div className="flex items-start gap-3 p-3 bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-lg">
                                     <Twitter className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">X (Twitter) Handle</div>
-                                        <div className="text-sm text-white">@{memberData.xHandle.replace('@', '')}</div>
+                                        <div className="text-sm text-black dark:text-white">@{memberData.xHandle.replace('@', '')}</div>
                                     </div>
                                 </div>
                             )}
 
                             {memberData.telegram && (
-                                <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
+                                <div className="flex items-start gap-3 p-3 bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-lg">
                                     <Send className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Telegram Handle</div>
-                                        <div className="text-sm text-white">@{memberData.telegram.replace('@', '')}</div>
+                                        <div className="text-sm text-black dark:text-white">@{memberData.telegram.replace('@', '')}</div>
                                     </div>
                                 </div>
                             )}
 
                             {discord && (
-                                <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
+                                <div className="flex items-start gap-3 p-3 bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-lg">
                                     <MessageCircle className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Discord Handle</div>
-                                        <div className="text-sm text-white">{discord}</div>
+                                        <div className="text-sm text-black dark:text-white">{discord}</div>
                                     </div>
                                 </div>
                             )}
@@ -217,34 +217,34 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
 
                     {/* Additional Information */}
                     <div className="mb-6">
-                        <h5 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Additional Information</h5>
+                        <h5 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4">Additional Information</h5>
                         <div className="space-y-3">
                             {wallet && (
-                                <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
+                                <div className="flex items-start gap-3 p-3 bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-lg">
                                     <Wallet className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Wallet Address</div>
-                                        <div className="text-sm text-white break-all font-mono">{wallet}</div>
+                                        <div className="text-sm text-black dark:text-white break-all font-mono">{wallet}</div>
                                     </div>
                                 </div>
                             )}
 
                             {address && (
-                                <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
+                                <div className="flex items-start gap-3 p-3 bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-lg">
                                     <MapPin className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Location / Address</div>
-                                        <div className="text-sm text-white">{address}</div>
+                                        <div className="text-sm text-black dark:text-white">{address}</div>
                                     </div>
                                 </div>
                             )}
 
                             {bio && (
-                                <div className="flex items-start gap-3 p-3 bg-zinc-900/30 border border-white/5 rounded-lg">
+                                <div className="flex items-start gap-3 p-3 bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-lg">
                                     <FileText className="w-4 h-4 text-zinc-500 mt-0.5 flex-shrink-0"/>
                                     <div className="flex-1 min-w-0">
                                         <div className="text-xs text-zinc-500 mb-1">Bio</div>
-                                        <div className="text-sm text-white whitespace-pre-wrap">{bio}</div>
+                                        <div className="text-sm text-black dark:text-white whitespace-pre-wrap">{bio}</div>
                                     </div>
                                 </div>
                             )}
@@ -253,17 +253,17 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-6 border-t border-white/5 flex items-center justify-end gap-3">
+                <div className="p-6 border-t border-black/5 dark:border-white/5 flex items-center justify-end gap-3">
                     <button 
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
+                        className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors"
                     >
                         Close
                     </button>
                     <button 
                         onClick={() => onDelete(memberData)}
                         disabled={isSubmitting}
-                        className="px-4 py-2 rounded-lg text-sm font-bold bg-zinc-800 text-zinc-400 border border-white/5 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                        className="px-4 py-2 rounded-lg text-sm font-bold bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-black/5 dark:border-white/5 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
                     >
                         {isSubmitting ? (
                             <>

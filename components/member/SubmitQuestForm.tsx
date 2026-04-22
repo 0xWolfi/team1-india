@@ -135,7 +135,7 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
             <button
                 type="button"
                 onClick={() => router.push("/member")}
-                className="flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-6"
+                className="flex items-center gap-2 text-sm text-zinc-500 hover:text-black dark:hover:text-white transition-colors mb-6"
             >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Dashboard
@@ -143,7 +143,7 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
 
             {/* Page header */}
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-white mb-2">Submit Quest</h1>
+                <h1 className="text-2xl font-bold text-black dark:text-white mb-2">Submit Quest</h1>
                 <p className="text-xs text-red-400 font-semibold">Only for Team1 India Members — Do not Share</p>
                 <p className="text-[11px] text-zinc-500 mt-1">Sprint 1 — April 1st to April 30th 2026</p>
             </div>
@@ -153,11 +153,11 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label className="block text-xs font-semibold text-zinc-500 uppercase mb-1.5">Name</label>
-                        <input type="text" value={name} readOnly disabled className="w-full bg-zinc-800 border border-white/5 rounded-lg px-3 py-2.5 text-sm text-zinc-400 cursor-not-allowed" />
+                        <input type="text" value={name} readOnly disabled className="w-full bg-zinc-200 dark:bg-zinc-800 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2.5 text-sm text-zinc-400 cursor-not-allowed" />
                     </div>
                     <div>
                         <label className="block text-xs font-semibold text-zinc-500 uppercase mb-1.5">Email</label>
-                        <input type="email" value={email} readOnly disabled className="w-full bg-zinc-800 border border-white/5 rounded-lg px-3 py-2.5 text-sm text-zinc-400 cursor-not-allowed" />
+                        <input type="email" value={email} readOnly disabled className="w-full bg-zinc-200 dark:bg-zinc-800 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2.5 text-sm text-zinc-400 cursor-not-allowed" />
                     </div>
                 </div>
 
@@ -174,11 +174,11 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                                     "w-full text-left p-4 rounded-xl border transition-all",
                                     questType === quest.value
                                         ? "bg-red-500/10 border-red-500/30"
-                                        : "bg-zinc-900/40 border-white/5 hover:border-white/10"
+                                        : "bg-zinc-100/40 dark:bg-zinc-900/40 border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10"
                                 )}
                             >
                                 <div className="flex items-center justify-between mb-1">
-                                    <span className="text-sm font-semibold text-white">{quest.label}</span>
+                                    <span className="text-sm font-semibold text-black dark:text-white">{quest.label}</span>
                                     <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/20">
                                         {quest.reward}
                                     </span>
@@ -193,23 +193,23 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                 {selectedQuest && (
                     <>
                         {/* Tasks Required */}
-                        <div className="p-4 rounded-xl bg-zinc-900/40 border border-white/5">
+                        <div className="p-4 rounded-xl bg-zinc-100/40 dark:bg-zinc-900/40 border border-black/5 dark:border-white/5">
                             <h4 className="text-xs font-bold text-zinc-400 uppercase mb-3">Tasks Required</h4>
                             <ul className="space-y-2">
                                 {selectedQuest.tasks.map((task, i) => (
-                                    <li key={i} className="flex items-start gap-2 text-xs text-zinc-300">
+                                    <li key={i} className="flex items-start gap-2 text-xs text-zinc-600 dark:text-zinc-300">
                                         <span className="text-red-400 font-bold mt-0.5 shrink-0">{String.fromCharCode(65 + i)}.</span>
                                         {task}
                                     </li>
                                 ))}
                             </ul>
-                            <p className="text-[10px] text-zinc-600 mt-3">Requirement: tag @Team1IND and @AvaxTeam1</p>
+                            <p className="text-[10px] text-zinc-400 dark:text-zinc-600 mt-3">Requirement: tag @Team1IND and @AvaxTeam1</p>
                         </div>
 
                         {/* X Post Link Fields */}
                         <div>
                             <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">Submit Your X Post Links</label>
-                            <p className="text-[10px] text-zinc-600 mb-3">Only x.com URLs accepted (e.g. https://x.com/user/status/...)</p>
+                            <p className="text-[10px] text-zinc-400 dark:text-zinc-600 mb-3">Only x.com URLs accepted (e.g. https://x.com/user/status/...)</p>
                             <div className="space-y-3">
                                 {links.map((link, i) => (
                                     <div key={i}>
@@ -225,7 +225,7 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                                                     setLinks(updated);
                                                 }}
                                                 placeholder="https://x.com/..."
-                                                className="w-full bg-zinc-800 border border-white/10 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/20"
+                                                className="w-full bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 rounded-lg pl-9 pr-3 py-2.5 text-sm text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-black/20 dark:focus:border-white/20"
                                             />
                                         </div>
                                     </div>
@@ -240,13 +240,13 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                                 <button
                                     type="button"
                                     onClick={() => setExtraLinks(prev => [...prev, ""])}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors"
                                 >
                                     <Plus className="w-3 h-3" /> Add Link
                                 </button>
                             </div>
                             {extraLinks.length === 0 && (
-                                <p className="text-[10px] text-zinc-600">Click + to add any additional links (YouTube, GitHub, etc.)</p>
+                                <p className="text-[10px] text-zinc-400 dark:text-zinc-600">Click + to add any additional links (YouTube, GitHub, etc.)</p>
                             )}
                             <div className="space-y-3">
                                 {extraLinks.map((url, i) => (
@@ -262,7 +262,7 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                                                     setExtraLinks(updated);
                                                 }}
                                                 placeholder="https://..."
-                                                className="w-full bg-zinc-800 border border-white/10 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-zinc-700 focus:outline-none focus:border-white/20"
+                                                className="w-full bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 rounded-lg pl-9 pr-3 py-2.5 text-sm text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 focus:outline-none focus:border-black/20 dark:focus:border-white/20"
                                             />
                                         </div>
                                         <button
@@ -280,11 +280,11 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                 )}
 
                 {/* Submit buttons */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-black/5 dark:border-white/5">
                     <button
                         type="button"
                         onClick={() => router.push("/member")}
-                        className="px-4 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
+                        className="px-4 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors"
                     >
                         Cancel
                     </button>

@@ -30,7 +30,7 @@ function MarqueeRow({ images, direction, speed, onImageClick, baseIndex }: Marqu
     <div className="relative py-2 md:py-3">
       <div
         className={
-          direction === "left" ? "gallery-marquee-left flex gap-4 md:gap-6" : "gallery-marquee-right flex gap-4 md:gap-6"
+          direction === "left" ? "gallery-marquee-left flex gap-3 sm:gap-4 md:gap-6" : "gallery-marquee-right flex gap-3 sm:gap-4 md:gap-6"
         }
         style={{ animationDuration: `${speed}s` }}
       >
@@ -41,14 +41,14 @@ function MarqueeRow({ images, direction, speed, onImageClick, baseIndex }: Marqu
               key={`${src}-${i}`}
               type="button"
               onClick={() => onImageClick(originalIndex)}
-              className="group relative shrink-0 w-[220px] h-[150px] md:w-[320px] md:h-[215px] rounded-2xl overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.08] hover:!z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+              className="group relative shrink-0 w-[180px] h-[120px] sm:w-[220px] sm:h-[150px] md:w-[320px] md:h-[215px] rounded-2xl overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.08] hover:!z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
               aria-label="Open gallery image"
             >
               <Image
                 src={src}
                 alt="Team1 India community moment"
                 fill
-                sizes="(max-width: 768px) 220px, 320px"
+                sizes="(max-width: 640px) 180px, (max-width: 768px) 220px, 320px"
                 className="object-cover transition-all duration-700 ease-out group-hover:brightness-110 group-hover:saturate-125"
                 draggable={false}
               />

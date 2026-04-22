@@ -6,7 +6,7 @@ import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
+const glassClass = "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]";
 
 const typeConfig: Record<string, { icon: string; color: string; bg: string; border: string; label: string }> = {
     tweet: { icon: "Send", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", label: "Tweet" },
@@ -94,12 +94,12 @@ export default function CoreBountyPage() {
     };
 
     return (
-        <div className="min-h-screen text-white pb-20">
+        <div className="min-h-screen text-black dark:text-white pb-20">
             <main className="container mx-auto px-4 sm:px-6 md:px-12 md:pt-24 pt-8">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
                     <div>
-                        <Link href="/core" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors mb-4 group">
+                        <Link href="/core" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-black dark:hover:text-white transition-colors mb-4 group">
                             <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform"/>
                             Back to Core
                         </Link>
@@ -142,16 +142,16 @@ export default function CoreBountyPage() {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex rounded-lg p-0.5 bg-zinc-800/80 border border-white/5 w-fit mb-6">
+                <div className="flex rounded-lg p-0.5 bg-zinc-200/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/5 w-fit mb-6">
                     {(["pending", "bounties", "history"] as Tab[]).map(t => (
-                        <button key={t} type="button" onClick={() => setTab(t)} className={cn("px-4 py-2 rounded-md text-xs font-semibold capitalize transition-all", tab === t ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-300")}>
+                        <button key={t} type="button" onClick={() => setTab(t)} className={cn("px-4 py-2 rounded-md text-xs font-semibold capitalize transition-all", tab === t ? "bg-black/10 dark:bg-white/10 text-black dark:text-white" : "text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300")}>
                             {t === "pending" ? `Pending (${pendingSubs.length})` : t === "bounties" ? "Bounties" : "History"}
                         </button>
                     ))}
                 </div>
 
                 {loading ? (
-                    <div className="py-20 text-center text-zinc-600 animate-pulse">Loading...</div>
+                    <div className="py-20 text-center text-zinc-400 dark:text-zinc-600 animate-pulse">Loading...</div>
                 ) : tab === "pending" ? (
                     pendingSubs.length > 0 ? (
                         <div className="space-y-3">
@@ -163,7 +163,7 @@ export default function CoreBountyPage() {
                                             <DynamicIcon name={cfg.icon} className={cn("w-4 h-4 ", cfg.color)}/>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-white">{sub.bounty?.title}</p>
+                                            <p className="text-sm font-medium text-black dark:text-white">{sub.bounty?.title}</p>
                                             <p className="text-xs text-zinc-500">{sub.submittedBy?.name || sub.publicUser?.fullName || sub.submittedByEmail}</p>
                                             <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-sky-400 hover:underline truncate block">{sub.proofUrl}</a>
                                         </div>
@@ -181,7 +181,7 @@ export default function CoreBountyPage() {
                         </div>
                     ) : (
                         <div className={cn("py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                            <p className="text-zinc-600 text-sm">No pending submissions</p>
+                            <p className="text-zinc-400 dark:text-zinc-600 text-sm">No pending submissions</p>
                         </div>
                     )
                 ) : tab === "bounties" ? (
@@ -194,17 +194,17 @@ export default function CoreBountyPage() {
                                         <DynamicIcon name={cfg.icon} className={cn("w-4 h-4 ", cfg.color)}/>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-white">{b.title}</p>
+                                        <p className="text-sm font-medium text-black dark:text-white">{b.title}</p>
                                         <p className="text-xs text-zinc-500">{cfg.label} &middot; {b.frequency} &middot; {b.xpReward} XP</p>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
                                         <span className={cn("px-2 py-1 rounded-lg text-[10px] font-semibold border", b.audience === 'public' ? "bg-blue-500/10 text-blue-400 border-blue-500/20" : "bg-indigo-500/10 text-indigo-400 border-indigo-500/20")}>
                                             {b.audience === 'public' ? 'Public' : 'Member'}
                                         </span>
-                                        <span className={cn("px-2 py-1 rounded-lg text-[10px] font-semibold border", b.status === 'active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-800 text-zinc-500 border-zinc-700")}>
+                                        <span className={cn("px-2 py-1 rounded-lg text-[10px] font-semibold border", b.status === 'active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-200 dark:bg-zinc-800 text-zinc-500 border-zinc-700")}>
                                             {b.status}
                                         </span>
-                                        <button type="button" onClick={() => handleToggleBounty(b.id, b.status === 'active' ? 'paused' : 'active')} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                                        <button type="button" onClick={() => handleToggleBounty(b.id, b.status === 'active' ? 'paused' : 'active')} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                                             {b.status === 'active' ? 'Pause' : 'Activate'}
                                         </button>
                                     </div>
@@ -224,7 +224,7 @@ export default function CoreBountyPage() {
                                             <DynamicIcon name={cfg.icon} className={cn("w-4 h-4 ", cfg.color)}/>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-white">{sub.bounty?.title}</p>
+                                            <p className="text-sm font-medium text-black dark:text-white">{sub.bounty?.title}</p>
                                             <p className="text-xs text-zinc-500">{sub.submittedBy?.name || sub.publicUser?.fullName || sub.submittedByEmail}</p>
                                         </div>
                                         <span className={cn("px-2.5 py-1 rounded-lg text-[11px] font-semibold border shrink-0", badge.cls)}>{badge.text}</span>
@@ -234,7 +234,7 @@ export default function CoreBountyPage() {
                         </div>
                     ) : (
                         <div className={cn("py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                            <p className="text-zinc-600 text-sm">No reviewed submissions yet</p>
+                            <p className="text-zinc-400 dark:text-zinc-600 text-sm">No reviewed submissions yet</p>
                         </div>
                     )
                 )}
@@ -244,15 +244,15 @@ export default function CoreBountyPage() {
             {/* Reset Confirmation Modal */}
             {showResetConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-                    <div className="w-full max-w-md rounded-2xl bg-zinc-900 border border-white/10 p-6 space-y-4">
+                    <div className="w-full max-w-md rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 p-6 space-y-4">
                         <div className="flex items-center gap-3">
                             <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20">
                                 <AlertTriangle className="w-5 h-5 text-red-400"/>
                             </div>
-                            <h2 className="text-lg font-bold text-white">Reset All Bounty Data</h2>
+                            <h2 className="text-lg font-bold text-black dark:text-white">Reset All Bounty Data</h2>
                         </div>
-                        <p className="text-sm text-zinc-400">
-                            This will permanently delete <span className="text-white font-semibold">all bounties</span>, <span className="text-white font-semibold">all submissions</span>, and <span className="text-white font-semibold">reset all member XP to 0</span>. This action cannot be undone.
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                            This will permanently delete <span className="text-black dark:text-white font-semibold">all bounties</span>, <span className="text-black dark:text-white font-semibold">all submissions</span>, and <span className="text-black dark:text-white font-semibold">reset all member XP to 0</span>. This action cannot be undone.
                         </p>
                         <div>
                             <label className="text-xs text-zinc-500 block mb-1.5">Type <span className="text-red-400 font-bold">RESET</span> to confirm</label>
@@ -261,14 +261,14 @@ export default function CoreBountyPage() {
                                 value={resetConfirmText}
                                 onChange={(e) => setResetConfirmText(e.target.value)}
                                 placeholder="RESET"
-                                className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-red-500/50"
+                                className="w-full px-3 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-black dark:text-white text-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-red-500/50"
                             />
                         </div>
                         <div className="flex items-center gap-3 pt-2">
                             <button
                                 type="button"
                                 onClick={() => { setShowResetConfirm(false); setResetConfirmText(""); }}
-                                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-zinc-800 border border-white/10 text-zinc-300 hover:bg-zinc-700 transition-colors"
+                                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
                             >
                                 Cancel
                             </button>

@@ -11,7 +11,7 @@ export function GetInvolved() {
 
   return (
     <section id="involved" className="py-12 md:py-16 relative overflow-hidden">
-      <div className="container mx-auto px-6 relative z-10 flex justify-center">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10 flex justify-center">
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 40 }}
@@ -24,8 +24,8 @@ export function GetInvolved() {
             <div className="w-full h-full rounded-3xl bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-xl" />
           </div>
 
-          <div className="relative z-10 p-8 md:p-16 text-center">
-            <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white mb-6 tracking-tight uppercase leading-[1.1]">
+          <div className="relative z-10 p-5 sm:p-8 md:p-16 text-center">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white mb-6 tracking-tight uppercase leading-[1.1]">
               READY TO MAKE AN IMPACT?
             </h2>
             <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">

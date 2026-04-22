@@ -50,12 +50,12 @@ export default function NewAssetPage() {
             <CorePageHeader
                 title="Upload Asset"
                 description="Add a new resource to the media kit."
-                icon={<Upload className="w-5 h-5 text-zinc-200" />}
+                icon={<Upload className="w-5 h-5 text-zinc-700 dark:text-zinc-200" />}
             >
                 <div className="flex gap-2">
                     <button 
                         onClick={() => router.back()}
-                        className="px-4 py-2 border border-white/10 rounded-lg text-xs font-bold text-zinc-400 hover:text-white transition-colors"
+                        className="px-4 py-2 border border-black/10 dark:border-white/10 rounded-lg text-xs font-bold text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
                     >
                         Cancel
                     </button>
@@ -73,13 +73,13 @@ export default function NewAssetPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Title */}
                     <div>
-                        <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">Asset Title</label>
+                        <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase tracking-wider">Asset Title</label>
                         <input
                             type="text"
                             required
                             value={formData.title}
                             onChange={e => setFormData({...formData, title: e.target.value})}
-                            className="w-full bg-zinc-900 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all"
+                            className="w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg px-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 transition-all"
                             placeholder="e.g. Primary Logo (White)"
                         />
                     </div>
@@ -98,8 +98,8 @@ export default function NewAssetPage() {
                                 onClick={() => setFormData({...formData, type: type.id})}
                                 className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${
                                     formData.type === type.id
-                                    ? 'bg-zinc-800 border-white text-white'
-                                    : 'bg-zinc-900/50 border-white/5 text-zinc-500 hover:text-zinc-300 hover:border-white/10'
+                                    ? 'bg-zinc-200 dark:bg-zinc-800 border-black dark:border-white text-black dark:text-white'
+                                    : 'bg-zinc-100/50 dark:bg-zinc-900/50 border-black/5 dark:border-white/5 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 hover:border-black/10 dark:hover:border-white/10'
                                 }`}
                             >
                                 {type.icon}
@@ -110,7 +110,7 @@ export default function NewAssetPage() {
 
                     {/* Dynamic Content Field */}
                     <div>
-                        <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">
+                        <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase tracking-wider">
                             {formData.type === 'COLOR_PALETTE' ? 'Hex Code' : 'URL / Link'}
                         </label>
                         <input
@@ -118,7 +118,7 @@ export default function NewAssetPage() {
                             required
                             value={formData.content}
                             onChange={e => setFormData({...formData, content: e.target.value})}
-                            className="w-full bg-zinc-900 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all font-mono"
+                            className="w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg px-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 transition-all font-mono"
                             placeholder={formData.type === 'COLOR_PALETTE' ? '#FFFFFF' : 'https://...'}
                         />
                     </div>
@@ -126,11 +126,11 @@ export default function NewAssetPage() {
                      {/* Format (Optional) */}
                      {formData.type !== 'COLOR_PALETTE' && (
                         <div>
-                            <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">Format / Extension</label>
+                            <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase tracking-wider">Format / Extension</label>
                             <select
                                 value={formData.format}
                                 onChange={e => setFormData({...formData, format: e.target.value})}
-                                className="w-full bg-zinc-900 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all"
+                                className="w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg px-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 transition-all"
                             >
                                 <option value="PNG">PNG</option>
                                 <option value="SVG">SVG</option>
@@ -143,11 +143,11 @@ export default function NewAssetPage() {
 
                     {/* Description */}
                     <div>
-                        <label className="block text-xs font-bold text-zinc-400 mb-2 uppercase tracking-wider">Description (Optional)</label>
+                        <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase tracking-wider">Description (Optional)</label>
                         <textarea
                             value={formData.description}
                             onChange={e => setFormData({...formData, description: e.target.value})}
-                            className="w-full bg-zinc-900 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all h-32 resize-none"
+                            className="w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg px-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 transition-all h-32 resize-none"
                             placeholder="Brief details about usage..."
                         />
                     </div>

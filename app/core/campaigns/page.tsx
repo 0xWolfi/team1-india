@@ -8,7 +8,7 @@ import { Plus, MapPin, Link2, Check, Trash2, ExternalLink } from "lucide-react";
 import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 
-const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
+const glassClass = "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]";
 
 const typeConfig: Record<string, { icon: string; color: string; bg: string; border: string; label: string }> = {
     WORKSHOP: { icon: "GraduationCap", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", label: "Workshop" },
@@ -64,7 +64,7 @@ export default function CampaignsPage() {
             <CorePageHeader
                 title="Campaigns"
                 description="Create workshops & hackathon forms with shareable links."
-                icon={<DynamicIcon name="Megaphone" className="w-5 h-5 text-zinc-200" />}
+                icon={<DynamicIcon name="Megaphone" className="w-5 h-5 text-zinc-700 dark:text-zinc-200" />}
             >
                 <Link href="/core/campaigns/new">
                     <button className="flex items-center gap-2 bg-white text-black font-semibold px-5 py-2.5 rounded-xl hover:bg-zinc-100 transition-colors text-sm">
@@ -74,11 +74,11 @@ export default function CampaignsPage() {
             </CorePageHeader>
 
             {loading ? (
-                <div className="py-20 text-center text-zinc-600 animate-pulse">Loading...</div>
+                <div className="py-20 text-center text-zinc-400 dark:text-zinc-600 animate-pulse">Loading...</div>
             ) : campaigns.length === 0 ? (
                 <div className={cn("py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                    <DynamicIcon name="Megaphone" className="w-8 h-8 text-zinc-700 mb-3" />
-                    <p className="text-zinc-600 text-sm">No campaigns yet. Create your first one.</p>
+                    <DynamicIcon name="Megaphone" className="w-8 h-8 text-zinc-300 dark:text-zinc-700 mb-3" />
+                    <p className="text-zinc-400 dark:text-zinc-600 text-sm">No campaigns yet. Create your first one.</p>
                 </div>
             ) : (
                 <div className="space-y-3">
@@ -93,7 +93,7 @@ export default function CampaignsPage() {
                                     </Link>
                                     <Link href={`/core/campaigns/${c.id}`} className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-0.5">
-                                            <p className="text-sm font-semibold text-white truncate hover:underline">{c.title}</p>
+                                            <p className="text-sm font-semibold text-black dark:text-white truncate hover:underline">{c.title}</p>
                                             <span className={cn("px-2 py-0.5 rounded-md text-[10px] font-bold border shrink-0", cfg.bg, cfg.color, cfg.border)}>
                                                 {cfg.label}
                                             </span>
@@ -107,7 +107,7 @@ export default function CampaignsPage() {
                                     <div className="flex items-center gap-2 shrink-0">
                                         <button
                                             onClick={() => copyLink(c)}
-                                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-zinc-300"
+                                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-zinc-600 dark:text-zinc-300"
                                             title="Copy shareable link"
                                         >
                                             {copiedId === c.id ? (
@@ -120,7 +120,7 @@ export default function CampaignsPage() {
                                             href={getPublicLink(c)}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-zinc-400 hover:text-white"
+                                            className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                                             title="Open public link"
                                         >
                                             <ExternalLink className="w-4 h-4" />
@@ -136,8 +136,8 @@ export default function CampaignsPage() {
                                 </div>
 
                                 {/* Shareable Link Preview */}
-                                <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-zinc-950/50 border border-white/5 rounded-lg">
-                                    <Link2 className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
+                                <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-zinc-50/50 dark:bg-zinc-950/50 border border-black/5 dark:border-white/5 rounded-lg">
+                                    <Link2 className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-600 shrink-0" />
                                     <span className="text-xs text-zinc-500 truncate font-mono">{getPublicLink(c)}</span>
                                 </div>
                             </div>
@@ -149,8 +149,8 @@ export default function CampaignsPage() {
             {/* Submissions count */}
             {campaigns.length > 0 && (
                 <div className="mt-8">
-                    <p className="text-xs text-zinc-600 text-center">
-                        Submissions are reviewed in the <Link href="/core/applications" className="text-zinc-400 hover:text-white underline">Applications</Link> section.
+                    <p className="text-xs text-zinc-400 dark:text-zinc-600 text-center">
+                        Submissions are reviewed in the <Link href="/core/applications" className="text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white underline">Applications</Link> section.
                     </p>
                 </div>
             )}

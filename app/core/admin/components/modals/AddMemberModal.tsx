@@ -109,14 +109,14 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-[#09090b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
-                 <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
+        <div className="fixed inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-white dark:bg-[#09090b] border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
+                 <div className="p-6 border-b border-black/10 dark:border-white/10 flex justify-between items-center bg-black/[0.02] dark:bg-white/[0.02]">
                     <div>
-                        <h3 className="text-xl font-bold text-white">Deploy Agent</h3>
+                        <h3 className="text-xl font-bold text-black dark:text-white">Deploy Agent</h3>
                         <p className="text-zinc-500 text-xs mt-1">Assign identity and define operational scope.</p>
                     </div>
-                    <button onClick={onClose} className="text-zinc-500 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <button onClick={onClose} className="text-zinc-500 hover:text-black dark:hover:text-white p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                         <XCircle className="w-5 h-5"/>
                     </button>
                 </div>
@@ -134,12 +134,12 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                         placeholder="agent@team1.network"
                                         value={email}
                                         onChange={e => setEmail(e.target.value)}
-                                        className={`w-full bg-black/40 border rounded-lg px-4 py-3 pr-10 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder:text-zinc-700 ${
-                                            emailStatus === 'exists' 
-                                                ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20' 
+                                        className={`w-full bg-white/40 dark:bg-black/40 border rounded-lg px-4 py-3 pr-10 text-sm text-black dark:text-white focus:outline-none focus:ring-1 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700 ${
+                                            emailStatus === 'exists'
+                                                ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20'
                                                 : emailStatus === 'available'
                                                 ? 'border-emerald-500/50 focus:border-emerald-500 focus:ring-emerald-500/20'
-                                                : 'border-white/10 focus:border-white/20 focus:ring-white/20'
+                                                : 'border-black/10 dark:border-white/10 focus:border-black/20 dark:focus:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
                                         }`}
                                     />
                                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -167,12 +167,12 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                 <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Designation Tags</label>
                                 <div className="relative">
                                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                                        <Tag className="w-4 h-4 text-zinc-600"/>
+                                        <Tag className="w-4 h-4 text-zinc-400 dark:text-zinc-600"/>
                                     </div>
-                                    <input 
-                                        type="text" 
-                                        placeholder="Type tag and press Enter... (e.g. Lead, Analyst)" 
-                                        className="w-full bg-black/40 border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all placeholder:text-zinc-700"
+                                    <input
+                                        type="text"
+                                        placeholder="Type tag and press Enter... (e.g. Lead, Analyst)"
+                                        className="w-full bg-white/40 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 e.preventDefault();
@@ -185,15 +185,15 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                 {/* Tag Chips */}
                                 <div className="flex flex-wrap gap-2 pt-1 min-h-[30px]">
                                     {tags.map(tag => (
-                                        <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-800 text-zinc-200 border border-white/10 animate-in zoom-in-90">
+                                        <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border border-black/10 dark:border-white/10 animate-in zoom-in-90">
                                             {tag}
-                                            <button type="button" onClick={() => removeTag(tag)} className="ml-1.5 text-zinc-500 hover:text-white transition-colors">
+                                            <button type="button" onClick={() => removeTag(tag)} className="ml-1.5 text-zinc-500 hover:text-black dark:hover:text-white transition-colors">
                                                 <XCircle className="w-3 h-3"/>
                                             </button>
                                         </span>
                                     ))}
                                     {permissions['*'] === 'FULL_ACCESS' && (
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-900/50 text-zinc-600 border border-white/5 border-dashed">
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-100/50 dark:bg-zinc-900/50 text-zinc-400 dark:text-zinc-600 border border-black/5 dark:border-white/5 border-dashed">
                                             + Admin (Auto)
                                         </span>
                                     )}
@@ -224,12 +224,12 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between mt-4 mb-2">
                                             <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Modular Access</label>
-                                            <div className="flex bg-black/40 rounded-lg p-1 border border-white/5">
-                                                <button type="button" onClick={() => bulkSetPermissions('READ')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">All Read</button>
-                                                <div className="w-px bg-white/10 my-1" />
-                                                <button type="button" onClick={() => bulkSetPermissions('WRITE')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">All Write</button>
-                                                <div className="w-px bg-white/10 my-1" />
-                                                <button type="button" onClick={() => bulkSetPermissions('NONE')} className="px-3 py-1 text-[10px] text-zinc-400 hover:text-white transition-colors">Reset</button>
+                                            <div className="flex bg-white/40 dark:bg-black/40 rounded-lg p-1 border border-black/5 dark:border-white/5">
+                                                <button type="button" onClick={() => bulkSetPermissions('READ')} className="px-3 py-1 text-[10px] text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors">All Read</button>
+                                                <div className="w-px bg-black/10 dark:bg-white/10 my-1" />
+                                                <button type="button" onClick={() => bulkSetPermissions('WRITE')} className="px-3 py-1 text-[10px] text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors">All Write</button>
+                                                <div className="w-px bg-black/10 dark:bg-white/10 my-1" />
+                                                <button type="button" onClick={() => bulkSetPermissions('NONE')} className="px-3 py-1 text-[10px] text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors">Reset</button>
                                             </div>
                                         </div>
                                         <div className="space-y-3">
@@ -237,37 +237,37 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                                 const currentLevel = permissions[scope.key];
                                                 
                                                 return (
-                                                    <div key={scope.key} className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-colors group">
+                                                    <div key={scope.key} className="flex items-center justify-between p-3 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] hover:bg-black/[0.03] dark:hover:bg-white/[0.03] transition-colors group">
                                                         <div className="flex items-center gap-3">
-                                                            <div className={`p-2 rounded-lg border border-white/5 ${currentLevel ? 'bg-zinc-800' : 'bg-black/40'}`}>
-                                                                <DynamicIcon name={scope.iconName} className={`w-4 h-4 ${currentLevel ? 'text-zinc-200' : 'text-zinc-600'}`}/>
+                                                            <div className={`p-2 rounded-lg border border-black/5 dark:border-white/5 ${currentLevel ? 'bg-zinc-200 dark:bg-zinc-800' : 'bg-white/40 dark:bg-black/40'}`}>
+                                                                <DynamicIcon name={scope.iconName} className={`w-4 h-4 ${currentLevel ? 'text-zinc-700 dark:text-zinc-200' : 'text-zinc-400 dark:text-zinc-600'}`}/>
                                                             </div>
                                                             <div>
-                                                                <div className={`text-sm font-medium ${currentLevel ? 'text-zinc-200' : 'text-zinc-500'}`}>{scope.label}</div>
-                                                                <div className="text-[10px] text-zinc-600 hidden sm:block">{scope.description}</div>
+                                                                <div className={`text-sm font-medium ${currentLevel ? 'text-zinc-700 dark:text-zinc-200' : 'text-zinc-500'}`}>{scope.label}</div>
+                                                                <div className="text-[10px] text-zinc-400 dark:text-zinc-600 hidden sm:block">{scope.description}</div>
                                                             </div>
                                                         </div>
                                                         
                                                         {/* Segmented Control */}
-                                                        <div className="flex bg-black/40 rounded-lg border border-white/5 p-1">
+                                                        <div className="flex bg-white/40 dark:bg-black/40 rounded-lg border border-black/5 dark:border-white/5 p-1">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => togglePermission(scope.key, 'NONE')}
-                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${!permissions[scope.key] ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${!permissions[scope.key] ? 'bg-zinc-300 dark:bg-zinc-700 text-black dark:text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'}`}
                                                             >
                                                                 None
                                                             </button>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => togglePermission(scope.key, 'READ')}
-                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${permissions[scope.key] === 'READ' ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/20' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${permissions[scope.key] === 'READ' ? 'bg-blue-600 text-white shadow-sm shadow-blue-900/20' : 'text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'}`}
                                                             >
                                                                 Read
                                                             </button>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => togglePermission(scope.key, 'WRITE')}
-                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${permissions[scope.key] === 'WRITE' ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-900/20' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                                                className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all ${permissions[scope.key] === 'WRITE' ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-900/20' : 'text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'}`}
                                                             >
                                                                 Write
                                                             </button>
@@ -284,7 +284,7 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({ isOpen, onClose,
                                 <button 
                                     type="button"
                                     onClick={onClose}
-                                    className="flex-1 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
+                                    className="flex-1 py-3 rounded-lg text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors"
                                 >
                                     Abort
                                 </button>

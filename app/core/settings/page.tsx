@@ -69,12 +69,12 @@ export default function SettingsPage() {
              <CorePageHeader 
                 title="System Settings" 
                 description="Manage global configuration and visibility."
-                icon={<Settings className="w-5 h-5 text-zinc-200"/>}
+                icon={<Settings className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>}
             />
 
             <div className="mt-8 space-y-6 max-w-2xl">
-                <div className="p-6 bg-zinc-900 border border-white/5 rounded-2xl">
-                    <h3 className="text-lg font-bold text-white mb-4">Public Portal Visibility</h3>
+                <div className="p-6 bg-zinc-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 rounded-2xl">
+                    <h3 className="text-lg font-bold text-black dark:text-white mb-4">Public Portal Visibility</h3>
                     <div className="space-y-4">
                         <ToggleItem 
                             label="Show Partners Section"
@@ -100,12 +100,12 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
-                <div className="p-6 bg-zinc-900 border border-white/5 rounded-2xl">
+                <div className="p-6 bg-zinc-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 rounded-2xl">
                     <NotificationPreferences />
                 </div>
 
-                 <div className="p-6 bg-zinc-900 border border-white/5 rounded-2xl opacity-50 pointer-events-none">
-                    <h3 className="text-lg font-bold text-white mb-4">Maintenance Mode (Coming Soon)</h3>
+                 <div className="p-6 bg-zinc-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 rounded-2xl opacity-50 pointer-events-none">
+                    <h3 className="text-lg font-bold text-black dark:text-white mb-4">Maintenance Mode (Coming Soon)</h3>
                     <div className="space-y-4">
                         <ToggleItem 
                             label="Enable Maintenance Mode"
@@ -123,15 +123,15 @@ export default function SettingsPage() {
 
 function ToggleItem({ label, description, isOn, onToggle, disabled }: any) {
     return (
-        <div className="flex items-center justify-between p-4 bg-black/40 rounded-xl border border-white/5">
+        <div className="flex items-center justify-between p-4 bg-white/40 dark:bg-black/40 rounded-xl border border-black/5 dark:border-white/5">
             <div>
-                <h4 className="font-bold text-sm text-zinc-200">{label}</h4>
+                <h4 className="font-bold text-sm text-zinc-700 dark:text-zinc-200">{label}</h4>
                 <p className="text-xs text-zinc-500 max-w-sm mt-1">{description}</p>
             </div>
             <button 
                 onClick={onToggle}
                 disabled={disabled}
-                className={`transition-colors focus:outline-none ${isOn ? 'text-emerald-400' : 'text-zinc-600'}`}
+                className={`transition-colors focus:outline-none ${isOn ? 'text-emerald-400' : 'text-zinc-400 dark:text-zinc-600'}`}
             >
                 {isOn ? <ToggleRight className="w-8 h-8"/> : <ToggleLeft className="w-8 h-8"/>}
             </button>

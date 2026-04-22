@@ -182,15 +182,15 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                     <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit mx-auto">
                         <Check className="w-8 h-8 text-emerald-400" />
                     </div>
-                    <h2 className="text-2xl font-bold text-white">Feedback Form Created!</h2>
-                    <p className="text-sm text-zinc-400">Share this link with the event host. They can sign in and fill the feedback form.</p>
+                    <h2 className="text-2xl font-bold text-black dark:text-white">Feedback Form Created!</h2>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">Share this link with the event host. They can sign in and fill the feedback form.</p>
 
-                    <div className="flex items-center gap-2 p-3 bg-zinc-900 border border-white/10 rounded-xl">
+                    <div className="flex items-center gap-2 p-3 bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl">
                         <Link2 className="w-4 h-4 text-zinc-500 shrink-0" />
-                        <span className="text-sm text-zinc-300 truncate font-mono flex-1 text-left">{createdLink}</span>
+                        <span className="text-sm text-zinc-600 dark:text-zinc-300 truncate font-mono flex-1 text-left">{createdLink}</span>
                         <button
                             onClick={copyLink}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/10 border border-white/10 hover:bg-white/20 transition-colors text-white shrink-0"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/10 hover:bg-black/20 dark:hover:bg-white/20 transition-colors text-black dark:text-white shrink-0"
                         >
                             {copied ? <><Check className="w-3.5 h-3.5 text-emerald-400" /> Copied</> : <><Copy className="w-3.5 h-3.5" /> Copy</>}
                         </button>
@@ -205,7 +205,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                                 <Mail className="w-4 h-4" /> Send Email to Host
                             </button>
                         )}
-                        <Link href={`/core/event-feedback/${createdGuideId}`} className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 transition-colors">
+                        <Link href={`/core/event-feedback/${createdGuideId}`} className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-black/10 dark:hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                             View Submissions
                         </Link>
                         <Link href="/core/event-feedback" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white text-black hover:bg-zinc-100 transition-colors">
@@ -216,13 +216,13 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
 
                 {/* Email Modal */}
                 {showEmailModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-                        <div className="w-full max-w-lg rounded-2xl bg-zinc-900 border border-white/10 p-6 space-y-4">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 dark:bg-black/70 backdrop-blur-sm p-4">
+                        <div className="w-full max-w-lg rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 p-6 space-y-4">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                <h2 className="text-lg font-bold text-black dark:text-white flex items-center gap-2">
                                     <Mail className="w-5 h-5 text-sky-400" /> Send Feedback Link
                                 </h2>
-                                <button onClick={() => setShowEmailModal(false)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                                <button onClick={() => setShowEmailModal(false)} className="p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                                     <X className="w-4 h-4 text-zinc-400" />
                                 </button>
                             </div>
@@ -246,7 +246,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                                                         "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
                                                         selectedHostEmails.includes(host.email)
                                                             ? "bg-sky-500/10 border-sky-500/20"
-                                                            : "bg-zinc-800/50 border-white/5 hover:border-white/10"
+                                                            : "bg-zinc-200/50 dark:bg-zinc-800/50 border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10"
                                                     )}
                                                 >
                                                     <input
@@ -256,7 +256,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                                                         className="accent-sky-500 w-4 h-4"
                                                     />
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-sm text-white font-medium">{host.name || 'Unknown'}</p>
+                                                        <p className="text-sm text-black dark:text-white font-medium">{host.name || 'Unknown'}</p>
                                                         <p className="text-xs text-zinc-500 truncate">{host.email}</p>
                                                     </div>
                                                 </label>
@@ -268,7 +268,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                                         <input
                                             value={emailSubject}
                                             onChange={e => setEmailSubject(e.target.value)}
-                                            className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm focus:outline-none focus:border-white/20"
+                                            className="w-full px-3 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-black dark:text-white text-sm focus:outline-none focus:border-black/20 dark:focus:border-white/20"
                                         />
                                     </div>
                                     <div>
@@ -277,13 +277,13 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                                             value={emailBody}
                                             onChange={e => setEmailBody(e.target.value)}
                                             rows={10}
-                                            className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm focus:outline-none focus:border-white/20 resize-none"
+                                            className="w-full px-3 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-black dark:text-white text-sm focus:outline-none focus:border-black/20 dark:focus:border-white/20 resize-none"
                                         />
                                     </div>
                                     <div className="flex items-center gap-3 pt-2">
                                         <button
                                             onClick={() => setShowEmailModal(false)}
-                                            className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-zinc-800 border border-white/10 text-zinc-300 hover:bg-zinc-700 transition-colors"
+                                            className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
                                         >
                                             Cancel
                                         </button>
@@ -310,12 +310,12 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
             <CorePageHeader
                 title={`Feedback: ${eventName || 'New Form'}`}
                 description={`Create a feedback form${city ? ` · ${city}` : ''}`}
-                icon={<ClipboardList className="w-5 h-5 text-zinc-200" />}
+                icon={<ClipboardList className="w-5 h-5 text-zinc-700 dark:text-zinc-200" />}
                 backLink="/core/event-feedback"
                 backText="Back to Event Feedback"
             >
                 <Link href="/core/event-feedback">
-                    <button className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white px-3 py-2 rounded-lg transition-colors border border-white/5">
+                    <button className="flex items-center gap-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white px-3 py-2 rounded-lg transition-colors border border-black/5 dark:border-white/5">
                         <X className="w-4 h-4" /> Close
                     </button>
                 </Link>
@@ -324,17 +324,17 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
             {/* Event Info + Hosts */}
             <div className="max-w-4xl mx-auto space-y-6 mb-8">
                 {eventName && (
-                    <div className="p-4 bg-zinc-900/40 border border-white/[0.06] rounded-xl">
+                    <div className="p-4 bg-zinc-100/40 dark:bg-zinc-900/40 border border-black/[0.06] dark:border-white/[0.06] rounded-xl">
                         <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-2">Event Details</p>
-                        <p className="text-sm text-white font-semibold">{eventName}</p>
-                        {city && <p className="text-xs text-zinc-400 mt-1">City: {city}</p>}
+                        <p className="text-sm text-black dark:text-white font-semibold">{eventName}</p>
+                        {city && <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">City: {city}</p>}
                     </div>
                 )}
 
                 {/* Host inputs */}
                 <div>
                     <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Event Hosts</label>
-                    <p className="text-xs text-zinc-600 mb-3">Add the hosts who organized this event. They will receive the feedback form link via email.</p>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-3">Add the hosts who organized this event. They will receive the feedback form link via email.</p>
                     <div className="space-y-3">
                         {hosts.map((host, idx) => {
                             const filtered = activeSearchIdx === idx ? getFilteredMembers(host.name) : [];
@@ -347,22 +347,22 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                                             onFocus={() => setActiveSearchIdx(idx)}
                                             onBlur={() => setTimeout(() => setActiveSearchIdx(null), 200)}
                                             placeholder="Host name (type to search members)"
-                                            className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20"
+                                            className="w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-black dark:text-white text-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20"
                                         />
                                         {filtered.length > 0 && (
-                                            <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-xl">
+                                            <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-xl">
                                                 {filtered.map(m => (
                                                     <button
                                                         key={m.id}
                                                         type="button"
                                                         onMouseDown={() => selectMember(idx, m)}
-                                                        className="w-full text-left px-4 py-2.5 hover:bg-white/5 transition-colors flex items-center gap-3"
+                                                        className="w-full text-left px-4 py-2.5 hover:bg-black/5 dark:hover:bg-white/5 transition-colors flex items-center gap-3"
                                                     >
-                                                        <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-zinc-400 shrink-0">
+                                                        <div className="w-7 h-7 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-xs font-bold text-zinc-500 dark:text-zinc-400 shrink-0">
                                                             {m.name.charAt(0).toUpperCase()}
                                                         </div>
                                                         <div className="min-w-0">
-                                                            <p className="text-sm text-white font-medium truncate">{m.name}</p>
+                                                            <p className="text-sm text-black dark:text-white font-medium truncate">{m.name}</p>
                                                             <p className="text-xs text-zinc-500 truncate">{m.email}</p>
                                                         </div>
                                                     </button>
@@ -375,7 +375,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                                         onChange={e => updateHost(idx, 'email', e.target.value)}
                                         placeholder="host@email.com"
                                         type="email"
-                                        className="flex-1 bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20"
+                                        className="flex-1 bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-black dark:text-white text-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20"
                                     />
                                     {hosts.length > 1 && (
                                         <button
@@ -393,13 +393,13 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                     <button
                         type="button"
                         onClick={addHost}
-                        className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+                        className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors"
                     >
                         <Plus className="w-3.5 h-3.5" /> Add Another Host
                     </button>
                 </div>
 
-                <div className="h-px bg-white/5" />
+                <div className="h-px bg-black/5 dark:bg-white/5" />
             </div>
 
             {/* Form Title + Form Builder */}
@@ -410,13 +410,13 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                         value={formTitle}
                         onChange={e => setFormTitle(e.target.value)}
                         placeholder="e.g., Event Feedback - Team1 Connect Pune"
-                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20"
+                        className="w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20"
                     />
                 </div>
 
                 <div>
                     <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Form Fields</label>
-                    <p className="text-xs text-zinc-600 mb-3">Name and Email are included by default. Add custom questions for the feedback form.</p>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-600 mb-3">Name and Email are included by default. Add custom questions for the feedback form.</p>
                     <FormBuilder fields={formFields} onChange={setFormFields} />
                 </div>
 

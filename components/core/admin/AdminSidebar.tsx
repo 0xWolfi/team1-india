@@ -17,12 +17,12 @@ export function AdminSidebar() {
     ];
 
     return (
-        <aside className="w-64 border-r border-white/5 bg-zinc-950/50 flex flex-col p-4 md:h-[calc(100vh-6rem)] sticky top-24 rounded-2xl md:mr-6">
+        <aside className="w-64 border-r border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-950/50 flex flex-col p-4 md:h-[calc(100vh-6rem)] sticky top-24 rounded-2xl md:mr-6">
             <div className="flex items-center gap-2 px-3 py-2 mb-6">
                 <div className="p-1.5 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
                     <Shield className="w-4 h-4 text-indigo-400"/>
                 </div>
-                <span className="font-bold text-sm tracking-wide text-zinc-200">Admin Console</span>
+                <span className="font-bold text-sm tracking-wide text-zinc-700 dark:text-zinc-200">Admin Console</span>
             </div>
 
             <nav className="space-y-1">
@@ -34,20 +34,20 @@ export function AdminSidebar() {
                             href={link.href}
                             className={`
                                 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group
-                                ${isActive 
-                                    ? "bg-white/10 text-white shadow-sm border border-white/5" 
-                                    : "text-zinc-500 hover:text-zinc-200 hover:bg-white/5"
+                                ${isActive
+                                    ? "bg-black/10 dark:bg-white/10 text-black dark:text-white shadow-sm border border-black/5 dark:border-white/5"
+                                    : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5"
                                 }
                             `}
                         >
-                            <DynamicIcon name={link.icon} className={`w-4 h-4 ${isActive ? "text-indigo-400" : "text-zinc-600 group-hover:text-zinc-400"}`}/>
+                            <DynamicIcon name={link.icon} className={`w-4 h-4 ${isActive ? "text-indigo-400" : "text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400"}`}/>
                             {link.label}
                         </Link>
                     );
                 })}
             </nav>
 
-            <div className="mt-auto px-3 py-4 border-t border-white/5">
+            <div className="mt-auto px-3 py-4 border-t border-black/5 dark:border-white/5">
                 <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     <span className="text-xs font-mono text-zinc-500">System Secure</span>

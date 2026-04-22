@@ -37,10 +37,10 @@ export default function SectionCarousel({
             <div className="container mx-auto px-6 relative z-10 w-full">
                 <div className="flex flex-col items-center text-center md:flex-row md:items-end md:text-left justify-between mb-8 gap-6">
                     <div className="max-w-2xl">
-                        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+                        <h2 className="text-3xl md:text-5xl font-bold text-black dark:text-white mb-4 tracking-tight">
                             {title}
                         </h2>
-                        <p className="text-zinc-400 text-lg leading-relaxed">
+                        <p className="text-zinc-500 dark:text-zinc-400 text-lg leading-relaxed">
                             {description}
                         </p>
                     </div>
@@ -48,7 +48,7 @@ export default function SectionCarousel({
                     {/* Desktop See All Button */}
                     <Link 
                         href={seeAllLink}
-                        className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-2 rounded-lg transition-all"
+                        className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 px-4 py-2 rounded-lg transition-all"
                     >
                         {seeAllText}
                         <ArrowRight className="w-4 h-4"/>
@@ -65,7 +65,7 @@ export default function SectionCarousel({
                 ) : (
                     <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 scrollbar-hide">
                         {items.slice(0, 5).map((child, index) => (
-                            <div key={index} className="shrink-0 snap-center w-[280px]">
+                            <div key={index} className="shrink-0 snap-center w-[80vw] min-w-[240px] sm:w-[280px]">
                                 {child}
                             </div>
                         ))}
@@ -75,7 +75,7 @@ export default function SectionCarousel({
                 {/* Mobile See All Button (Bottom) */}
                 <Link 
                     href={seeAllLink}
-                    className="flex w-full justify-center items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 hover:border-white/20 px-4 py-3 rounded-xl transition-all mt-4"
+                    className="flex w-full justify-center items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 px-4 py-3 rounded-xl transition-all mt-4"
                 >
                     {seeAllText}
                     <ArrowRight className="w-4 h-4"/>

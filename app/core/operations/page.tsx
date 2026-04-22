@@ -60,7 +60,7 @@ export default function OperationsPage() {
             <CorePageHeader
                 title="Operations Center"
                 description="Manage tasks, sprints, and operational workflows."
-                icon={<CheckCircle2 className="w-5 h-5 text-zinc-200"/>}
+                icon={<CheckCircle2 className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>}
             >
                 <button 
                     className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all hover:bg-zinc-200 active:scale-95 text-sm"
@@ -73,15 +73,15 @@ export default function OperationsPage() {
             </CorePageHeader>
 
             {/* Navigation Tabs */}
-            <div className="flex items-center gap-1 bg-zinc-900/50 p-1 rounded-xl w-fit mb-8 border border-white/5 backdrop-blur-sm">
+            <div className="flex items-center gap-1 bg-zinc-100/50 dark:bg-zinc-900/50 p-1 rounded-xl w-fit mb-8 border border-black/5 dark:border-white/5 backdrop-blur-sm">
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setView(tab.id as any)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                             view === tab.id 
-                            ? 'bg-zinc-800 text-white shadow-lg ring-1 ring-white/5' 
-                            : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                            ? 'bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white shadow-lg ring-1 ring-black/5 dark:ring-white/5'
+                            : 'text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                         }`}
                     >
                         <DynamicIcon name={tab.iconName} className="w-4 h-4"/>
@@ -98,19 +98,19 @@ export default function OperationsPage() {
                     <div className="grid grid-cols-1 gap-6">
                         {/* Render View Specific Content */}
                         {view === 'board' && (
-                            <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
+                            <div className="p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
                                 <LayoutDashboard className="w-12 h-12 mb-4 opacity-50"/>
-                                <h3 className="text-lg font-semibold mb-1 text-zinc-300">Kanban Board</h3>
+                                <h3 className="text-lg font-semibold mb-1 text-zinc-600 dark:text-zinc-300">Kanban Board</h3>
                                 <p className="text-sm">Task cards and drag-and-drop workflow will be here.</p>
                             </div>
                         )}
                         {view === 'calendar' && (
-                             <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
+                             <div className="p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
                                 <Calendar className="w-12 h-12 mb-4 opacity-50"/>
-                                <h3 className="text-lg font-semibold mb-1 text-zinc-300">Calendar View</h3>
+                                <h3 className="text-lg font-semibold mb-1 text-zinc-600 dark:text-zinc-300">Calendar View</h3>
                                 <p className="text-sm mb-6">Monthly schedule and deadlines.</p>
                                 <button 
-                                    className="group relative inline-flex h-10 items-center justify-center overflow-hidden rounded-lg bg-white/10 hover:bg-white/20 px-6 font-medium text-white transition-all active:scale-95 text-sm border border-white/10"
+                                    className="group relative inline-flex h-10 items-center justify-center overflow-hidden rounded-lg bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 px-6 font-medium text-black dark:text-white transition-all active:scale-95 text-sm border border-black/10 dark:border-white/10"
                                     onClick={() => setIsMeetingModalOpen(true)}
                                 >
                                     <span className="flex items-center gap-2">
@@ -120,16 +120,16 @@ export default function OperationsPage() {
                             </div>
                         )}
                         {view === 'list' && (
-                             <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
+                             <div className="p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
                                 <ListTodo className="w-12 h-12 mb-4 opacity-50"/>
-                                <h3 className="text-lg font-semibold mb-1 text-zinc-300">List View</h3>
+                                <h3 className="text-lg font-semibold mb-1 text-zinc-600 dark:text-zinc-300">List View</h3>
                                 <p className="text-sm">Detailed list of tasks and assignments.</p>
                             </div>
                         )}
                         {view === 'time' && (
-                             <div className="p-16 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-900/20">
+                             <div className="p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
                                 <Clock className="w-12 h-12 mb-4 opacity-50"/>
-                                <h3 className="text-lg font-semibold mb-1 text-zinc-300">Time Logs</h3>
+                                <h3 className="text-lg font-semibold mb-1 text-zinc-600 dark:text-zinc-300">Time Logs</h3>
                                 <p className="text-sm">Tracked time and performance metrics.</p>
                             </div>
                         )}
