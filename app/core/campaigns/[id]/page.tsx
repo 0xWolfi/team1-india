@@ -132,9 +132,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
                     <p className="text-zinc-600 text-sm">No submissions yet</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start max-h-[calc(100vh-280px)]">
                     {/* List */}
-                    <div className="lg:col-span-1 space-y-2 max-h-[calc(100vh-350px)] overflow-y-auto pr-1">
+                    <div className="lg:col-span-1 space-y-2 overflow-y-auto pr-1 max-h-[calc(100vh-280px)]">
                         {submissions.map(sub => {
                             const statusColors: Record<string, string> = {
                                 pending: "bg-amber-500/10 text-amber-400 border-amber-500/20",
@@ -171,9 +171,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
                     </div>
 
                     {/* Detail View */}
-                    <div className="lg:col-span-2">
+                    <div className="lg:col-span-2 overflow-y-auto max-h-[calc(100vh-280px)]">
                         {selected ? (
-                            <div className={cn("rounded-2xl p-6 sm:p-8 space-y-6 sticky top-24", glassClass)}>
+                            <div className={cn("rounded-2xl p-6 sm:p-8 space-y-6", glassClass)}>
                                 {/* Header */}
                                 <div className="flex justify-between items-start border-b border-white/5 pb-6">
                                     <div>
