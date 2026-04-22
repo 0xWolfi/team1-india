@@ -40,7 +40,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {/* Search */}
         <div className="relative w-full md:w-64 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors"/>
+            <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-black dark:group-focus-within:text-white transition-colors"/>
           </div>
           <input
             type="text"
@@ -54,7 +54,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {/* City Filter */}
         <div className="relative w-full md:w-48 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <MapPin className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors"/>
+            <MapPin className="w-4 h-4 text-zinc-500 group-focus-within:text-black dark:group-focus-within:text-white transition-colors"/>
           </div>
           <select
             value={selectedCity}
@@ -92,7 +92,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
                           href={event.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group block shrink-0 w-[220px] sm:w-[260px] snap-center"
+                          className="group block shrink-0 w-[75vw] min-w-[200px] sm:w-[260px] snap-center"
                         >
                             <div className={`relative aspect-square overflow-hidden rounded-3xl border border-black/10 dark:border-white/10 shadow-[inset_0_1px_0_0_rgba(0,0,0,0.03)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] bg-zinc-100/60 dark:bg-zinc-900/60 backdrop-blur-2xl transition-all duration-500 group-hover:border-black/30 dark:group-hover:border-white/30 group-hover:shadow-2xl group-hover:shadow-black/5 dark:group-hover:shadow-white/5 group-hover:-translate-y-2 mb-5 ${!event.cover_url ? fallbackGradient : ''}`}>
                               {event.cover_url ? (

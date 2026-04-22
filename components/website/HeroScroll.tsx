@@ -385,11 +385,11 @@ export const HeroScroll = () => {
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }} className="flex flex-col sm:flex-row items-center gap-4 mb-10">
-              <Link href="/public" className="group flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white dark:bg-white text-black dark:text-black font-semibold text-base border border-black/10 transition-all duration-300 hover:bg-red-500 hover:text-white hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02]">
+              <Link href="/public" className="group flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-white dark:bg-white text-black dark:text-black font-semibold text-sm sm:text-base border border-black/10 transition-all duration-300 hover:bg-red-500 hover:text-white hover:border-red-500 hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] hover:scale-[1.02]">
                 Explore
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </Link>
-              <a href="https://t.me/avalanche_hi" target="_blank" rel="noopener noreferrer" className="px-8 py-3.5 rounded-xl bg-black/8 dark:bg-white/8 border border-black/12 dark:border-white/12 text-black dark:text-white font-semibold text-base transition-all duration-300 hover:bg-red-500 hover:border-red-500 hover:text-white hover:scale-[1.02]">
+              <a href="https://t.me/avalanche_hi" target="_blank" rel="noopener noreferrer" className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-black/8 dark:bg-white/8 border border-black/12 dark:border-white/12 text-black dark:text-white font-semibold text-sm sm:text-base transition-all duration-300 hover:bg-red-500 hover:border-red-500 hover:text-white hover:scale-[1.02]">
                 Join Us
               </a>
             </motion.div>
@@ -429,8 +429,8 @@ export const HeroScroll = () => {
           />
           <div className="relative w-full max-w-7xl mx-auto">
             <motion.div style={{ opacity: headingOpacity, scale: headingScale, y: headingY }} className="mb-6 lg:mb-8 text-center">
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight uppercase">
-                WHAT WE HAVE DONE
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight">
+                What We've Achieved
               </h2>
             </motion.div>
             <motion.div

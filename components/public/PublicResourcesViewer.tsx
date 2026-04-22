@@ -62,14 +62,14 @@ export default function PublicResourcesViewer({ playbooks, guides }: PublicResou
             {/* Search Bar */}
             <div className="max-w-md mx-auto relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                     <Search className="w-5 h-5 text-zinc-500 group-focus-within:text-white transition-colors"/>
+                     <Search className="w-5 h-5 text-zinc-500 group-focus-within:text-black dark:group-focus-within:text-white transition-colors"/>
                 </div>
                 <input 
                     type="text"
                     placeholder="Search resources..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-zinc-900/50 border border-white/10 rounded-full pl-12 pr-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all hover:bg-zinc-900/80 hover:border-white/20 shadow-lg shadow-black/20"
+                    className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-full pl-12 pr-4 py-3 text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black/20 dark:focus:border-white/20 transition-all hover:bg-zinc-100/80 dark:hover:bg-zinc-900/80 hover:border-black/20 dark:hover:border-white/20 shadow-lg shadow-black/20"
                 />
             </div>
 
@@ -82,7 +82,7 @@ export default function PublicResourcesViewer({ playbooks, guides }: PublicResou
                         className={`px-6 py-3 rounded-full text-sm font-bold transition-all border ${
                             activeTab === tab 
                                 ? 'bg-white text-black border-white' 
-                                : 'bg-transparent text-zinc-500 border-white/10 hover:border-white/30 hover:text-white'
+                                : 'bg-transparent text-zinc-500 border-black/10 dark:border-white/10 hover:border-black/30 dark:hover:border-white/30 hover:text-black dark:hover:text-white'
                         }`}
                     >
                         {tab}
@@ -107,13 +107,13 @@ export default function PublicResourcesViewer({ playbooks, guides }: PublicResou
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-20 text-zinc-500 italic border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center border border-white/5">
-                        <Search className="w-6 h-6 text-zinc-600"/>
+                <div className="text-center py-20 text-zinc-500 italic border border-dashed border-black/10 dark:border-white/10 rounded-2xl flex flex-col items-center justify-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center border border-black/5 dark:border-white/5">
+                        <Search className="w-6 h-6 text-zinc-400 dark:text-zinc-600"/>
                     </div>
                     <div>
                         <p>No resources found for "{activeTab}"</p>
-                        {searchTerm && <p className="text-xs text-zinc-600 mt-1">matching "{searchTerm}"</p>}
+                        {searchTerm && <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">matching "{searchTerm}"</p>}
                     </div>
                 </div>
             )}
@@ -123,7 +123,7 @@ export default function PublicResourcesViewer({ playbooks, guides }: PublicResou
                 <div className="flex justify-center pt-0 -mt-6">
                     <button 
                         onClick={handleLoadMore}
-                        className="px-6 py-2 bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-full font-bold transition-all flex items-center gap-2 text-xs"
+                        className="px-6 py-2 bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white rounded-full font-bold transition-all flex items-center gap-2 text-xs"
                     >
                         See More <ArrowRight className="w-4 h-4"/>
                     </button>

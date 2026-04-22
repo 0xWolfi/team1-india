@@ -15,23 +15,23 @@ export const DeleteCommunityMemberModal: React.FC<DeleteCommunityMemberModalProp
     if (!member) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-[#09090b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-white dark:bg-[#09090b] border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
                 <div className="p-6">
                     <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border border-red-500/20">
                         <AlertTriangle className="w-6 h-6 text-red-500"/>
                     </div>
                     
-                    <h3 className="text-xl font-bold text-white mb-2">Remove Member?</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                        Are you sure you want to remove <span className="text-white font-medium">{member.name || member.email}</span> from the community roster? This action cannot be undone.
+                    <h3 className="text-xl font-bold text-black dark:text-white mb-2">Remove Member?</h3>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed mb-6">
+                        Are you sure you want to remove <span className="text-black dark:text-white font-medium">{member.name || member.email}</span> from the community roster? This action cannot be undone.
                     </p>
 
                     <div className="flex gap-3">
                         <button 
                             onClick={onClose}
                             disabled={isSubmitting}
-                            className="flex-1 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
+                            className="flex-1 py-2.5 rounded-lg text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors"
                         >
                             Cancel
                         </button>

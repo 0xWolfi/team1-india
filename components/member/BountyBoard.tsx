@@ -158,7 +158,7 @@ export function BountyBoard() {
     const pendingCount = stats.pendingSubmissions;
 
     return (
-        <div className="text-white max-w-[1200px] mx-auto">
+        <div className="text-black dark:text-white max-w-[1200px] mx-auto">
             {/* ── Hero Header ── */}
             <div className="mb-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
@@ -187,7 +187,7 @@ export function BountyBoard() {
                             <Flame className="w-4 h-4 text-red-400" />
                             <span className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Active</span>
                         </div>
-                        <p className="text-2xl font-bold text-white tabular-nums">{stats.activeBounties}</p>
+                        <p className="text-2xl font-bold text-black dark:text-white tabular-nums">{stats.activeBounties}</p>
                     </div>
                     <div className={cn("rounded-xl p-4", glassClass)}>
                         <div className="flex items-center gap-2 mb-2">
@@ -201,14 +201,14 @@ export function BountyBoard() {
                             <Clock className="w-4 h-4 text-amber-400" />
                             <span className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Pending</span>
                         </div>
-                        <p className="text-2xl font-bold text-zinc-300 tabular-nums">{pendingCount}</p>
+                        <p className="text-2xl font-bold text-zinc-600 dark:text-zinc-300 tabular-nums">{pendingCount}</p>
                     </div>
                 </div>
             </div>
 
             {/* ── Tab Bar + Filters ── */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <div className="flex rounded-xl p-1 bg-zinc-800/80 border border-white/5">
+                <div className="flex rounded-xl p-1 bg-zinc-200/80 dark:bg-zinc-800/80 border border-black/5 dark:border-white/5">
                     {(["active", "submissions"] as Tab[]).map((t) => (
                         <button
                             key={t}
@@ -216,12 +216,12 @@ export function BountyBoard() {
                             onClick={() => setTab(t)}
                             className={cn(
                                 "px-5 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all",
-                                tab === t ? "bg-white/10 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+                                tab === t ? "bg-black/10 dark:bg-white/10 text-black dark:text-white shadow-sm" : "text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
                             )}
                         >
                             {t === "active" ? "Active Bounties" : "My Submissions"}
                             {t === "submissions" && submissions.length > 0 && (
-                                <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] bg-white/5">{submissions.length}</span>
+                                <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] bg-black/5 dark:bg-white/5">{submissions.length}</span>
                             )}
                         </button>
                     ))}
@@ -236,7 +236,7 @@ export function BountyBoard() {
                                 placeholder="Search bounties..."
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
-                                className="w-full bg-zinc-800/50 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+                                className="w-full bg-zinc-200/50 dark:bg-zinc-800/50 border border-black/10 dark:border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-black/20 dark:focus:border-white/20"
                             />
                         </div>
                     </div>
@@ -250,7 +250,7 @@ export function BountyBoard() {
                         onClick={() => setTypeFilter("all")}
                         className={cn(
                             "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all whitespace-nowrap",
-                            typeFilter === "all" ? "bg-white/10 text-white border-white/20" : "bg-transparent text-zinc-500 border-white/5 hover:text-zinc-300"
+                            typeFilter === "all" ? "bg-black/10 dark:bg-white/10 text-black dark:text-white border-black/20 dark:border-white/20" : "bg-transparent text-zinc-500 border-black/5 dark:border-white/5 hover:text-zinc-600 dark:hover:text-zinc-300"
                         )}
                     >
                         All Types
@@ -263,7 +263,7 @@ export function BountyBoard() {
                                 "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all whitespace-nowrap flex items-center gap-1.5",
                                 typeFilter === key
                                     ? `${cfg.bg} ${cfg.color} ${cfg.border}`
-                                    : "bg-transparent text-zinc-500 border-white/5 hover:text-zinc-300"
+                                    : "bg-transparent text-zinc-500 border-black/5 dark:border-white/5 hover:text-zinc-600 dark:hover:text-zinc-300"
                             )}
                         >
                             <DynamicIcon name={cfg.icon} className="w-3 h-3" />
@@ -279,15 +279,15 @@ export function BountyBoard() {
                     {[...Array(6)].map((_, i) => (
                         <div key={i} className={cn("rounded-2xl p-5 animate-pulse", glassClass)}>
                             <div className="flex items-center justify-between mb-4">
-                                <div className="h-6 w-16 bg-zinc-800 rounded-lg" />
-                                <div className="h-4 w-20 bg-zinc-800 rounded" />
+                                <div className="h-6 w-16 bg-zinc-200 dark:bg-zinc-200 dark:bg-zinc-800 rounded-lg" />
+                                <div className="h-4 w-20 bg-zinc-200 dark:bg-zinc-800 rounded" />
                             </div>
-                            <div className="h-5 w-3/4 bg-zinc-800 rounded mb-2" />
-                            <div className="h-4 w-full bg-zinc-800/50 rounded mb-1" />
-                            <div className="h-4 w-2/3 bg-zinc-800/50 rounded" />
-                            <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/[0.04]">
-                                <div className="h-5 w-16 bg-zinc-800 rounded" />
-                                <div className="h-8 w-20 bg-zinc-800 rounded-xl" />
+                            <div className="h-5 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded mb-2" />
+                            <div className="h-4 w-full bg-zinc-200/50 dark:bg-zinc-800/50 rounded mb-1" />
+                            <div className="h-4 w-2/3 bg-zinc-200/50 dark:bg-zinc-800/50 rounded" />
+                            <div className="flex items-center justify-between mt-6 pt-4 border-t border-black/[0.04] dark:border-white/[0.04]">
+                                <div className="h-5 w-16 bg-zinc-200 dark:bg-zinc-800 rounded" />
+                                <div className="h-8 w-20 bg-zinc-200 dark:bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
                             </div>
                         </div>
                     ))}
@@ -310,7 +310,7 @@ export function BountyBoard() {
                                     className={cn(
                                         "rounded-2xl transition-all duration-300 overflow-hidden",
                                         glassClass,
-                                        isExpanded ? "ring-1 ring-white/10" : "hover:border-white/[0.1] hover:shadow-lg hover:shadow-black/10",
+                                        isExpanded ? "ring-1 ring-black/10 dark:ring-white/10" : "hover:border-black/[0.1] dark:hover:border-white/[0.1] hover:shadow-lg hover:shadow-black/10",
                                         isExpanded && "col-span-1 sm:col-span-2 lg:col-span-2"
                                     )}
                                 >
@@ -349,7 +349,7 @@ export function BountyBoard() {
                                                 <DynamicIcon name={cfg.icon} className={cn("w-5 h-5", cfg.color)} />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold text-white text-sm leading-snug mb-1 group-hover:text-zinc-100 transition-colors">
+                                                <h3 className="font-semibold text-black dark:text-white text-sm leading-snug mb-1 group-hover:text-zinc-800 dark:group-hover:text-zinc-100 transition-colors">
                                                     {bounty.title}
                                                 </h3>
                                                 <p className={cn("text-xs text-zinc-500", isExpanded ? "" : "line-clamp-2")}>
@@ -357,7 +357,7 @@ export function BountyBoard() {
                                                 </p>
                                             </div>
                                             <ChevronDown className={cn(
-                                                "w-4 h-4 text-zinc-600 shrink-0 transition-transform mt-1",
+                                                "w-4 h-4 text-zinc-400 dark:text-zinc-600 shrink-0 transition-transform mt-1",
                                                 isExpanded && "rotate-180"
                                             )} />
                                         </button>
@@ -367,21 +367,21 @@ export function BountyBoard() {
                                             <div className="mt-4 space-y-4 animate-in slide-in-from-top-2 duration-200">
                                                 {/* Info grid */}
                                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                                    <div className="bg-zinc-800/30 rounded-lg p-3">
-                                                        <p className="text-[10px] text-zinc-600 uppercase tracking-wider mb-1">Reward</p>
+                                                    <div className="bg-zinc-200/30 dark:bg-zinc-800/30 rounded-lg p-3">
+                                                        <p className="text-[10px] text-zinc-400 dark:text-zinc-600 uppercase tracking-wider mb-1">Reward</p>
                                                         <div className="flex items-center gap-1.5">
                                                             <Zap className="w-3.5 h-3.5 text-amber-400" />
                                                             <span className="text-sm font-bold text-amber-400">{bounty.xpReward} XP</span>
                                                         </div>
                                                     </div>
-                                                    <div className="bg-zinc-800/30 rounded-lg p-3">
-                                                        <p className="text-[10px] text-zinc-600 uppercase tracking-wider mb-1">Frequency</p>
-                                                        <p className="text-sm font-medium text-white">{freq.label}</p>
+                                                    <div className="bg-zinc-200/30 dark:bg-zinc-800/30 rounded-lg p-3">
+                                                        <p className="text-[10px] text-zinc-400 dark:text-zinc-600 uppercase tracking-wider mb-1">Frequency</p>
+                                                        <p className="text-sm font-medium text-black dark:text-white">{freq.label}</p>
                                                     </div>
                                                     {bounty.deadline && (
-                                                        <div className="bg-zinc-800/30 rounded-lg p-3">
-                                                            <p className="text-[10px] text-zinc-600 uppercase tracking-wider mb-1">Deadline</p>
-                                                            <p className="text-sm font-medium text-white">
+                                                        <div className="bg-zinc-200/30 dark:bg-zinc-800/30 rounded-lg p-3">
+                                                            <p className="text-[10px] text-zinc-400 dark:text-zinc-600 uppercase tracking-wider mb-1">Deadline</p>
+                                                            <p className="text-sm font-medium text-black dark:text-white">
                                                                 {new Date(bounty.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                                                             </p>
                                                         </div>
@@ -402,7 +402,7 @@ export function BountyBoard() {
                                                             )}
                                                         </div>
                                                         <a href={mySubmission.proofUrl} target="_blank" rel="noopener noreferrer"
-                                                            className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 truncate">
+                                                            className="text-xs text-zinc-400 hover:text-black dark:hover:text-white flex items-center gap-1 truncate">
                                                             <ExternalLink className="w-3 h-3 shrink-0" />
                                                             {mySubmission.proofUrl}
                                                         </a>
@@ -415,7 +415,7 @@ export function BountyBoard() {
                                                 {/* Submit form inline */}
                                                 {!hasSubmission && (
                                                     isSubmitOpen ? (
-                                                        <form onSubmit={handleSubmit} className="space-y-3 bg-zinc-800/20 rounded-xl p-4 border border-white/5">
+                                                        <form onSubmit={handleSubmit} className="space-y-3 bg-zinc-200/20 dark:bg-zinc-800/20 rounded-xl p-4 border border-black/5 dark:border-white/5">
                                                             <div>
                                                                 <label className="block text-xs font-medium text-zinc-400 mb-1.5">Proof URL *</label>
                                                                 <input
@@ -424,7 +424,7 @@ export function BountyBoard() {
                                                                     onChange={e => setProofUrl(e.target.value)}
                                                                     required
                                                                     placeholder="https://twitter.com/... or blog link"
-                                                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20 placeholder:text-zinc-700"
+                                                                    className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2 text-black dark:text-white text-sm focus:outline-none focus:border-black/20 dark:focus:border-white/20 placeholder:text-zinc-400 dark:placeholder:text-zinc-700"
                                                                 />
                                                             </div>
                                                             <div>
@@ -434,12 +434,12 @@ export function BountyBoard() {
                                                                     onChange={e => setProofNote(e.target.value)}
                                                                     placeholder="Any context about your submission..."
                                                                     rows={2}
-                                                                    className="w-full bg-zinc-900/50 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-white/20 resize-none placeholder:text-zinc-700"
+                                                                    className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2 text-black dark:text-white text-sm focus:outline-none focus:border-black/20 dark:focus:border-white/20 resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-700"
                                                                 />
                                                             </div>
                                                             <div className="flex justify-end gap-2">
                                                                 <button type="button" onClick={() => { setSubmitBountyId(null); setProofUrl(""); setProofNote(""); }}
-                                                                    className="px-4 py-2 rounded-lg text-xs text-zinc-400 hover:bg-white/5 transition-colors">
+                                                                    className="px-4 py-2 rounded-lg text-xs text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                                                                     Cancel
                                                                 </button>
                                                                 <button
@@ -468,7 +468,7 @@ export function BountyBoard() {
 
                                         {/* Footer — XP + Action */}
                                         {!isExpanded && (
-                                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/[0.04]">
+                                            <div className="flex items-center justify-between mt-4 pt-4 border-t border-black/[0.04] dark:border-white/[0.04]">
                                                 <div className="flex items-center gap-1.5">
                                                     <Zap className="w-3.5 h-3.5 text-amber-400" />
                                                     <span className="text-sm font-bold text-amber-400">{bounty.xpReward} XP</span>
@@ -512,7 +512,7 @@ export function BountyBoard() {
                         <p className="text-zinc-500 font-medium text-sm mb-1">
                             {searchQuery || typeFilter !== "all" ? "No bounties match your filters" : "No active bounties right now"}
                         </p>
-                        <p className="text-zinc-600 text-xs">Check back later for new opportunities</p>
+                        <p className="text-zinc-400 dark:text-zinc-600 text-xs">Check back later for new opportunities</p>
                     </div>
                 )
             ) : (
@@ -524,16 +524,16 @@ export function BountyBoard() {
                             const badge = statusBadge[sub.status] || statusBadge.pending;
                             const BadgeIcon = badge.icon;
                             return (
-                                <div key={sub.id} className={cn("rounded-xl p-4 transition-all hover:border-white/[0.1]", glassClass)}>
+                                <div key={sub.id} className={cn("rounded-xl p-4 transition-all hover:border-black/[0.1] dark:hover:border-white/[0.1]", glassClass)}>
                                     <div className="flex items-center gap-4">
                                         <div className={cn("p-2.5 rounded-xl border shrink-0", cfg.bg, cfg.border)}>
                                             <DynamicIcon name={cfg.icon} className={cn("w-4 h-4", cfg.color)} />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-white truncate">{sub.bounty.title}</p>
+                                            <p className="text-sm font-medium text-black dark:text-white truncate">{sub.bounty.title}</p>
                                             <div className="flex items-center gap-3 mt-1">
                                                 <a href={sub.proofUrl} target="_blank" rel="noopener noreferrer"
-                                                    className="text-xs text-zinc-500 hover:text-zinc-300 truncate flex items-center gap-1">
+                                                    className="text-xs text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 truncate flex items-center gap-1">
                                                     <ExternalLink className="w-3 h-3 shrink-0" />
                                                     {sub.proofUrl}
                                                 </a>
@@ -556,7 +556,7 @@ export function BountyBoard() {
                                         </div>
                                     </div>
                                     {sub.reviewNote && (
-                                        <div className="mt-3 ml-[52px] pl-4 border-l border-white/5">
+                                        <div className="mt-3 ml-[52px] pl-4 border-l border-black/5 dark:border-white/5">
                                             <p className="text-xs text-zinc-500 italic">&quot;{sub.reviewNote}&quot;</p>
                                         </div>
                                     )}
@@ -568,7 +568,7 @@ export function BountyBoard() {
                     <div className={cn("py-20 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
                         <Send className="w-10 h-10 text-zinc-700 mb-4" />
                         <p className="text-zinc-500 font-medium text-sm mb-1">No submissions yet</p>
-                        <p className="text-zinc-600 text-xs">Complete a bounty to start earning XP</p>
+                        <p className="text-zinc-400 dark:text-zinc-600 text-xs">Complete a bounty to start earning XP</p>
                     </div>
                 )
             )}

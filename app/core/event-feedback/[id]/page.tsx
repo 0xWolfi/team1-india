@@ -6,7 +6,7 @@ import { CorePageHeader } from "@/components/core/CorePageHeader";
 import { Check, X, Mail, Calendar, Link2, ExternalLink, ClipboardList, Send, Loader2, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const glassClass = "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]";
+const glassClass = "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]";
 
 interface Submission {
     id: string;
@@ -149,7 +149,7 @@ Thank you!`
     if (loading) {
         return (
             <CoreWrapper>
-                <div className="py-20 text-center text-zinc-600 animate-pulse">Loading...</div>
+                <div className="py-20 text-center text-zinc-400 dark:text-zinc-600 animate-pulse">Loading...</div>
             </CoreWrapper>
         );
     }
@@ -159,7 +159,7 @@ Thank you!`
             <CorePageHeader
                 title={guide?.title || 'Event Feedback'}
                 description={`${body.hostName ? `Host: ${body.hostName}` : ''}${body.city ? ` · ${body.city}` : ''} — ${submissions.length} submissions`}
-                icon={<ClipboardList className="w-5 h-5 text-zinc-200" />}
+                icon={<ClipboardList className="w-5 h-5 text-zinc-700 dark:text-zinc-200" />}
                 backLink="/core/event-feedback"
                 backText="Back to Event Feedback"
             >
@@ -174,7 +174,7 @@ Thank you!`
                     )}
                     <button
                         onClick={copyLink}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-zinc-300"
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-zinc-600 dark:text-zinc-300"
                     >
                         {copied ? <><Check className="w-3.5 h-3.5 text-emerald-400" /> Copied</> : <><Link2 className="w-3.5 h-3.5" /> Copy Link</>}
                     </button>
@@ -200,7 +200,7 @@ Thank you!`
             {submissions.length === 0 ? (
                 <div className={cn("py-16 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
                     <ClipboardList className="w-8 h-8 text-zinc-700 mb-3" />
-                    <p className="text-zinc-600 text-sm">No submissions yet</p>
+                    <p className="text-zinc-400 dark:text-zinc-600 text-sm">No submissions yet</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -220,12 +220,12 @@ Thank you!`
                                     className={cn(
                                         "w-full text-left p-4 rounded-xl border transition-all",
                                         selected?.id === sub.id
-                                            ? "bg-white/5 border-white/20"
-                                            : "bg-zinc-900/30 border-white/5 hover:border-white/10 hover:bg-white/[0.02]"
+                                            ? "bg-black/5 dark:bg-white/5 border-black/20 dark:border-white/20"
+                                            : "bg-zinc-100/30 dark:bg-zinc-900/30 border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
                                     )}
                                 >
                                     <div className="flex items-center justify-between mb-1">
-                                        <p className="text-sm font-semibold text-white truncate">{sub.data?.name || 'Unknown'}</p>
+                                        <p className="text-sm font-semibold text-black dark:text-white truncate">{sub.data?.name || 'Unknown'}</p>
                                         <span className={cn("px-2 py-0.5 rounded-md text-[10px] font-bold border capitalize shrink-0 ml-2", statusColors[sub.status] || statusColors.pending)}>
                                             {sub.status}
                                         </span>
@@ -233,7 +233,7 @@ Thank you!`
                                     <p className="text-xs text-zinc-500 flex items-center gap-1 truncate">
                                         <Mail className="w-3 h-3 shrink-0" /> {sub.applicantEmail}
                                     </p>
-                                    <p className="text-[10px] text-zinc-600 mt-1">
+                                    <p className="text-[10px] text-zinc-400 dark:text-zinc-600 mt-1">
                                         {new Date(sub.submittedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                 </button>
@@ -245,14 +245,14 @@ Thank you!`
                     <div className="lg:col-span-2">
                         {selected ? (
                             <div className={cn("rounded-2xl p-6 sm:p-8 space-y-6 sticky top-24", glassClass)}>
-                                <div className="flex justify-between items-start border-b border-white/5 pb-6">
+                                <div className="flex justify-between items-start border-b border-black/5 dark:border-white/5 pb-6">
                                     <div>
-                                        <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">{selected.data?.name || 'Unknown'}</h2>
+                                        <h2 className="text-xl sm:text-2xl font-bold text-black dark:text-white mb-1">{selected.data?.name || 'Unknown'}</h2>
                                         <div className="flex flex-wrap gap-2 text-xs mt-2">
-                                            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-zinc-300 flex items-center gap-1.5">
+                                            <span className="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5">
                                                 <Mail className="w-3 h-3 text-zinc-500" /> {selected.applicantEmail}
                                             </span>
-                                            <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-zinc-300 flex items-center gap-1.5">
+                                            <span className="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300 flex items-center gap-1.5">
                                                 <Calendar className="w-3 h-3 text-zinc-500" /> {new Date(selected.submittedAt).toLocaleDateString()}
                                             </span>
                                         </div>
@@ -284,9 +284,9 @@ Thank you!`
                                             if (key === 'submittedAt' || key === 'email') return null;
                                             const label = key.replace(/([A-Z])/g, ' $1').replace(/[_-]/g, ' ').replace(/^\w/, c => c.toUpperCase());
                                             return (
-                                                <div key={key} className="p-3 bg-black/20 rounded-xl border border-white/5">
+                                                <div key={key} className="p-3 bg-white/20 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5">
                                                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">{label}</p>
-                                                    <p className="text-sm text-zinc-200 whitespace-pre-wrap break-words">
+                                                    <p className="text-sm text-zinc-700 dark:text-zinc-200 whitespace-pre-wrap break-words">
                                                         {typeof value === 'string' && (value.startsWith('http://') || value.startsWith('https://')) ? (
                                                             <a href={value} target="_blank" rel="noopener noreferrer" className="text-red-400 hover:text-red-300 flex items-center gap-1">
                                                                 <ExternalLink className="w-3 h-3" /> {value}
@@ -302,10 +302,10 @@ Thank you!`
                                 </div>
                             </div>
                         ) : (
-                            <div className="h-80 flex flex-col items-center justify-center text-zinc-500 border border-dashed border-white/10 rounded-2xl">
+                            <div className="h-80 flex flex-col items-center justify-center text-zinc-500 border border-dashed border-black/10 dark:border-white/10 rounded-2xl">
                                 <ClipboardList className="w-8 h-8 opacity-20 mb-3" />
                                 <p className="font-medium text-sm">Select a submission</p>
-                                <p className="text-xs text-zinc-600 mt-1">View details and approve/reject</p>
+                                <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">View details and approve/reject</p>
                             </div>
                         )}
                     </div>
@@ -314,13 +314,13 @@ Thank you!`
 
             {/* Email Modal */}
             {showEmailModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-                    <div className="w-full max-w-lg rounded-2xl bg-zinc-900 border border-white/10 p-6 space-y-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 dark:bg-black/70 backdrop-blur-sm p-4">
+                    <div className="w-full max-w-lg rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 p-6 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                            <h2 className="text-lg font-bold text-black dark:text-white flex items-center gap-2">
                                 <Mail className="w-5 h-5 text-sky-400" /> Send Feedback Link
                             </h2>
-                            <button onClick={() => setShowEmailModal(false)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                            <button onClick={() => setShowEmailModal(false)} className="p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                                 <X className="w-4 h-4 text-zinc-400" />
                             </button>
                         </div>
@@ -343,7 +343,7 @@ Thank you!`
                                                 className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                                                     selectedHostEmails.includes(host.email!)
                                                         ? "bg-sky-500/10 border-sky-500/20"
-                                                        : "bg-zinc-800/50 border-white/5 hover:border-white/10"
+                                                        : "bg-zinc-200/50 dark:bg-zinc-800/50 border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10"
                                                 }`}
                                             >
                                                 <input
@@ -353,7 +353,7 @@ Thank you!`
                                                     className="accent-sky-500 w-4 h-4"
                                                 />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm text-white font-medium">{host.name || 'Unknown'}</p>
+                                                    <p className="text-sm text-black dark:text-white font-medium">{host.name || 'Unknown'}</p>
                                                     <p className="text-xs text-zinc-500 truncate">{host.email}</p>
                                                 </div>
                                             </label>
@@ -365,7 +365,7 @@ Thank you!`
                                     <input
                                         value={emailSubject}
                                         onChange={e => setEmailSubject(e.target.value)}
-                                        className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm focus:outline-none focus:border-white/20"
+                                        className="w-full px-3 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-black dark:text-white text-sm focus:outline-none focus:border-black/20 dark:focus:border-white/20"
                                     />
                                 </div>
                                 <div>
@@ -374,13 +374,13 @@ Thank you!`
                                         value={emailBody}
                                         onChange={e => setEmailBody(e.target.value)}
                                         rows={10}
-                                        className="w-full px-3 py-2 rounded-lg bg-zinc-800 border border-white/10 text-white text-sm focus:outline-none focus:border-white/20 resize-none"
+                                        className="w-full px-3 py-2 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-black dark:text-white text-sm focus:outline-none focus:border-black/20 dark:focus:border-white/20 resize-none"
                                     />
                                 </div>
                                 <div className="flex items-center gap-3 pt-2">
                                     <button
                                         onClick={() => setShowEmailModal(false)}
-                                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-zinc-800 border border-white/10 text-zinc-300 hover:bg-zinc-700 transition-colors"
+                                        className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors"
                                     >
                                         Cancel
                                     </button>

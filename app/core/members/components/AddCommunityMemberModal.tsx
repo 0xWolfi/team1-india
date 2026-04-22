@@ -77,14 +77,14 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
-            <div className="bg-[#09090b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
-                 <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
+        <div className="fixed inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
+            <div className="bg-white dark:bg-[#09090b] border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 relative" onClick={e => e.stopPropagation()}>
+                 <div className="p-6 border-b border-black/10 dark:border-white/10 flex justify-between items-center bg-black/[0.02] dark:bg-white/[0.02]">
                     <div>
-                        <h3 className="text-xl font-bold text-white">Add Community Member</h3>
+                        <h3 className="text-xl font-bold text-black dark:text-white">Add Community Member</h3>
                         <p className="text-zinc-500 text-xs mt-1">Register a new member to the community roster.</p>
                     </div>
-                    <button onClick={onClose} className="text-zinc-500 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <button onClick={onClose} className="text-zinc-500 hover:text-black dark:hover:text-white p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                         <XCircle className="w-5 h-5"/>
                     </button>
                 </div>
@@ -96,7 +96,7 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                             <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Email Address</label>
                             <div className="relative">
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                                    <AtSign className="w-4 h-4 text-zinc-600"/>
+                                    <AtSign className="w-4 h-4 text-zinc-400 dark:text-zinc-600"/>
                                 </div>
                                 <input 
                                     autoFocus
@@ -105,12 +105,12 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                                     placeholder="member@example.com"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    className={`w-full bg-black/40 border rounded-lg pl-10 pr-10 py-3 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder:text-zinc-700 ${
+                                    className={`w-full bg-white/40 dark:bg-black/40 border rounded-lg pl-10 pr-10 py-3 text-sm text-black dark:text-white focus:outline-none focus:ring-1 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700 ${
                                         emailStatus === 'exists' 
                                             ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/20' 
                                             : emailStatus === 'available'
                                             ? 'border-emerald-500/50 focus:border-emerald-500 focus:ring-emerald-500/20'
-                                            : 'border-white/10 focus:border-white/20 focus:ring-white/20'
+                                            : 'border-black/10 dark:border-white/10 focus:border-black/20 dark:focus:border-white/20 focus:ring-black/20 dark:focus:ring-white/20'
                                     }`}
                                 />
                                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -138,12 +138,12 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                             <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Role</label>
                             <div className="relative">
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                                    <Tag className="w-4 h-4 text-zinc-600"/>
+                                    <Tag className="w-4 h-4 text-zinc-400 dark:text-zinc-600"/>
                                 </div>
                                 <select
                                     value={tag}
                                     onChange={e => setTag(e.target.value)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg pl-10 pr-10 py-3 text-sm text-white focus:outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 transition-all appearance-none cursor-pointer"
+                                    className="w-full bg-white/40 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-lg pl-10 pr-10 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20 transition-all appearance-none cursor-pointer"
                                 >
                                     <option value="member">Member</option>
                                     <option value="collaborator">Collaborator</option>
@@ -152,14 +152,14 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                                     <ChevronDown className="w-4 h-4 text-zinc-500"/>
                                 </div>
                             </div>
-                            <p className="text-xs text-zinc-600 mt-1">The member will be asked to complete their profile details after first login.</p>
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">The member will be asked to complete their profile details after first login.</p>
                         </div>
 
-                        <div className="flex gap-3 pt-4 border-t border-white/5 mt-6">
+                        <div className="flex gap-3 pt-4 border-t border-black/5 dark:border-white/5 mt-6">
                             <button 
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 py-3 rounded-lg text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
+                                className="flex-1 py-3 rounded-lg text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors"
                             >
                                 Cancel
                             </button>

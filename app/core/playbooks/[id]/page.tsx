@@ -279,7 +279,7 @@ export default function PlaybookPage() {
 
     // derived for badge
     const statusText = isSaving ? "Saving..." : hasUnsavedChanges ? "Unsaved" : "Saved";
-    const statusColor = isSaving ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : hasUnsavedChanges ? "bg-zinc-800 text-zinc-400 border-zinc-700" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+    const statusColor = isSaving ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : hasUnsavedChanges ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
 
     // Action Components (Extracted for reuse in Sticky Header)
     const ViewAction = playbook ? (
@@ -291,7 +291,7 @@ export default function PlaybookPage() {
                 ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20' 
                 : playbook.visibility === 'CORE'
                 ? 'bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20'
-                : 'bg-zinc-800 border-white/10 text-zinc-400 hover:bg-zinc-700'
+                : 'bg-zinc-200 dark:bg-zinc-800 border-black/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
             } ${((!hasWriteAccess || isLockedByOther) && !isEditing) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         >
             {playbook.visibility === 'PUBLIC' && <Globe className="w-3.5 h-3.5"/>}
@@ -321,7 +321,7 @@ export default function PlaybookPage() {
                      try { await fetch(`/api/playbooks/${id}/unlock`, { method: 'POST' }); } catch (e) { console.error("Unlock error", e); }
                  }}
                  disabled={isSaving}
-                 className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 border border-white/10 text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50"
+                 className="flex items-center gap-2 px-3 py-1.5 bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-zinc-700 dark:text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors disabled:opacity-50"
              >
                  <Check className="w-3.5 h-3.5"/>
                  Save
@@ -331,7 +331,7 @@ export default function PlaybookPage() {
           hasWriteAccess && (
               <button 
                  onClick={handleEnterEdit}
-                 className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-700 transition-colors border border-white/5"
+                 className="flex items-center gap-2 px-3 py-1.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-xs font-bold rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors border border-black/5 dark:border-white/5"
               >
                  <Edit3 className="w-3.5 h-3.5"/> <span className="hidden sm:inline">Edit</span>
               </button>
@@ -340,13 +340,13 @@ export default function PlaybookPage() {
 
     const MenuAction = (
         <div className="relative group">
-            <button className="p-2 hover:bg-zinc-800 rounded-lg transition-colors">
-                <MoreVertical className="w-4 h-4 text-zinc-400"/>
+            <button className="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                <MoreVertical className="w-4 h-4 text-zinc-500 dark:text-zinc-400"/>
             </button>
-            <div className="absolute right-0 top-full mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden hidden group-hover:block z-50 animate-in fade-in zoom-in-95 duration-200 p-1">
+            <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#18181b] border border-black/10 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden hidden group-hover:block z-50 animate-in fade-in zoom-in-95 duration-200 p-1">
                 <button 
                     onClick={() => window.print()}
-                    className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 rounded-lg flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg flex items-center gap-2"
                 >
                     <Download className="w-3.5 h-3.5"/>
                     Export as PDF
@@ -361,12 +361,12 @@ export default function PlaybookPage() {
                         a.download = `${playbook.title.replace(/\s+/g, '_')}.json`;
                         a.click();
                     }}
-                    className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-300 hover:bg-white/5 rounded-lg flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg flex items-center gap-2"
                 >
                     <FileText className="w-3.5 h-3.5"/>
                     Export JSON
                 </button>
-                <div className="h-px bg-white/5 my-1" />
+                <div className="h-px bg-black/5 dark:bg-white/5 my-1" />
                 {hasWriteAccess && (
                     <button
                         onClick={handleDelete}
@@ -449,7 +449,7 @@ export default function PlaybookPage() {
                      </button>
                      )}
 
-                     <div className="w-px h-4 bg-white/10 mx-1" />
+                     <div className="w-px h-4 bg-black/10 dark:bg-white/10 mx-1" />
 
                      {EditAction}
                      {MenuAction}
@@ -458,7 +458,7 @@ export default function PlaybookPage() {
                 stickyActions={
                     <div className="flex items-center gap-2">
                         {ViewAction}
-                        <div className="w-px h-4 bg-white/10 mx-1" />
+                        <div className="w-px h-4 bg-black/10 dark:bg-white/10 mx-1" />
                         {EditAction}
                         {MenuAction}
                     </div>

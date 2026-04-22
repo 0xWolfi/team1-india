@@ -66,9 +66,9 @@ export default function PlaybooksClient({ playbooks }: PlaybooksClientProps) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={cn(
-              "w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-white placeholder:text-zinc-600",
-              "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]",
-              "focus:outline-none focus:border-white/[0.12] focus:bg-zinc-900/60",
+              "w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600",
+              "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]",
+              "focus:outline-none focus:border-black/[0.12] dark:focus:border-white/[0.12] focus:bg-zinc-100/60 dark:focus:bg-zinc-900/60",
               "transition-all duration-300"
             )}
           />
@@ -78,7 +78,7 @@ export default function PlaybooksClient({ playbooks }: PlaybooksClientProps) {
         <div
           className={cn(
             "flex items-center rounded-xl p-1 shrink-0 self-end sm:self-auto",
-            "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]"
+            "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]"
           )}
         >
           <button
@@ -86,8 +86,8 @@ export default function PlaybooksClient({ playbooks }: PlaybooksClientProps) {
             className={cn(
               "p-2 rounded-lg transition-all duration-200",
               viewMode === "grid"
-                ? "bg-white/[0.08] text-white shadow-sm"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-black/[0.08] dark:bg-white/[0.08] text-black dark:text-white shadow-sm"
+                : "text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
             )}
             aria-label="Grid view"
           >
@@ -98,8 +98,8 @@ export default function PlaybooksClient({ playbooks }: PlaybooksClientProps) {
             className={cn(
               "p-2 rounded-lg transition-all duration-200",
               viewMode === "list"
-                ? "bg-white/[0.08] text-white shadow-sm"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-black/[0.08] dark:bg-white/[0.08] text-black dark:text-white shadow-sm"
+                : "text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
             )}
             aria-label="List view"
           >
@@ -127,9 +127,9 @@ export default function PlaybooksClient({ playbooks }: PlaybooksClientProps) {
         </div>
       ) : (
         /* Empty State */
-        <div className="flex flex-col items-center justify-center py-32 border border-dashed border-white/[0.06] rounded-2xl">
-          <div className="p-4 rounded-2xl bg-white/[0.03] mb-4">
-            <BookOpen className="w-8 h-8 text-zinc-600" />
+        <div className="flex flex-col items-center justify-center py-32 border border-dashed border-black/[0.06] dark:border-white/[0.06] rounded-2xl">
+          <div className="p-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03] mb-4">
+            <BookOpen className="w-8 h-8 text-zinc-400 dark:text-zinc-600" />
           </div>
           <p className="text-zinc-500 text-sm font-medium">
             {searchTerm
@@ -152,13 +152,13 @@ function GridCard({ playbook }: { playbook: Playbook }) {
       href={`/public/playbooks/${playbook.id}`}
       className={cn(
         "group relative flex flex-col rounded-2xl overflow-hidden",
-        "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]",
-        "hover:-translate-y-1 hover:border-white/10 hover:shadow-2xl hover:shadow-black/20",
+        "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]",
+        "hover:-translate-y-1 hover:border-black/10 dark:hover:border-white/10 hover:shadow-2xl hover:shadow-black/20",
         "transition-all duration-300 ease-out"
       )}
     >
       {/* Cover Image */}
-      <div className="relative w-full h-48 overflow-hidden bg-zinc-900">
+      <div className="relative w-full h-48 overflow-hidden bg-zinc-100 dark:bg-zinc-900">
         {playbook.coverImage ? (
           <Image
             src={playbook.coverImage}
@@ -169,7 +169,7 @@ function GridCard({ playbook }: { playbook: Playbook }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="p-4 rounded-2xl bg-white/[0.03]">
+            <div className="p-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03]">
               <BookOpen className="w-8 h-8 text-zinc-700" />
             </div>
           </div>
@@ -201,7 +201,7 @@ function GridCard({ playbook }: { playbook: Playbook }) {
 
       {/* Content */}
       <div className="flex-1 flex flex-col p-5">
-        <h3 className="text-white font-semibold text-[15px] leading-snug line-clamp-2 mb-2">
+        <h3 className="text-black dark:text-white font-semibold text-[15px] leading-snug line-clamp-2 mb-2">
           {playbook.title}
         </h3>
         <p className="text-zinc-500 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
@@ -209,11 +209,11 @@ function GridCard({ playbook }: { playbook: Playbook }) {
         </p>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3.5 border-t border-white/[0.04]">
-          <div className="flex items-center gap-1.5 text-xs text-zinc-600">
+        <div className="flex items-center justify-between pt-3.5 border-t border-black/[0.04] dark:border-white/[0.04]">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-600">
             <span>
               by{" "}
-              <span className="text-zinc-400">
+              <span className="text-zinc-500 dark:text-zinc-400">
                 {playbook.createdBy?.name || "Team 1"}
               </span>
             </span>
@@ -222,7 +222,7 @@ function GridCard({ playbook }: { playbook: Playbook }) {
           </div>
 
           {/* Read Action */}
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 group-hover:text-white transition-colors duration-200">
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 group-hover:text-black dark:group-hover:text-white transition-colors duration-200">
             READ
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
           </span>
@@ -242,13 +242,13 @@ function ListCard({ playbook }: { playbook: Playbook }) {
       href={`/public/playbooks/${playbook.id}`}
       className={cn(
         "group relative flex flex-col sm:flex-row rounded-2xl overflow-hidden",
-        "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.06]",
-        "hover:-translate-y-0.5 hover:border-white/10 hover:shadow-2xl hover:shadow-black/20",
+        "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.06]",
+        "hover:-translate-y-0.5 hover:border-black/10 dark:hover:border-white/10 hover:shadow-2xl hover:shadow-black/20",
         "transition-all duration-300 ease-out"
       )}
     >
       {/* Cover Image */}
-      <div className="relative w-full sm:w-56 h-40 sm:h-auto shrink-0 overflow-hidden bg-zinc-900">
+      <div className="relative w-full sm:w-56 h-40 sm:h-auto shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900">
         {playbook.coverImage ? (
           <Image
             src={playbook.coverImage}
@@ -259,7 +259,7 @@ function ListCard({ playbook }: { playbook: Playbook }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center min-h-[120px]">
-            <div className="p-3 rounded-2xl bg-white/[0.03]">
+            <div className="p-3 rounded-2xl bg-black/[0.03] dark:bg-white/[0.03]">
               <BookOpen className="w-6 h-6 text-zinc-700" />
             </div>
           </div>
@@ -274,7 +274,7 @@ function ListCard({ playbook }: { playbook: Playbook }) {
       <div className="flex-1 flex flex-col justify-between p-5">
         <div>
           <div className="flex items-start justify-between gap-3 mb-2">
-            <h3 className="text-white font-semibold text-[15px] leading-snug line-clamp-2 flex-1">
+            <h3 className="text-black dark:text-white font-semibold text-[15px] leading-snug line-clamp-2 flex-1">
               {playbook.title}
             </h3>
 
@@ -303,11 +303,11 @@ function ListCard({ playbook }: { playbook: Playbook }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-white/[0.04]">
-          <div className="flex items-center gap-1.5 text-xs text-zinc-600">
+        <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-black/[0.04] dark:border-white/[0.04]">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-600">
             <span>
               by{" "}
-              <span className="text-zinc-400">
+              <span className="text-zinc-500 dark:text-zinc-400">
                 {playbook.createdBy?.name || "Team 1"}
               </span>
             </span>
@@ -316,7 +316,7 @@ function ListCard({ playbook }: { playbook: Playbook }) {
           </div>
 
           {/* Read Action */}
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 group-hover:text-white transition-colors duration-200">
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-zinc-500 group-hover:text-black dark:group-hover:text-white transition-colors duration-200">
             READ
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
           </span>

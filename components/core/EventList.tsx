@@ -32,10 +32,10 @@ export const EventList: React.FC<EventListProps> = ({ events, basePath, isLoadin
 
     if (events.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center p-12 border border-dashed border-white/10 rounded-2xl bg-white/[0.02]">
-                <Calendar className="w-8 h-8 text-zinc-600 mb-4"/>
-                <h3 className="text-zinc-400 font-medium text-sm">No events scheduled</h3>
-                <p className="text-zinc-600 text-xs mt-1">Create an event to populate the calendar.</p>
+            <div className="flex flex-col items-center justify-center p-12 border border-dashed border-black/10 dark:border-white/10 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02]">
+                <Calendar className="w-8 h-8 text-zinc-400 dark:text-zinc-600 mb-4"/>
+                <h3 className="text-zinc-500 dark:text-zinc-400 font-medium text-sm">No events scheduled</h3>
+                <p className="text-zinc-400 dark:text-zinc-600 text-xs mt-1">Create an event to populate the calendar.</p>
             </div>
         );
     }

@@ -35,7 +35,7 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
     const SocialLinks = ({ item }: { item: Project | Partner }) => (
         <div className="flex gap-3 mt-4">
             {item.website && (
-                <Link href={item.website} target="_blank" className="text-zinc-500 hover:text-white transition-colors">
+                <Link href={item.website} target="_blank" className="text-zinc-500 hover:text-black dark:hover:text-white transition-colors">
                     <Globe className="w-4 h-4"/>
                 </Link>
             )}
@@ -62,25 +62,25 @@ export default function PublicCommunitySection({ projects, partners }: PublicCom
                             <Rocket className="w-5 h-5 text-indigo-400"/>
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-white">Community Projects</h2>
-                            <p className="text-zinc-400 text-sm">Initiatives built by our members.</p>
+                            <h2 className="text-2xl font-bold text-black dark:text-white">Community Projects</h2>
+                            <p className="text-zinc-500 dark:text-zinc-400 text-sm">Initiatives built by our members.</p>
                         </div>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {projects.map(project => (
-                            <div key={project.id} className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all group">
+                            <div key={project.id} className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/5 dark:border-white/5 rounded-2xl p-6 hover:border-black/10 dark:hover:border-white/10 transition-all group">
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-4">
                                         {project.logo ? (
-                                            <Image src={project.logo} alt={project.name} width={48} height={48} className="w-12 h-12 rounded-xl object-cover bg-black" />
+                                            <Image src={project.logo} alt={project.name} width={48} height={48} className="w-12 h-12 rounded-xl object-cover bg-white dark:bg-black" />
                                         ) : (
-                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center text-xl font-bold text-zinc-500 uppercase">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-200 to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 border border-black/5 dark:border-white/5 flex items-center justify-center text-xl font-bold text-zinc-500 uppercase">
                                                 {project.name.substring(0, 2)}
                                             </div>
                                         )}
                                         <div>
-                                            <h3 className="font-bold text-white group-hover:text-indigo-400 transition-colors">{project.name}</h3>
+                                            <h3 className="font-bold text-black dark:text-white group-hover:text-indigo-400 transition-colors">{project.name}</h3>
                                         </div>
                                     </div>
                                 </div>

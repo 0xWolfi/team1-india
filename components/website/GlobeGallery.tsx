@@ -30,7 +30,7 @@ function MarqueeRow({ images, direction, speed, onImageClick, baseIndex }: Marqu
     <div className="relative py-2 md:py-3">
       <div
         className={
-          direction === "left" ? "gallery-marquee-left flex gap-4 md:gap-6" : "gallery-marquee-right flex gap-4 md:gap-6"
+          direction === "left" ? "gallery-marquee-left flex gap-3 sm:gap-4 md:gap-6" : "gallery-marquee-right flex gap-3 sm:gap-4 md:gap-6"
         }
         style={{ animationDuration: `${speed}s` }}
       >
@@ -41,21 +41,21 @@ function MarqueeRow({ images, direction, speed, onImageClick, baseIndex }: Marqu
               key={`${src}-${i}`}
               type="button"
               onClick={() => onImageClick(originalIndex)}
-              className="group relative shrink-0 w-[220px] h-[150px] md:w-[320px] md:h-[215px] rounded-2xl overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.08] hover:!z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+              className="group relative shrink-0 w-[180px] h-[120px] sm:w-[220px] sm:h-[150px] md:w-[320px] md:h-[215px] rounded-2xl overflow-hidden cursor-pointer transition-transform duration-500 ease-out hover:scale-[1.08] hover:!z-20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
               aria-label="Open gallery image"
             >
               <Image
                 src={src}
                 alt="Team1 India community moment"
                 fill
-                sizes="(max-width: 768px) 220px, 320px"
+                sizes="(max-width: 640px) 180px, (max-width: 768px) 220px, 320px"
                 className="object-cover transition-all duration-700 ease-out group-hover:brightness-110 group-hover:saturate-125"
                 draggable={false}
               />
               {/* Subtle gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity duration-500" />
               {/* Inner ring for depth */}
-              <div className="absolute inset-0 ring-1 ring-inset ring-white/15 rounded-2xl pointer-events-none" />
+              <div className="absolute inset-0 ring-1 ring-inset ring-black/15 dark:ring-white/15 rounded-2xl pointer-events-none" />
               {/* Hover glow */}
               <div className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: "0 30px 60px -15px rgba(0,0,0,0.5)" }} />
             </button>
@@ -126,9 +126,9 @@ export function GlobeGallery() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white tracking-tight uppercase leading-[1.1]"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]"
         >
-          MOMENTS THAT MATTER
+          Glimpses Of Our Journey
         </motion.h2>
       </div>
 

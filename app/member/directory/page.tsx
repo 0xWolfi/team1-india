@@ -52,19 +52,19 @@ export default function MemberDirectoryPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4"/>
                 Back to Dashboard
             </Link>
             
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-white/5 rounded-lg border border-white/5">
-                        <Users className="w-5 h-5 text-zinc-200"/>
+                    <div className="p-2 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5">
+                        <Users className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-white">Members Directory</h1>
-                        <p className="text-sm text-zinc-400">Connect with fellow community members.</p>
+                        <h1 className="text-2xl font-bold text-black dark:text-white">Members Directory</h1>
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">Connect with fellow community members.</p>
                     </div>
                 </div>
             </div>
@@ -72,10 +72,10 @@ export default function MemberDirectoryPage() {
             {/* Search Bar */}
             <div className="relative mb-10 group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors"/>
+                    <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-black dark:group-focus-within:text-white transition-colors"/>
                 </div>
                 <input
-                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/10 transition-all hover:bg-zinc-900/80"
+                    className="w-full bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/5 dark:border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-sm text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-black/10 dark:focus:ring-white/10 transition-all hover:bg-zinc-100/80 dark:hover:bg-zinc-900/80"
                     placeholder="Search members by name or email..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
@@ -86,17 +86,17 @@ export default function MemberDirectoryPage() {
             {isLoading && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3, 4, 5, 6].map(i => (
-                        <div key={i} className="h-40 rounded-2xl bg-white/5 animate-pulse border border-white/5" />
+                        <div key={i} className="h-40 rounded-2xl bg-black/5 dark:bg-white/5 animate-pulse border border-black/5 dark:border-white/5" />
                     ))}
                 </div>
             )}
 
             {!isLoading && filtered.length === 0 && (
-                <div className="py-32 text-center border-2 border-white/5 rounded-[2rem] border-dashed bg-white/5 backdrop-blur-sm flex flex-col items-center max-w-2xl mx-auto">
-                    <div className="w-20 h-20 rounded-full bg-black border border-white/10 flex items-center justify-center mb-6 shadow-inner">
-                        <Search className="w-8 h-8 text-zinc-600"/>
+                <div className="py-32 text-center border-2 border-black/5 dark:border-white/5 rounded-[2rem] border-dashed bg-black/5 dark:bg-white/5 backdrop-blur-sm flex flex-col items-center max-w-2xl mx-auto">
+                    <div className="w-20 h-20 rounded-full bg-white dark:bg-black border border-black/10 dark:border-white/10 flex items-center justify-center mb-6 shadow-inner">
+                        <Search className="w-8 h-8 text-zinc-400 dark:text-zinc-600"/>
                     </div>
-                    <h3 className="text-zinc-200 text-xl font-bold mb-2">No members found</h3>
+                    <h3 className="text-zinc-700 dark:text-zinc-200 text-xl font-bold mb-2">No members found</h3>
                     <p className="text-zinc-500 max-w-xs mx-auto">
                         {searchTerm ? `We couldn't find anyone matching "${searchTerm}".` : "No members in the directory yet."}
                     </p>
@@ -108,19 +108,19 @@ export default function MemberDirectoryPage() {
                     {filtered.map(member => (
                         <div
                             key={member.id}
-                            className="group p-6 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all"
+                            className="group p-6 rounded-2xl bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 transition-all"
                         >
                             {/* Avatar/Initials */}
                             <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-zinc-500/20 to-zinc-500/20 border border-white/10 flex items-center justify-center text-white font-bold text-lg">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-zinc-500/20 to-zinc-500/20 border border-black/10 dark:border-white/10 flex items-center justify-center text-black dark:text-white font-bold text-lg">
                                     {(member.name || '?').charAt(0).toUpperCase()}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg font-bold text-white truncate">
+                                    <h3 className="text-lg font-bold text-black dark:text-white truncate">
                                         {member.name || 'Unknown'}
                                     </h3>
                                     {member.tags && (
-                                        <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono bg-white/5 px-2 py-0.5 rounded">
+                                        <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-mono bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
                                             {member.tags}
                                         </span>
                                     )}
@@ -132,9 +132,9 @@ export default function MemberDirectoryPage() {
                                 {member.email && (
                                     <a
                                         href={`mailto:${member.email}`}
-                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group/item"
+                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
                                     >
-                                        <Mail className="w-4 h-4 text-zinc-600 group-hover/item:text-white transition-colors"/>
+                                        <Mail className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover/item:text-black dark:group-hover/item:text-white transition-colors"/>
                                         <span className="truncate">{member.email}</span>
                                     </a>
                                 )}
@@ -144,9 +144,9 @@ export default function MemberDirectoryPage() {
                                         href={`https://x.com/${member.xHandle.replace('@', '')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group/item"
+                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
                                     >
-                                        <svg className="w-4 h-4 text-zinc-600 group-hover/item:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                                        <svg className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover/item:text-black dark:group-hover/item:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                                         </svg>
                                         <span>{member.xHandle}</span>
@@ -158,9 +158,9 @@ export default function MemberDirectoryPage() {
                                         href={`https://t.me/${member.telegram.replace('@', '')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors group/item"
+                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
                                     >
-                                        <Send className="w-4 h-4 text-zinc-600 group-hover/item:text-white transition-colors"/>
+                                        <Send className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover/item:text-black dark:group-hover/item:text-white transition-colors"/>
                                         <span>{member.telegram}</span>
                                     </a>
                                 )}

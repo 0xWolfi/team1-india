@@ -48,15 +48,15 @@ export default async function PublicProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200 relative">
+        <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-700 dark:selection:text-zinc-200 relative">
             <div className="pt-16 px-4 md:px-8 max-w-7xl mx-auto relative z-10">
                  <div className="mb-8">
-                     <Link href="/public" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-6 group">
+                     <Link href="/public" className="inline-flex items-center gap-2 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors mb-6 group">
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform"/>
                         <span className="text-sm font-medium">Back to Home</span>
                      </Link>
                      <h2 className="text-4xl font-bold tracking-tight mb-2">My Profile</h2>
-                     <p className="text-zinc-400">Manage your identity and preferences across the Team1 Network.</p>
+                     <p className="text-zinc-500 dark:text-zinc-400">Manage your identity and preferences across the Team1 Network.</p>
                  </div>
 
                  <ProfileDashboard initialData={safeData} role="PUBLIC" />

@@ -6,13 +6,13 @@ export default function MonitoringPage() {
   const { report, loading, refresh } = useWeeklyReport();
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">PWA Monitoring</h1>
-            <p className="text-zinc-400 mt-1">Real-time health and performance tracking</p>
+            <p className="text-zinc-500 dark:text-zinc-400 mt-1">Real-time health and performance tracking</p>
           </div>
           
           <div className="flex items-center gap-3">
@@ -42,20 +42,20 @@ export default function MonitoringPage() {
           </div>
 
           {loading ? (
-            <div className="bg-zinc-900 border border-white/10 rounded-xl p-8 text-center text-zinc-500">
+            <div className="bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl p-8 text-center text-zinc-500">
               Loading report...
             </div>
           ) : report ? (
-            <div className="bg-zinc-900 border border-white/10 rounded-xl p-6 space-y-6">
+            <div className="bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl p-6 space-y-6">
               {/* Health Score */}
-              <div className="text-center pb-6 border-b border-white/10">
+              <div className="text-center pb-6 border-b border-black/10 dark:border-white/10">
                 <div className={`text-6xl font-bold ${
                   report.score >= 90 ? 'text-green-500' :
                   report.score >= 70 ? 'text-yellow-500' : 'text-red-500'
                 }`}>
                   {report.score}/100
                 </div>
-                <div className="text-zinc-400 mt-2">Overall Health Score</div>
+                <div className="text-zinc-500 dark:text-zinc-400 mt-2">Overall Health Score</div>
                 <div className="text-xs text-zinc-600 mt-1">
                   {report.period.start.toLocaleDateString()} - {report.period.end.toLocaleDateString()}
                 </div>
@@ -110,7 +110,7 @@ export default function MonitoringPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-zinc-900 border border-white/10 rounded-xl p-8 text-center text-zinc-500">
+            <div className="bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl p-8 text-center text-zinc-500">
               No report data available
             </div>
           )}
@@ -118,22 +118,22 @@ export default function MonitoringPage() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-zinc-900 border border-white/10 rounded-lg p-4">
+          <div className="bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg p-4">
             <div className="text-xs text-zinc-500 mb-1">Service Worker</div>
             <div className="text-lg font-semibold text-green-500">Active</div>
           </div>
 
-          <div className="bg-zinc-900 border border-white/10 rounded-lg p-4">
+          <div className="bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg p-4">
             <div className="text-xs text-zinc-500 mb-1">Alert Channels</div>
             <div className="text-lg font-semibold">Email</div>
           </div>
 
-          <div className="bg-zinc-900 border border-white/10 rounded-lg p-4">
+          <div className="bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg p-4">
             <div className="text-xs text-zinc-500 mb-1">Recipients</div>
             <div className="text-lg font-semibold">3</div>
           </div>
 
-          <div className="bg-zinc-900 border border-white/10 rounded-lg p-4">
+          <div className="bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg p-4">
             <div className="text-xs text-zinc-500 mb-1">Monitoring</div>
             <div className="text-lg font-semibold text-green-500">Enabled</div>
           </div>

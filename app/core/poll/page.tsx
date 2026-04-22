@@ -150,11 +150,11 @@ export default function PollsPage() {
             </CorePageHeader>
 
             {/* Tabs */}
-            <div className="flex items-center gap-4 mb-8 border-b border-white/5 pb-1">
+            <div className="flex items-center gap-4 mb-8 border-b border-black/5 dark:border-white/5 pb-1">
                 <button 
                     onClick={() => setActiveTab('ONGOING')}
                     className={`pb-3 text-sm font-bold transition-all relative ${
-                        activeTab === 'ONGOING' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+                        activeTab === 'ONGOING' ? 'text-black dark:text-white' : 'text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
                     }`}
                 >
                     Ongoing Polls
@@ -163,7 +163,7 @@ export default function PollsPage() {
                 <button 
                     onClick={() => setActiveTab('PAST')}
                     className={`pb-3 text-sm font-bold transition-all relative ${
-                        activeTab === 'PAST' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+                        activeTab === 'PAST' ? 'text-black dark:text-white' : 'text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300'
                     }`}
                 >
                     Past Results
@@ -173,20 +173,20 @@ export default function PollsPage() {
 
             {/* Create Modal */}
             {isCreating && (
-                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
-                    <div className="bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-white/10 rounded-3xl w-full max-w-xl p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-white/5">
+                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
+                    <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-xl p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-white/5">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-white">Create New Poll</h2>
-                            <button onClick={() => setIsCreating(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><X className="w-5 h-5 text-zinc-400"/></button>
+                            <h2 className="text-2xl font-bold text-black dark:text-white">Create New Poll</h2>
+                            <button onClick={() => setIsCreating(false)} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><X className="w-5 h-5 text-zinc-500 dark:text-zinc-400"/></button>
                         </div>
 
                         <div className="space-y-6">
                             <div className="space-y-3">
-                                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Question</label>
+                                <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Question</label>
                                 <input 
                                     type="text" 
                                     autoFocus
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all font-medium"
+                                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl px-4 py-4 text-black dark:text-white focus:outline-none focus:border-indigo-500/50 focus:bg-black/10 dark:focus:bg-white/10 transition-all font-medium"
                                     placeholder="e.g. What should be our next priority?"
                                     value={newQuestion}
                                     onChange={e => setNewQuestion(e.target.value)}
@@ -194,17 +194,17 @@ export default function PollsPage() {
                             </div>
 
                             <div className="space-y-3">
-                                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Audience</label>
+                                <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Audience</label>
                                 <div className="flex gap-3">
                                     <button 
                                         onClick={() => setAudience('CORE')} 
-                                        className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${audience === 'CORE' ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-white/5 border-white/5 text-zinc-500'}`}
+                                        className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${audience === 'CORE' ? 'bg-indigo-500/10 border-indigo-500 text-indigo-400' : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 text-zinc-500'}`}
                                     >
                                         <Lock className="w-4 h-4"/> Core Only
                                     </button>
                                     <button 
                                         onClick={() => setAudience('PUBLIC')} 
-                                        className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${audience === 'PUBLIC' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-white/5 border-white/5 text-zinc-500'}`}
+                                        className={`flex-1 p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${audience === 'PUBLIC' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 text-zinc-500'}`}
                                     >
                                         <Globe className="w-4 h-4"/> Public
                                     </button>
@@ -212,12 +212,12 @@ export default function PollsPage() {
                             </div>
 
                             <div className="space-y-3">
-                                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Options</label>
+                                <label className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Options</label>
                                 {newOptions.map((opt, idx) => (
                                     <div key={idx}>
                                          <input 
                                             type="text" 
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all"
+                                            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-indigo-500/50 focus:bg-black/10 dark:focus:bg-white/10 transition-all"
                                             placeholder={`Option ${idx + 1}`}
                                             value={opt}
                                             onChange={e => {
@@ -248,7 +248,7 @@ export default function PollsPage() {
             {/* Polls Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {polls.length === 0 && !loading && (
-                    <div className="col-span-full py-20 text-center text-zinc-500 border border-dashed border-white/10 rounded-3xl">
+                    <div className="col-span-full py-20 text-center text-zinc-500 border border-dashed border-black/10 dark:border-white/10 rounded-3xl">
                         No polls found.
                     </div>
                 )}
@@ -258,7 +258,7 @@ export default function PollsPage() {
                     const isEnded = poll.status === 'CLOSED';
 
                     return (
-                        <div key={poll.id} className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-3xl p-8 hover:border-white/20 transition-all group flex flex-col">
+                        <div key={poll.id} className="bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-3xl p-8 hover:border-black/20 dark:hover:border-white/20 transition-all group flex flex-col">
                             
                             {/* Header */}
                             <div className="flex justify-between items-start mb-6">
@@ -271,14 +271,14 @@ export default function PollsPage() {
                                         }`}>
                                             {poll.customFields.audience}
                                         </span>
-                                        {isEnded && <span className="text-zinc-500 text-[10px] font-bold uppercase border border-white/5 px-2 py-0.5 rounded">Ended</span>}
+                                        {isEnded && <span className="text-zinc-500 text-[10px] font-bold uppercase border border-black/5 dark:border-white/5 px-2 py-0.5 rounded">Ended</span>}
                                     </div>
-                                    <h3 className="text-xl font-bold text-white leading-tight">{poll.title}</h3>
+                                    <h3 className="text-xl font-bold text-black dark:text-white leading-tight">{poll.title}</h3>
                                 </div>
                                 {canManage && (
                                     <button 
                                         onClick={() => toggleStatus(poll.id, poll.status)}
-                                        className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                                        className="p-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
                                         title={isEnded ? "Reopen Poll" : "End Poll"}
                                     >
                                         {isEnded ? <Clock className="w-4 h-4"/> : <Trophy className="w-4 h-4"/>}
@@ -299,7 +299,7 @@ export default function PollsPage() {
                                             className={`relative ${!isEnded ? 'cursor-pointer' : ''}`}
                                         >
                                             {/* Progress Bar Background */}
-                                            <div className="absolute inset-0 bg-white/5 rounded-2xl overflow-hidden">
+                                            <div className="absolute inset-0 bg-black/5 dark:bg-white/5 rounded-2xl overflow-hidden">
                                                 <div 
                                                     className={`h-full opacity-20 transition-all duration-1000 ${isEnded ? 'bg-zinc-500' : 'bg-indigo-500'}`} 
                                                     style={{ width: `${percentage}%` }}
@@ -309,22 +309,22 @@ export default function PollsPage() {
                                             {/* Content */}
                                             <div className="relative p-4 flex flex-col gap-2 z-10">
                                                 <div className="flex justify-between items-center">
-                                                     <span className="font-bold text-white text-sm">{opt.text}</span>
-                                                     <span className="font-mono text-zinc-400 text-xs">{percentage}%</span>
+                                                     <span className="font-bold text-black dark:text-white text-sm">{opt.text}</span>
+                                                     <span className="font-mono text-zinc-500 dark:text-zinc-400 text-xs">{percentage}%</span>
                                                 </div>
 
                                                 {/* Voters */}
                                                 {voteCount > 0 && (
                                                     <div className="flex -space-x-2 overflow-hidden py-1">
                                                         {opt.voters?.slice(0, 8).map(v => (
-                                                            <div key={v.id} className="w-6 h-6 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[8px] text-white font-bold" title={v.name}>
+                                                            <div key={v.id} className="w-6 h-6 rounded-full border-2 border-white dark:border-black bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[8px] text-black dark:text-white font-bold" title={v.name}>
                                                                 {v.image ? (
                                                                     <Image src={v.image} alt={v.name} width={24} height={24} className="w-full h-full rounded-full object-cover" />
                                                                 ) : v.name[0]}
                                                             </div>
                                                         ))}
                                                         {voteCount > 8 && (
-                                                            <div className="w-6 h-6 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center text-[8px] text-zinc-400 font-bold">
+                                                            <div className="w-6 h-6 rounded-full border-2 border-white dark:border-black bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[8px] text-zinc-500 dark:text-zinc-400 font-bold">
                                                                 +{voteCount - 8}
                                                             </div>
                                                         )}
@@ -337,7 +337,7 @@ export default function PollsPage() {
                             </div>
 
                             {/* Footer */}
-                            <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-xs text-zinc-500">
+                            <div className="mt-6 pt-4 border-t border-black/5 dark:border-white/5 flex justify-between items-center text-xs text-zinc-500">
                                 <span className="flex items-center gap-1.5">
                                     <Users className="w-3.5 h-3.5"/> {totalVotes} votes
                                 </span>

@@ -26,7 +26,7 @@ export default function Icon() {
         }}
       >
         <img
-          src={`data:image/png;base64,${iconBase64}`}
+          src={`data:image/jpeg;base64,${iconBase64}`}
           alt="Favicon"
           style={{
             width: '32px',

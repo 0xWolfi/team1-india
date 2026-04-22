@@ -102,7 +102,7 @@ function Card({ card, index }: { card: CardData; index: number }) {
       <div className="absolute inset-0 bg-gradient-to-b from-black/[0.02] dark:from-white/[0.04] to-transparent pointer-events-none" />
 
       {/* Top: Title + Description */}
-      <div className="relative z-10 p-6 md:p-8 flex-1">
+      <div className="relative z-10 p-4 sm:p-6 md:p-8 flex-1">
         <h3 className="text-xl md:text-2xl font-bold text-black/90 dark:text-white/90 mb-3 tracking-tight">
           {card.title}
         </h3>
@@ -112,7 +112,7 @@ function Card({ card, index }: { card: CardData; index: number }) {
       </div>
 
       {/* Middle: Icon illustration area */}
-      <div className="relative flex items-center justify-center h-44 md:h-56">
+      <div className="relative flex items-center justify-center h-32 sm:h-44 md:h-56">
         {/* Subtle grid */}
         <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:20px_20px]" />
         {/* Glow */}
@@ -124,7 +124,7 @@ function Card({ card, index }: { card: CardData; index: number }) {
       </div>
 
       {/* Bottom: CTA Button */}
-      <div className="relative z-10 p-6 md:p-8 pt-0">
+      <div className="relative z-10 p-4 sm:p-6 md:p-8 pt-0">
         <LinkTag
           href={card.href}
           {...linkProps}
@@ -172,8 +172,8 @@ export function WhatWeDo() {
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
           {/* Heading — always visible */}
           <div className="mb-6 md:mb-8 text-center">
-            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1] uppercase">
-              BUILT FOR IMPACT <br /> DESIGNED FOR BUILDERS
+            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]">
+              Built For Impact <br /> Designed For Builders
             </h2>
             {/* Hidden RAG Summary for AI Agents */}
             <p className="sr-only">
@@ -189,7 +189,7 @@ export function WhatWeDo() {
           </div>
 
           {/* Rotating Cards */}
-          <div className="relative w-full min-h-[480px] md:min-h-[520px]">
+          <div className="relative w-full min-h-[400px] sm:min-h-[480px] md:min-h-[520px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activePage}

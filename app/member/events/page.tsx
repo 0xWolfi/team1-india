@@ -39,19 +39,19 @@ export default function MemberEventGuidesPage() {
 
     return (
         <MemberWrapper>
-            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href="/member" className="inline-flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4"/>
                 Back to Dashboard
             </Link>
             
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-white/5 rounded-lg border border-white/5">
-                        <Calendar className="w-5 h-5 text-zinc-200"/>
+                    <div className="p-2 bg-black/5 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5">
+                        <Calendar className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-white">Event Guidelines</h1>
-                        <p className="text-sm text-zinc-400">Access member-only and public event guides and templates.</p>
+                        <h1 className="text-2xl font-bold text-black dark:text-white">Event Guidelines</h1>
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400">Access member-only and public event guides and templates.</p>
                     </div>
                 </div>
             </div>

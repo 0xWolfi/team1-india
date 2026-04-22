@@ -275,7 +275,7 @@ export default function CommunityMembersPage() {
              >
                 <button 
                     onClick={() => setIsAddingMember(true)}
-                    className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-white/5 flex items-center gap-2 active:scale-95"
+                    className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-black/5 dark:shadow-white/5 flex items-center gap-2 active:scale-95"
                 >
                     <Plus className="w-4 h-4"/> Add Member
                 </button>
@@ -297,12 +297,12 @@ export default function CommunityMembersPage() {
                 onRefresh={handleManualRefresh} 
                 isLoading={isLoading} 
              >
-                <div className="flex bg-black/40 backdrop-blur-md border border-white/5 p-1 rounded-xl">
+                <div className="flex bg-white/40 dark:bg-black/40 backdrop-blur-md border border-black/5 dark:border-white/5 p-1 rounded-xl">
                     <button
                         onClick={() => handleTabChange('members')}
                         className={cn(
                             "px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2",
-                            activeTab === 'members' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-white"
+                            activeTab === 'members' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-black dark:hover:text-white"
                         )}
                     >
                         <Users className="w-3.5 h-3.5"/> Members
@@ -311,7 +311,7 @@ export default function CommunityMembersPage() {
                         onClick={() => handleTabChange('public')}
                         className={cn(
                             "px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2",
-                            activeTab === 'public' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-white"
+                            activeTab === 'public' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-black dark:hover:text-white"
                         )}
                     >
                         <Globe className="w-3.5 h-3.5"/> Public
@@ -320,17 +320,17 @@ export default function CommunityMembersPage() {
              </AdminToolbar>
 
              {/* Table */}
-             <div className="bg-black/40 backdrop-blur-xl border border-white/5 rounded-xl shadow-2xl relative z-30 overflow-visible min-h-[300px]">
+             <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl relative z-30 overflow-visible min-h-[300px]">
                 {isLoading && (
-                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-xl transition-all duration-300">
+                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-sm rounded-xl transition-all duration-300">
                         <div className="flex flex-col items-center gap-3">
-                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <div className="text-xs text-white font-medium animate-pulse">Loading...</div>
+                            <div className="w-6 h-6 border-2 border-black dark:border-white border-t-transparent rounded-full animate-spin" />
+                            <div className="text-xs text-black dark:text-white font-medium animate-pulse">Loading...</div>
                         </div>
                     </div>
                 )}
                 <table className="w-full text-left text-sm">
-                    <thead className="bg-white/[0.02] text-zinc-500 font-medium uppercase text-[10px] tracking-wider border-b border-white/5 rounded-t-xl">
+                    <thead className="bg-black/[0.02] dark:bg-white/[0.02] text-zinc-500 font-medium uppercase text-[10px] tracking-wider border-b border-black/5 dark:border-white/5 rounded-t-xl">
                         <tr>
                             <th className="p-4 pl-6 font-semibold rounded-tl-xl w-[20%]">Name</th>
                             {activeTab === 'members' ? (
@@ -352,25 +352,25 @@ export default function CommunityMembersPage() {
                             <th className="p-4 text-right pr-6 font-semibold rounded-tr-xl w-[15%]">Action</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-black/5 dark:divide-white/5">
                         {members.length === 0 && !isLoading && (
-                            <tr><td colSpan={7} className="p-12 text-center text-zinc-600">No records found.</td></tr>
+                            <tr><td colSpan={7} className="p-12 text-center text-zinc-400 dark:text-zinc-600">No records found.</td></tr>
                         )}
                         {members.map(member => (
-                            <tr key={member.id} className="hover:bg-white/[0.02] transition-colors group">
+                            <tr key={member.id} className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors group">
                                 <td className="p-4 pl-6">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-[10px] font-bold text-zinc-400">
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-200 dark:from-zinc-800 to-white dark:to-black border border-black/10 dark:border-white/10 flex items-center justify-center text-[10px] font-bold text-zinc-500 dark:text-zinc-400">
                                             {member.name ? member.name.charAt(0).toUpperCase() : (member.fullName ? member.fullName.charAt(0).toUpperCase() : member.email?.charAt(0).toUpperCase())}
                                         </div>
-                                        <div className="font-medium text-zinc-200 text-sm">{member.name || member.fullName || "Unknown"}</div>
+                                        <div className="font-medium text-zinc-700 dark:text-zinc-200 text-sm">{member.name || member.fullName || "Unknown"}</div>
                                     </div>
                                 </td>
                                 
                                 {activeTab === 'members' ? (
                                     <>
                                         <td className="p-4">
-                                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[10px] font-medium bg-zinc-900/50 text-zinc-400 border border-white/5 uppercase">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[10px] font-medium bg-zinc-100/50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border border-black/5 dark:border-white/5 uppercase">
                                                 {member.tags || 'member'}
                                             </span>
                                         </td>
@@ -379,21 +379,21 @@ export default function CommunityMembersPage() {
                                         </td>
                                         <td className="p-4">
                                             {member.xHandle ? (
-                                                <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.xHandle.replace('@','')}</span>
+                                                <span className="text-[11px] text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer">@{member.xHandle.replace('@','')}</span>
                                             ) : (
-                                                <span className="text-zinc-700">-</span>
+                                                <span className="text-zinc-400 dark:text-zinc-700">-</span>
                                             )}
                                         </td>
                                         <td className="p-4">
                                             {member.telegram ? (
-                                                <span className="text-[11px] text-zinc-400 hover:text-white transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
+                                                <span className="text-[11px] text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer">@{member.telegram.replace('@','')}</span>
                                             ) : (
-                                                <span className="text-zinc-700">-</span>
+                                                <span className="text-zinc-400 dark:text-zinc-700">-</span>
                                             )}
                                         </td>
                                         <td className="p-4">
                                             <div className="flex gap-1">
-                                                <span className="text-zinc-700 text-xs">-</span>
+                                                <span className="text-zinc-400 dark:text-zinc-700 text-xs">-</span>
                                             </div>
                                         </td>
                                     </>
@@ -409,13 +409,13 @@ export default function CommunityMembersPage() {
                                              {member.consentLegal ? (
                                                 <CheckCircle className="w-4 h-4 text-emerald-500/50"/>
                                              ) : (
-                                                <XCircle className="w-4 h-4 text-zinc-800"/>
+                                                <XCircle className="w-4 h-4 text-zinc-200 dark:text-zinc-800"/>
                                              )}
                                         </td>
                                         <td className="p-4">
                                             <div className="flex flex-wrap gap-1">
                                                 {member.interests && Array.isArray(member.interests) && member.interests.slice(0, 2).map((i: string) => (
-                                                     <span key={i} className="text-[10px] bg-zinc-800 px-1 rounded text-zinc-400">{i}</span>
+                                                     <span key={i} className="text-[10px] bg-zinc-200 dark:bg-zinc-800 px-1 rounded text-zinc-500 dark:text-zinc-400">{i}</span>
                                                 ))}
                                             </div>
                                         </td>
@@ -427,7 +427,7 @@ export default function CommunityMembersPage() {
                                         {isSuperAdmin && (
                                             <button 
                                                 onClick={() => setViewingMember(member)} // Might need update for PublicUser
-                                                className="p-1.5 rounded-md hover:bg-white/10 text-zinc-600 hover:text-white transition-colors"
+                                                className="p-1.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 text-zinc-600 hover:text-black dark:hover:text-white transition-colors"
                                                 title="View Details"
                                             >
                                                 <Eye className="w-4 h-4"/>
@@ -457,14 +457,14 @@ export default function CommunityMembersPage() {
                      <button
                          disabled={page <= 1 || isLoading}
                          onClick={() => refreshMembers(page - 1)}
-                         className="px-3 py-1 rounded bg-zinc-900 border border-white/10 text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition-colors"
+                         className="px-3 py-1 rounded bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-medium hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-50 transition-colors"
                      >
                          Previous
                      </button>
                      <button
                          disabled={page >= totalPages || isLoading}
                          onClick={() => refreshMembers(page + 1)}
-                         className="px-3 py-1 rounded bg-zinc-900 border border-white/10 text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition-colors"
+                         className="px-3 py-1 rounded bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 text-xs font-medium hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-50 transition-colors"
                      >
                          Next
                      </button>

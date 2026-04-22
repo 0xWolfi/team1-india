@@ -20,7 +20,7 @@ export default async function CoreProfilePage() {
     return (
         <CoreWrapper>
             <div className="max-w-5xl mx-auto px-4 py-8">
-                <Link href="/core" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-6 group text-sm font-medium">
+                <Link href="/core" className="inline-flex items-center gap-2 text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors mb-6 group text-sm font-medium">
                     <span aria-hidden="true">←</span>
                     <span>Back to Core</span>
                 </Link>
