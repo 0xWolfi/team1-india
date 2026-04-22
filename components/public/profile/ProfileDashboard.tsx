@@ -237,7 +237,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
               {/* Header Section */}
               <div className="flex flex-col md:flex-row gap-8 items-start mb-12">
                    {/* Profile Image */}
-                   <div className="relative w-32 h-32 shrink-0 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+                   <div className="relative w-32 h-32 shrink-0 bg-zinc-100 dark:bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
                        {formData.profileImage ? (
                            <Image src={formData.profileImage} alt={formData.fullName || "User"} fill className="object-cover" />
                        ) : (
@@ -251,7 +251,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                            <div className="space-y-2">
                                <div className="flex items-center gap-3">
-                                   <h1 className="text-4xl font-bold text-white tracking-tight">{formData.fullName || "New Builder"}</h1>
+                                   <h1 className="text-4xl font-bold text-black dark:text-white tracking-tight">{formData.fullName || "New Builder"}</h1>
                                    <span className={cn(
                                        "px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border",
                                        role === 'CORE' ? "bg-red-500/10 text-red-500 border-red-500/20" :
@@ -262,7 +262,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                    </span>
                                </div>
                                
-                               <div className="flex flex-wrap items-center gap-4 text-zinc-400 text-sm">
+                               <div className="flex flex-wrap items-center gap-4 text-zinc-500 dark:text-zinc-400 text-sm">
                                    {(formData.city || formData.country) && (
                                        <div className="flex items-center gap-1.5">
                                            <MapPin className="w-3.5 h-3.5"/>
@@ -287,26 +287,26 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                            </button>
                        </div>
                        
-                       <p className="text-zinc-300 text-base leading-relaxed max-w-2xl">
+                       <p className="text-zinc-600 dark:text-zinc-300 text-base leading-relaxed max-w-2xl">
                            {formData.bio || "No bio provided."}
                        </p>
 
                        {/* Socials & Availability */}
                        <div className="flex flex-wrap items-center gap-4 pt-2">
                            {formData.availability && (
-                               <span className="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium">
+                               <span className="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-medium">
                                    {formData.availability}
                                </span>
                            )}
                            <div className="h-4 w-px bg-zinc-800 hidden md:block" />
                            <div className="flex gap-3">
                                {formData.socialProfiles.map((social, i) => (
-                                   <a key={i} href={social.url} target="_blank" rel="noreferrer" className="text-zinc-500 hover:text-white transition-colors">
+                                   <a key={i} href={social.url} target="_blank" rel="noreferrer" className="text-zinc-500 hover:text-black dark:hover:text-white transition-colors">
                                        {getSocialIcon(social.name)}
                                    </a>
                                ))}
                                {formData.wallet && (
-                                   <div title="Wallet Connected" className="text-zinc-500 hover:text-white cursor-help">
+                                   <div title="Wallet Connected" className="text-zinc-500 hover:text-black dark:hover:text-white cursor-help">
                                        <Wallet className="w-4 h-4"/>
                                    </div>
                                )}
@@ -323,9 +323,9 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                           onClick={() => setActiveTab(tab)}
                           className={cn(
                               "px-6 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap",
-                              activeTab === tab 
-                                  ? "border-white text-white" 
-                                  : "border-transparent text-zinc-500 hover:text-zinc-300 hover:border-zinc-800"
+                              activeTab === tab
+                                  ? "border-black dark:border-white text-black dark:text-white"
+                                  : "border-transparent text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 hover:border-zinc-200 dark:hover:border-zinc-800"
                           )}
                       >
                           {tab}
@@ -341,10 +341,10 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                         <div className="md:col-span-2 space-y-8">
                             <section>
                                 <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Current Project</h3>
-                                <div className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+                                <div className="p-6 bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-800 rounded-xl">
                                     <div className="flex items-start gap-3">
-                                        <Briefcase className="w-5 h-5 text-zinc-400 mt-0.5"/>
-                                        <p className="text-zinc-300 font-medium">
+                                        <Briefcase className="w-5 h-5 text-zinc-500 dark:text-zinc-400 mt-0.5"/>
+                                        <p className="text-zinc-600 dark:text-zinc-300 font-medium">
                                             {formData.currentProject || "Not working on anything public right now."}
                                         </p>
                                     </div>
@@ -355,10 +355,10 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Skills</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {formData.skills.length > 0 ? formData.skills.map(skill => (
-                                        <span key={skill} className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-sm rounded-lg">
+                                        <span key={skill} className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900 border border-zinc-800 text-zinc-600 dark:text-zinc-300 text-sm rounded-lg">
                                             {skill}
                                         </span>
-                                    )) : <span className="text-zinc-600 italic">No skills listed</span>}
+                                    )) : <span className="text-zinc-400 dark:text-zinc-600 italic">No skills listed</span>}
                                 </div>
                             </section>
 
@@ -366,10 +366,10 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Interests</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {formData.interests.length > 0 ? formData.interests.map(item => (
-                                        <span key={item} className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 text-zinc-400 text-sm rounded-lg">
+                                        <span key={item} className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900 border border-zinc-800 text-zinc-500 dark:text-zinc-400 text-sm rounded-lg">
                                             {item}
                                         </span>
-                                    )) : <span className="text-zinc-600 italic">No interests selected</span>}
+                                    )) : <span className="text-zinc-400 dark:text-zinc-600 italic">No interests selected</span>}
                                 </div>
                             </section>
                         </div>
@@ -378,13 +378,13 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                         <div className="space-y-8">
                             {/* XP Stats */}
                             {(role === 'MEMBER' || role === 'CORE') && initialData.totalXp !== undefined && (
-                                <section className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+                                <section className="p-6 bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-800 rounded-xl">
                                     <div className="flex items-center gap-3 mb-1">
                                         <div className="p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
                                             <Zap className="w-4 h-4 text-amber-400"/>
                                         </div>
                                         <div>
-                                            <p className="text-2xl font-bold text-white tabular-nums">{initialData.totalXp || 0}</p>
+                                            <p className="text-2xl font-bold text-black dark:text-white tabular-nums">{initialData.totalXp || 0}</p>
                                             <p className="text-[11px] text-zinc-500 font-medium">Total XP Earned</p>
                                         </div>
                                     </div>
@@ -395,24 +395,24 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Roles</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {formData.roles.length > 0 ? formData.roles.map(role => (
-                                        <span key={role} className="px-3 py-1.5 bg-white/5 border border-white/5 text-white text-sm font-medium rounded-lg">
+                                        <span key={role} className="px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 text-black dark:text-white text-sm font-medium rounded-lg">
                                             {role}
                                         </span>
-                                    )) : <span className="text-zinc-600 italic">--</span>}
+                                    )) : <span className="text-zinc-400 dark:text-zinc-600 italic">--</span>}
                                 </div>
                             </section>
 
                             {/* Contact Card (Simulated based on viewable fields) */}
-                            <section className="p-6 bg-zinc-900/30 border border-zinc-800 rounded-xl space-y-4">
-                                <h3 className="text-sm font-bold text-white mb-2">Contact</h3>
+                            <section className="p-6 bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-800 rounded-xl space-y-4">
+                                <h3 className="text-sm font-bold text-black dark:text-white mb-2">Contact</h3>
                                 {formData.telegram && (
-                                    <div className="flex items-center gap-3 text-sm text-zinc-400">
+                                    <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
                                         <Send className="w-4 h-4"/>
                                         <span>{formData.telegram}</span>
                                     </div>
                                 )}
                                 {formData.discord && (
-                                    <div className="flex items-center gap-3 text-sm text-zinc-400">
+                                    <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
                                         <MessageCircle className="w-4 h-4"/>
                                         <span>{formData.discord}</span>
                                     </div>
@@ -427,34 +427,34 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                           {/* Event Timeline / List */}
                           <section>
                               <div className="flex items-center justify-between mb-6">
-                                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                      <Calendar className="w-5 h-5 text-zinc-100"/>
+                                  <h3 className="text-lg font-bold text-black dark:text-white flex items-center gap-2">
+                                      <Calendar className="w-5 h-5 text-zinc-800 dark:text-zinc-100"/>
                                       Events Attended
                                   </h3>
                               </div>
                               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                   {EVENTS.length > 0 ? EVENTS.map(event => (
-                                      <div key={event.id} className="group relative bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-all hover:scale-[1.02] duration-300">
+                                      <div key={event.id} className="group relative bg-zinc-100 dark:bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-zinc-700 transition-all hover:scale-[1.02] duration-300">
                                           <div className="relative h-32 w-full">
                                               <Image src={event.image} alt={event.name} fill className="object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
-                                              <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-xs font-bold text-white border border-white/10">
+                                              <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-xs font-bold text-black dark:text-white border border-black/10 dark:border-white/10">
                                                   {event.status}
                                               </div>
                                           </div>
                                           <div className="p-4">
-                                              <h4 className="text-base font-bold text-white mb-1">{event.name}</h4>
+                                              <h4 className="text-base font-bold text-black dark:text-white mb-1">{event.name}</h4>
                                               <div className="flex justify-between items-center text-xs text-zinc-500">
                                                   <span>{event.date}</span>
-                                                  <span className="text-zinc-300 font-medium">{event.role}</span>
+                                                  <span className="text-zinc-600 dark:text-zinc-300 font-medium">{event.role}</span>
                                               </div>
                                           </div>
                                       </div>
                                   )) : (
-                                      <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
-                                          <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
-                                              <Calendar className="w-8 h-8 text-zinc-600"/>
+                                      <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
+                                          <div className="w-16 h-16 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+                                              <Calendar className="w-8 h-8 text-zinc-400 dark:text-zinc-600"/>
                                           </div>
-                                          <h3 className="text-lg font-bold text-white mb-2">No Events Yet</h3>
+                                          <h3 className="text-lg font-bold text-black dark:text-white mb-2">No Events Yet</h3>
                                           <p className="text-zinc-500 text-center max-w-sm">
                                               Join our upcoming hackathons and community meetups to start building your timeline!
                                           </p>
@@ -465,8 +465,8 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                           
                           {/* POAPs */}
                           <section>
-                               <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
-                                  <Award className="w-5 h-5 text-zinc-100"/>
+                               <h3 className="text-lg font-bold text-black dark:text-white flex items-center gap-2 mb-6">
+                                  <Award className="w-5 h-5 text-zinc-800 dark:text-zinc-100"/>
                                   POAPs & Collectibles
                                </h3>
                                <div className="flex flex-wrap gap-4">

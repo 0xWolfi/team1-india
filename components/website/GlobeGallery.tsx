@@ -55,7 +55,7 @@ function MarqueeRow({ images, direction, speed, onImageClick, baseIndex }: Marqu
               {/* Subtle gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity duration-500" />
               {/* Inner ring for depth */}
-              <div className="absolute inset-0 ring-1 ring-inset ring-white/15 rounded-2xl pointer-events-none" />
+              <div className="absolute inset-0 ring-1 ring-inset ring-black/15 dark:ring-white/15 rounded-2xl pointer-events-none" />
               {/* Hover glow */}
               <div className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ boxShadow: "0 30px 60px -15px rgba(0,0,0,0.5)" }} />
             </button>
@@ -126,9 +126,9 @@ export function GlobeGallery() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white tracking-tight uppercase leading-[1.1]"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]"
         >
-          MOMENTS THAT MATTER
+          Glimpses Of Our Journey
         </motion.h2>
       </div>
 

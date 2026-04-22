@@ -70,7 +70,7 @@ export default async function ProgramDetailPage({ params }: Props) {
   const coverImage = program.coverImage;
 
   return (
-    <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
+    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-800 dark:selection:text-zinc-200">
       
       {/* Cover Image Section */}
       {coverImage && (
@@ -94,40 +94,40 @@ export default async function ProgramDetailPage({ params }: Props) {
             
             {/* Left Content */}
             <div className="lg:col-span-2">
-                <Link href="/public/programs" className="flex items-center gap-2 text-zinc-500 hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
+                <Link href="/public/programs" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
                     <ArrowLeft className="w-4 h-4"/> Back to Programs
                 </Link>
 
                 <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{program.title}</h1>
-                <p className="text-xl text-zinc-400 leading-relaxed mb-8">{program.description}</p>
+                <p className="text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-8">{program.description}</p>
                 
-                <div className="flex flex-wrap gap-4 text-sm text-zinc-500 mb-12 border-y border-white/5 py-6">
+                <div className="flex flex-wrap gap-4 text-sm text-zinc-500 mb-12 border-y border-black/5 dark:border-white/5 py-6">
                     <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-zinc-400"/>
+                        <Users className="w-4 h-4 text-zinc-500 dark:text-zinc-400"/>
                         <span>Open Enrollment</span>
                     </div>
-                    <div className="w-px h-4 bg-white/10" />
+                    <div className="w-px h-4 bg-black/10 dark:bg-white/10" />
                     <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-zinc-400"/>
+                        <Calendar className="w-4 h-4 text-zinc-500 dark:text-zinc-400"/>
                         <span>Rolling Admissions</span>
                     </div>
-                    <div className="w-px h-4 bg-white/10" />
+                    <div className="w-px h-4 bg-black/10 dark:bg-white/10" />
                     <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-zinc-400"/>
+                        <Globe className="w-4 h-4 text-zinc-500 dark:text-zinc-400"/>
                         <span>Remote / Global</span>
                     </div>
                 </div>
 
                 {/* Render actual program body content */}
                 {program.body?.markdown && (
-                    <div className="prose prose-invert prose-zinc max-w-none">
+                    <div className="prose dark:prose-invert prose-zinc max-w-none">
                         <ReactMarkdown>{program.body.markdown}</ReactMarkdown>
                     </div>
                 )}
                 
                 {/* Fallback content if no markdown */}
                 {!program.body?.markdown && (
-                    <div className="prose prose-invert prose-zinc max-w-none">
+                    <div className="prose dark:prose-invert prose-zinc max-w-none">
                         <h3>About the Program</h3>
                         <p>
                             This program is designed to provide you with the resources, mentorship, and network needed to accelerate your growth. 

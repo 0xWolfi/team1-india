@@ -44,23 +44,23 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className={cn(
-                            "w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-white placeholder:text-zinc-600",
-                            "bg-zinc-900/40 backdrop-blur-xl border border-white/6",
-                            "focus:outline-none focus:border-white/12 focus:bg-zinc-900/60",
+                            "w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600",
+                            "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/6 dark:border-white/6",
+                            "focus:outline-none focus:border-black/12 dark:focus:border-white/12 focus:bg-zinc-100/60 dark:focus:bg-zinc-900/60",
                             "transition-all duration-300"
                         )}
                     />
                 </div>
 
                 {/* View Toggle */}
-                <div className="flex items-center bg-zinc-900/40 backdrop-blur-xl border border-white/6 rounded-xl p-1 self-start">
+                <div className="flex items-center bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/6 dark:border-white/6 rounded-xl p-1 self-start">
                     <button
                         onClick={() => setViewMode("grid")}
                         className={cn(
                             "p-2 rounded-lg transition-all duration-300",
                             viewMode === "grid"
-                                ? "bg-white/8 text-white shadow-sm"
-                                : "text-zinc-500 hover:text-zinc-300"
+                                ? "bg-black/8 dark:bg-white/8 text-black dark:text-white shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
                         )}
                         aria-label="Grid view"
                     >
@@ -71,8 +71,8 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                         className={cn(
                             "p-2 rounded-lg transition-all duration-300",
                             viewMode === "list"
-                                ? "bg-white/8 text-white shadow-sm"
-                                : "text-zinc-500 hover:text-zinc-300"
+                                ? "bg-black/8 dark:bg-white/8 text-black dark:text-white shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
                         )}
                         aria-label="List view"
                     >
@@ -98,13 +98,13 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                 href={`/public/programs/${item.id}`}
                                 className={cn(
                                     "group relative flex flex-col rounded-2xl overflow-hidden",
-                                    "bg-zinc-900/40 backdrop-blur-xl border border-white/6",
-                                    "hover:-translate-y-1 hover:border-white/10 hover:shadow-2xl hover:shadow-black/30",
+                                    "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/6 dark:border-white/6",
+                                    "hover:-translate-y-1 hover:border-black/10 dark:hover:border-white/10 hover:shadow-2xl hover:shadow-black/30",
                                     "transition-all duration-300"
                                 )}
                             >
                                 {/* Cover Image */}
-                                <div className="relative w-full h-48 overflow-hidden bg-zinc-900">
+                                <div className="relative w-full h-48 overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                                     {item.coverImage ? (
                                         <>
                                             <Image
@@ -117,8 +117,8 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                             <div className="absolute inset-0 bg-linear-to-t from-zinc-950/80 via-zinc-950/20 to-transparent" />
                                         </>
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-zinc-900/80">
-                                            <div className="p-4 rounded-full bg-white/4">
+                                        <div className="w-full h-full flex items-center justify-center bg-zinc-100/80 dark:bg-zinc-900/80">
+                                            <div className="p-4 rounded-full bg-black/4 dark:bg-white/4">
                                                 <Users className="w-8 h-8 text-red-500/50" />
                                             </div>
                                         </div>
@@ -128,8 +128,8 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                     <div
                                         className={cn(
                                             "absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg",
-                                            "bg-white/8 backdrop-blur-md border border-white/8",
-                                            "text-[10px] font-bold uppercase tracking-widest text-zinc-300",
+                                            "bg-black/8 dark:bg-white/8 backdrop-blur-md border border-black/8 dark:border-white/8",
+                                            "text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:text-zinc-300",
                                             "group-hover:bg-white group-hover:text-zinc-900",
                                             "transition-all duration-300"
                                         )}
@@ -142,7 +142,7 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                 {/* Content */}
                                 <div className="flex-1 p-5 flex flex-col justify-between">
                                     <div>
-                                        <h3 className="font-semibold text-white text-[15px] leading-snug line-clamp-2 mb-2">
+                                        <h3 className="font-semibold text-black dark:text-white text-[15px] leading-snug line-clamp-2 mb-2">
                                             {item.title}
                                         </h3>
                                         <p className="text-[13px] text-zinc-500 line-clamp-2 leading-relaxed">
@@ -151,10 +151,10 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                     </div>
 
                                     {/* Footer */}
-                                    <div className="mt-4 flex items-center justify-between text-[11px] text-zinc-600 border-t border-white/4 pt-3.5">
+                                    <div className="mt-4 flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-600 border-t border-black/4 dark:border-white/4 pt-3.5">
                                         <span>
                                             by{" "}
-                                            <span className="text-zinc-400">
+                                            <span className="text-zinc-500 dark:text-zinc-400">
                                                 {item.createdBy?.name || "Team 1"}
                                             </span>
                                         </span>
@@ -169,13 +169,13 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                 href={`/public/programs/${item.id}`}
                                 className={cn(
                                     "group flex flex-col sm:flex-row rounded-2xl overflow-hidden",
-                                    "bg-zinc-900/40 backdrop-blur-xl border border-white/6",
-                                    "hover:-translate-y-1 hover:border-white/10 hover:shadow-2xl hover:shadow-black/30",
+                                    "bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/6 dark:border-white/6",
+                                    "hover:-translate-y-1 hover:border-black/10 dark:hover:border-white/10 hover:shadow-2xl hover:shadow-black/30",
                                     "transition-all duration-300"
                                 )}
                             >
                                 {/* Image (left) */}
-                                <div className="relative w-full sm:w-56 h-44 sm:h-auto shrink-0 overflow-hidden bg-zinc-900">
+                                <div className="relative w-full sm:w-56 h-44 sm:h-auto shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                                     {item.coverImage ? (
                                         <>
                                             <Image
@@ -188,8 +188,8 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                             <div className="absolute inset-0 bg-linear-to-t from-zinc-950/60 to-transparent sm:hidden" />
                                         </>
                                     ) : (
-                                        <div className="w-full h-full min-h-30 flex items-center justify-center bg-zinc-900/80">
-                                            <div className="p-3 rounded-full bg-white/4">
+                                        <div className="w-full h-full min-h-30 flex items-center justify-center bg-zinc-100/80 dark:bg-zinc-900/80">
+                                            <div className="p-3 rounded-full bg-black/4 dark:bg-white/4">
                                                 <Users className="w-6 h-6 text-red-500/50" />
                                             </div>
                                         </div>
@@ -200,14 +200,14 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                 <div className="flex-1 p-5 flex flex-col justify-between min-w-0">
                                     <div>
                                         <div className="flex items-start justify-between gap-4 mb-2">
-                                            <h3 className="font-semibold text-white text-[15px] leading-snug line-clamp-2 flex-1">
+                                            <h3 className="font-semibold text-black dark:text-white text-[15px] leading-snug line-clamp-2 flex-1">
                                                 {item.title}
                                             </h3>
                                             <div
                                                 className={cn(
                                                     "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg",
-                                                    "bg-white/6 border border-white/6",
-                                                    "text-[10px] font-bold uppercase tracking-widest text-zinc-400",
+                                                    "bg-black/6 dark:bg-white/6 border border-black/6 dark:border-white/6",
+                                                    "text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400",
                                                     "group-hover:bg-white group-hover:text-zinc-900",
                                                     "transition-all duration-300"
                                                 )}
@@ -222,10 +222,10 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                                     </div>
 
                                     {/* Footer */}
-                                    <div className="mt-4 flex items-center justify-between text-[11px] text-zinc-600 border-t border-white/4 pt-3.5">
+                                    <div className="mt-4 flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-600 border-t border-black/4 dark:border-white/4 pt-3.5">
                                         <span>
                                             by{" "}
-                                            <span className="text-zinc-400">
+                                            <span className="text-zinc-500 dark:text-zinc-400">
                                                 {item.createdBy?.name || "Team 1"}
                                             </span>
                                         </span>
@@ -238,8 +238,8 @@ export default function ProgramsClient({ programs }: { programs: any[] }) {
                 </div>
             ) : (
                 /* ───────── EMPTY STATE ───────── */
-                <div className="py-32 flex flex-col items-center justify-center gap-4 border border-dashed border-white/6 rounded-2xl">
-                    <div className="p-4 rounded-full bg-white/3">
+                <div className="py-32 flex flex-col items-center justify-center gap-4 border border-dashed border-black/6 dark:border-white/6 rounded-2xl">
+                    <div className="p-4 rounded-full bg-black/3 dark:bg-white/3">
                         <Users className="w-7 h-7 text-red-500/50" />
                     </div>
                     <p className="text-sm text-zinc-500">No programs found</p>

@@ -205,10 +205,8 @@ export function Programs() {
       <div className="max-w-6xl mx-auto px-5 md:px-8">
         {/* Heading */}
         <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white tracking-tight uppercase leading-[1.1]">
-            PROGRAMS DESIGNED FOR
-            <br />
-            EVERY STAGE OF YOUR JOURNEY
+          <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]">
+            Programs For Every Stage
           </h2>
           <p className="sr-only">
             Our accelerator offers specific tracks for different stages:

@@ -40,7 +40,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {/* Search */}
         <div className="relative w-full md:w-64 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors"/>
+            <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-black dark:group-focus-within:text-white transition-colors"/>
           </div>
           <input
             type="text"
@@ -54,7 +54,7 @@ export function EventGrid({ initialEvents }: EventGridProps) {
         {/* City Filter */}
         <div className="relative w-full md:w-48 group">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <MapPin className="w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors"/>
+            <MapPin className="w-4 h-4 text-zinc-500 group-focus-within:text-black dark:group-focus-within:text-white transition-colors"/>
           </div>
           <select
             value={selectedCity}

@@ -22,7 +22,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
     if (!item) return null;
 
     return (
-        <section className="relative w-full aspect-[21/9] md:aspect-[2.5/1] overflow-hidden rounded-3xl border border-white/10 group">
+        <section className="relative w-full aspect-[21/9] md:aspect-[2.5/1] overflow-hidden rounded-3xl border border-black/10 dark:border-white/10 group">
             {/* Background Image */}
             <div className="absolute inset-0">
                 {item.coverImage ? (
@@ -33,7 +33,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                 ) : (
-                    <div className="w-full h-full bg-zinc-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black" />
+                    <div className="w-full h-full bg-zinc-100 dark:bg-zinc-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-200 dark:from-zinc-800 via-zinc-100 dark:via-zinc-900 to-white dark:to-black" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
             </div>
@@ -46,7 +46,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
                             Featured {item.type}
                         </span>
                         {item.createdAt && (
-                             <span className="text-zinc-300 text-xs flex items-center gap-1 font-medium bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
+                             <span className="text-zinc-600 dark:text-zinc-300 text-xs flex items-center gap-1 font-medium bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm border border-black/10 dark:border-white/10">
                                 <Clock className="w-3 h-3"/> {new Date(item.createdAt).toLocaleDateString()}
                             </span>
                         )}
@@ -57,7 +57,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
                     </h1>
                     
                     {item.description && (
-                        <p className="text-zinc-300 text-lg md:text-xl line-clamp-2 max-w-2xl leading-relaxed text-shadow-sm">
+                        <p className="text-zinc-600 dark:text-zinc-300 text-lg md:text-xl line-clamp-2 max-w-2xl leading-relaxed text-shadow-sm">
                             {item.description}
                         </p>
                     )}

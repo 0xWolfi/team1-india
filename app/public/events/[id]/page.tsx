@@ -71,9 +71,9 @@ export default async function PublicEventDetailPage({ params }: Props) {
   const coverImage = event.coverImage;
 
   return (
-    <main className="min-h-screen bg-black text-white selection:bg-zinc-800 selection:text-zinc-200">
+    <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-800 dark:selection:text-zinc-200">
        {/* Hero Image / Header */}
-       <div className="relative h-[50vh] w-full bg-zinc-900">
+       <div className="relative h-[50vh] w-full bg-zinc-100 dark:bg-zinc-900">
            {coverImage ? (
                <Image 
                    src={coverImage as string} 
@@ -84,8 +84,8 @@ export default async function PublicEventDetailPage({ params }: Props) {
                    unoptimized
                />
            ) : (
-                <div className="w-full h-full flex items-center justify-center bg-zinc-900 pattern-grid-lg">
-                    <Calendar className="w-20 h-20 text-zinc-800"/>
+                <div className="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 pattern-grid-lg">
+                    <Calendar className="w-20 h-20 text-zinc-200 dark:text-zinc-800"/>
                 </div>
            )}
            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
@@ -106,15 +106,15 @@ export default async function PublicEventDetailPage({ params }: Props) {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-12">
                 <section>
-                    <h2 className="text-xl font-bold text-white mb-4">About Event</h2>
+                    <h2 className="text-xl font-bold text-black dark:text-white mb-4">About Event</h2>
                     
                     {/* Render actual event body content */}
                     {event.body?.markdown ? (
-                        <div className="prose prose-invert prose-zinc max-w-none">
+                        <div className="prose dark:prose-invert prose-zinc max-w-none">
                             <ReactMarkdown>{event.body.markdown}</ReactMarkdown>
                         </div>
                     ) : (
-                        <div className="prose prose-invert max-w-none text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                        <div className="prose dark:prose-invert max-w-none text-zinc-500 dark:text-zinc-400 leading-relaxed whitespace-pre-wrap">
                             {event.description || "No description provided."}
                         </div>
                     )}

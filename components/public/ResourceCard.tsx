@@ -26,9 +26,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     visibility
 }) => {
     return (
-        <Link href={href} className={`group block rounded-2xl bg-zinc-900 border border-white/5 hover:border-white/20 transition-all overflow-hidden flex flex-col h-full ${className}`}>
+        <Link href={href} className={`group block rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 transition-all overflow-hidden flex flex-col h-full ${className}`}>
             {/* Image Section */}
-            <div className="h-48 w-full bg-zinc-800 relative overflow-hidden">
+            <div className="h-48 w-full bg-zinc-200 dark:bg-zinc-800 relative overflow-hidden">
                 {coverImage ? (
                     <Image
                         src={coverImage}
@@ -37,7 +37,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
                         className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
+                    <div className="w-full h-full flex items-center justify-center bg-zinc-200 dark:bg-zinc-800 group-hover:bg-zinc-300 dark:group-hover:bg-zinc-700 transition-colors">
                         <FileText className="w-12 h-12 text-red-500/50 group-hover:text-red-500 transition-colors"/>
                     </div>
                 )}
@@ -58,23 +58,23 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             {/* Content Section */}
             <div className="p-4 flex flex-col flex-1">
                 <div className="flex items-start justify-between gap-4 mb-2">
-                    <h3 className="text-lg font-bold text-white line-clamp-2 leading-tight group-hover:text-zinc-200 transition-colors">
+                    <h3 className="text-lg font-bold text-black dark:text-white line-clamp-2 leading-tight group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors">
                         {title}
                     </h3>
-                    <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-400 group-hover:text-white group-hover:bg-zinc-700 transition-all flex items-center gap-1">
+                    <div className="shrink-0 px-3 py-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white group-hover:bg-zinc-300 dark:group-hover:bg-zinc-700 transition-all flex items-center gap-1">
                         {buttonText} <ArrowRight className="w-3 h-3"/>
                     </div>
                 </div>
 
                 {description && (
-                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4 flex-1">
+                    <p className="text-zinc-500 dark:text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4 flex-1">
                         {description}
                     </p>
                 )}
                 
                 {(author || date) && (
-                    <div className="mt-auto pt-3 border-t border-white/5 flex items-center justify-between text-xs text-zinc-500 font-medium">
-                        {author && <span>by <span className="text-zinc-400 capitalize">{author.replace(/^By\s+/i, '')}</span></span>}
+                    <div className="mt-auto pt-3 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-zinc-500 font-medium">
+                        {author && <span>by <span className="text-zinc-500 dark:text-zinc-400 capitalize">{author.replace(/^By\s+/i, '')}</span></span>}
                         {date && <span>{date}</span>}
                     </div>
                 )}

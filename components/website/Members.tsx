@@ -87,9 +87,9 @@ export function Members() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white tracking-tight uppercase leading-[1.1]"
+            className="text-3xl md:text-5xl lg:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]"
           >
-            TEAM1 IS ITS MEMBERS
+            Our Members
           </motion.h2>
         </div>
 

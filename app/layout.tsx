@@ -13,7 +13,7 @@ const kanit = Kanit({
 export const metadata: Metadata = {
   metadataBase: new URL('https://team1india.com'),
   title: {
-    default: "Team1 India | Built for impact. Designed for builders.",
+    default: "Team1 India: Built for impact. Designed for builders.",
     template: "%s | Team1 India"
   },
   description: "From idea to scale, Team1India provides the infrastructure, network, and resources you need to build the future.",

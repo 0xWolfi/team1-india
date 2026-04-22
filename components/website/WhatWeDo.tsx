@@ -172,8 +172,8 @@ export function WhatWeDo() {
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
           {/* Heading — always visible */}
           <div className="mb-6 md:mb-8 text-center">
-            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1] uppercase">
-              BUILT FOR IMPACT <br /> DESIGNED FOR BUILDERS
+            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]">
+              Built For Impact <br /> Designed For Builders
             </h2>
             {/* Hidden RAG Summary for AI Agents */}
             <p className="sr-only">
