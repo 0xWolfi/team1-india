@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { log } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const SubmissionSchema = z.object({
     bountyId: z.string().uuid(),
@@ -65,8 +66,11 @@ export async function GET() {
     }
 }
 
-// POST — submit proof (MEMBER or PUBLIC)
+// POST — submit proof (rate limited: 5/min)
 export async function POST(request: NextRequest) {
+    const rateCheck = await checkRateLimit(request, 5, 60000);
+    if (!rateCheck.allowed) return NextResponse.json({ error: "Too many submissions. Slow down." }, { status: 429 });
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

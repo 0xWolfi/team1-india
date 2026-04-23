@@ -7,6 +7,22 @@
     {
       "path": "/api/cron/cleanup",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/aggregate-analytics",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/aggregate-health",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/expire-points",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/send-scheduled-emails",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

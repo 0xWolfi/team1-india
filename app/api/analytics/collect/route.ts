@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit } from "@/lib/rate-limit";
 
-// POST /api/analytics/collect — receive events (public, rate limited via sendBeacon)
+// POST /api/analytics/collect — receive events (public, rate limited: 60/min)
 export async function POST(request: NextRequest) {
+  const rateCheck = await checkRateLimit(request, 60, 60000);
+  if (!rateCheck.allowed) return NextResponse.json({ ok: true }); // silent fail for analytics
   try {
     const body = await request.json();
     const { type, name, path, referrer, sessionId, data, utmSource, utmMedium, utmCampaign } = body;

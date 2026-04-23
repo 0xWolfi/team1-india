@@ -116,7 +116,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                                         onClose();
                                         router.push(`/core/members/${memberData.id}`);
                                     }}
-                                    className="px-3 py-1.5 bg-white text-black rounded-lg text-xs font-medium hover:bg-zinc-200 transition-colors flex items-center gap-1.5"
+                                    className="px-3 py-1.5 bg-white text-black dark:bg-white dark:text-black rounded-lg text-xs font-medium hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1.5"
                                     title="View Full Details"
                                 >
                                     <ExternalLink className="w-3 h-3"/>
@@ -157,7 +157,7 @@ export const ViewMemberModal: React.FC<ViewMemberModalProps> = ({
                             <button
                                 onClick={handleRoleChange}
                                 disabled={isChangingRole || selectedRole === memberData.tags}
-                                className="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                className="px-4 py-2 bg-white text-black dark:bg-white dark:text-black rounded-lg text-sm font-medium hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 {isChangingRole ? (
                                     <>

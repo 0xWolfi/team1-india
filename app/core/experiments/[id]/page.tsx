@@ -119,8 +119,8 @@ export default function ExperimentDetailPage() {
 
   const stageColors = {
     PROPOSED: "bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-700",
-    DISCUSSION: "bg-zinc-100 text-black border-zinc-200",
-    APPROVED: "bg-white text-black border-white",
+    DISCUSSION: "bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border-zinc-200 dark:border-zinc-700",
+    APPROVED: "bg-white text-black dark:bg-white dark:text-black border-white",
     REJECTED: "bg-zinc-100 dark:bg-zinc-900 text-zinc-500 border-zinc-200 dark:border-zinc-800 line-through",
   };
 

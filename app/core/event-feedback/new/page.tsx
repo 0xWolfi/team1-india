@@ -208,7 +208,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                         <Link href={`/core/event-feedback/${createdGuideId}`} className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:bg-black/10 dark:hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                             View Submissions
                         </Link>
-                        <Link href="/core/event-feedback" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white text-black hover:bg-zinc-100 transition-colors">
+                        <Link href="/core/event-feedback" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white text-black dark:bg-white dark:text-black hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
                             Back to Event Feedback
                         </Link>
                     </div>
@@ -424,7 +424,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                     <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black dark:bg-white dark:text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSaving ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating...</> : <><Save className="w-4 h-4" /> Create Feedback Form</>}
                     </button>

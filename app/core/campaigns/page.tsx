@@ -67,7 +67,7 @@ export default function CampaignsPage() {
                 icon={<DynamicIcon name="Megaphone" className="w-5 h-5 text-zinc-700 dark:text-zinc-200" />}
             >
                 <Link href="/core/campaigns/new">
-                    <button className="flex items-center gap-2 bg-white text-black font-semibold px-5 py-2.5 rounded-xl hover:bg-zinc-100 transition-colors text-sm">
+                    <button className="flex items-center gap-2 bg-white text-black dark:bg-white dark:text-black font-semibold px-5 py-2.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors text-sm">
                         <Plus className="w-4 h-4" /> New Campaign
                     </button>
                 </Link>

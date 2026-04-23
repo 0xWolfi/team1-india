@@ -34,7 +34,7 @@ export default function OfflinePage() {
         {/* Retry Button */}
         <button 
           onClick={() => window.location.reload()}
-          className="px-8 py-3 bg-white text-black rounded-full font-bold hover:bg-zinc-200 transition-colors duration-200 hover:scale-105 transform"
+          className="px-8 py-3 bg-white text-black dark:bg-white dark:text-black rounded-full font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors duration-200 hover:scale-105 transform"
         >
           Try Again
         </button>

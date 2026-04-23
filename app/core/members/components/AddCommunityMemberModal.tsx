@@ -166,7 +166,7 @@ export const AddCommunityMemberModal: React.FC<AddCommunityMemberModalProps> = (
                             <button 
                                 type="submit"
                                 disabled={isSubmitting || emailStatus === 'exists' || emailStatus === 'checking'}
-                                className="flex-1 py-3 rounded-lg text-sm font-bold bg-white text-black hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 py-3 rounded-lg text-sm font-bold bg-white text-black dark:bg-white dark:text-black hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : "Add Member"}
                             </button>

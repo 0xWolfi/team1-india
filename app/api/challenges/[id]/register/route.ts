@@ -3,9 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { sendNotification } from "@/lib/notify";
+import { checkRateLimit } from "@/lib/rate-limit";
 
-// POST /api/challenges/[id]/register
+// POST /api/challenges/[id]/register (rate limited: 3/min)
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const rateCheck = await checkRateLimit(request, 3, 60000);
+  if (!rateCheck.allowed) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;

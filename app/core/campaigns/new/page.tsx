@@ -82,7 +82,7 @@ export default function NewCampaignPage() {
                         </Link>
                         <button
                             onClick={() => { setCreatedLink(''); setCity(''); }}
-                            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white text-black hover:bg-zinc-100 transition-colors"
+                            className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white text-black dark:bg-white dark:text-black hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                         >
                             Create Another
                         </button>

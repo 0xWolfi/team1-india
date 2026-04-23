@@ -147,7 +147,7 @@ export default function MediaPage() {
             >
                  <button 
                      onClick={handleCreate}
-                     className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all hover:bg-zinc-200 active:scale-95 text-sm"
+                     className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all hover:bg-zinc-200 dark:hover:bg-zinc-800 active:scale-95 text-sm"
                  >
                     <span className="flex items-center gap-2">
                         <Plus className="w-4 h-4" />

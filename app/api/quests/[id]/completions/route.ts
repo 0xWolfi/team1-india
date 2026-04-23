@@ -4,12 +4,16 @@ import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { earnReward } from "@/lib/wallet";
 import { sendNotification } from "@/lib/notify";
+import { checkRateLimit } from "@/lib/rate-limit";
 
-// POST /api/quests/[id]/completions — submit quest completion
+// POST /api/quests/[id]/completions — submit quest completion (rate limited: 5/min)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const rateCheck = await checkRateLimit(request, 5, 60000);
+  if (!rateCheck.allowed) return NextResponse.json({ error: "Too many submissions" }, { status: 429 });
+
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

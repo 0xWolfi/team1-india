@@ -152,7 +152,7 @@ export default function AnnouncementsPage() {
                 {!isCreating && canManage && (
                     <button 
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm font-bold shadow-lg shadow-red-500/20"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black dark:bg-white dark:text-black rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm font-bold shadow-lg shadow-red-500/20"
                     >
                         <Plus className="w-4 h-4"/> New Announcement
                     </button>
@@ -233,7 +233,7 @@ export default function AnnouncementsPage() {
                             <button 
                                 type="submit"
                                 disabled={isLoading}
-                                className="px-6 py-2 bg-white text-black text-sm font-bold rounded-lg hover:bg-zinc-200 disabled:opacity-50"
+                                className="px-6 py-2 bg-white text-black dark:bg-white dark:text-black text-sm font-bold rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-50"
                             >
                                 {isLoading ? 'Posting...' : 'Post Announcement'}
                             </button>

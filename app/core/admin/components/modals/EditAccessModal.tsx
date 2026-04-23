@@ -194,7 +194,7 @@ export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChan
                     <button 
                         onClick={onSave}
                         disabled={isSubmitting}
-                        className="px-6 py-2.5 rounded-xl text-sm font-bold bg-white text-black hover:bg-zinc-200 transition-colors shadow-lg shadow-black/10 dark:shadow-white/10 flex items-center gap-2"
+                        className="px-6 py-2.5 rounded-xl text-sm font-bold bg-white text-black dark:bg-white dark:text-black hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors shadow-lg shadow-black/10 dark:shadow-white/10 flex items-center gap-2"
                     >
                         {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : "Save Changes"}
                     </button>
