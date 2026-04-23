@@ -758,3 +758,64 @@ model QuestCompletion {
   @@index([status])
   @@index([questId, status])
 }
+
+// Swag Shop
+model SwagItem {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  image          String?  // cover image URL
+  images         Json?    // array of image URLs
+  pointsCost     Int      // points required to redeem
+  category       String?  // "tshirt", "sticker", "hoodie", "accessory"
+  audience       String   @default("all") // "all", "member"
+  totalStock     Int      @default(0)
+  remainingStock Int      @default(0)
+  status         String   @default("active") // "active", "paused", "out_of_stock"
+  featured       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+  deletedAt      DateTime?
+
+  variants       SwagVariant[]
+  orders         SwagOrder[]
+
+  @@index([status])
+  @@index([audience])
+  @@index([category])
+  @@index([deletedAt])
+}
+
+model SwagVariant {
+  id             String   @id @default(uuid())
+  itemId         String
+  label          String   // "S", "M", "L", "XL", "Red", "Blue"
+  stock          Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  item           SwagItem @relation(fields: [itemId], references: [id])
+
+  @@index([itemId])
+}
+
+model SwagOrder {
+  id             String   @id @default(uuid())
+  itemId         String
+  variantId      String?
+  userEmail      String
+  pointsSpent    Int
+  quantity       Int      @default(1)
+  status         String   @default("pending") // "pending", "processing", "shipped", "delivered", "cancelled"
+  trackingNumber String?
+  trackingUrl    String?
+  shippingAddress String? // encrypted via PII vault reference
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+
+  item           SwagItem @relation(fields: [itemId], references: [id])
+
+  @@index([userEmail])
+  @@index([status])
+  @@index([itemId])
+}
