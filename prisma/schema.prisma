@@ -631,3 +631,18 @@ model PersonalVault {
   @@index([hmacIndex])
   @@index([entityType, fieldName, hmacIndex])
 }
+
+// In-app notifications
+model Notification {
+  id        String   @id @default(uuid())
+  userEmail String   // recipient
+  type      String   // "quest_approved", "bounty_approved", "team_invite", etc.
+  title     String
+  message   String
+  link      String?  // clickable destination, e.g. "/member/bounty"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userEmail, isRead, createdAt])
+  @@index([userEmail, createdAt])
+}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, LogOut, Settings, User } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface UnifiedDashboardHeaderProps {
     title: string;
@@ -108,6 +109,7 @@ export function UnifiedDashboardHeader({
                 {children}
 
                 <div className="flex items-center gap-3 pl-6 border-l border-white/5">
+                    <NotificationBell />
                     {/* Profile Image (Static Display) */}
                     <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/10 bg-zinc-800 flex items-center justify-center relative">
                         {displayImage && !profileImageError ? (
