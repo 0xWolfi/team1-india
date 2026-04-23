@@ -696,3 +696,57 @@ model WalletTransaction {
   @@index([walletId, createdAt])
   @@index([type])
 }
+
+// Quest System
+model Quest {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  type        String    // "daily", "weekly", "one-time", "recurring"
+  category    String?   // "social", "developer", "community", "content"
+  xpReward    Int       @default(10)
+  pointsReward Int      @default(10)
+  audience    String    @default("all") // "all", "member", "public"
+  status      String    @default("active") // "active", "paused", "closed"
+  maxCompletions Int?   // null = unlimited
+  totalCompletions Int  @default(0)
+  proofRequired Boolean @default(true)
+  proofDescription String? // "Submit a screenshot of your tweet"
+  startDate   DateTime?
+  endDate     DateTime?
+  createdBy   String    // admin email
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  deletedAt   DateTime?
+
+  completions QuestCompletion[]
+
+  @@index([status])
+  @@index([audience])
+  @@index([type])
+  @@index([deletedAt])
+  @@index([status, audience, deletedAt])
+}
+
+model QuestCompletion {
+  id          String    @id @default(uuid())
+  questId     String
+  userEmail   String
+  proofUrl    String?
+  proofNote   String?
+  status      String    @default("pending") // "pending", "approved", "rejected"
+  reviewNote  String?
+  reviewedBy  String?   // admin email
+  xpAwarded   Int?
+  pointsAwarded Int?
+  submittedAt DateTime  @default(now())
+  reviewedAt  DateTime?
+
+  quest       Quest     @relation(fields: [questId], references: [id])
+
+  @@unique([questId, userEmail]) // one completion per quest per user (for one-time quests)
+  @@index([questId])
+  @@index([userEmail])
+  @@index([status])
+  @@index([questId, status])
+}
