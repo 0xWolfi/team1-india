@@ -9,14 +9,19 @@ export const revalidate = 60;
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const project = await prisma.userProject.findFirst({
-    where: { slug, deletedAt: null, status: "published" },
-    include: {
-      challenge: { select: { id: true, title: true, slug: true } },
-      comments: { where: { deletedAt: null, isHidden: false }, orderBy: { createdAt: "desc" }, take: 20 },
-      _count: { select: { likes: true, comments: true } },
-    },
-  });
+  let project;
+  try {
+    project = await prisma.userProject.findFirst({
+      where: { slug, deletedAt: null, status: "published" },
+      include: {
+        challenge: { select: { id: true, title: true, slug: true } },
+        comments: { where: { deletedAt: null, isHidden: false }, orderBy: { createdAt: "desc" }, take: 20 },
+        _count: { select: { likes: true, comments: true } },
+      },
+    });
+  } catch {
+    notFound();
+  }
 
   if (!project) notFound();
 

@@ -6,23 +6,31 @@ import { Footer } from "@/components/website/Footer";
 export const revalidate = 60;
 
 async function getProjects() {
-  return prisma.userProject.findMany({
-    where: { status: "published", deletedAt: null },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-    select: {
-      id: true, title: true, slug: true, description: true, coverImage: true,
-      techStack: true, tags: true, likeCount: true, viewCount: true,
-      isWinner: true, winnerBadge: true, ownerEmail: true, createdAt: true,
-    },
-  });
+  try {
+    return await prisma.userProject.findMany({
+      where: { status: "published", deletedAt: null },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      select: {
+        id: true, title: true, slug: true, description: true, coverImage: true,
+        techStack: true, tags: true, likeCount: true, viewCount: true,
+        isWinner: true, winnerBadge: true, ownerEmail: true, createdAt: true,
+      },
+    });
+  } catch {
+    return [];
+  }
 }
 
 async function getShowcase() {
-  return prisma.showcaseSection.findMany({
-    where: { isActive: true },
-    orderBy: { sortOrder: "asc" },
-  });
+  try {
+    return await prisma.showcaseSection.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+    });
+  } catch {
+    return [];
+  }
 }
 
 export default async function PublicProjectsPage() {

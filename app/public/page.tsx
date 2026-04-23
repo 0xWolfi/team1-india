@@ -21,7 +21,7 @@ function categorizeEvents(events: LumaEventData[]) {
 }
 
 export default async function PublicPage() {
-    const [playbooks, publicGuides, resources, lumaEvents, bounties] = await Promise.all([
+    const [playbooks, publicGuides, resources, lumaEvents, bounties, questCount, projectCount, challengeCount, activeQuests, featuredProjects, activeChallenges] = await Promise.all([
         prisma.playbook.findMany({
             where: { visibility: "PUBLIC", deletedAt: null },
             orderBy: { createdAt: "desc" },
@@ -47,9 +47,13 @@ export default async function PublicPage() {
             select: { id: true, title: true, content: true, customFields: true },
         }),
         getAllEvents(),
-        prisma.bounty.count({
-            where: { status: "active", deletedAt: null, audience: "public" },
-        }),
+        prisma.bounty.count({ where: { status: "active", deletedAt: null } }).catch(() => 0),
+        prisma.quest.count({ where: { status: "active", deletedAt: null } }).catch(() => 0),
+        prisma.userProject.count({ where: { status: "published", deletedAt: null } }).catch(() => 0),
+        prisma.challenge.count({ where: { status: { not: "cancelled" }, deletedAt: null } }).catch(() => 0),
+        prisma.quest.findMany({ where: { status: "active", deletedAt: null, audience: { in: ["all", "public"] } }, orderBy: { createdAt: "desc" }, take: 6, select: { id: true, title: true, description: true, xpReward: true, pointsReward: true, type: true, category: true } }).catch(() => [] as any[]),
+        prisma.userProject.findMany({ where: { status: "published", deletedAt: null }, orderBy: { likeCount: "desc" }, take: 6, select: { id: true, title: true, slug: true, description: true, coverImage: true, techStack: true, likeCount: true, isWinner: true, winnerBadge: true } }).catch(() => [] as any[]),
+        prisma.challenge.findMany({ where: { status: { in: ["registration_open", "in_progress"] }, deletedAt: null }, orderBy: { createdAt: "desc" }, take: 3, select: { id: true, title: true, slug: true, description: true, coverImage: true, status: true, prizePool: true } }).catch(() => [] as any[]),
     ]);
 
     // Bucket guides by type
@@ -105,6 +109,12 @@ export default async function PublicPage() {
                 upcomingEvents: lumaEvents,
                 mediaItems,
                 bountyCount: bounties,
+                questCount,
+                projectCount,
+                challengeCount,
+                activeQuests,
+                featuredProjects,
+                activeChallenges,
                 categorizedEvents,
             }}
         />
