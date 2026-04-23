@@ -67,6 +67,7 @@ import { ThemeProvider } from "./providers";
 
 import { Analytics } from "@vercel/analytics/react";
 import dynamic from "next/dynamic";
+import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 
 const PWAUpdatePrompt = dynamic(() => import("@/components/PWAUpdatePrompt"));
 const PWAInstallPrompt = dynamic(() => import("@/components/PWAInstallPrompt"));
@@ -166,7 +167,9 @@ export default function RootLayout({
                     }}
                 />
                 <div className="relative z-10">
-                    {children}
+                    <AnalyticsProvider>
+                        {children}
+                    </AnalyticsProvider>
                 </div>
             </div>
             <Analytics />

@@ -1101,3 +1101,55 @@ model ScheduledEmail {
   @@index([challengeId])
   @@index([status, scheduledFor])
 }
+
+// ===== ANALYTICS =====
+
+model AnalyticsEvent {
+  id          String    @id @default(uuid())
+  type        String    // page_view, click, api_call, custom
+  name        String    // "quest_completed", "event_card_click", etc.
+  path        String?   // URL path
+  referrer    String?
+  userEmail   String?   // null for anonymous
+  sessionId   String    // cookie-less UUID per visit
+  data        Json?     // { questId, challengeId, durationMs, etc. }
+  device      String?   // mobile, desktop, tablet
+  browser     String?
+  os          String?
+  country     String?   // from Vercel geo headers
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  createdAt   DateTime  @default(now())
+
+  @@index([type, createdAt])
+  @@index([name, createdAt])
+  @@index([path, createdAt])
+  @@index([userEmail])
+  @@index([sessionId])
+}
+
+model AnalyticsDailyStat {
+  id          String   @id @default(uuid())
+  date        DateTime @db.Date
+  metric      String   // "page_views", "unique_visitors", "quest_completions", etc.
+  value       Int
+  breakdown   Json?    // { "/public": 450, "/public/bounty": 120 }
+
+  @@unique([date, metric])
+  @@index([date])
+}
+
+model ApiHealthLog {
+  id          String    @id @default(uuid())
+  endpoint    String
+  method      String
+  statusCode  Int
+  durationMs  Int
+  error       String?
+  userEmail   String?
+  createdAt   DateTime  @default(now())
+
+  @@index([endpoint, createdAt])
+  @@index([statusCode, createdAt])
+}
