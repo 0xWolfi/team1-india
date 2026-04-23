@@ -14,15 +14,15 @@
     },
     {
       "path": "/api/cron/aggregate-health",
-      "schedule": "0 * * * *"
+      "schedule": "0 4 * * *"
     },
     {
       "path": "/api/cron/expire-points",
-      "schedule": "0 3 * * *"
+      "schedule": "0 5 * * *"
     },
     {
       "path": "/api/cron/send-scheduled-emails",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 8 * * *"
     }
   ]
 }
