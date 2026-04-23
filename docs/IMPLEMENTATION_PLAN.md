@@ -1127,3 +1127,399 @@ All 35 decisions finalized. Plan is execution-ready.
 
 **Say "go" to start Phase 0 (PII Vault + Encryption).**
 
+
+# Master Task Checklist
+
+> Updated as each step is implemented and verified.
+> `[ ]` = not started · `[/]` = in progress · `[x]` = completed
+
+---
+
+## Phase 0: PII Vault + Encryption
+- [ ] Create `lib/encryption.ts` (AES-256-GCM encrypt/decrypt)
+- [ ] Create `lib/pii.ts` (store/retrieve/search PII helpers)
+- [ ] Add `PersonalVault` model to `prisma/schema.prisma`
+- [ ] Run `npx prisma migrate dev`
+- [ ] Write unit tests for encrypt/decrypt roundtrip
+- [ ] Write unit tests for PII store/retrieve
+- [ ] Add `PII_ENCRYPTION_KEY` and `PII_HMAC_KEY` to `.env.example`
+- [ ] **Verify**: tests pass, no build errors
+
+## Phase 0.5: Migrate Existing PII
+- [ ] Create migration script (`scripts/migrate-pii.ts`)
+- [ ] Migrate `Member` PII (name, email) to vault
+- [ ] Migrate `CommunityMember` PII to vault
+- [ ] Migrate `PublicUser` PII to vault
+- [ ] Test migration on copy of production data
+- [ ] **Verify**: all PII encrypted, original fields still work via helpers
+
+## Phase N: Notification System
+- [ ] Add `Notification` model to schema
+- [ ] Run migration
+- [ ] Create `lib/notify.ts` (sendNotification helper)
+- [ ] Create `GET /api/notifications` (own notifications)
+- [ ] Create `PATCH /api/notifications/read` (bulk mark read)
+- [ ] Create `DELETE /api/notifications/[id]` (dismiss)
+- [ ] Add notification bell UI to FloatingNav
+- [ ] Add notification bell to Core header
+- [ ] Add notification bell to Member header
+- [ ] Integrate web push (extend existing `/api/push/*`)
+- [ ] **Verify**: create notification → shows in bell → mark read → push works
+
+## Phase SEC: Anti-Spam + Rate Limiting
+- [ ] Install `@upstash/ratelimit` + `@upstash/redis`
+- [ ] Create `lib/rate-limit.ts` (tiered limiters)
+- [ ] Create `middleware.ts` (security headers, request ID)
+- [ ] Create `lib/sanitize.ts` (DOMPurify HTML + text sanitization)
+- [ ] Install `isomorphic-dompurify`
+- [ ] Add rate limiting to all public POST routes
+- [ ] Add rate limiting to all auth write routes
+- [ ] Add honeypot field to contact + registration forms
+- [ ] Add comment spam prevention (cooldown, link limit)
+- [ ] Add referral abuse prevention (IP dedup, self-referral block)
+- [ ] Add `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` to `.env.example`
+- [ ] **Verify**: rate limit returns 429, honeypot rejects bots, sanitization strips XSS
+
+## Phase 2FA: Two-Factor Authentication
+- [ ] Add `TwoFactorAuth` + `Passkey` models to schema
+- [ ] Run migration
+- [ ] Install `otpauth`, `qrcode`, `@simplewebauthn/server`, `@simplewebauthn/browser`
+- [ ] Create `lib/2fa/totp.ts` (generate secret, verify code)
+- [ ] Create `lib/2fa/passkey.ts` (WebAuthn registration + authentication)
+- [ ] Create `POST /api/auth/2fa/totp/setup` (generate QR)
+- [ ] Create `POST /api/auth/2fa/totp/verify` (verify + enable)
+- [ ] Create `POST /api/auth/2fa/totp/disable`
+- [ ] Create `POST /api/auth/2fa/passkey/register`
+- [ ] Create `POST /api/auth/2fa/passkey/verify-register`
+- [ ] Create `POST /api/auth/2fa/passkey/authenticate`
+- [ ] Create `POST /api/auth/2fa/recovery/generate` (10 codes)
+- [ ] Create `POST /api/auth/2fa/recovery/verify-backup` (user types back 2)
+- [ ] Create `POST /api/auth/2fa/recovery/use`
+- [ ] Create `GET /api/auth/2fa/status`
+- [ ] Create `POST /api/auth/2fa/challenge` (login verification)
+- [ ] Create `/auth/verify-2fa` page
+- [ ] Create `/auth/setup-2fa` page
+- [ ] Create `TwoFactorSetup` component (profile settings)
+- [ ] Modify `lib/auth-options.ts` (add 2FA token flags)
+- [ ] Modify `middleware.ts` (2FA redirect for CORE mandatory)
+- [ ] Add `WEBAUTHN_RP_ID` + `WEBAUTHN_ORIGIN` to `.env.example`
+- [ ] **Verify**: enable TOTP → logout → login → 2FA prompt → verify → session works
+- [ ] **Verify**: passkey register → authenticate → works
+- [ ] **Verify**: recovery code flow → works
+- [ ] **Verify**: CORE without 2FA → forced to setup page
+
+## Phase A: Dual Currency (Wallet)
+- [ ] Add `UserWallet`, `PointsBatch`, `WalletTransaction` models
+- [ ] Run migration
+- [ ] Create `lib/wallet.ts` (earnReward, spendPoints with $transaction)
+- [ ] Create `GET /api/wallet` (own wallet)
+- [ ] Create `GET /api/wallet/history` (transaction history)
+- [ ] Create `GET /api/wallet/expiring` (expiring soon)
+- [ ] Create `GET /api/wallet/[userId]` (admin view)
+- [ ] Create `POST /api/wallet/adjust` (admin manual adjust)
+- [ ] Modify `GET /api/leaderboard` (rank by totalXp)
+- [ ] Create `/api/cron/expire-points` (daily FIFO expiry)
+- [ ] **Verify**: earn → balance increases, spend → FIFO deduction, expiry cron works
+
+## Phase B: Quest System
+- [ ] Add `Quest`, `QuestCompletion` models
+- [ ] Run migration
+- [ ] Create `GET /api/quests` (public: active quests)
+- [ ] Create `POST /api/quests` (CORE: create)
+- [ ] Create `GET /api/quests/[id]`
+- [ ] Create `PATCH /api/quests/[id]` (update, pause)
+- [ ] Create `DELETE /api/quests/[id]` (soft delete)
+- [ ] Create `POST /api/quests/[id]/complete` (submit with proof)
+- [ ] Create `GET /api/quests/[id]/completions` (admin review)
+- [ ] Create `PATCH /api/quests/completions/[id]` (approve/reject → earnReward)
+- [ ] Create `POST /api/quests/completions/bulk-review` (bulk approve/reject)
+- [ ] Create `GET /api/quests/my` (user's quest history)
+- [ ] Create `GET /api/quests/stats` (completed/available for dashboard)
+- [ ] **Verify**: create quest → complete → admin approve → XP+Points credited
+
+## Phase C: Enhanced Bounty
+- [ ] Modify `Bounty` model (add cash, brief, resources, rules, maxSubmissions)
+- [ ] Modify `BountySubmission` model (add submissionNumber)
+- [ ] Run migration
+- [ ] Modify `GET /api/bounty` (make public, fix audience bug)
+- [ ] Modify `POST /api/bounty` (new fields)
+- [ ] Modify `POST /api/bounty/submissions` (multi-submission, earnReward)
+- [ ] Modify `PATCH /api/bounty/submissions/[id]` (approve → earnReward)
+- [ ] Create `POST /api/bounty/submissions/bulk-review`
+- [ ] Fix bounty audience bug (audience: "all" works for everyone)
+- [ ] **Verify**: create bounty → submit → approve → XP+Points credited
+
+## Phase D: Swag Shop
+- [ ] Add `SwagItem`, `SwagVariant`, `SwagOrder` models
+- [ ] Run migration
+- [ ] Create `GET /api/swag` (list items, filter by audience)
+- [ ] Create `POST /api/swag` (CORE: create item)
+- [ ] Create `GET /api/swag/[id]` (item detail)
+- [ ] Create `PATCH /api/swag/[id]` (update stock, status)
+- [ ] Create `DELETE /api/swag/[id]` (soft delete)
+- [ ] Create `POST /api/swag/[id]/redeem` (spend points, atomic stock decrement, PII vault for address)
+- [ ] Create `GET /api/swag/orders` (admin: all orders)
+- [ ] Create `GET /api/swag/orders/my` (user's orders)
+- [ ] Create `PATCH /api/swag/orders/[id]` (update status + tracking)
+- [ ] **Verify**: create item → redeem → points deducted → stock decremented → order created
+
+## Phase 1: DB Models (Projects + Challenges)
+- [ ] Add all project models (Project, ProjectVersion, ProjectComment, ProjectLike, ShowcaseSection)
+- [ ] Add all challenge models (Challenge, ChallengeTrack, ChallengeRegistration, ChallengeTeamMember, ChallengeSubmission, ChallengeWinner, ReferralCode, PartnerReviewLink, ScheduledEmail)
+- [ ] Add version field for optimistic locking on Project
+- [ ] Add unique constraints (registration dedup, etc.)
+- [ ] Run migration
+- [ ] **Verify**: migration succeeds, no schema conflicts
+
+## Phase 2: Project APIs
+- [ ] Create `GET /api/projects` (public list with filters)
+- [ ] Create `POST /api/projects` (create, multi-owner teamEmails)
+- [ ] Create `GET /api/projects/[id]` (detail, increment viewCount)
+- [ ] Create `PATCH /api/projects/[id]` (update with version check + auto-version + notify teammates)
+- [ ] Create `DELETE /api/projects/[id]` (owner soft-delete, admin hide)
+- [ ] Create `GET /api/projects/[id]/versions` (version timeline)
+- [ ] Create `POST /api/projects/[id]/like` (toggle like)
+- [ ] Create `GET /api/projects/[id]/comments` (list with hidden toggle)
+- [ ] Create `POST /api/projects/[id]/comments` (add comment)
+- [ ] Create `PATCH /api/projects/[id]/comments/[cid]` (owner hide)
+- [ ] Create `DELETE /api/projects/[id]/comments/[cid]` (admin delete)
+- [ ] Create `PATCH /api/projects/[id]/privacy` (privacy settings)
+- [ ] Create `PATCH /api/projects/[id]/team` (creator adds/removes members)
+- [ ] Create `POST /api/projects/[id]/team/leave` (member leaves)
+- [ ] Create `PATCH /api/projects/[id]/team/[email]/privacy` (teammate hides self)
+- [ ] Create `POST /api/projects/[id]/report` (flag for moderation)
+- [ ] Create `GET /api/projects/my` (own projects)
+- [ ] Create `GET /api/projects/search` (full-text search)
+- [ ] Create `POST /api/upload/cloudinary` (signed upload)
+- [ ] Create `GET /api/public/profile/[userId]/projects` (other user's projects)
+- [ ] **Verify**: create → edit (version created) → like → comment → teammate edits → notification sent
+
+## Phase 3: Project Showcase Pages
+- [ ] Create `GET /api/projects/showcase` (curated sections)
+- [ ] Create `POST /api/projects/showcase` (CORE: create section)
+- [ ] Create `PATCH /api/projects/showcase/[id]` (reorder, update)
+- [ ] Create `DELETE /api/projects/showcase/[id]`
+- [ ] Create `/public/projects/page.tsx` (Discover page)
+- [ ] Create `/public/projects/[slug]/page.tsx` (project detail)
+- [ ] Create `/public/projects/[slug]/history/page.tsx` (version timeline)
+- [ ] **Verify**: showcase renders, project detail shows challenge badge + winner badge
+
+## Phase 4: Challenge CRUD
+- [ ] Create `GET /api/challenges` (list with counts)
+- [ ] Create `POST /api/challenges` (CORE create)
+- [ ] Create `GET /api/challenges/[id]` (detail with tracks)
+- [ ] Create `PATCH /api/challenges/[id]` (update)
+- [ ] Create `DELETE /api/challenges/[id]` (soft delete)
+- [ ] Create `GET /api/challenges/[id]/tracks` (list tracks)
+- [ ] Create `POST /api/challenges/[id]/tracks` (add track)
+- [ ] Create `PATCH /api/challenges/[id]/tracks/[tid]`
+- [ ] Create `DELETE /api/challenges/[id]/tracks/[tid]`
+- [ ] Create `PATCH /api/challenges/[id]/status` (phase transitions)
+- [ ] **Verify**: create challenge → add tracks → change status → list shows counts
+
+## Phase 5: Referral/UTM System
+- [ ] Create `POST /api/challenges/[id]/referrals` (generate code)
+- [ ] Create `GET /api/challenges/[id]/referrals` (admin analytics)
+- [ ] Create `GET /api/r/[code]` (click track + redirect)
+- [ ] Add IP dedup for clicks
+- [ ] Block self-referral
+- [ ] **Verify**: generate code → click → tracks → register with code → conversion counted
+
+## Phase 6: Team System
+- [ ] Create `POST /api/challenges/[id]/teams/invite`
+- [ ] Create `POST /api/challenges/[id]/teams/respond`
+- [ ] Create `POST /api/challenges/[id]/teams/leave`
+- [ ] Create `POST /api/challenges/[id]/teams/remove`
+- [ ] Validate team size limit + deadline
+- [ ] Send invite email + notification
+- [ ] **Verify**: invite → accept → leave → remove → all with deadline enforcement
+
+## Phase 7: Registration Flow
+- [ ] Create `POST /api/challenges/[id]/register`
+- [ ] Create `GET /api/challenges/[id]/registrations` (admin)
+- [ ] Create `GET /api/challenges/[id]/registrations/my` (own)
+- [ ] Store UTM/referral data
+- [ ] Send confirmation email
+- [ ] Unique constraint prevents double registration
+- [ ] **Verify**: register → confirmation → admin sees → duplicate blocked
+
+## Phase 8: Submission Flow
+- [ ] Create `POST /api/challenges/[id]/submissions` (auto-link to Project)
+- [ ] Create `GET /api/challenges/[id]/submissions` (admin)
+- [ ] Create `GET /api/challenges/[id]/submissions/my` (own)
+- [ ] Create `PATCH /api/challenges/[id]/submissions/[sid]` (review status)
+- [ ] Auto-add team members to project teamEmails
+- [ ] **Verify**: submit → project created with team → admin reviews → status updates
+
+## Phase 9: Partner Review
+- [ ] Create `POST /api/challenges/[id]/partner-links` (generate token link)
+- [ ] Create `GET /api/challenges/[id]/partner-links` (list active)
+- [ ] Create `DELETE /api/challenges/[id]/partner-links/[lid]` (revoke)
+- [ ] Create `GET /api/partner-review/[token]` (token-based view)
+- [ ] Validate token expiry
+- [ ] **Verify**: generate link → partner views submissions → expired link rejected
+
+## Phase 10: Winner System
+- [ ] Create `POST /api/challenges/[id]/winners` (select winner)
+- [ ] Create `GET /api/challenges/[id]/winners` (public: published only)
+- [ ] Create `PATCH /api/challenges/[id]/winners/[wid]` (update)
+- [ ] Create `DELETE /api/challenges/[id]/winners/[wid]` (remove)
+- [ ] Create `POST /api/challenges/[id]/winners/publish` (batch publish + award XP+Points)
+- [ ] Set project `isWinner=true` + badges
+- [ ] Send winner notification (in-app + push + email)
+- [ ] **Verify**: select → publish → XP+Points awarded → notifications sent → badges show
+
+## Phase 11: Email Scheduling
+- [ ] Create `GET /api/challenges/[id]/emails` (list scheduled)
+- [ ] Create `POST /api/challenges/[id]/emails` (schedule)
+- [ ] Create `PATCH /api/challenges/[id]/emails/[eid]` (edit before send)
+- [ ] Create `DELETE /api/challenges/[id]/emails/[eid]` (cancel)
+- [ ] Create `POST /api/challenges/[id]/emails/[eid]/send-now` (manual trigger)
+- [ ] Create `/api/cron/send-scheduled-emails` (every 15 min)
+- [ ] **Verify**: schedule → cron picks up → sends → manual trigger works
+
+## Phase ANA: Analytics
+- [ ] Add `AnalyticsEvent` + `AnalyticsDailyStat` models
+- [ ] Run migration
+- [ ] Create `lib/analytics.ts` (client-side tracker with sendBeacon)
+- [ ] Create `lib/api-tracker.ts` (server-side API tracking)
+- [ ] Create `components/providers/AnalyticsProvider.tsx`
+- [ ] Create `POST /api/analytics/collect` (receive events, rate limited)
+- [ ] Create `GET /api/analytics/stats` (CORE: dashboard stats)
+- [ ] Create `GET /api/analytics/events` (CORE: raw events)
+- [ ] Create `GET /api/analytics/funnel` (CORE: funnel analysis)
+- [ ] Create `/api/cron/aggregate-analytics` (daily aggregation)
+- [ ] Wrap `app/layout.tsx` with AnalyticsProvider
+- [ ] Add `trackEvent` calls to key user actions
+- [ ] Deploy Umami separately (same PostgreSQL)
+- [ ] Add Umami script tag to `app/layout.tsx`
+- [ ] Create `/core/analytics/page.tsx` (admin dashboard)
+- [ ] Add `ApiHealthLog` model to schema
+- [ ] Run migration
+- [ ] Create `lib/api-monitor.ts` (withMonitoring wrapper)
+- [ ] Create `GET /api/monitoring/health` (CORE: health summary)
+- [ ] Create `GET /api/monitoring/slow` (CORE: slowest endpoints)
+- [ ] Create `GET /api/monitoring/errors` (CORE: recent errors)
+- [ ] Create `/api/cron/aggregate-health` (hourly)
+- [ ] Modify `/core/monitoring/page.tsx` (monitoring dashboard)
+- [ ] Wrap critical API routes with `withMonitoring()`
+- [ ] **Verify**: page views tracked → events tracked → dashboard shows data → Umami works → slow API alert fires → error logging works
+
+## Phase UI: Navigation + Page Consistency
+- [ ] Update `FloatingNav.tsx` (6-item nav: Home, Programs, Earn▾, Challenges▾, Shop, Contact)
+- [ ] Update `/public/bounty` page (match programs/playbooks layout)
+- [ ] Update `/public/leaderboard` page (match programs/playbooks layout)
+- [ ] Create `/public/contact/page.tsx`
+- [ ] Create `POST /api/public/contact` (rate limited, honeypot)
+- [ ] **Verify**: nav works on mobile + desktop, pages consistent, contact form sends
+
+## Phase UI-2: Public Dashboard Changes
+- [ ] Modify `PublicHero.tsx` (new stat boxes: Playbooks, Bounties, Quests, Ranking)
+- [ ] Add dashboard modal for CORE/MEMBER (sessionStorage one-time)
+- [ ] Modify `PublicPageClient.tsx` (merge event badges — first card only)
+- [ ] Remove Playbooks section from dashboard
+- [ ] Modify `app/public/page.tsx` (add quest stats + rank queries)
+- [ ] Create `GET /api/public/dashboard-stats` (aggregated public stats)
+- [ ] Create `GET /api/public/dashboard-stats/user` (user-specific stats)
+- [ ] Add wallet + projects sections to `/public/profile`
+- [ ] Create `/public/profile/wallet` page
+- [ ] Create `/public/profile/projects` page
+- [ ] **Verify**: stat boxes show correct data, events merged correctly, profile shows wallet + projects
+
+## Phase CORE: Core Admin Dashboard
+- [ ] Add 6 new resource cards (Challenges, Quests, Swag, Showcase, PII, Analytics)
+- [ ] Add 2 new quick actions (Review Queue, Scheduled Emails)
+- [ ] Remove old `Quest Submissions` card
+- [ ] Merge `Projects` card with showcase
+- [ ] Create `/core/challenges/page.tsx` + new + [id]
+- [ ] Create `/core/quests/page.tsx` + new
+- [ ] Create `/core/shop/page.tsx` + new + orders
+- [ ] Create `/core/projects/showcase/page.tsx`
+- [ ] Create `/core/pii/page.tsx` (SuperAdmin only)
+- [ ] Create `/core/review-queue/page.tsx`
+- [ ] Create `GET /api/admin/pii/[vaultId]`
+- [ ] Create `DELETE /api/admin/pii/[vaultId]`
+- [ ] Create `POST /api/admin/pii/search`
+- [ ] Add `challenges`, `quests`, `shop`, `pii`, `analytics` permission keys
+- [ ] **Verify**: all cards render, permissions work, PII only for SuperAdmin
+
+## Phase MEMBER: Member Dashboard
+- [ ] Create `WalletWidget.tsx` (XP + Points + Rank + Expiry)
+- [ ] Create `ActiveQuests.tsx` (quest preview with progress)
+- [ ] Create `MyProjects.tsx` (user's projects preview)
+- [ ] Create `ShopPreview.tsx` (featured swag items)
+- [ ] Modify `MemberDashboard.tsx` (add new sections, remove Content + Playbooks)
+- [ ] Modify `app/member/page.tsx` (add wallet, quest, project, shop data fetching)
+- [ ] Create `/member/quests/page.tsx`
+- [ ] Create `/member/projects/page.tsx`
+- [ ] Create `/member/shop/page.tsx` + orders
+- [ ] Create `/member/wallet/page.tsx`
+- [ ] **Verify**: wallet shows, quests show member-only, projects show, shop shows member-only items
+
+## Phase PWA: Progressive Web App
+- [ ] Create `public/manifest.json`
+- [ ] Create `public/sw.js` (service worker with caching strategy)
+- [ ] Create app icons (192, 512, maskable)
+- [ ] Create `/app/offline/page.tsx`
+- [ ] Create `components/pwa/InstallPrompt.tsx`
+- [ ] Create `components/pwa/ServiceWorkerRegistration.tsx`
+- [ ] Add manifest + meta tags to `app/layout.tsx`
+- [ ] Implement browsable content caching (stale-while-revalidate)
+- [ ] Cache clear on login/logout
+- [ ] **Verify**: install prompt shows on mobile, offline fallback works, cached pages load offline
+
+## Phase PERF: Performance + Optimization
+- [ ] Add Prisma connection pooling + slow query logging
+- [ ] Add missing DB indexes (wallet, project, notification)
+- [ ] Add ISR (`revalidate`) to listing pages
+- [ ] Add Cloudinary image optimization (f_auto, q_auto)
+- [ ] Add dynamic imports for heavy components
+- [ ] Add cursor-based pagination for large datasets
+- [ ] Create `lib/cache.ts` (Redis cache helper)
+- [ ] Cache hot data (leaderboard, stats)
+- [ ] **Verify**: Lighthouse score > 90, no slow queries in logs, pages load < 2s
+
+## Phase 13: Security Hardening
+- [ ] Audit all API routes for proper auth checks
+- [ ] Ensure all POST routes have rate limiting
+- [ ] Ensure all user inputs pass through sanitization
+- [ ] Add CSRF verification on public POST routes
+- [ ] Verify cron endpoints use CRON_SECRET
+- [ ] Add payload size limits to all POST routes
+- [ ] Remove old quest submission files
+- [ ] Remove old Contribution quest logic
+- [ ] Remove `CommunityMember.totalXp` references
+- [ ] **Verify**: full security audit passes, no unprotected routes
+
+## Phase EDGE: Edge Case Hardening
+- [ ] Fix wallet race condition ($transaction + Serializable)
+- [ ] Fix swag stock race condition (atomic decrement)
+- [ ] Fix registration dedup (@@unique constraint)
+- [ ] Add optimistic locking for project edits (version field)
+- [ ] Fix team deadline timezone handling (UTC + display)
+- [ ] Fix points expiry during spend (lock wallet row)
+- [ ] Add email delivery retry on failure
+- [ ] Add Cloudinary upload confirmation workflow
+- [ ] Add payload size limits (50KB max)
+- [ ] Add soft-delete cascade filters (reusable activeProjectFilter)
+- [ ] Add PII vault key rotation support (PII_KEY_VERSION)
+- [ ] Fix partner link token brute force (32-byte tokens + rate limit)
+- [ ] Fix referral self-click inflation (IP + code + day dedup)
+- [ ] Fix bounty audience bug (audience: "all" works for everyone)
+- [ ] **Verify**: all 14 edge cases tested, race conditions cannot occur
+
+## Phase CSV: Export + Data
+- [ ] Create `GET /api/challenges/[id]/export/registrations` (CSV)
+- [ ] Create `GET /api/challenges/[id]/export/submissions` (CSV)
+- [ ] **Verify**: CSV downloads with correct data
+
+---
+
+## Summary
+
+| Status | Count |
+|---|---|
+| Total tasks | ~260 |
+| Completed | 0 |
+| In Progress | 0 |
+| Not Started | ~260 |
