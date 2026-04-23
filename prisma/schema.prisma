@@ -819,3 +819,285 @@ model SwagOrder {
   @@index([status])
   @@index([itemId])
 }
+
+// ===== USER PROJECTS =====
+
+model UserProject {
+  id            String    @id @default(uuid())
+  title         String
+  slug          String    @unique
+  description   String?
+  coverImage    String?
+  images        Json?     // array of image URLs
+  demoUrl       String?
+  repoUrl       String?
+  techStack     String[]  @default([])
+  tags          String[]  @default([])
+  teamEmails    String[]  @default([]) // all team member emails
+  ownerEmail    String    // creator
+  viewCount     Int       @default(0)
+  likeCount     Int       @default(0)
+  commentCount  Int       @default(0)
+  status        String    @default("published") // "draft", "published", "hidden", "reported"
+  isWinner      Boolean   @default(false)
+  winnerBadge   String?   // "1st", "2nd", "3rd", "honorable"
+  challengeId   String?   // linked challenge (if submitted to one)
+  version       Int       @default(1) // optimistic locking
+  privacy       Json?     // { showTeam: true, showRepo: true }
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  deletedAt     DateTime?
+
+  versions      ProjectVersion[]
+  comments      ProjectComment[]
+  likes         ProjectLike[]
+  challenge     Challenge?   @relation(fields: [challengeId], references: [id])
+
+  @@index([ownerEmail])
+  @@index([slug])
+  @@index([challengeId])
+  @@index([status])
+  @@index([isWinner])
+  @@index([deletedAt])
+}
+
+model ProjectVersion {
+  id          String   @id @default(uuid())
+  projectId   String
+  versionNum  Int
+  title       String
+  description String?
+  changes     String?  // what changed in this version
+  snapshot    Json?    // snapshot of project data at this version
+  createdBy   String   // email of editor
+  createdAt   DateTime @default(now())
+
+  project     UserProject @relation(fields: [projectId], references: [id])
+
+  @@index([projectId, versionNum])
+}
+
+model ProjectComment {
+  id          String    @id @default(uuid())
+  projectId   String
+  authorEmail String
+  content     String
+  isHidden    Boolean   @default(false) // owner can hide
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+
+  project     UserProject @relation(fields: [projectId], references: [id])
+
+  @@index([projectId, createdAt])
+  @@index([authorEmail])
+  @@index([deletedAt])
+}
+
+model ProjectLike {
+  id          String   @id @default(uuid())
+  projectId   String
+  userEmail   String
+  createdAt   DateTime @default(now())
+
+  project     UserProject @relation(fields: [projectId], references: [id])
+
+  @@unique([projectId, userEmail])
+  @@index([projectId])
+  @@index([userEmail])
+}
+
+model ShowcaseSection {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  projectIds  String[] @default([]) // ordered list of project IDs
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([sortOrder])
+}
+
+// ===== CHALLENGES =====
+
+model Challenge {
+  id             String    @id @default(uuid())
+  title          String
+  slug           String    @unique
+  description    String?
+  coverImage     String?
+  body           Json?     // rich text content
+  status         String    @default("draft") // "draft", "registration_open", "in_progress", "judging", "completed", "cancelled"
+  startDate      DateTime?
+  endDate        DateTime?
+  registrationDeadline DateTime?
+  submissionDeadline   DateTime?
+  maxTeamSize    Int       @default(4)
+  minTeamSize    Int       @default(1)
+  allowSolo      Boolean   @default(true)
+  prizePool      String?   // "₹50,000" or "XP + Swag"
+  rules          String?
+  judgingCriteria String?
+  createdBy      String    // admin email
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+  deletedAt      DateTime?
+
+  tracks         ChallengeTrack[]
+  registrations  ChallengeRegistration[]
+  submissions    ChallengeSubmission[]
+  winners        ChallengeWinner[]
+  referralCodes  ReferralCode[]
+  partnerLinks   PartnerReviewLink[]
+  scheduledEmails ScheduledEmail[]
+  projects       UserProject[]
+
+  @@index([status])
+  @@index([slug])
+  @@index([deletedAt])
+}
+
+model ChallengeTrack {
+  id            String   @id @default(uuid())
+  challengeId   String
+  name          String
+  description   String?
+  prizeAmount   String?
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  challenge     Challenge @relation(fields: [challengeId], references: [id])
+
+  @@index([challengeId])
+}
+
+model ChallengeRegistration {
+  id            String    @id @default(uuid())
+  challengeId   String
+  captainEmail  String
+  teamName      String?
+  trackId       String?   // which track they're competing in
+  referralCode  String?   // how they found the challenge
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  status        String    @default("registered") // "registered", "confirmed", "withdrawn"
+  createdAt     DateTime  @default(now())
+
+  challenge     Challenge @relation(fields: [challengeId], references: [id])
+  teamMembers   ChallengeTeamMember[]
+
+  @@unique([challengeId, captainEmail]) // prevent duplicate registration
+  @@index([challengeId])
+  @@index([captainEmail])
+}
+
+model ChallengeTeamMember {
+  id              String   @id @default(uuid())
+  registrationId  String
+  email           String
+  role            String   @default("member") // "captain", "member"
+  status          String   @default("pending") // "pending", "accepted", "declined"
+  joinedAt        DateTime @default(now())
+
+  registration    ChallengeRegistration @relation(fields: [registrationId], references: [id])
+
+  @@unique([registrationId, email])
+  @@index([registrationId])
+  @@index([email])
+}
+
+model ChallengeSubmission {
+  id              String    @id @default(uuid())
+  challengeId     String
+  registrationId  String?
+  projectId       String?   // linked UserProject
+  teamEmail       String    // captain email
+  trackId         String?
+  demoUrl         String?
+  repoUrl         String?
+  presentationUrl String?
+  description     String?
+  status          String    @default("submitted") // "submitted", "under_review", "accepted", "disqualified"
+  reviewNotes     String?
+  submittedAt     DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+
+  challenge       Challenge @relation(fields: [challengeId], references: [id])
+
+  @@index([challengeId])
+  @@index([teamEmail])
+  @@index([status])
+}
+
+model ChallengeWinner {
+  id            String    @id @default(uuid())
+  challengeId   String
+  submissionId  String?
+  projectId     String?
+  teamEmail     String
+  trackId       String?
+  position      String    // "1st", "2nd", "3rd", "honorable"
+  prizeAmount   String?
+  xpAwarded     Int       @default(0)
+  pointsAwarded Int       @default(0)
+  isPublished   Boolean   @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  challenge     Challenge @relation(fields: [challengeId], references: [id])
+
+  @@index([challengeId])
+  @@index([isPublished])
+}
+
+model ReferralCode {
+  id            String   @id @default(uuid())
+  challengeId   String
+  code          String   @unique
+  createdBy     String   // email of creator
+  clicks        Int      @default(0)
+  conversions   Int      @default(0) // registrations via this code
+  createdAt     DateTime @default(now())
+
+  challenge     Challenge @relation(fields: [challengeId], references: [id])
+
+  @@index([challengeId])
+  @@index([code])
+}
+
+model PartnerReviewLink {
+  id            String    @id @default(uuid())
+  challengeId   String
+  token         String    @unique // 32-byte random token
+  partnerName   String?
+  partnerEmail  String?
+  expiresAt     DateTime
+  accessCount   Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  challenge     Challenge @relation(fields: [challengeId], references: [id])
+
+  @@index([challengeId])
+  @@index([token])
+}
+
+model ScheduledEmail {
+  id            String    @id @default(uuid())
+  challengeId   String
+  subject       String
+  body          String
+  recipientType String   // "all_registered", "all_submitted", "winners", "custom"
+  customEmails  String[] @default([])
+  scheduledFor  DateTime
+  sentAt        DateTime?
+  status        String   @default("scheduled") // "scheduled", "sending", "sent", "cancelled"
+  createdBy     String   // admin email
+  createdAt     DateTime @default(now())
+
+  challenge     Challenge @relation(fields: [challengeId], references: [id])
+
+  @@index([challengeId])
+  @@index([status, scheduledFor])
+}
