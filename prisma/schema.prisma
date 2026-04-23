@@ -646,3 +646,53 @@ model Notification {
   @@index([userEmail, isRead, createdAt])
   @@index([userEmail, createdAt])
 }
+
+// Dual Currency Wallet (XP + Points)
+model UserWallet {
+  id            String   @id @default(uuid())
+  userEmail     String   @unique
+  totalXp       Int      @default(0)  // lifetime XP (never decreases)
+  pointsBalance Int      @default(0)  // spendable points (can decrease)
+  totalEarned   Int      @default(0)  // lifetime points earned
+  totalSpent    Int      @default(0)  // lifetime points spent
+  totalExpired  Int      @default(0)  // lifetime points expired
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+
+  batches       PointsBatch[]
+  transactions  WalletTransaction[]
+
+  @@index([totalXp])  // leaderboard sort
+}
+
+model PointsBatch {
+  id        String   @id @default(uuid())
+  walletId  String
+  amount    Int      // original amount
+  remaining Int      // how much is left (decreases on spend/expire)
+  source    String   // "quest", "bounty", "admin_adjust", "challenge_winner"
+  sourceId  String?  // quest ID, bounty ID, etc.
+  earnedAt  DateTime @default(now())
+  expiresAt DateTime // when this batch expires
+
+  wallet    UserWallet @relation(fields: [walletId], references: [id])
+
+  @@index([walletId, expiresAt])
+  @@index([expiresAt, remaining])  // expiry cron
+}
+
+model WalletTransaction {
+  id           String   @id @default(uuid())
+  walletId     String
+  pointsAmount Int      // positive = earn, negative = spend
+  xpAmount     Int      // XP earned (always >= 0)
+  type         String   // "quest_reward", "bounty_reward", "swag_purchase", "admin_adjust", "expiry"
+  description  String?
+  sourceId     String?  // related entity ID
+  createdAt    DateTime @default(now())
+
+  wallet       UserWallet @relation(fields: [walletId], references: [id])
+
+  @@index([walletId, createdAt])
+  @@index([type])
+}
