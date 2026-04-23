@@ -612,3 +612,22 @@ model LumaEvent {
   @@index([startAt])
   @@index([visibility])
 }
+
+// PII Vault — stores encrypted personal data with HMAC search index
+model PersonalVault {
+  id            String   @id @default(uuid())
+  entityType    String   // "Member", "CommunityMember", "PublicUser"
+  entityId      String   // ID of the related record
+  fieldName     String   // "email", "name", "phone", etc.
+  encryptedValue String  // AES-256-GCM encrypted value
+  hmacIndex     String?  // HMAC-SHA256 hash for searching (e.g., email lookup)
+  keyVersion    Int      @default(1) // for future key rotation
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+
+  @@unique([entityType, entityId, fieldName])
+  @@index([entityType, entityId])
+  @@index([hmacIndex])
+  @@index([entityType, fieldName, hmacIndex])
+}
