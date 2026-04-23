@@ -539,19 +539,25 @@ model MemberExtraProfile {
 }
 
 model Bounty {
-  id          String    @id @default(uuid())
-  title       String
-  description String?
-  type        String    // "tweet", "thread", "blog", "video", "developer"
-  xpReward    Int       @default(10)
-  frequency   String    // "daily", "twice-weekly", "weekly", "biweekly"
-  audience    String    @default("member") // "member" or "public"
-  status      String    @default("active") // "active", "paused", "closed"
-  deadline    DateTime?
-  maxPerCycle Int?      // Max submissions per member per cycle
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now()) @updatedAt
-  deletedAt   DateTime?
+  id             String    @id @default(uuid())
+  title          String
+  description    String?
+  type           String    // "tweet", "thread", "blog", "video", "developer"
+  xpReward       Int       @default(10)
+  pointsReward   Int       @default(10)  // NEW: points awarded on approval
+  frequency      String    // "daily", "twice-weekly", "weekly", "biweekly"
+  audience       String    @default("all") // "all", "member", "public"
+  status         String    @default("active") // "active", "paused", "closed"
+  deadline       DateTime?
+  maxPerCycle    Int?      // Max submissions per member per cycle
+  maxSubmissions Int?      // NEW: total max submissions across all users
+  brief          String?   // NEW: detailed brief / instructions
+  resources      Json?     // NEW: array of { label, url } resource links
+  rules          String?   // NEW: submission rules / requirements
+  cash           Int?      // NEW: optional cash reward (in INR)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+  deletedAt      DateTime?
 
   submissions BountySubmission[]
 
@@ -568,6 +574,8 @@ model BountySubmission {
   status           String    @default("pending") // "pending", "approved", "rejected"
   reviewNote       String?
   xpAwarded        Int?
+  pointsAwarded    Int?      // NEW: points awarded on approval
+  submissionNumber Int?      // NEW: sequential number for this bounty
 
   bounty           Bounty    @relation(fields: [bountyId], references: [id])
   bountyId         String

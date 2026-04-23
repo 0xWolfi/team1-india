@@ -10,10 +10,16 @@ const BountyCreateSchema = z.object({
     description: z.string().max(2000).optional(),
     type: z.enum(["tweet", "thread", "blog", "video", "developer"]),
     xpReward: z.number().int().min(1).max(1000).default(10),
+    pointsReward: z.number().int().min(0).max(1000).default(10),
     frequency: z.enum(["daily", "twice-weekly", "weekly", "biweekly"]),
-    audience: z.enum(["member", "public"]).default("member"),
+    audience: z.enum(["all", "member", "public"]).default("all"),
     deadline: z.string().optional(),
     maxPerCycle: z.number().int().min(1).max(100).optional(),
+    maxSubmissions: z.number().int().min(1).optional(),
+    brief: z.string().max(5000).optional(),
+    resources: z.array(z.object({ label: z.string(), url: z.string() })).optional(),
+    rules: z.string().max(2000).optional(),
+    cash: z.number().int().min(0).optional(),
 });
 
 // GET — list bounties
@@ -25,16 +31,19 @@ export async function GET() {
 
     // @ts-ignore
     const role = session.user.role;
-    if (role !== 'MEMBER' && role !== 'CORE') {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
 
     try {
         const where: any = { deletedAt: null };
-        // Members only see active member-audience bounties
-        if (role === 'MEMBER') {
+        // Filter by audience based on role
+        if (role === 'CORE') {
+            // CORE sees all bounties (any status)
+        } else if (role === 'MEMBER') {
             where.status = 'active';
-            where.audience = 'member';
+            where.audience = { in: ['all', 'member'] };
+        } else {
+            // PUBLIC users see active bounties with audience "all" or "public"
+            where.status = 'active';
+            where.audience = { in: ['all', 'public'] };
         }
 
         const bounties = await prisma.bounty.findMany({
@@ -79,10 +88,16 @@ export async function POST(request: NextRequest) {
                 description: data.description,
                 type: data.type,
                 xpReward: data.xpReward,
+                pointsReward: data.pointsReward,
                 frequency: data.frequency,
                 audience: data.audience,
                 deadline: data.deadline ? new Date(data.deadline) : null,
                 maxPerCycle: data.maxPerCycle,
+                maxSubmissions: data.maxSubmissions,
+                brief: data.brief,
+                resources: data.resources,
+                rules: data.rules,
+                cash: data.cash,
             }
         });
 

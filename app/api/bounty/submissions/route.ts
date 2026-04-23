@@ -77,8 +77,8 @@ export async function POST(request: NextRequest) {
     // @ts-ignore
     const userId: string = session.user.id;
 
-    if ((role !== 'MEMBER' && role !== 'PUBLIC') || !userId) {
-        return NextResponse.json({ error: "Only members or public users can submit bounties" }, { status: 403 });
+    if (!userId) {
+        return NextResponse.json({ error: "User ID required" }, { status: 403 });
     }
 
     try {
@@ -96,11 +96,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Bounty not available" }, { status: 404 });
         }
 
-        // Validate audience: members can only submit to member bounties, public to public bounties
-        const expectedAudience = role === 'MEMBER' ? 'member' : 'public';
-        if (bounty.audience !== expectedAudience) {
-            return NextResponse.json({ error: "This bounty is not available for your role" }, { status: 403 });
+        // Validate audience: "all" allows everyone, "member" requires MEMBER/CORE, "public" allows PUBLIC
+        if (bounty.audience === 'member' && role !== 'MEMBER' && role !== 'CORE') {
+            return NextResponse.json({ error: "This bounty is for members only" }, { status: 403 });
         }
+        if (bounty.audience === 'public' && role === 'MEMBER') {
+            // Members can also submit to public bounties — no restriction
+        }
+        // audience: "all" → anyone logged in can submit
 
         // Check for existing submission (one per bounty per user)
         if (role === 'MEMBER') {
