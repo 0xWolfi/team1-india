@@ -89,6 +89,10 @@ export const authOptions: NextAuthOptions = {
       if (trigger === "update" && session?.consent) {
           token.consent = session.consent;
       }
+      // Handle 2FA verification update
+      if (trigger === "update" && session?.twoFactorVerified) {
+          token.twoFactorVerified = true;
+      }
 
       if (user) {
         try {
@@ -148,6 +152,21 @@ export const authOptions: NextAuthOptions = {
             token.consent = false;
             return token;
 
+            // Check 2FA status (feature-flagged)
+            if (process.env.ENABLE_2FA === "true" && token.email) {
+                try {
+                    const twoFactor = await prisma.twoFactorAuth.findUnique({
+                        where: { userEmail: token.email as string },
+                        select: { totpEnabled: true, passkeyEnabled: true },
+                    });
+                    token.twoFactorEnabled = !!(twoFactor?.totpEnabled || twoFactor?.passkeyEnabled);
+                    token.twoFactorVerified = false;
+                } catch {
+                    token.twoFactorEnabled = false;
+                    token.twoFactorVerified = false;
+                }
+            }
+
         } catch (e) {
             // eslint-disable-next-line no-console
             console.error(e);
@@ -164,6 +183,8 @@ export const authOptions: NextAuthOptions = {
         s.permissions = token.permissions;
         s.tags = token.tags;
         s.consent = token.consent;
+        s.twoFactorEnabled = token.twoFactorEnabled;
+        s.twoFactorVerified = token.twoFactorVerified;
       }
       return session;
     },

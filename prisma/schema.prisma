@@ -1153,3 +1153,38 @@ model ApiHealthLog {
   @@index([endpoint, createdAt])
   @@index([statusCode, createdAt])
 }
+
+// ===== TWO-FACTOR AUTHENTICATION =====
+
+model TwoFactorAuth {
+  id              String    @id @default(uuid())
+  userEmail       String    @unique
+  totpSecret      String?   // encrypted via PII vault pattern
+  totpEnabled     Boolean   @default(false)
+  totpVerifiedAt  DateTime?
+  passkeyEnabled  Boolean   @default(false)
+  recoveryCodes   String?   // encrypted, comma-separated
+  recoveryUsed    String[]  @default([])
+  backupEmail     String?   // encrypted
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+
+  passkeys        Passkey[]
+
+  @@index([userEmail])
+}
+
+model Passkey {
+  id              String    @id @default(uuid())
+  twoFactorId     String
+  credentialId    String    @unique
+  publicKey       Bytes
+  counter         BigInt
+  deviceName      String?
+  createdAt       DateTime  @default(now())
+  lastUsedAt      DateTime?
+
+  twoFactor       TwoFactorAuth @relation(fields: [twoFactorId], references: [id])
+
+  @@index([twoFactorId])
+}
