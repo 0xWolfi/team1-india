@@ -225,14 +225,61 @@ export default function CorePage() {
             image: "/images/dashboard/community.png",
             items: [] 
         },
-        { 
-            title: "Logs", 
-            key: "logs", 
-            link: "/core/logs", 
-            iconName: "History", 
+        {
+            title: "Logs",
+            key: "logs",
+            link: "/core/logs",
+            iconName: "History",
             description: "Audit system activities, user actions, and change logs.",
             image: "/images/dashboard/data.png",
-            items: [] 
+            items: []
+        },
+
+        // ── New: Economy & Challenges ──
+        {
+            title: "Challenges",
+            key: "challenges",
+            link: "/core/challenges",
+            iconName: "Trophy",
+            description: "Create and manage hackathons, track registrations and submissions.",
+            image: "/images/dashboard/planning.png",
+            items: []
+        },
+        {
+            title: "Quests",
+            key: "quests",
+            link: "/core/quests",
+            iconName: "Target",
+            description: "Create quests, review completions, and award XP + points.",
+            image: "/images/dashboard/data.png",
+            items: []
+        },
+        {
+            title: "Swag Shop",
+            key: "shop",
+            link: "/core/shop",
+            iconName: "ShoppingBag",
+            description: "Manage swag items, stock, and fulfil redemption orders.",
+            image: "/images/dashboard/community.png",
+            items: []
+        },
+        {
+            title: "Analytics",
+            key: "analytics",
+            link: "/core/analytics",
+            iconName: "BarChart3",
+            description: "Page views, visitors, top pages, devices, and funnel analysis.",
+            image: "/images/dashboard/data.png",
+            items: []
+        },
+        {
+            title: "Review Queue",
+            key: "bounty",
+            link: "/core/review-queue",
+            iconName: "ClipboardCheck",
+            description: "Approve or reject pending quest and bounty submissions.",
+            image: "/images/dashboard/data.png",
+            items: []
         },
 
     ];

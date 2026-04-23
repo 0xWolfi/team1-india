@@ -237,7 +237,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                 {activeChallenges.length > 0 && (
                     <section id="challenges" className="py-8 scroll-mt-24 md:py-10">
                         <SectionHeader icon="Trophy" title="Challenges" subtitle="Compete, build, and win prizes" action={
-                            <Link href="/public/projects" className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all">
+                            <Link href="/public/challenges" className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all">
                                 View All <ArrowRight className="w-3.5 h-3.5"/>
                             </Link>
                         } />

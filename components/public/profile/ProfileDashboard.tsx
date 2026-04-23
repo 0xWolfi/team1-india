@@ -41,6 +41,116 @@ const getSocialIcon = (name: string) => {
     return <Link className="w-4 h-4"/>;
 };
 
+// ── Wallet Tab ──
+function WalletTab() {
+  const [wallet, setWallet] = useState<any>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [expiring, setExpiring] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/wallet").then((r) => r.json()).then((d) => setWallet(d.wallet)),
+      fetch("/api/wallet/history?limit=15").then((r) => r.json()).then((d) => setTransactions(d.transactions || [])),
+      fetch("/api/wallet/expiring").then((r) => r.json()).then((d) => setExpiring(d.expiring || [])),
+    ]).finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="text-zinc-500 text-sm text-center py-16">Loading wallet...</div>;
+
+  return (
+    <div className="space-y-6">
+      {wallet ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { label: "Total XP", value: wallet.totalXp?.toLocaleString(), color: "text-purple-500" },
+            { label: "Points Balance", value: wallet.pointsBalance?.toLocaleString(), color: "text-yellow-500" },
+            { label: "Total Earned", value: wallet.totalEarned?.toLocaleString(), color: "text-green-500" },
+            { label: "Total Spent", value: wallet.totalSpent?.toLocaleString(), color: "text-red-500" },
+          ].map((s) => (
+            <div key={s.label} className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-zinc-50 dark:bg-zinc-900">
+              <div className={`text-2xl font-bold ${s.color}`}>{s.value || "0"}</div>
+              <div className="text-xs text-zinc-500 mt-1">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-10 text-zinc-500 text-sm">No wallet yet. Complete quests or bounties to earn XP and points!</div>
+      )}
+
+      {expiring.length > 0 && (
+        <div className="p-4 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
+          <div className="text-sm font-bold text-yellow-600 dark:text-yellow-400 mb-2">Points Expiring Soon</div>
+          {expiring.map((b: any) => (
+            <div key={b.id} className="flex justify-between text-sm py-1 text-zinc-600 dark:text-zinc-400">
+              <span>{b.remaining} points</span>
+              <span className="text-zinc-400">{new Date(b.expiresAt).toLocaleDateString()}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div>
+        <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-wider mb-4">Recent Transactions</h3>
+        <div className="space-y-2">
+          {transactions.map((tx: any) => (
+            <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl border border-black/5 dark:border-white/5">
+              <div>
+                <div className="text-sm font-medium text-black dark:text-white">{tx.description || tx.type?.replace(/_/g, " ")}</div>
+                <div className="text-xs text-zinc-400">{new Date(tx.createdAt).toLocaleDateString()}</div>
+              </div>
+              <div className="text-right">
+                {tx.xpAmount > 0 && <div className="text-xs text-purple-500 font-medium">+{tx.xpAmount} XP</div>}
+                <div className={`text-sm font-bold ${tx.pointsAmount >= 0 ? "text-green-500" : "text-red-500"}`}>
+                  {tx.pointsAmount >= 0 ? "+" : ""}{tx.pointsAmount} pts
+                </div>
+              </div>
+            </div>
+          ))}
+          {transactions.length === 0 && <div className="text-center py-10 text-zinc-400 text-sm">No transactions yet.</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Projects Tab ──
+function ProjectsTab() {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/projects/my").then((r) => r.json()).then((d) => setProjects(d.projects || [])).finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="text-zinc-500 text-sm text-center py-16">Loading projects...</div>;
+
+  return (
+    <div className="space-y-4">
+      {projects.map((p: any) => (
+        <a key={p.id} href={`/public/projects/${p.slug}`} className="flex items-center gap-4 p-4 rounded-xl border border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 transition-colors">
+          {p.coverImage && <div className="w-16 h-16 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0"><img src={p.coverImage} alt="" className="w-full h-full object-cover" /></div>}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-bold text-sm text-black dark:text-white">{p.title}</h3>
+            {p.description && <p className="text-xs text-zinc-500 line-clamp-1 mt-0.5">{p.description}</p>}
+            <div className="flex items-center gap-3 mt-1 text-xs text-zinc-400">
+              <span>{p.likeCount || 0} likes</span>
+              <span>{p.viewCount || 0} views</span>
+              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${p.status === "published" ? "bg-green-500/10 text-green-500" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"}`}>{p.status}</span>
+            </div>
+          </div>
+        </a>
+      ))}
+      {projects.length === 0 && (
+        <div className="text-center py-16">
+          <div className="text-zinc-400 text-sm mb-2">No projects yet.</div>
+          <p className="text-zinc-500 text-xs">Create your first project to showcase your work!</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashboardProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -317,7 +427,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
 
               {/* Tabs Navigation */}
               <div className="flex border-b border-zinc-800 mb-8 overflow-x-auto">
-                  {["OVERVIEW", "EVENTS", "CONTENT", "ACHIEVEMENTS"].map((tab) => (
+                  {["OVERVIEW", "WALLET", "PROJECTS", "EVENTS", "CONTENT", "ACHIEVEMENTS"].map((tab) => (
                       <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
@@ -419,6 +529,18 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 )}
                             </section>
                         </div>
+                    </div>
+                  )}
+
+                  {activeTab === "WALLET" && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <WalletTab />
+                    </div>
+                  )}
+
+                  {activeTab === "PROJECTS" && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                      <ProjectsTab />
                     </div>
                   )}
 
