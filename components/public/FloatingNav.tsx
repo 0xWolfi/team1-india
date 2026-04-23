@@ -18,10 +18,10 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 const navItems = [
     { label: "Home", href: "/public", icon: "Home" },
     { label: "Programs", href: "/public/programs", icon: "Rocket" },
-    { label: "Playbooks", href: "/public/playbooks", icon: "Book" },
+    { label: "Projects", href: "/public/projects", icon: "Layers" },
     { label: "Bounties", href: "/public/bounty", icon: "Zap" },
     { label: "Leaderboard", href: "/public/leaderboard", icon: "Trophy" },
-    { label: "Contact", href: "/public#contact", icon: "Mail" },
+    { label: "Contact", href: "/public/contact", icon: "Mail" },
 ];
 
 export function FloatingNav() {

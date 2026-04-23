@@ -137,6 +137,22 @@ export function MemberDashboard({
             </div>
 
 
+            {/* ── Quick Nav Cards ── */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-6">
+                {[
+                    { label: "Quests", href: "/member/quests", icon: "Target", color: "text-purple-500" },
+                    { label: "Wallet", href: "/member/wallet", icon: "Wallet", color: "text-yellow-500" },
+                    { label: "Projects", href: "/member/projects", icon: "Layers", color: "text-blue-500" },
+                    { label: "Shop", href: "/member/shop", icon: "ShoppingBag", color: "text-green-500" },
+                    { label: "Bounties", href: "/member/bounty", icon: "Zap", color: "text-red-500" },
+                ].map((item) => (
+                    <Link key={item.label} href={item.href} className={cn("flex items-center gap-2.5 p-3 rounded-xl transition-all hover:border-black/10 dark:hover:border-white/10", glassClass)}>
+                        <DynamicIcon name={item.icon} className={`w-4 h-4 ${item.color}`} />
+                        <span className="text-xs font-semibold text-black dark:text-white">{item.label}</span>
+                    </Link>
+                ))}
+            </div>
+
             {/* ── Profile Incomplete Notification ── */}
             {!isProfileComplete && (
                 <Link
