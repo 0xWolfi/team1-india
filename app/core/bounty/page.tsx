@@ -117,7 +117,7 @@ export default function CoreBountyPage() {
                         </button>
                         <Link
                             href="/core/bounty/new"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 transition-all"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-black dark:bg-white dark:text-black rounded-xl text-sm font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all"
                         >
                             <Plus className="w-4 h-4"/>
                             New Bounty

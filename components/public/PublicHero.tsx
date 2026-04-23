@@ -18,6 +18,9 @@ interface PublicHeroProps {
         totalEvents: number;
         activeBounties: number;
         totalPlaybooks: number;
+        activeQuests: number;
+        totalProjects: number;
+        activeChallenges: number;
     };
 }
 
@@ -27,22 +30,19 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
 
     const statCards = [
         { label: "Events Hosted", value: stats?.totalEvents || 0, icon: "Calendar", href: "#activity-feed" },
-        { label: "Active Bounties", value: stats?.activeBounties || 0, icon: "Zap", href: "/public/bounty" },
-        { label: "Leaderboard", value: null, icon: "Trophy", href: "/public/leaderboard" },
+        { label: "Bounties", value: stats?.activeBounties || 0, icon: "Zap", href: "/public/bounty" },
+        { label: "Quests", value: stats?.activeQuests || 0, icon: "Target", href: "#quests" },
+        { label: "Projects", value: stats?.totalProjects || 0, icon: "Layers", href: "/public/projects" },
+        { label: "Challenges", value: stats?.activeChallenges || 0, icon: "Trophy", href: "#challenges" },
         { label: "Playbooks", value: stats?.totalPlaybooks || 0, icon: "BookOpen", href: "#playbooks" },
     ];
 
     const handleStatClick = (href: string) => {
         if (href.startsWith('#')) {
-            // In-page anchor
             const el = document.getElementById(href.substring(1));
             if (el) el.scrollIntoView({ behavior: 'smooth' });
-        } else if (href === '/public/bounty' || href === '/public/leaderboard') {
-            if (isAuthenticated) {
-                router.push(href);
-            } else {
-                onLoginClick?.();
-            }
+        } else {
+            router.push(href);
         }
     };
 
@@ -109,7 +109,7 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
             </div>
 
             {/* Stats Strip */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
                 {statCards.map((stat) => (
                     <button
                         key={stat.label}

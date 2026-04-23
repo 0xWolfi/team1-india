@@ -114,7 +114,7 @@ export default function LogsPage() {
                     </span>
                     <button 
                         onClick={handleDownload}
-                        className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-xl font-bold text-xs hover:bg-zinc-200 transition-colors shadow-lg shadow-black/5 dark:shadow-white/5"
+                        className="flex items-center gap-2 bg-white text-black dark:bg-white dark:text-black px-4 py-2 rounded-xl font-bold text-xs hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors shadow-lg shadow-black/5 dark:shadow-white/5"
                     >
                         <Download className="w-3.5 h-3.5" /> Export CSV
                     </button>

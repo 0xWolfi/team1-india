@@ -150,7 +150,7 @@ export default function AttendancePage() {
                 {canManage && (
                     <button 
                         onClick={() => setIsModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm font-bold shadow-lg shadow-red-500/20"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black dark:bg-white dark:text-black rounded-lg hover:bg-red-500 hover:text-white transition-colors text-sm font-bold shadow-lg shadow-red-500/20"
                     >
                         <Calendar className="w-4 h-4"/> New Session
                     </button>
@@ -399,7 +399,7 @@ export default function AttendancePage() {
                                 <button 
                                     onClick={() => setModalStep(2)}
                                     disabled={!meetingName}
-                                    className="px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                                    className="px-8 py-3 bg-white text-black dark:bg-white dark:text-black rounded-xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                                 >
                                     Next Step
                                 </button>

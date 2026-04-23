@@ -43,7 +43,7 @@ export default async function ContentPage() {
              >
                 {canCreate && (
                     <Link href="/core/content/guides/new">
-                        <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors">
+                        <button className="flex items-center gap-2 bg-white text-black dark:bg-white dark:text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors">
                             <Plus className="w-4 h-4" /> Create Guide
                         </button>
                     </Link>

@@ -275,7 +275,7 @@ export default function CommunityMembersPage() {
              >
                 <button 
                     onClick={() => setIsAddingMember(true)}
-                    className="bg-white text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-black/5 dark:shadow-white/5 flex items-center gap-2 active:scale-95"
+                    className="bg-white text-black dark:bg-white dark:text-black px-4 py-2 rounded-lg text-sm font-semibold hover:bg-zinc-200 transition-all shadow-lg shadow-black/5 dark:shadow-white/5 flex items-center gap-2 active:scale-95"
                 >
                     <Plus className="w-4 h-4"/> Add Member
                 </button>
@@ -302,7 +302,7 @@ export default function CommunityMembersPage() {
                         onClick={() => handleTabChange('members')}
                         className={cn(
                             "px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2",
-                            activeTab === 'members' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-black dark:hover:text-white"
+                            activeTab === 'members' ? "bg-white text-black dark:bg-white dark:text-black shadow-lg" : "text-zinc-500 hover:text-black dark:hover:text-white"
                         )}
                     >
                         <Users className="w-3.5 h-3.5"/> Members
@@ -311,7 +311,7 @@ export default function CommunityMembersPage() {
                         onClick={() => handleTabChange('public')}
                         className={cn(
                             "px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2",
-                            activeTab === 'public' ? "bg-white text-black shadow-lg" : "text-zinc-500 hover:text-black dark:hover:text-white"
+                            activeTab === 'public' ? "bg-white text-black dark:bg-white dark:text-black shadow-lg" : "text-zinc-500 hover:text-black dark:hover:text-white"
                         )}
                     >
                         <Globe className="w-3.5 h-3.5"/> Public

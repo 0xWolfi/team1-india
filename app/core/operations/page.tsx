@@ -63,7 +63,7 @@ export default function OperationsPage() {
                 icon={<CheckCircle2 className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>}
             >
                 <button 
-                    className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all hover:bg-zinc-200 active:scale-95 text-sm"
+                    className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-lg bg-white px-4 font-medium text-black transition-all hover:bg-zinc-200 dark:hover:bg-zinc-800 active:scale-95 text-sm"
                     onClick={() => alert("Create Task Modal Coming Soon")}
                 >
                     <span className="flex items-center gap-2">

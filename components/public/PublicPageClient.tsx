@@ -129,6 +129,12 @@ export interface PublicPageData {
     upcomingEvents: LumaEventData[];
     mediaItems: any[];
     bountyCount: number;
+    questCount: number;
+    projectCount: number;
+    challengeCount: number;
+    activeQuests: any[];
+    featuredProjects: any[];
+    activeChallenges: any[];
     categorizedEvents: {
         live: LumaEventData[];
         upcoming: LumaEventData[];
@@ -147,7 +153,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
         }
     }, [status]);
 
-    const { playbooks, programs, upcomingEvents, mediaItems, bountyCount, categorizedEvents } = data;
+    const { playbooks, programs, upcomingEvents, mediaItems, bountyCount, questCount, projectCount, challengeCount, activeQuests, featuredProjects, activeChallenges, categorizedEvents } = data;
 
     return (
         <main className="h-[100dvh] w-full overflow-y-scroll overflow-x-hidden snap-y snap-mandatory md:h-auto md:w-auto md:overflow-visible md:snap-none text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-800 dark:selection:text-zinc-200 supports-[height:100svh]:h-[100svh]">
@@ -168,6 +174,9 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         totalEvents: upcomingEvents.length,
                         activeBounties: bountyCount,
                         totalPlaybooks: playbooks.length,
+                        activeQuests: questCount,
+                        totalProjects: projectCount,
+                        activeChallenges: challengeCount,
                     }}
                 />
 
@@ -223,6 +232,74 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         </div>
                     )}
                 </section>
+
+                {/* ── Challenges ── */}
+                {activeChallenges.length > 0 && (
+                    <section id="challenges" className="py-8 scroll-mt-24 md:py-10">
+                        <SectionHeader icon="Trophy" title="Challenges" subtitle="Compete, build, and win prizes" action={
+                            <Link href="/public/projects" className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all">
+                                View All <ArrowRight className="w-3.5 h-3.5"/>
+                            </Link>
+                        } />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {activeChallenges.map((c: any) => (
+                                <div key={c.id} className={cn("rounded-2xl p-5 transition-all duration-300 hover:border-black/[0.12] dark:hover:border-white/[0.12]", glassClass)}>
+                                    {c.coverImage && <div className="h-32 rounded-xl overflow-hidden mb-3 bg-zinc-200/50 dark:bg-zinc-800/50"><img src={c.coverImage} alt="" className="w-full h-full object-cover" /></div>}
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${c.status === "registration_open" ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-blue-500/10 text-blue-500 border border-blue-500/20"}`}>{c.status === "registration_open" ? "Open" : "In Progress"}</span>
+                                        {c.prizePool && <span className="text-[10px] font-medium text-yellow-500">{c.prizePool}</span>}
+                                    </div>
+                                    <h3 className="font-semibold text-black dark:text-white text-sm mb-1">{c.title}</h3>
+                                    {c.description && <p className="text-xs text-zinc-500 line-clamp-2">{c.description}</p>}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* ── Quests ── */}
+                {activeQuests.length > 0 && (
+                    <section id="quests" className="py-8 scroll-mt-24 md:py-10">
+                        <SectionHeader icon="Target" title="Active Quests" subtitle="Complete quests to earn XP and points" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {activeQuests.map((q: any) => (
+                                <div key={q.id} className={cn("rounded-2xl p-5 transition-all duration-300 hover:border-black/[0.12] dark:hover:border-white/[0.12]", glassClass)}>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-purple-500/10 text-purple-500 border border-purple-500/20">{q.type}</span>
+                                        {q.category && <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20">{q.category}</span>}
+                                    </div>
+                                    <h3 className="font-semibold text-black dark:text-white text-sm mb-1">{q.title}</h3>
+                                    {q.description && <p className="text-xs text-zinc-500 line-clamp-2 mb-2">{q.description}</p>}
+                                    <div className="flex items-center gap-3 text-xs">
+                                        <span className="text-purple-500 font-medium">+{q.xpReward} XP</span>
+                                        <span className="text-yellow-500 font-medium">+{q.pointsReward} pts</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {/* ── Featured Projects ── */}
+                {featuredProjects.length > 0 && (
+                    <section id="projects" className="py-8 scroll-mt-24 md:py-10">
+                        <SectionHeader icon="Layers" title="Community Projects" subtitle="Built by the Team1 India community" action={
+                            <Link href="/public/projects" className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all">
+                                View All <ArrowRight className="w-3.5 h-3.5"/>
+                            </Link>
+                        } />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {featuredProjects.map((p: any) => (
+                                <Link key={p.id} href={`/public/projects/${p.slug}`} className={cn("group rounded-2xl p-5 transition-all duration-300 hover:border-black/[0.12] dark:hover:border-white/[0.12]", glassClass)}>
+                                    {p.coverImage && <div className="h-32 rounded-xl overflow-hidden mb-3 bg-zinc-200/50 dark:bg-zinc-800/50"><img src={p.coverImage} alt="" className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" /></div>}
+                                    <h3 className="font-semibold text-black dark:text-white text-sm mb-1 group-hover:text-zinc-700 dark:group-hover:text-zinc-100 transition-colors">{p.title}</h3>
+                                    {p.description && <p className="text-xs text-zinc-500 line-clamp-2 mb-2">{p.description}</p>}
+                                    {p.techStack?.length > 0 && <div className="flex flex-wrap gap-1">{p.techStack.slice(0, 3).map((t: string) => <span key={t} className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 text-[10px] text-zinc-500">{t}</span>)}</div>}
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* ── Programs ── */}
                 <section

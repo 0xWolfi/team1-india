@@ -85,7 +85,7 @@ function SignInContent() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
                             onClick={handleGoogleSignIn}
-                            className="group/btn relative w-full h-12 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold text-sm transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] overflow-hidden flex items-center justify-center gap-3"
+                            className="group/btn relative w-full h-12 bg-white text-black dark:bg-white dark:text-black hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-xl font-bold text-sm transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] overflow-hidden flex items-center justify-center gap-3"
                         >
                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-300/40 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out"></div>
                              

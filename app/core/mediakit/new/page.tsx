@@ -62,7 +62,7 @@ export default function NewAssetPage() {
                     <button 
                          onClick={(e) => handleSubmit(e as any)}
                          disabled={isSubmitting}
-                         className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 transition-colors disabled:opacity-50"
+                         className="flex items-center gap-2 bg-white text-black dark:bg-white dark:text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50"
                     >
                         {isSubmitting ? 'Saving...' : <><Save className="w-4 h-4" /> Save Asset</>}
                     </button>

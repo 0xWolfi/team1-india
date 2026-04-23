@@ -142,7 +142,7 @@ export default function PollsPage() {
                 {canManage && !isCreating && (
                     <button 
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-xl font-bold transition-all hover:bg-red-500 hover:text-white text-sm shadow-lg shadow-red-500/20"
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black dark:bg-white dark:text-black rounded-xl font-bold transition-all hover:bg-red-500 hover:text-white text-sm shadow-lg shadow-red-500/20"
                     >
                         <Plus className="w-4 h-4"/> New Poll
                     </button>
@@ -236,7 +236,7 @@ export default function PollsPage() {
                             <button 
                                 onClick={createPoll}
                                 disabled={isSubmitting}
-                                className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-zinc-200 transition-all shadow-lg hover:translate-y-[-1px]"
+                                className="w-full py-4 bg-white text-black dark:bg-white dark:text-black font-bold rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all shadow-lg hover:translate-y-[-1px]"
                             >
                                 {isSubmitting ? "Launching..." : "Launch Poll"}
                             </button>

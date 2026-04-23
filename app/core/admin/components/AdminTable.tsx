@@ -106,7 +106,7 @@ export const AdminTable: React.FC<AdminTableProps> = ({
                                                 e.stopPropagation();
                                                 setActiveMenuId(activeMenuId === member.id ? null : member.id);
                                             }}
-                                            className={`p-1.5 rounded-md transition-all ${activeMenuId === member.id ? 'bg-white text-black' : 'hover:bg-black/10 dark:hover:bg-white/10 text-zinc-600 hover:text-black dark:hover:text-white'}`}
+                                            className={`p-1.5 rounded-md transition-all ${activeMenuId === member.id ? 'bg-white text-black dark:bg-white dark:text-black' : 'hover:bg-black/10 dark:hover:bg-white/10 text-zinc-600 hover:text-black dark:hover:text-white'}`}
                                         >
                                             <MoreVertical className="w-4 h-4"/>
                                         </button>

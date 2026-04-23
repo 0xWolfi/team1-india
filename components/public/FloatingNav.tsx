@@ -13,6 +13,7 @@ import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 import { ThemeToggle } from "@/components/website/ThemeToggle";
 import { useDrag } from "@use-gesture/react";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const navItems = [
     { label: "Home", href: "/public", icon: "Home" },
@@ -146,6 +147,7 @@ export function FloatingNav() {
 
                     {/* Right Actions */}
                     <div className="flex items-center gap-2 pl-1">
+                        {session?.user && <NotificationBell />}
                         {session?.user ? (
                             <button
                                 onClick={() => setShowUserMenu(true)}

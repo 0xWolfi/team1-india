@@ -88,7 +88,7 @@ export default function MemberExperimentsPage() {
                     </div>
 
                     <Link href="/member/experiments/new">
-                        <button className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors">
+                        <button className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-800 dark:hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors">
                             <Plus className="w-4 h-4"/> New Proposal
                         </button>
                     </Link>

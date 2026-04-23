@@ -202,7 +202,7 @@ Thank you!`
                                             ) : (
                                                 <Link
                                                     href={`/core/event-feedback/new?eventId=${event.id}&eventName=${encodeURIComponent(event.name)}&city=${encodeURIComponent(event.city || '')}`}
-                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-black hover:bg-zinc-100 transition-all"
+                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white text-black dark:bg-white dark:text-black hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all"
                                                 >
                                                     <Plus className="w-3.5 h-3.5" /> Create Feedback Form
                                                 </Link>

@@ -84,7 +84,7 @@ export default function NewExperimentPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 px-8 py-3 bg-white text-black hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-bold transition-all shadow-lg hover:shadow-black/10 dark:hover:shadow-white/10 hover:scale-105"
+                            className="flex items-center gap-2 px-8 py-3 bg-white text-black dark:bg-white dark:text-black hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-bold transition-all shadow-lg hover:shadow-black/10 dark:hover:shadow-white/10 hover:scale-105"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin"/> : <Save className="w-4 h-4"/>}
                             Submit Proposal
