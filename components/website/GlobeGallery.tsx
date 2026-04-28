@@ -128,7 +128,7 @@ export function GlobeGallery() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-4xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]"
         >
-          Glimpses Of Our Journey
+          Moments
         </motion.h2>
       </div>
 
