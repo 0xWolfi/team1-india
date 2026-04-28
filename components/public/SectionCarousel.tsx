@@ -29,10 +29,9 @@ export default function SectionCarousel({
     const scrollingContent = enableScroll && !isEmpty ? [...items, ...items, ...items, ...items] : [];
 
     return (
-        <section 
-            id={id} 
-            className="min-h-[100dvh] snap-center flex flex-col justify-center items-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)] relative scroll-mt-24 overflow-hidden md:min-h-0 md:block md:items-stretch md:py-8"
-            style={{ scrollSnapStop: 'always' }}
+        <section
+            id={id}
+            className="py-8 relative scroll-mt-24 overflow-hidden md:py-8"
         >
             <div className="container mx-auto px-6 relative z-10 w-full">
                 <div className="flex flex-col items-center text-center md:flex-row md:items-end md:text-left justify-between mb-8 gap-6">

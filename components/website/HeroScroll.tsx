@@ -132,42 +132,32 @@ function TextReveal({
    ═══════════════════════════════════════════ */
 
 function StatCard({
-  stat, glow, progress, counterRange, isDark,
+  stat, progress, counterRange, isDark,
 }: {
-  stat: (typeof impactStats)[0]; glow: MotionValue<number>; progress: MotionValue<number>; counterRange: [number, number]; isDark: boolean;
+  stat: (typeof impactStats)[0]; glow?: MotionValue<number>; progress: MotionValue<number>; counterRange: [number, number]; isDark: boolean;
 }) {
-  const bg = useTransform(glow, [0, 1], [isDark ? "rgba(24,24,27,0.4)" : "rgba(244,244,245,0.6)", "rgba(69,10,10,0.8)"]);
-  const border = useTransform(glow, [0, 1], [isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)", "rgba(239,68,68,0.3)"]);
-  const boxSh = useTransform(glow, [0, 1], ["0 0 0px rgba(0,0,0,0)", "0 0 40px rgba(255,57,74,0.15)"]);
-  const iconC = useTransform(glow, [0, 1], ["rgba(255,255,255,1)", "rgba(252,165,165,1)"]);
-  const numC = useTransform(glow, [0, 1], ["rgba(255,255,255,1)", "rgba(248,113,113,1)"]);
-  const txtC = useTransform(glow, [0, 1], ["rgba(161,161,170,1)", "rgba(254,202,202,0.9)"]);
-
-  // Image effects
-  const imgGrayscale = useTransform(glow, [0, 1], ["grayscale(100%)", "grayscale(0%)"]);
-  const imgOpacity = useTransform(glow, [0, 1], [0.6, 0.95]);
-  const redOverlayOpacity = useTransform(glow, [0, 1], [0, 0.3]);
+  // Permanent red glow state — no scroll-driven ramp
+  const bgStatic = stat.image ? undefined : "rgba(69,10,10,0.8)";
+  const borderStatic = "rgba(239,68,68,0.3)";
+  const boxShStatic = "0 0 40px rgba(255,57,74,0.15)";
+  const iconC = "rgba(252,165,165,1)";
+  const numC = "rgba(248,113,113,1)";
+  const txtC = "rgba(254,202,202,0.9)";
 
   return (
     <motion.div
-      style={{ backgroundColor: stat.image ? undefined : bg, borderColor: border, boxShadow: boxSh }}
+      style={{ backgroundColor: bgStatic, borderColor: borderStatic, boxShadow: boxShStatic }}
       className="relative flex flex-col justify-between p-3 sm:p-6 md:p-8 lg:p-10 min-h-[140px] sm:min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border bg-zinc-100/60 dark:bg-zinc-950/40"
     >
-      {/* Background image (if provided) */}
+      {/* Background image (if provided) — permanent color (no grayscale) */}
       {stat.image && (
         <>
-          <motion.div
-            className="absolute inset-0"
-            style={{ filter: imgGrayscale, opacity: imgOpacity }}
-          >
+          <div className="absolute inset-0" style={{ opacity: 0.95 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={stat.image} alt="" className="w-full h-full object-cover" />
-          </motion.div>
-          {/* Red hue overlay on focus */}
-          <motion.div
-            className="absolute inset-0 bg-red-600/60 mix-blend-multiply"
-            style={{ opacity: redOverlayOpacity }}
-          />
+          </div>
+          {/* Permanent red hue overlay */}
+          <div className="absolute inset-0 bg-red-600/60 mix-blend-multiply" style={{ opacity: 0.3 }} />
           {/* Dark gradient for text legibility */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/30" />
         </>
@@ -175,15 +165,15 @@ function StatCard({
       {/* Grid overlay — always on top */}
       <div className={`absolute inset-y-0 right-0 left-1/4 opacity-10 bg-[size:16px_24px] [mask-image:linear-gradient(to_right,transparent_0%,black_100%)] z-[1] ${isDark ? "bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)]" : "bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)]"}`} />
       <div className="relative z-10">
-        <motion.div style={{ color: iconC }}>{stat.icon}</motion.div>
+        <div style={{ color: iconC }}>{stat.icon}</div>
       </div>
       <div className="relative z-10 flex flex-col mt-auto text-left gap-1">
-        <motion.div style={{ color: numC }} className="text-3xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7rem] font-bold tracking-tighter leading-none mb-2">
+        <div style={{ color: numC }} className="text-3xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7rem] font-bold tracking-tighter leading-none mb-2">
           <AnimatedCounter target={stat.value} suffix={stat.suffix} progress={progress} range={counterRange} />
-        </motion.div>
-        <motion.p style={{ color: txtC }} className="text-xs sm:text-sm lg:text-base font-medium leading-snug max-w-[100px] sm:max-w-[160px] sm:self-auto self-end text-right sm:text-left">
+        </div>
+        <p style={{ color: txtC }} className="text-xs sm:text-sm lg:text-base font-medium leading-snug max-w-[100px] sm:max-w-[160px] sm:self-auto self-end text-right sm:text-left">
           {stat.label}
-        </motion.p>
+        </p>
       </div>
     </motion.div>
   );
@@ -330,12 +320,7 @@ export const HeroScroll = () => {
 
   const counterRange: [number, number] = [0.58, 0.66];
 
-  /* Card glows — strictly sequential + plateau + dim gaps between cards */
-  const glow0 = useTransform(scrollYProgress, [0.66, 0.68, 0.71, 0.72], [0, 1, 1, 0]);
-  const glow1 = useTransform(scrollYProgress, [0.73, 0.75, 0.78, 0.79], [0, 1, 1, 0]);
-  const glow2 = useTransform(scrollYProgress, [0.80, 0.82, 0.85, 0.86], [0, 1, 1, 0]);
-  const glow3 = useTransform(scrollYProgress, [0.87, 0.89, 0.92, 0.93], [0, 1, 1, 0]);
-  const glows = [glow0, glow1, glow2, glow3];
+  /* Card glows are now permanent (continuous red) — no scroll-driven ramp */
 
   return (
     <header id="hero" ref={containerRef} className="relative h-[500vh] md:h-[800vh]" role="banner">
@@ -437,8 +422,8 @@ export const HeroScroll = () => {
               style={{ opacity: statsOpacity, scale: statsScale, y: statsY }}
               className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 xl:gap-6 w-full"
             >
-              {impactStats.map((stat, i) => (
-                <StatCard key={stat.label} stat={stat} glow={glows[i]} progress={scrollYProgress} counterRange={counterRange} isDark={isDark} />
+              {impactStats.map((stat) => (
+                <StatCard key={stat.label} stat={stat} progress={scrollYProgress} counterRange={counterRange} isDark={isDark} />
               ))}
             </motion.div>
           </div>
