@@ -156,7 +156,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
     const { playbooks, programs, upcomingEvents, mediaItems, bountyCount, questCount, projectCount, challengeCount, activeQuests, featuredProjects, activeChallenges, categorizedEvents } = data;
 
     return (
-        <main className="h-[100dvh] w-full overflow-y-scroll overflow-x-hidden snap-y snap-mandatory md:h-auto md:w-auto md:overflow-visible md:snap-none text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-800 dark:selection:text-zinc-200 supports-[height:100svh]:h-[100svh]">
+        <main className="w-full overflow-x-hidden text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-800 dark:selection:text-zinc-200">
             <FloatingNav />
             <PublicLoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
             {session?.user?.role === 'PUBLIC' && session?.user?.consent === false && (
@@ -186,8 +186,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                 {/* ── Activity Feed ── */}
                 <section
                     id="activity-feed"
-                    className="min-h-[100dvh] snap-center flex flex-col justify-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-10"
-                    style={{ scrollSnapStop: 'always' }}
+                    className="py-8 relative scroll-mt-24 md:py-10"
                 >
                     <SectionHeader
                         icon="Calendar"
@@ -304,8 +303,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                 {/* ── Programs ── */}
                 <section
                     id="programs"
-                    className="min-h-[100dvh] snap-center flex flex-col justify-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-10"
-                    style={{ scrollSnapStop: 'always' }}
+                    className="py-8 relative scroll-mt-24 md:py-10"
                 >
                     <SectionHeader
                         icon="Rocket"
@@ -350,8 +348,7 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                 {/* ── Playbooks ── */}
                 <section
                     id="playbooks"
-                    className="min-h-[100dvh] snap-center flex flex-col justify-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] relative scroll-mt-24 md:min-h-0 md:block md:py-10"
-                    style={{ scrollSnapStop: 'always' }}
+                    className="py-8 relative scroll-mt-24 md:py-10"
                 >
                     <SectionHeader
                         icon="BookOpen"

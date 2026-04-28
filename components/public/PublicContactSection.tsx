@@ -21,10 +21,9 @@ export default function PublicContactSection({ mediaItems = [] }: { mediaItems?:
 
     return (
         <>
-            <section 
-                id="contact" 
-                className="min-h-[100dvh] snap-center flex flex-col justify-center items-center py-8 pb-[calc(8rem+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)] scroll-mt-24 md:min-h-0 md:block md:items-stretch md:py-20"
-                style={{ scrollSnapStop: 'always' }}
+            <section
+                id="contact"
+                className="py-10 scroll-mt-24 md:py-20"
             >
                 <div className="container mx-auto px-6">
                     <div className="max-w-7xl mx-auto space-y-6">
@@ -80,10 +79,9 @@ export default function PublicContactSection({ mediaItems = [] }: { mediaItems?:
             </section>
 
             {/* Verify Membership (Mobile Standalone) */}
-            <section 
-                id="verify-mobile" 
-                className="md:hidden min-h-[100dvh] snap-center flex flex-col justify-center items-center py-20 px-6 pb-[calc(8rem+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)]"
-                style={{ scrollSnapStop: 'always' }}
+            <section
+                id="verify-mobile"
+                className="md:hidden py-10 px-6"
             >
                 <div className="bg-zinc-100/30 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-3xl p-8 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 transition-colors w-full text-center">
                     <h3 className="text-2xl font-bold text-black dark:text-white mb-6 text-center">Verify Member</h3>

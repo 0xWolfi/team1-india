@@ -153,10 +153,17 @@ function Card({
       <div className="relative flex items-center justify-center h-20 sm:h-44 md:h-56">
         {/* Subtle grid */}
         <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:20px_20px]" />
-        {/* Glow */}
-        <div className="absolute w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-red-500/[0.06] blur-[50px] group-hover:bg-red-500/[0.14] transition-all duration-700" />
-        {/* Icon */}
-        <div className="relative z-10 text-zinc-400 dark:text-zinc-600 group-hover:text-red-400 transition-colors duration-500">
+        {/* Continuous red glow — pulses gently, stronger in light mode for visibility */}
+        <motion.div
+          className="absolute w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-red-500/40 dark:bg-red-500/[0.22] blur-[55px]"
+          animate={{ opacity: [0.7, 1, 0.7], scale: [0.95, 1.08, 0.95] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {/* Icon — permanent saturated red with drop-shadow glow (visible in both themes) */}
+        <div
+          className="relative z-10 text-red-600 dark:text-red-400"
+          style={{ filter: "drop-shadow(0 0 12px rgba(239,68,68,0.6)) drop-shadow(0 0 24px rgba(239,68,68,0.35))" }}
+        >
           {card.icon}
         </div>
       </div>
