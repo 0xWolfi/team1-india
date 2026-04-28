@@ -224,9 +224,9 @@ export default function AttendancePage() {
             {selectedRecord && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
                     <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
-                        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+                        <div className="p-4 sm:p-6 md:p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
                             <div>
-                                <h2 className="text-2xl font-bold text-black dark:text-white mb-1">{selectedRecord.note || "Untitled Meeting"}</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold text-black dark:text-white mb-1">{selectedRecord.note || "Untitled Meeting"}</h2>
                                 <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300">
                                     <Calendar className="w-4 h-4"/>
                                     {new Date(selectedRecord.date).toLocaleDateString(undefined, {
@@ -246,7 +246,7 @@ export default function AttendancePage() {
                                 <Users className="w-5 h-5"/>
                             </button>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 custom-scrollbar">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {getAttendees(selectedRecord).map(member => (
                                     <div key={member.id} className="p-3 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-2xl flex items-center gap-4 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
@@ -287,9 +287,9 @@ export default function AttendancePage() {
                     <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-xl flex flex-col shadow-2xl shadow-red-500/5 animate-in zoom-in-95 duration-200 overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
                         
                         {/* Modal Header */}
-                        <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-start justify-between">
+                        <div className="p-4 sm:p-6 md:p-8 border-b border-black/5 dark:border-white/5 flex items-start justify-between">
                             <div>
-                                <h2 className="text-2xl font-bold text-black dark:text-white mb-2">
+                                <h2 className="text-xl sm:text-2xl font-bold text-black dark:text-white mb-2">
                                     {modalStep === 1 ? "New Session" : "Mark Attendance"}
                                 </h2>
                                 <p className="text-zinc-600 dark:text-zinc-300">
@@ -304,7 +304,7 @@ export default function AttendancePage() {
                         </div>
 
                         {/* Modal Body */}
-                        <div className="p-8">
+                        <div className="p-4 sm:p-6 md:p-8">
                             {modalStep === 1 && (
                                 <div className="space-y-6">
                                     <div className="space-y-3">

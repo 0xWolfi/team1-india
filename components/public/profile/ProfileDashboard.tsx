@@ -572,7 +572,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                           </div>
                                       </div>
                                   )) : (
-                                      <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
+                                      <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-100/30 dark:bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl border-dashed">
                                           <div className="w-16 h-16 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
                                               <Calendar className="w-8 h-8 text-zinc-400 dark:text-zinc-600"/>
                                           </div>
@@ -593,15 +593,15 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                </h3>
                                <div className="flex flex-wrap gap-4">
                                    {POAPS.length > 0 ? POAPS.map(poap => (
-                                       <div key={poap.id} className="w-24 h-24 relative rounded-full border-2 border-zinc-800 bg-zinc-900 p-1 group hover:border-purple-500/50 transition-colors" title={poap.name}>
+                                       <div key={poap.id} className="w-24 h-24 relative rounded-full border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-1 group hover:border-purple-500/50 transition-colors" title={poap.name}>
                                            <div className="w-full h-full relative rounded-full overflow-hidden">
                                                 <Image src={poap.image} alt={poap.name} fill className="object-cover" />
                                            </div>
                                        </div>
                                    )) : (
-                                       <div className="w-full flex items-center gap-4 p-4 bg-zinc-900/30 border border-zinc-800/50 rounded-xl">
-                                             <div className="w-10 h-10 bg-zinc-800/50 rounded-full flex items-center justify-center">
-                                                  <Award className="w-5 h-5 text-zinc-400"/>
+                                       <div className="w-full flex items-center gap-4 p-4 bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/50 rounded-xl">
+                                             <div className="w-10 h-10 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center">
+                                                  <Award className="w-5 h-5 text-zinc-500 dark:text-zinc-400"/>
                                              </div>
                                              <div className="flex-1">
                                                  <p className="text-sm text-zinc-400">No collectibles yet. Attend events to earn POAPs!</p>
@@ -615,21 +615,21 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
 
                   {activeTab === "CONTENT" && (
                        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
+                            <h3 className="text-lg font-bold text-black dark:text-white flex items-center gap-2 mb-6">
                                 <FileText className="w-5 h-5 text-zinc-100"/>
                                 Content Contributions
                             </h3>
                             <div className="space-y-4">
                                 {CONTENT.length > 0 ? CONTENT.map(content => (
-                                    <div key={content.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-zinc-900/40 border border-zinc-800 rounded-xl hover:bg-zinc-900/60 transition-colors">
+                                    <div key={content.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-zinc-100/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:bg-zinc-900/60 transition-colors">
                                         <div className="flex items-start gap-4">
-                                            <div className="p-3 bg-zinc-800 rounded-lg">
-                                                {content.type === "Video" ? <Video className="w-5 h-5 text-white"/> : <FileText className="w-5 h-5 text-white"/>}
+                                            <div className="p-3 bg-zinc-200 dark:bg-zinc-800 rounded-lg">
+                                                {content.type === "Video" ? <Video className="w-5 h-5 text-black dark:text-white"/> : <FileText className="w-5 h-5 text-black dark:text-white"/>}
                                             </div>
                                             <div>
-                                                <h4 className="text-base font-bold text-white mb-1 hover:underline cursor-pointer">{content.title}</h4>
+                                                <h4 className="text-base font-bold text-black dark:text-white mb-1 hover:underline cursor-pointer">{content.title}</h4>
                                                 <div className="flex items-center gap-3 text-xs text-zinc-500">
-                                                    <span className="bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">{content.type}</span>
+                                                    <span className="bg-zinc-200 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300">{content.type}</span>
                                                     <span>{content.date}</span>
                                                 </div>
                                             </div>
@@ -642,11 +642,11 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                         </div>
                                     </div>
                                 )) : (
-                                    <div className="flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
-                                        <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+                                    <div className="flex flex-col items-center justify-center p-12 bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl border-dashed">
+                                        <div className="w-16 h-16 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
                                             <FileText className="w-8 h-8 text-zinc-600"/>
                                         </div>
-                                        <h3 className="text-lg font-bold text-white mb-2">No Content Yet</h3>
+                                        <h3 className="text-lg font-bold text-black dark:text-white mb-2">No Content Yet</h3>
                                         <p className="text-zinc-500 text-center max-w-sm">
                                             Share your knowledge! Submit articles, videos, or guides to earn reputation.
                                         </p>
@@ -658,25 +658,25 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
 
                   {activeTab === "ACHIEVEMENTS" && (
                        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
+                            <h3 className="text-lg font-bold text-black dark:text-white flex items-center gap-2 mb-6">
                                 <Trophy className="w-5 h-5 text-zinc-100"/>
                                 Badges & Achievements
                             </h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                                 {ACHIEVEMENTS.length > 0 ? ACHIEVEMENTS.map(badge => (
-                                    <div key={badge.id} className="flex flex-col items-center text-center p-6 bg-zinc-900/50 border border-zinc-800/50 rounded-2xl hover:bg-zinc-800/50 transition-colors">
-                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center mb-4 shadow-lg">
+                                    <div key={badge.id} className="flex flex-col items-center text-center p-6 bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 transition-colors">
+                                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-zinc-200 to-white dark:from-zinc-800 dark:to-black border border-black/10 dark:border-white/10 flex items-center justify-center mb-4 shadow-lg">
                                             {badge.icon}
                                         </div>
-                                        <h4 className="text-sm font-bold text-white mb-1">{badge.name}</h4>
+                                        <h4 className="text-sm font-bold text-black dark:text-white mb-1">{badge.name}</h4>
                                         <p className="text-xs text-zinc-500">{badge.description}</p>
                                     </div>
                                 )) : (
-                                    <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl border-dashed">
-                                        <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+                                    <div className="col-span-full flex flex-col items-center justify-center p-12 bg-zinc-100/30 dark:bg-zinc-900/30 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl border-dashed">
+                                        <div className="w-16 h-16 bg-zinc-200/50 dark:bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
                                             <Trophy className="w-8 h-8 text-zinc-600"/>
                                         </div>
-                                        <h3 className="text-lg font-bold text-white mb-2">No Achievements Yet</h3>
+                                        <h3 className="text-lg font-bold text-black dark:text-white mb-2">No Achievements Yet</h3>
                                         <p className="text-zinc-500 text-center max-w-sm">
                                             Contributions tracked on-chain will appear here as badges.
                                         </p>
@@ -695,12 +695,12 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
     <div className="max-w-4xl mx-auto py-10 pb-32 animate-in slide-in-from-bottom-5 duration-300">
       
       {/* Header Editor */}
-      <h2 className="text-2xl font-bold text-white mb-8">Edit Profile</h2>
+      <h2 className="text-2xl font-bold text-black dark:text-white mb-8">Edit Profile</h2>
 
       <div className="flex flex-col md:flex-row gap-8 items-start mb-10">
         <div className="flex flex-col items-center gap-3">
             {/* Square/Straight Profile Picture Box */}
-            <div className="relative w-32 h-32 bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden group shadow-xl">
+            <div className="relative w-32 h-32 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden group shadow-xl">
                 {isUploading ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
                         <Loader2 className="w-8 h-8 text-white animate-spin"/>
@@ -747,7 +747,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                         value={formData.fullName} 
                         onChange={(e) => handleChange('fullName', e.target.value)}
                         placeholder="Your Name"
-                        className="w-full text-base font-bold text-white bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 focus:border-white focus:outline-none transition-all placeholder:text-zinc-700"
+                        className="w-full text-base font-bold text-black dark:text-white bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 focus:border-black dark:focus:border-white focus:outline-none transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700"
                     />
                 </div>
                 <div className="space-y-1.5">
@@ -759,7 +759,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                             value={formData.xHandle}
                             onChange={(e) => handleChange('xHandle', e.target.value)}
                             placeholder="@username"
-                            className="w-full text-base text-zinc-200 bg-zinc-900/50 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 focus:border-white focus:outline-none transition-all placeholder:text-zinc-700"
+                            className="w-full text-base text-zinc-700 dark:text-zinc-200 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-10 pr-4 py-3 focus:border-black dark:focus:border-white focus:outline-none transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700"
                         />
                      </div>
                 </div>
@@ -772,7 +772,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                     onChange={(e) => handleChange('bio', e.target.value)}
                     rows={3}
                     placeholder="Short bio..."
-                    className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 text-zinc-200 focus:outline-none focus:border-white transition-all resize-none text-sm leading-relaxed"
+                    className="w-full bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 text-zinc-700 dark:text-zinc-200 focus:outline-none focus:border-black dark:focus:border-white transition-all resize-none text-sm leading-relaxed"
                 />
             </div>
         </div>
@@ -781,8 +781,8 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left: Professional */}
           <div className="space-y-8">
-               <section className="bg-zinc-900/50 border border-white/10 p-6 rounded-3xl space-y-6">
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">Professional</h3>
+               <section className="bg-white dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 p-6 rounded-3xl space-y-6">
+                  <h3 className="text-lg font-bold text-black dark:text-white flex items-center gap-2">Professional</h3>
                   
                   <div className="space-y-4">
                       <div>
@@ -790,7 +790,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                           <select 
                               value={formData.availability}
                               onChange={(e) => handleChange('availability', e.target.value)}
-                              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50"
+                              className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-black dark:text-white focus:outline-none focus:border-emerald-500/50"
                           >
                               {AVAILABILITY_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                           </select>
@@ -802,7 +802,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                               value={formData.currentProject} 
                               onChange={(e) => handleChange('currentProject', e.target.value)}
                               placeholder="e.g. Building a consumer dapp"
-                              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/20"
+                              className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20"
                           />
                       </div>
                       
@@ -812,7 +812,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                 <select 
                                     value={formData.country} 
                                     onChange={(e) => handleChange('country', e.target.value)}
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/20 appearance-none"
+                                    className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 appearance-none"
                                 >
                                     <option value="">Select Country</option>
                                     {countries.map(c => (
@@ -827,20 +827,20 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                     value={formData.city} 
                                     onChange={(e) => handleChange('city', e.target.value)}
                                     placeholder="e.g. Bengaluru"
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/20"
+                                    className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20"
                                 />
                             </div>
                       </div>
                   </div>
               </section>
 
-              <section className="bg-zinc-900/50 border border-white/10 p-6 rounded-3xl space-y-4">
-                   <h3 className="text-lg font-bold text-white">Skills</h3>
+              <section className="bg-white dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 p-6 rounded-3xl space-y-4">
+                   <h3 className="text-lg font-bold text-black dark:text-white">Skills</h3>
                    <div className="flex flex-wrap gap-2 mb-2">
                        {formData.skills.map(skill => (
-                           <span key={skill} className="px-3 py-1.5 rounded-lg bg-zinc-800 border border-white/5 text-sm font-medium flex items-center gap-2">
+                           <span key={skill} className="px-3 py-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/5 dark:border-white/5 text-sm font-medium flex items-center gap-2">
                                {skill}
-                               <button onClick={() => removeSkill(skill)} className="text-zinc-500 hover:text-white"><X className="w-3 h-3"/></button>
+                               <button onClick={() => removeSkill(skill)} className="text-zinc-500 hover:text-black dark:hover:text-white"><X className="w-3 h-3"/></button>
                            </span>
                        ))}
                    </div>
@@ -850,13 +850,13 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                        onChange={(e) => setNewSkill(e.target.value)}
                        onKeyDown={addSkill}
                        placeholder="+ Add Skill (Press Enter)"
-                       className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/20"
+                       className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20"
                    />
               </section>
 
-              <section className="bg-zinc-900/50 border border-white/10 p-6 rounded-3xl space-y-4">
+              <section className="bg-white dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 p-6 rounded-3xl space-y-4">
                   <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-bold text-white">Roles (Max 3)</h3>
+                      <h3 className="text-lg font-bold text-black dark:text-white">Roles (Max 3)</h3>
                       <span className="text-xs text-zinc-500">{formData.roles.length}/3</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -868,7 +868,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                               className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                                   formData.roles.includes(role) 
                                       ? "bg-white text-black border-white" 
-                                      : "bg-black/20 text-zinc-400 border-white/5 hover:border-white/20 disabled:opacity-30"
+                                      : "bg-zinc-100 dark:bg-black/20 text-zinc-600 dark:text-zinc-400 border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 disabled:opacity-30"
                               }`}
                           >
                               {role}
@@ -880,8 +880,8 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
 
           {/* Right: Socials & Interests */}
           <div className="space-y-8">
-              <section className="bg-zinc-900/50 border border-white/10 p-6 rounded-3xl space-y-4">
-                   <h3 className="text-lg font-bold text-white">Contact & Socials</h3>
+              <section className="bg-white dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 p-6 rounded-3xl space-y-4">
+                   <h3 className="text-lg font-bold text-black dark:text-white">Contact & Socials</h3>
                    
                    {/* Wallet Field */}
                    <div>
@@ -893,7 +893,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                value={formData.wallet} 
                                onChange={(e) => handleChange('wallet', e.target.value)}
                                placeholder="0x..."
-                               className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-white/20 font-mono text-sm"
+                               className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-10 pr-4 py-3 text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 font-mono text-sm"
                            />
                        </div>
                    </div>
@@ -909,7 +909,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                    value={formData.telegram} 
                                    onChange={(e) => handleChange('telegram', e.target.value)}
                                    placeholder="@username"
-                                   className="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-white/20 text-sm"
+                                   className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-9 pr-4 py-3 text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 text-sm"
                                />
                            </div>
                        </div>
@@ -922,18 +922,18 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                    value={formData.discord} 
                                    onChange={(e) => handleChange('discord', e.target.value)}
                                    placeholder="username"
-                                   className="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-white focus:outline-none focus:border-white/20 text-sm"
+                                   className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl pl-9 pr-4 py-3 text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 text-sm"
                                />
                            </div>
                        </div>
                    </div>
 
-                   <hr className="border-white/5 my-2" />
+                   <hr className="border-black/5 dark:border-white/5 my-2" />
 
                    <div className="space-y-3">
                        <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">Other Links</label>
                        {formData.socialProfiles.map((social, idx) => (
-                           <div key={idx} className="flex items-center gap-2 bg-black/40 p-2 rounded-xl border border-white/5">
+                           <div key={idx} className="flex items-center gap-2 bg-zinc-100 dark:bg-black/40 p-2 rounded-xl border border-black/5 dark:border-white/5">
                                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-zinc-400">
                                    {getSocialIcon(social.name)}
                                </div>
@@ -946,13 +946,13 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                </button>
                            </div>
                        ))}
-                       <div className="pt-2 border-t border-white/5 space-y-2">
+                       <div className="pt-2 border-t border-black/5 dark:border-white/5 space-y-2">
                            <input 
                                type="text"
                                value={newSocial.name}
                                onChange={(e) => setNewSocial(prev => ({ ...prev, name: e.target.value }))}
                                placeholder="Label (e.g. Portfolio)"
-                               className="w-full bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-xs text-white"
+                               className="w-full bg-zinc-100 dark:bg-black/20 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2 text-xs text-black dark:text-white"
                            />
                             <div className="flex gap-2">
                                 <input 
@@ -960,9 +960,9 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                     value={newSocial.url}
                                     onChange={(e) => setNewSocial(prev => ({ ...prev, url: e.target.value }))}
                                     placeholder="https://..."
-                                    className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-xs text-white"
+                                    className="flex-1 bg-zinc-100 dark:bg-black/20 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2 text-xs text-black dark:text-white"
                                 />
-                                <button onClick={addSocial} className="px-3 bg-white/10 hover:bg-white/20 rounded-lg text-white">
+                                <button onClick={addSocial} className="px-3 bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 rounded-lg text-black dark:text-white">
                                     <Plus className="w-4 h-4"/>
                                 </button>
                             </div>
@@ -970,9 +970,9 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                    </div>
               </section>
 
-               <section className="bg-zinc-900/50 border border-white/10 p-6 rounded-3xl space-y-4">
+               <section className="bg-white dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 p-6 rounded-3xl space-y-4">
                    <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-bold text-white">Interests</h3>
+                        <h3 className="text-lg font-bold text-black dark:text-white">Interests</h3>
                         <span className="text-xs text-zinc-500">{formData.interests.length}/10</span>
                    </div>
                    <div className="flex flex-wrap gap-2">
@@ -983,7 +983,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                                className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition-all ${
                                    formData.interests.includes(item) 
                                        ? "bg-amber-500/10 text-amber-500 border-amber-500/20" 
-                                       : "bg-black/20 text-zinc-500 border-white/5 hover:border-white/10"
+                                       : "bg-zinc-100 dark:bg-black/20 text-zinc-600 dark:text-zinc-500 border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10"
                                }`}
                            >
                                {item}
@@ -1004,9 +1004,9 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                            onChange={(e) => setNewInterest(e.target.value)}
                            onKeyDown={(e) => e.key === 'Enter' && addInterest()}
                            placeholder="Custom interest..."
-                           className="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-2 text-xs text-white"
+                           className="flex-1 bg-zinc-100 dark:bg-black/20 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2 text-xs text-black dark:text-white"
                        />
-                       <button onClick={() => addInterest()} className="px-3 bg-white/5 hover:bg-white/10 rounded-lg text-white">
+                       <button onClick={() => addInterest()} className="px-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg text-black dark:text-white">
                            <Plus className="w-3 h-3"/>
                        </button>
                    </div>
@@ -1015,12 +1015,12 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
       </div>
       
       {/* Fixed Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-zinc-900/80 backdrop-blur-xl border-t border-white/10 flex items-center justify-between px-8 z-50">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-between px-4 sm:px-8 z-50">
           <p className="text-sm text-zinc-400 hidden md:block">Unsaved changes will be lost.</p>
           <div className="flex gap-3 ml-auto">
              <button
                   onClick={() => setIsEditing(false)}
-                  className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold rounded-xl transition-colors"
+                  className="px-6 py-2.5 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-black dark:text-white text-sm font-bold rounded-xl transition-colors"
                   disabled={isSaving}
               >
                   Cancel

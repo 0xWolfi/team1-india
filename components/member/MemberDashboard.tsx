@@ -187,7 +187,7 @@ export function MemberDashboard({
                         <div className={cn("inline-flex p-2 rounded-lg mb-3 border", stat.bg, stat.border)}>
                             <DynamicIcon name={stat.icon} className={cn("w-4 h-4 ", stat.color)}/>
                         </div>
-                        <p className="text-2xl font-bold text-black dark:text-white tracking-tight">{stat.value}</p>
+                        <p className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white tracking-tight">{stat.value}</p>
                         <p className="text-xs text-zinc-500 mt-0.5 font-medium">{stat.label}</p>
                     </div>
                 ))}
@@ -213,7 +213,7 @@ export function MemberDashboard({
                                 <div className={cn("inline-flex p-2 rounded-lg mb-3 border", metric.bg, metric.border)}>
                                     <DynamicIcon name={metric.icon} className={cn("w-4 h-4 ", metric.color)}/>
                                 </div>
-                                <p className="text-2xl font-bold text-black dark:text-white tracking-tight">{metric.value}</p>
+                                <p className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white tracking-tight">{metric.value}</p>
                                 <p className="text-xs text-zinc-500 mt-0.5 font-medium">{metric.label}</p>
                             </div>
                         ))}

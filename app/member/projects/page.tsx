@@ -22,7 +22,7 @@ export default async function MemberProjectsPage() {
     <MemberWrapper>
       <CorePageHeader title="My Projects" description="Manage your projects and track engagement." icon={<Layers />} backLink="/member" backText="Back to Dashboard" />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {projects.map((p) => (
           <Link key={p.id} href={`/public/projects/${p.slug}`} className="p-5 rounded-xl border border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 transition-colors group">
             {p.coverImage && <div className="h-32 rounded-lg overflow-hidden mb-3 bg-zinc-100 dark:bg-zinc-800"><img src={p.coverImage} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}

@@ -195,9 +195,9 @@ export default function NotesPage() {
                                 </p>
                             </div>
                             <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-full border border-black/5 dark:border-white/5">
-                                <div className={`w-2.5 h-2.5 rounded-full ${modalStep >= 1 ? 'bg-red-500' : 'bg-white/10'}`} />
-                                <div className={`w-6 h-0.5 rounded-full ${modalStep >= 2 ? 'bg-red-500' : 'bg-white/10'}`} />
-                                <div className={`w-2 h-2 rounded-full ${modalStep >= 2 ? 'bg-red-500' : 'bg-white/10'}`} />
+                                <div className={`w-2.5 h-2.5 rounded-full ${modalStep >= 1 ? 'bg-red-500' : 'bg-black/10 dark:bg-white/10'}`} />
+                                <div className={`w-6 h-0.5 rounded-full ${modalStep >= 2 ? 'bg-red-500' : 'bg-black/10 dark:bg-white/10'}`} />
+                                <div className={`w-2 h-2 rounded-full ${modalStep >= 2 ? 'bg-red-500' : 'bg-black/10 dark:bg-white/10'}`} />
                             </div>
                         </div>
 

@@ -72,7 +72,7 @@ export default function MemberPlaybooksPage() {
                         <BookOpen className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-black dark:text-white">Playbooks</h1>
+                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">Playbooks</h1>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">Access member-only and public playbooks, guides, and strategic documentation.</p>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ export default function MemberPlaybooksPage() {
             {/* Content */}
             <div>
                 {isLoading && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                         {[1,2,3].map(i => (
                             <div key={i} className="h-48 rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse border border-black/5 dark:border-white/5" />
                         ))}
@@ -147,7 +147,7 @@ export default function MemberPlaybooksPage() {
                 )}
 
                 <div className={`
-                    ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8' : 'flex flex-col gap-4 max-w-4xl'}
+                    ${viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8' : 'flex flex-col gap-4 max-w-4xl'}
                 `}>
                     {filtered.map(doc => (
                         <div key={doc.id} className="relative group/card perspective-1000">
@@ -197,7 +197,7 @@ export default function MemberPlaybooksPage() {
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-zinc-200/50 dark:bg-zinc-800/50">
-                                                    <FileText className="w-12 h-12 text-zinc-700 group-hover:text-zinc-600 transition-colors"/>
+                                                    <FileText className="w-12 h-12 text-zinc-400 dark:text-zinc-700 group-hover:text-zinc-500 dark:group-hover:text-zinc-600 transition-colors"/>
                                                 </div>
                                             )}
 
@@ -226,7 +226,7 @@ export default function MemberPlaybooksPage() {
                                                 </div>
 
                                                 <div className="px-4 mb-3 flex-1">
-                                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed">
+                                                    <p className="text-zinc-600 dark:text-zinc-400 text-sm line-clamp-2 leading-relaxed">
                                                         {doc.description || "No description provided."}
                                                     </p>
                                                 </div>
@@ -254,7 +254,7 @@ export default function MemberPlaybooksPage() {
                                                 </div>
 
                                                 <div className="flex-1">
-                                                    <p className="text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4">
+                                                    <p className="text-zinc-600 dark:text-zinc-400 text-sm line-clamp-2 leading-relaxed mb-4">
                                                         {doc.description || "No description provided."}
                                                     </p>
                                                 </div>

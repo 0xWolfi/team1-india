@@ -20,15 +20,15 @@ export default function ProfileWalletPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <FloatingNav />
-      <div className="pt-24 px-6 max-w-4xl mx-auto pb-20">
+      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-4xl mx-auto pb-20">
         <Link href="/public/profile" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Profile
         </Link>
 
-        <h1 className="text-3xl font-bold mb-8">My Wallet</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-8">My Wallet</h1>
 
         {wallet && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             {[
               { label: "Total XP", value: wallet.totalXp, icon: TrendingUp, color: "text-purple-500" },
               { label: "Points Balance", value: wallet.pointsBalance, icon: Coins, color: "text-yellow-500" },

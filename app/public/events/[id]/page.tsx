@@ -73,7 +73,7 @@ export default async function PublicEventDetailPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-800 dark:selection:text-zinc-200">
        {/* Hero Image / Header */}
-       <div className="relative h-[50vh] w-full bg-zinc-100 dark:bg-zinc-900">
+       <div className="relative h-[35vh] sm:h-[45vh] md:h-[50vh] w-full bg-zinc-100 dark:bg-zinc-900">
            {coverImage ? (
                <Image 
                    src={coverImage as string} 
@@ -90,11 +90,11 @@ export default async function PublicEventDetailPage({ params }: Props) {
            )}
            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
            
-           <div className="absolute bottom-0 left-0 w-full p-6 md:p-12 max-w-7xl mx-auto">
+           <div className="absolute bottom-0 left-0 w-full p-4 sm:p-6 md:p-12 max-w-7xl mx-auto">
                <Link href="/public/events" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 transition-colors text-sm font-medium backdrop-blur-md bg-black/30 px-3 py-1.5 rounded-lg border border-white/5">
                    <ArrowLeft className="w-4 h-4"/> Back to Events
                </Link>
-               <h1 className="text-4xl md:text-6xl font-bold mb-4 max-w-4xl leading-tight">{event.title}</h1>
+               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 max-w-4xl leading-tight">{event.title}</h1>
                <div className="flex flex-wrap items-center gap-6 text-zinc-300 font-medium">
 
 
@@ -102,7 +102,7 @@ export default async function PublicEventDetailPage({ params }: Props) {
            </div>
        </div>
 
-       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-12">
                 <section>

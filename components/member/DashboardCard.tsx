@@ -86,8 +86,8 @@ export function DashboardCard({
                         <span className={cn(
                             "px-2 py-0.5 rounded-md text-[10px] font-semibold border backdrop-blur-md",
                             visibility === 'MEMBER'
-                                ? "bg-white/10 text-white/70 border-white/20"
-                                : "bg-zinc-800/60 text-zinc-400 border-zinc-700/50"
+                                ? "bg-black/10 dark:bg-white/10 text-black/70 dark:text-white/70 border-black/20 dark:border-white/20"
+                                : "bg-zinc-200/80 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700/50"
                         )}>
                             {visibility}
                         </span>
@@ -99,7 +99,7 @@ export function DashboardCard({
             <h3 className="font-semibold text-black dark:text-white text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-zinc-700 dark:group-hover:text-zinc-100 transition-colors">
                 {title}
             </h3>
-            <p className="text-xs text-zinc-600 leading-relaxed line-clamp-2">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-2">
                 {description || "No description provided."}
             </p>
         </Link>

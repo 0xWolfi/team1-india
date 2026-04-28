@@ -78,8 +78,8 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
         <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-3">
           <CheckCircle className="w-6 h-6 text-emerald-400"/>
         </div>
-        <h3 className="text-lg font-bold text-white mb-2">Application Received</h3>
-        <p className="text-zinc-400">We'll be in touch with you shortly.</p>
+        <h3 className="text-lg font-bold text-black dark:text-white mb-2">Application Received</h3>
+        <p className="text-zinc-600 dark:text-zinc-400">We'll be in touch with you shortly.</p>
         <button onClick={() => setStatus("idle")} className="mt-4 text-emerald-400 hover:text-emerald-300 text-sm font-medium">
           Apply again
         </button>
@@ -95,12 +95,12 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
 
   if (!session) {
       return (
-          <div className="bg-zinc-900 border border-white/10 rounded-2xl p-8 text-center">
-              <h3 className="text-xl font-bold text-white mb-2">Sign in to Apply</h3>
+          <div className="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl p-6 sm:p-8 text-center">
+              <h3 className="text-xl font-bold text-black dark:text-white mb-2">Sign in to Apply</h3>
               <p className="text-zinc-500 text-sm mb-6">You must be logged in to submit an application.</p>
               <button
                   onClick={() => signIn("google", { callbackUrl: typeof window !== 'undefined' ? window.location.href : '/public' })}
-                  className="bg-white text-black font-bold py-3 px-6 rounded-xl hover:bg-zinc-200 transition-colors w-full"
+                  className="bg-black dark:bg-white text-white dark:text-black font-bold py-3 px-6 rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors w-full"
               >
                   Sign In
               </button>
@@ -111,14 +111,14 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
   const user = session.user;
 
   return (
-    <form onSubmit={handleSubmit} className="bg-zinc-900 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl shadow-black/50">
-      <h3 className="text-xl font-bold text-white mb-2">Apply Now</h3>
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl shadow-black/10 dark:shadow-black/50">
+      <h3 className="text-xl font-bold text-black dark:text-white mb-2">Apply Now</h3>
       <p className="text-zinc-500 text-sm mb-6">Join this program to accelerate your journey.</p>
       
       {/* Default Fields */}
         <div className="space-y-4 mb-6">
             <div>
-            <label htmlFor="name" className="block text-sm font-medium text-zinc-400 mb-1.5">Full Name</label>
+            <label htmlFor="name" className="block text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-1.5">Full Name</label>
             <div className="relative">
                 <input 
                     type="text" 
@@ -126,10 +126,10 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                     id="name"
                     value={userName || user?.name || ""}
                     readOnly
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2.5 text-zinc-600 dark:text-zinc-400 cursor-not-allowed focus:outline-none"
                     required
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded border border-white/5">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900 px-2 py-0.5 rounded border border-black/5 dark:border-white/5">
                     Verified
                 </div>
             </div>
@@ -137,7 +137,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
             </div>
 
             <div>
-            <label htmlFor="email" className="block text-sm font-medium text-zinc-400 mb-1.5">Email Address</label>
+            <label htmlFor="email" className="block text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-1.5">Email Address</label>
             <div className="relative">
                 <input 
                     type="email" 
@@ -145,9 +145,9 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                     id="email"
                     value={userEmail || user?.email || ""}
                     readOnly
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-zinc-400 cursor-not-allowed focus:outline-none" 
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2.5 text-zinc-600 dark:text-zinc-400 cursor-not-allowed focus:outline-none"
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded border border-white/5">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] uppercase font-bold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900 px-2 py-0.5 rounded border border-black/5 dark:border-white/5">
                     Verified
                 </div>
             </div>
@@ -157,24 +157,24 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
 
       {/* Dynamic Fields */}
       {normalizedSchema.length > 0 && (
-        <div className="space-y-4 pt-4 border-t border-white/5 mb-6">
+        <div className="space-y-4 pt-4 border-t border-black/5 dark:border-white/5 mb-6">
             {normalizedSchema.map((field, idx) => (
                 <div key={field.key || field.id || idx}>
-                    <label className="block text-sm font-medium text-zinc-400 mb-1.5">
+                    <label className="block text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-1.5">
                         {field.label} {field.required && <span className="text-indigo-400">*</span>}
                     </label>
                     
                     {field.type === 'textarea' ? (
                         <textarea 
                             name={field.key}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-700 min-h-[100px] resize-none text-sm"
+                            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2.5 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 focus:bg-white dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700 min-h-[100px] resize-none text-sm"
                             placeholder={field.placeholder || `Enter response...`}
                             required={field.required}
                         />
                     ) : field.type === 'select' ? (
                         <select
                             name={field.key}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all text-sm"
+                            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2.5 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 focus:bg-white dark:focus:bg-zinc-900 transition-all text-sm"
                             required={field.required}
                             defaultValue=""
                         >
@@ -184,20 +184,20 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
                             ))}
                         </select>
                     ) : field.type === 'checkbox' ? (
-                        <label className="flex items-center gap-3 p-3 bg-zinc-950/30 rounded-lg border border-white/5 cursor-pointer hover:bg-zinc-900 transition-colors">
-                            <input 
+                        <label className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-950/30 rounded-lg border border-black/5 dark:border-white/5 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+                            <input
                                 type="checkbox"
                                 name={field.key}
-                                className="w-5 h-5 rounded bg-black border-white/20 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0"
+                                className="w-5 h-5 rounded bg-white dark:bg-black border-black/20 dark:border-white/20 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-0"
                                 required={field.required}
                             />
-                            <span className="text-sm text-zinc-300 font-medium">{field.placeholder || "Yes, I agree"}</span>
+                            <span className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">{field.placeholder || "Yes, I agree"}</span>
                         </label>
                     ) : (
                         <input 
                             type={field.type}
                             name={field.key}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white/50 focus:bg-zinc-900 transition-all placeholder:text-zinc-700 text-sm"
+                            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2.5 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 focus:bg-white dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700 text-sm"
                             placeholder={field.placeholder || `Enter ${field.label}...`}
                             required={field.required}
                         />
@@ -208,7 +208,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
       )}
 
       {status === "error" && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-zinc-800/50 border border-white/10 text-zinc-300 text-sm mb-4">
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-zinc-200/50 dark:bg-zinc-800/50 border border-black/10 dark:border-white/10 text-zinc-700 dark:text-zinc-300 text-sm mb-4">
             <AlertCircle className="w-4 h-4"/> {message}
         </div>
       )}
@@ -216,7 +216,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
       <button 
         type="submit" 
         disabled={status === "submitting"}
-        className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full bg-black dark:bg-white text-white dark:text-black font-bold py-3 rounded-xl hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {status === "submitting" ? (
           <>

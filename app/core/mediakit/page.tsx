@@ -89,7 +89,7 @@ export default function MediaKitPage() {
 
             <div className="space-y-6">
                 {/* Search & Tabs */}
-                <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-zinc-100/50 dark:bg-zinc-900/50 p-1 rounded-xl border border-black/5 dark:border-white/5">
+                <div className="flex flex-col md:flex-row gap-3 sm:gap-4 justify-between items-center bg-zinc-100/50 dark:bg-zinc-900/50 p-1 rounded-xl border border-black/5 dark:border-white/5 flex-wrap">
                     <div className="flex gap-1 overflow-x-auto w-full md:w-auto p-1">
                         {tabs.map(tab => (
                             <button

@@ -74,7 +74,7 @@ export default async function ProgramDetailPage({ params }: Props) {
       
       {/* Cover Image Section */}
       {coverImage && (
-        <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden">
+        <div className="relative w-full h-[30vh] sm:h-[40vh] md:h-[50vh] overflow-hidden">
           <Image
             src={coverImage}
             alt={program.title}
@@ -88,9 +88,9 @@ export default async function ProgramDetailPage({ params }: Props) {
       )}
 
       {/* Hero Section with Content */}
-      <div className="relative pb-20 px-6 overflow-hidden" style={{ marginTop: coverImage ? '-10vh' : '8rem' }}>
-         
-         <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="relative pb-20 px-4 sm:px-6 overflow-hidden" style={{ marginTop: coverImage ? '-10vh' : '8rem' }}>
+
+         <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
             
             {/* Left Content */}
             <div className="lg:col-span-2">
@@ -98,8 +98,8 @@ export default async function ProgramDetailPage({ params }: Props) {
                     <ArrowLeft className="w-4 h-4"/> Back to Programs
                 </Link>
 
-                <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{program.title}</h1>
-                <p className="text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-8">{program.description}</p>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight">{program.title}</h1>
+                <p className="text-base sm:text-lg md:text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-8">{program.description}</p>
                 
                 <div className="flex flex-wrap gap-4 text-sm text-zinc-500 mb-12 border-y border-black/5 dark:border-white/5 py-6">
                     <div className="flex items-center gap-2">

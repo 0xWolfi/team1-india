@@ -26,11 +26,11 @@ interface PublicPlaybookClientProps {
 export default function PublicPlaybookClient({ playbook, error }: PublicPlaybookClientProps) {
     if (error || !playbook) {
         return (
-            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+            <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white flex items-center justify-center px-4">
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-2 text-white">Error</h1>
+                    <h1 className="text-2xl font-bold mb-2 text-black dark:text-white">Error</h1>
                     <p className="text-zinc-500">{error || "Something went wrong"}</p>
-                    <Link href="/public" className="mt-4 inline-flex items-center text-sm text-zinc-400 hover:text-white transition-colors">
+                    <Link href="/public" className="mt-4 inline-flex items-center text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
                         <ArrowLeft className="w-4 h-4 mr-2"/> Back to Directory
                     </Link>
                 </div>

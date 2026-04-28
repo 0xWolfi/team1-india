@@ -63,7 +63,7 @@ export default function MemberDirectoryPage() {
                         <Users className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-black dark:text-white">Members Directory</h1>
+                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">Members Directory</h1>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">Connect with fellow community members.</p>
                     </div>
                 </div>
@@ -84,7 +84,7 @@ export default function MemberDirectoryPage() {
 
             {/* Content */}
             {isLoading && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {[1, 2, 3, 4, 5, 6].map(i => (
                         <div key={i} className="h-40 rounded-2xl bg-black/5 dark:bg-white/5 animate-pulse border border-black/5 dark:border-white/5" />
                     ))}
@@ -104,7 +104,7 @@ export default function MemberDirectoryPage() {
             )}
 
             {!isLoading && filtered.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {filtered.map(member => (
                         <div
                             key={member.id}
@@ -132,7 +132,7 @@ export default function MemberDirectoryPage() {
                                 {member.email && (
                                     <a
                                         href={`mailto:${member.email}`}
-                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
+                                        className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
                                     >
                                         <Mail className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover/item:text-black dark:group-hover/item:text-white transition-colors"/>
                                         <span className="truncate">{member.email}</span>
@@ -144,7 +144,7 @@ export default function MemberDirectoryPage() {
                                         href={`https://x.com/${member.xHandle.replace('@', '')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
+                                        className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
                                     >
                                         <svg className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover/item:text-black dark:group-hover/item:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -158,7 +158,7 @@ export default function MemberDirectoryPage() {
                                         href={`https://t.me/${member.telegram.replace('@', '')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-2 text-sm text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
+                                        className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors group/item"
                                     >
                                         <Send className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover/item:text-black dark:group-hover/item:text-white transition-colors"/>
                                         <span>{member.telegram}</span>

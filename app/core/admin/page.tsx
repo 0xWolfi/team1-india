@@ -182,7 +182,7 @@ export default function TeamPage() {
         }
     };
 
-    if (status === "loading") return <div className="min-h-screen pt-24 px-12 text-zinc-500 font-mono text-sm animate-pulse">Initializing Interface...</div>;
+    if (status === "loading") return <div className="min-h-screen pt-24 px-4 sm:px-6 md:px-12 text-zinc-500 font-mono text-sm animate-pulse">Initializing Interface...</div>;
 
     return (
         <>

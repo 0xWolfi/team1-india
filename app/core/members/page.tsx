@@ -320,7 +320,7 @@ export default function CommunityMembersPage() {
              </AdminToolbar>
 
              {/* Table */}
-             <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl relative z-30 overflow-visible min-h-[300px]">
+             <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl relative z-30 overflow-x-auto min-h-[300px]">
                 {isLoading && (
                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-sm rounded-xl transition-all duration-300">
                         <div className="flex flex-col items-center gap-3">
@@ -329,7 +329,7 @@ export default function CommunityMembersPage() {
                         </div>
                     </div>
                 )}
-                <table className="w-full text-left text-sm">
+                <table className="w-full text-left text-sm min-w-[800px]">
                     <thead className="bg-black/[0.02] dark:bg-white/[0.02] text-zinc-500 font-medium uppercase text-[10px] tracking-wider border-b border-black/5 dark:border-white/5 rounded-t-xl">
                         <tr>
                             <th className="p-4 pl-6 font-semibold rounded-tl-xl w-[20%]">Name</th>

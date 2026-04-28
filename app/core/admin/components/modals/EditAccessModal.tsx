@@ -111,7 +111,7 @@ export const EditAccessModal: React.FC<EditAccessModalProps> = ({ member, onChan
                                     onChange({ ...member, permissions: newPerms });
                                 }}
                             />
-                            <div className="w-12 h-6 bg-zinc-900 border border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-zinc-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-900/50 peer-checked:border-purple-500/50 peer-checked:after:bg-purple-400"></div>
+                            <div className="w-12 h-6 bg-zinc-200 dark:bg-zinc-900 border border-black/10 dark:border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-zinc-500 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-900/50 peer-checked:border-purple-500/50 peer-checked:after:bg-purple-400"></div>
                         </label>
                     </div>
 

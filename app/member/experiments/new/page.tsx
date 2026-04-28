@@ -47,10 +47,10 @@ export default function NewMemberExperimentPage() {
         />
 
         <div className="max-w-3xl mx-auto">
-            <div className="bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-8 shadow-2xl">
+            <div className="bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-bold text-zinc-400 mb-2 uppercase tracking-wider">Proposal Title</label>
+                        <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2 uppercase tracking-wider">Proposal Title</label>
                         <input
                             required
                             type="text"
@@ -62,7 +62,7 @@ export default function NewMemberExperimentPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-zinc-400 mb-2 uppercase tracking-wider">Detailed Description</label>
+                        <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2 uppercase tracking-wider">Detailed Description</label>
                         <div className="relative group">
                             <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl opacity-0 group-focus-within:opacity-10 transition-opacity blur" />
                             <textarea
@@ -84,7 +84,7 @@ export default function NewMemberExperimentPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 px-8 py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-bold transition-all shadow-lg hover:shadow-black/10 dark:hover:shadow-white/10 hover:scale-105"
+                            className="flex items-center gap-2 px-6 sm:px-8 py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-bold transition-all shadow-lg hover:shadow-black/10 dark:hover:shadow-white/10 hover:scale-105"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin"/> : <Save className="w-4 h-4"/>}
                             Submit Proposal

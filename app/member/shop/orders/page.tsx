@@ -37,7 +37,7 @@ export default async function MemberOrdersPage() {
               <div className="text-xs text-zinc-400 mt-1">{new Date(o.createdAt).toLocaleDateString()} &middot; {o.pointsSpent} pts</div>
               {o.trackingNumber && <div className="text-xs text-blue-500 mt-1">Tracking: {o.trackingNumber}</div>}
             </div>
-            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${STATUS_COLORS[o.status] || "bg-zinc-100 text-zinc-500"}`}>{o.status}</span>
+            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${STATUS_COLORS[o.status] || "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"}`}>{o.status}</span>
           </div>
         ))}
         {orders.length === 0 && <p className="text-zinc-400 text-sm text-center py-16">No orders yet.</p>}

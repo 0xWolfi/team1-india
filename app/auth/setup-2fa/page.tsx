@@ -52,10 +52,10 @@ export default function Setup2FAPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black p-4">
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md mx-4 sm:mx-auto space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-black dark:text-white">Setup Two-Factor Authentication</h1>
-          <p className="text-zinc-500 text-sm mt-2">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">Setup Two-Factor Authentication</h1>
+          <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-2">
             {step === "setup" && "Secure your account with an authenticator app"}
             {step === "verify" && "Scan the QR code with your authenticator app, then enter the code"}
             {step === "recovery" && "Save these recovery codes in a safe place"}
@@ -71,9 +71,9 @@ export default function Setup2FAPage() {
         {step === "verify" && (
           <div className="space-y-4">
             <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700">
-              <p className="text-xs text-zinc-500 mb-2">Manual entry key:</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 mb-2">Manual entry key:</p>
               <p className="font-mono text-sm text-black dark:text-white break-all select-all">{secret}</p>
-              <p className="text-xs text-zinc-400 mt-2">URI: <span className="break-all">{uri}</span></p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2">URI: <span className="break-all">{uri}</span></p>
             </div>
 
             <input
@@ -81,7 +81,7 @@ export default function Setup2FAPage() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Enter 6-digit code"
-              className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent text-black dark:text-white text-center text-lg tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+              className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-transparent text-black dark:text-white text-center text-base sm:text-lg tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
               maxLength={6}
               autoFocus
             />
@@ -98,9 +98,9 @@ export default function Setup2FAPage() {
           <div className="space-y-4">
             <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700">
               <p className="text-xs text-red-500 font-bold mb-3">Save these codes! They won&apos;t be shown again.</p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {recoveryCodes.map((c, i) => (
-                  <div key={i} className="font-mono text-sm text-black dark:text-white bg-white dark:bg-black px-3 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 text-center">
+                  <div key={i} className="font-mono text-xs sm:text-sm text-black dark:text-white bg-white dark:bg-black px-3 py-1.5 rounded border border-zinc-200 dark:border-zinc-700 text-center break-all">
                     {c}
                   </div>
                 ))}

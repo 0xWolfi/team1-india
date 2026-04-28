@@ -143,7 +143,7 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
 
             {/* Page header */}
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-black dark:text-white mb-2">Submit Quest</h1>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white mb-2">Submit Quest</h1>
                 <p className="text-xs text-red-400 font-semibold">Only for Team1 India Members — Do not Share</p>
                 <p className="text-[11px] text-zinc-500 mt-1">Sprint 1 — April 1st to April 30th 2026</p>
             </div>
@@ -153,11 +153,11 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label className="block text-xs font-semibold text-zinc-500 uppercase mb-1.5">Name</label>
-                        <input type="text" value={name} readOnly disabled className="w-full bg-zinc-200 dark:bg-zinc-800 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2.5 text-sm text-zinc-400 cursor-not-allowed" />
+                        <input type="text" value={name} readOnly disabled className="w-full bg-zinc-200 dark:bg-zinc-800 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2.5 text-sm text-zinc-600 dark:text-zinc-400 cursor-not-allowed" />
                     </div>
                     <div>
                         <label className="block text-xs font-semibold text-zinc-500 uppercase mb-1.5">Email</label>
-                        <input type="email" value={email} readOnly disabled className="w-full bg-zinc-200 dark:bg-zinc-800 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2.5 text-sm text-zinc-400 cursor-not-allowed" />
+                        <input type="email" value={email} readOnly disabled className="w-full bg-zinc-200 dark:bg-zinc-800 border border-black/5 dark:border-white/5 rounded-lg px-3 py-2.5 text-sm text-zinc-600 dark:text-zinc-400 cursor-not-allowed" />
                     </div>
                 </div>
 
@@ -194,7 +194,7 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                     <>
                         {/* Tasks Required */}
                         <div className="p-4 rounded-xl bg-zinc-100/40 dark:bg-zinc-900/40 border border-black/5 dark:border-white/5">
-                            <h4 className="text-xs font-bold text-zinc-400 uppercase mb-3">Tasks Required</h4>
+                            <h4 className="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase mb-3">Tasks Required</h4>
                             <ul className="space-y-2">
                                 {selectedQuest.tasks.map((task, i) => (
                                     <li key={i} className="flex items-start gap-2 text-xs text-zinc-600 dark:text-zinc-300">
@@ -213,7 +213,7 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                             <div className="space-y-3">
                                 {links.map((link, i) => (
                                     <div key={i}>
-                                        <label className="block text-[11px] text-zinc-400 mb-1">{link.label}</label>
+                                        <label className="block text-[11px] text-zinc-600 dark:text-zinc-400 mb-1">{link.label}</label>
                                         <div className="relative">
                                             <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-600" />
                                             <input
@@ -240,7 +240,7 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                                 <button
                                     type="button"
                                     onClick={() => setExtraLinks(prev => [...prev, ""])}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-colors"
                                 >
                                     <Plus className="w-3 h-3" /> Add Link
                                 </button>
@@ -284,14 +284,14 @@ export const SubmitQuestForm: React.FC<SubmitQuestFormProps> = ({ user }) => {
                     <button
                         type="button"
                         onClick={() => router.push("/member")}
-                        className="px-4 py-2.5 rounded-lg text-sm font-medium text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors"
+                        className="px-4 py-2.5 rounded-lg text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={isSubmitting || !questType}
-                        className="px-6 py-2.5 rounded-xl text-sm font-bold bg-white text-black hover:bg-zinc-100 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2.5 rounded-xl text-sm font-bold bg-black text-white dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSubmitting ? (
                             <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</>

@@ -288,7 +288,7 @@ export default function CorePage() {
     <div className="min-h-[100svh] text-black dark:text-white pb-20">
         
         {/* Mobile Sticky Nav */}
-        <div className="md:hidden sticky top-0 z-50 w-full px-6 py-3 bg-white/20 dark:bg-black/20 backdrop-blur-xl border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+        <div className="md:hidden sticky top-0 z-50 w-full px-4 sm:px-6 py-3 bg-white/20 dark:bg-black/20 backdrop-blur-xl border-b border-black/5 dark:border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
                      <Team1Logo className="h-5 w-auto" />
             </div>
@@ -319,7 +319,7 @@ export default function CorePage() {
             </div>
         </div>
 
-        <main className="container mx-auto px-6 md:px-12 md:pt-24 pt-8">
+        <main className="container mx-auto px-4 sm:px-6 md:px-12 md:pt-24 pt-8">
         {/* Header */}
         <UnifiedDashboardHeader 
             title="Core Terminal"
@@ -391,7 +391,7 @@ export default function CorePage() {
         </div>
         
         {/* Resources Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {resources.map((resource, idx) => {
                 const isLocked = !checkAccess(resource.key);
                 return (

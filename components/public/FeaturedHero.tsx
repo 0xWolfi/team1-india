@@ -39,7 +39,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
             </div>
 
             {/* Content */}
-            <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-end">
+            <div className="absolute inset-0 p-4 sm:p-6 md:p-12 flex flex-col justify-end">
                 <div className="max-w-3xl space-y-4">
                     <div className="flex items-center gap-3">
                         <span className="px-3 py-1 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-full">
@@ -52,7 +52,7 @@ export default function FeaturedHero({ item }: { item: HeroItem }) {
                         )}
                     </div>
                     
-                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight">
                         {item.title}
                     </h1>
                     

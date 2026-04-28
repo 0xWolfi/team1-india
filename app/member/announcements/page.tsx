@@ -47,7 +47,7 @@ export default function MemberAnnouncementsPage() {
                         <Megaphone className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-black dark:text-white">Announcements</h1>
+                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">Announcements</h1>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">View member-only and public announcements from the team.</p>
                     </div>
                 </div>
@@ -78,7 +78,7 @@ export default function MemberAnnouncementsPage() {
                                             </a>
                                         )}
                                     </h3>
-                                    <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
+                                    <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 mt-1">
                                         <span className="bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded border border-black/5 dark:border-white/5 uppercase tracking-wider font-mono">
                                             {item.audience}
                                         </span>

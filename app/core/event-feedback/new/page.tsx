@@ -339,7 +339,7 @@ Thank you for your contribution to the Avalanche ecosystem in India!`
                         {hosts.map((host, idx) => {
                             const filtered = activeSearchIdx === idx ? getFilteredMembers(host.name) : [];
                             return (
-                                <div key={idx} className="flex items-start gap-2">
+                                <div key={idx} className="flex flex-col sm:flex-row items-stretch sm:items-start gap-2">
                                     <div className="relative flex-1">
                                         <input
                                             value={host.name}

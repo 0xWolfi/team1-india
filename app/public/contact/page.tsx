@@ -27,7 +27,7 @@ export default function PublicContactPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <FloatingNav />
-      <div className="pt-24 px-6 max-w-2xl mx-auto pb-20">
+      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-2xl mx-auto pb-20">
         <Link href="/public" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </Link>
@@ -36,7 +36,7 @@ export default function PublicContactPage() {
           <div className="w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 flex items-center justify-center">
             <Mail className="w-4 h-4 text-zinc-500" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold">Contact Us</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">Contact Us</h1>
         </div>
         <p className="text-zinc-500 text-sm mb-10">Have a question, partnership idea, or just want to say hello? Drop us a message.</p>
 
