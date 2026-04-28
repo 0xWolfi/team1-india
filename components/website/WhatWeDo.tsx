@@ -75,28 +75,66 @@ const pages = [
 type CardData = (typeof pages)[0][0];
 
 /* ═══════════════════════════════════════════
+   RAG Summary (shared across mobile + desktop)
+   ═══════════════════════════════════════════ */
+
+function RagSummary() {
+  return (
+    <p className="sr-only">
+      Team1 India offers a comprehensive suite of services for the blockchain
+      ecosystem: 1. Idea Phase Accelerator: Funding and mentorship for early
+      startups. 2. Community: A network of builders sharing knowledge. 3.
+      Marketing Support: Go-to-market strategies for web3 products. 4.
+      Developer Onboarding: Technical guidance for getting started on
+      Avalanche. 5. Closed Beta Testing: Access to early adopters for product
+      validation. 6. Events: Hackathons and meetups across India.
+    </p>
+  );
+}
+
+/* ═══════════════════════════════════════════
    Single Card
    ═══════════════════════════════════════════ */
 
-function Card({ card, index }: { card: CardData; index: number }) {
+function Card({
+  card,
+  index,
+  simple = false,
+}: {
+  card: CardData;
+  index: number;
+  simple?: boolean;
+}) {
   const isExternal = "external" in card && card.external;
   const LinkTag = isExternal ? "a" : Link;
   const linkProps = isExternal
     ? { target: "_blank", rel: "noopener noreferrer" }
     : {};
 
+  const motionProps = simple
+    ? {
+        initial: { opacity: 0, y: 12 },
+        animate: { opacity: 1, y: 0 },
+        transition: {
+          duration: 0.35,
+          delay: index * 0.06,
+          ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+        },
+      }
+    : {
+        initial: { rotateY: -90, opacity: 0 },
+        animate: { rotateY: 0, opacity: 1 },
+        exit: { rotateY: 90, opacity: 0 },
+        transition: {
+          duration: 0.35,
+          delay: index * 0.06,
+          ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+        },
+        style: { perspective: "1000px", transformStyle: "preserve-3d" as const },
+      };
+
   return (
-    <motion.div
-      initial={{ rotateY: -90, opacity: 0 }}
-      animate={{ rotateY: 0, opacity: 1 }}
-      exit={{ rotateY: 90, opacity: 0 }}
-      transition={{
-        duration: 0.35,
-        delay: index * 0.06,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
-    >
+    <motion.div {...motionProps}>
     <div className="group relative flex flex-col rounded-2xl border border-black/[0.08] dark:border-white/[0.08] bg-white/60 dark:bg-black/60 backdrop-blur-xl overflow-hidden h-full">
       {/* Inner glass effect */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/[0.02] dark:from-white/[0.04] to-transparent pointer-events-none" />
@@ -140,10 +178,57 @@ function Card({ card, index }: { card: CardData; index: number }) {
 }
 
 /* ═══════════════════════════════════════════
-   WhatWeDo — Scroll-pinned rotating cards
+   Hook: detect ≥ sm breakpoint (640px)
    ═══════════════════════════════════════════ */
 
-export function WhatWeDo() {
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia("(min-width: 640px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return isDesktop;
+}
+
+/* ═══════════════════════════════════════════
+   Mobile — plain stacked cards (no scroll pin)
+   ═══════════════════════════════════════════ */
+
+function WhatWeDoMobile() {
+  const allCards = pages.flat();
+  return (
+    <section
+      id="what-we-do"
+      className="relative w-full bg-[var(--background)] py-16 sm:py-24 overflow-hidden"
+    >
+      {/* Background decorator */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-black/[0.015] dark:bg-white/[0.015] rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold text-black dark:text-white tracking-tight leading-[1.1]">
+            Built For Impact <br /> Designed For Builders
+          </h2>
+          <RagSummary />
+        </div>
+        <div className="grid grid-cols-1 gap-4">
+          {allCards.map((card, i) => (
+            <Card key={card.title} card={card} index={i} simple />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Desktop — scroll-pinned rotating cards (unchanged)
+   ═══════════════════════════════════════════ */
+
+function WhatWeDoDesktop() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activePage, setActivePage] = React.useState(0);
 
@@ -176,16 +261,7 @@ export function WhatWeDo() {
               Built For Impact <br /> Designed For Builders
             </h2>
             {/* Hidden RAG Summary for AI Agents */}
-            <p className="sr-only">
-              Team1 India offers a comprehensive suite of services for the
-              blockchain ecosystem: 1. Idea Phase Accelerator: Funding and
-              mentorship for early startups. 2. Community: A network of
-              builders sharing knowledge. 3. Marketing Support: Go-to-market
-              strategies for web3 products. 4. Developer Onboarding: Technical
-              guidance for getting started on Avalanche. 5. Closed Beta
-              Testing: Access to early adopters for product validation. 6.
-              Events: Hackathons and meetups across India.
-            </p>
+            <RagSummary />
           </div>
 
           {/* Rotating Cards */}
@@ -219,4 +295,13 @@ export function WhatWeDo() {
       </div>
     </section>
   );
+}
+
+/* ═══════════════════════════════════════════
+   WhatWeDo — picks mobile/desktop tree
+   ═══════════════════════════════════════════ */
+
+export function WhatWeDo() {
+  const isDesktop = useIsDesktop();
+  return isDesktop ? <WhatWeDoDesktop /> : <WhatWeDoMobile />;
 }
