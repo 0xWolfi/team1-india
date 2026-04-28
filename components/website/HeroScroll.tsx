@@ -19,10 +19,10 @@ import { useTheme } from "next-themes";
    ═══════════════════════════════════════════ */
 
 const impactStats = [
-  { value: 113, label: "Events", suffix: "+", icon: <Calendar className="w-7 h-7" />, image: "/events-card.jpg" },
-  { value: 15, label: "Campuses", suffix: "+", icon: <School className="w-7 h-7" />, image: "/campus-card.jpg" },
-  { value: 7, label: "Hackathons", suffix: "", icon: <Trophy className="w-7 h-7" />, image: "/hackathons-card.jpg" },
-  { value: 31, label: "Projects Building", suffix: "+", icon: <Rocket className="w-7 h-7" />, image: "/projects-card.jpg" },
+  { value: 113, label: "Events", suffix: "+", icon: <Calendar className="w-5 h-5 sm:w-7 sm:h-7" />, image: "/events-card.jpg" },
+  { value: 15, label: "Campuses", suffix: "+", icon: <School className="w-5 h-5 sm:w-7 sm:h-7" />, image: "/campus-card.jpg" },
+  { value: 7, label: "Hackathons", suffix: "", icon: <Trophy className="w-5 h-5 sm:w-7 sm:h-7" />, image: "/hackathons-card.jpg" },
+  { value: 31, label: "Projects Building", suffix: "+", icon: <Rocket className="w-5 h-5 sm:w-7 sm:h-7" />, image: "/projects-card.jpg" },
 ];
 
 const socials = [
@@ -151,7 +151,7 @@ function StatCard({
   return (
     <motion.div
       style={{ backgroundColor: stat.image ? undefined : bg, borderColor: border, boxShadow: boxSh }}
-      className="relative flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-10 min-h-[200px] sm:min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border bg-zinc-100/60 dark:bg-zinc-950/40"
+      className="relative flex flex-col justify-between p-3 sm:p-6 md:p-8 lg:p-10 min-h-[140px] sm:min-h-[280px] lg:min-h-[360px] xl:min-h-[400px] rounded-3xl overflow-hidden border bg-zinc-100/60 dark:bg-zinc-950/40"
     >
       {/* Background image (if provided) */}
       {stat.image && (
@@ -178,10 +178,10 @@ function StatCard({
         <motion.div style={{ color: iconC }}>{stat.icon}</motion.div>
       </div>
       <div className="relative z-10 flex flex-col mt-auto text-left gap-1">
-        <motion.div style={{ color: numC }} className="text-4xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7rem] font-bold tracking-tighter leading-none mb-2">
+        <motion.div style={{ color: numC }} className="text-3xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7rem] font-bold tracking-tighter leading-none mb-2">
           <AnimatedCounter target={stat.value} suffix={stat.suffix} progress={progress} range={counterRange} />
         </motion.div>
-        <motion.p style={{ color: txtC }} className="text-sm lg:text-base font-medium leading-snug max-w-[160px] sm:self-auto self-end text-right sm:text-left">
+        <motion.p style={{ color: txtC }} className="text-xs sm:text-sm lg:text-base font-medium leading-snug max-w-[100px] sm:max-w-[160px] sm:self-auto self-end text-right sm:text-left">
           {stat.label}
         </motion.p>
       </div>
@@ -435,7 +435,7 @@ export const HeroScroll = () => {
             </motion.div>
             <motion.div
               style={{ opacity: statsOpacity, scale: statsScale, y: statsY }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 xl:gap-6 w-full"
+              className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 xl:gap-6 w-full"
             >
               {impactStats.map((stat, i) => (
                 <StatCard key={stat.label} stat={stat} glow={glows[i]} progress={scrollYProgress} counterRange={counterRange} isDark={isDark} />
