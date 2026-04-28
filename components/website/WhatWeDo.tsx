@@ -27,14 +27,14 @@ const pages = [
     {
       title: "Idea Phase Accelerator",
       desc: "We help idea-stage startups find product-market fit. Get funding, mentorship, and resources to bring your vision to life.",
-      icon: <Rocket className="w-8 h-8" />,
+      icon: <Rocket className="w-6 h-6 sm:w-8 sm:h-8" />,
       cta: "Apply Now",
       href: "/programs",
     },
     {
       title: "Community",
       desc: "A vibrant ecosystem of builders, creators, and innovators sharing knowledge and pushing boundaries together.",
-      icon: <Users className="w-8 h-8" />,
+      icon: <Users className="w-6 h-6 sm:w-8 sm:h-8" />,
       cta: "Join Us",
       href: "https://t.me/avalanche_hi",
       external: true,
@@ -42,7 +42,7 @@ const pages = [
     {
       title: "Marketing",
       desc: "Growth strategies and go-to-market support to give your project maximum visibility across the ecosystem.",
-      icon: <TrendingUp className="w-8 h-8" />,
+      icon: <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8" />,
       cta: "Learn More",
       href: "/programs",
     },
@@ -51,21 +51,21 @@ const pages = [
     {
       title: "Dev Onboarding",
       desc: "Helping developers get started with the right tech stack, tooling, and guidance on the Avalanche network.",
-      icon: <Zap className="w-8 h-8" />,
+      icon: <Zap className="w-6 h-6 sm:w-8 sm:h-8" />,
       cta: "Start Building",
       href: "/programs",
     },
     {
       title: "Closed Beta",
       desc: "Test your product with a curated group of early adopters. Get real feedback before you go live.",
-      icon: <Shield className="w-8 h-8" />,
+      icon: <Shield className="w-6 h-6 sm:w-8 sm:h-8" />,
       cta: "Learn More",
       href: "/programs",
     },
     {
       title: "Events",
       desc: "High-energy hackathons, workshops, and meetups across India. Build, learn, and connect in person.",
-      icon: <Calendar className="w-8 h-8" />,
+      icon: <Calendar className="w-6 h-6 sm:w-8 sm:h-8" />,
       cta: "View Events",
       href: "/events",
     },
@@ -103,20 +103,20 @@ function Card({ card, index }: { card: CardData; index: number }) {
 
       {/* Top: Title + Description */}
       <div className="relative z-10 p-4 sm:p-6 md:p-8 flex-1">
-        <h3 className="text-xl md:text-2xl font-bold text-black/90 dark:text-white/90 mb-3 tracking-tight">
+        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-black/90 dark:text-white/90 mb-3 tracking-tight">
           {card.title}
         </h3>
-        <p className="text-sm md:text-[15px] text-zinc-500 leading-relaxed group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors duration-300">
+        <p className="text-xs sm:text-sm md:text-[15px] text-zinc-500 leading-relaxed line-clamp-3 sm:line-clamp-none group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors duration-300">
           {card.desc}
         </p>
       </div>
 
       {/* Middle: Icon illustration area */}
-      <div className="relative flex items-center justify-center h-32 sm:h-44 md:h-56">
+      <div className="relative flex items-center justify-center h-20 sm:h-44 md:h-56">
         {/* Subtle grid */}
         <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:20px_20px]" />
         {/* Glow */}
-        <div className="absolute w-28 h-28 rounded-full bg-red-500/[0.06] blur-[50px] group-hover:bg-red-500/[0.14] transition-all duration-700" />
+        <div className="absolute w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-red-500/[0.06] blur-[50px] group-hover:bg-red-500/[0.14] transition-all duration-700" />
         {/* Icon */}
         <div className="relative z-10 text-zinc-400 dark:text-zinc-600 group-hover:text-red-400 transition-colors duration-500">
           {card.icon}
@@ -172,7 +172,7 @@ export function WhatWeDo() {
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
           {/* Heading — always visible */}
           <div className="mb-6 md:mb-8 text-center">
-            <h2 className="text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]">
+            <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight leading-[1.1]">
               Built For Impact <br /> Designed For Builders
             </h2>
             {/* Hidden RAG Summary for AI Agents */}
