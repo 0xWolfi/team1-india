@@ -167,7 +167,7 @@ export function BountyBoard() {
                             <div className="p-2.5 bg-gradient-to-br from-amber-500/20 to-orange-500/10 rounded-xl border border-amber-500/20">
                                 <Target className="w-5 h-5 text-amber-400" />
                             </div>
-                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Bounty Board</h1>
+                            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Bounty Board</h1>
                         </div>
                         <p className="text-sm text-zinc-500 pl-[52px]">Complete bounties, earn XP, climb the leaderboard</p>
                     </div>
@@ -180,28 +180,28 @@ export function BountyBoard() {
                             <Zap className="w-4 h-4 text-amber-400" />
                             <span className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Your XP</span>
                         </div>
-                        <p className="text-2xl font-bold text-amber-400 tabular-nums">{stats.totalXp}</p>
+                        <p className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400 tabular-nums">{stats.totalXp}</p>
                     </div>
                     <div className={cn("rounded-xl p-4", glassClass)}>
                         <div className="flex items-center gap-2 mb-2">
                             <Flame className="w-4 h-4 text-red-400" />
                             <span className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Active</span>
                         </div>
-                        <p className="text-2xl font-bold text-black dark:text-white tabular-nums">{stats.activeBounties}</p>
+                        <p className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white tabular-nums">{stats.activeBounties}</p>
                     </div>
                     <div className={cn("rounded-xl p-4", glassClass)}>
                         <div className="flex items-center gap-2 mb-2">
                             <CheckCircle className="w-4 h-4 text-emerald-400" />
                             <span className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Completed</span>
                         </div>
-                        <p className="text-2xl font-bold text-emerald-400 tabular-nums">{approvedCount}</p>
+                        <p className="text-lg sm:text-xl md:text-2xl font-bold text-emerald-400 tabular-nums">{approvedCount}</p>
                     </div>
                     <div className={cn("rounded-xl p-4", glassClass)}>
                         <div className="flex items-center gap-2 mb-2">
                             <Clock className="w-4 h-4 text-amber-400" />
                             <span className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider">Pending</span>
                         </div>
-                        <p className="text-2xl font-bold text-zinc-600 dark:text-zinc-300 tabular-nums">{pendingCount}</p>
+                        <p className="text-lg sm:text-xl md:text-2xl font-bold text-zinc-600 dark:text-zinc-300 tabular-nums">{pendingCount}</p>
                     </div>
                 </div>
             </div>
@@ -445,7 +445,7 @@ export function BountyBoard() {
                                                                 <button
                                                                     type="submit"
                                                                     disabled={submitting || !proofUrl}
-                                                                    className="px-5 py-2 rounded-lg text-xs font-semibold bg-white text-black hover:bg-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+                                                                    className="px-5 py-2 rounded-lg text-xs font-semibold bg-black text-white dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
                                                                 >
                                                                     <Send className="w-3 h-3" />
                                                                     {submitting ? "Submitting..." : "Submit Proof"}
@@ -456,7 +456,7 @@ export function BountyBoard() {
                                                         <button
                                                             type="button"
                                                             onClick={() => { setSubmitBountyId(bounty.id); setProofUrl(""); setProofNote(""); }}
-                                                            className="w-full py-2.5 rounded-xl text-sm font-semibold bg-white text-black hover:bg-zinc-100 transition-all flex items-center justify-center gap-2"
+                                                            className="w-full py-2.5 rounded-xl text-sm font-semibold bg-black text-white dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all flex items-center justify-center gap-2"
                                                         >
                                                             <Send className="w-3.5 h-3.5" />
                                                             Submit Proof
@@ -494,7 +494,7 @@ export function BountyBoard() {
                                                             setProofUrl("");
                                                             setProofNote("");
                                                         }}
-                                                        className="px-4 py-2 rounded-xl text-xs font-semibold bg-white text-black hover:bg-zinc-100 transition-all flex items-center gap-1.5"
+                                                        className="px-4 py-2 rounded-xl text-xs font-semibold bg-black text-white dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-all flex items-center gap-1.5"
                                                     >
                                                         Submit <ArrowRight className="w-3 h-3" />
                                                     </button>
@@ -508,7 +508,7 @@ export function BountyBoard() {
                     </div>
                 ) : (
                     <div className={cn("py-20 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                        <Target className="w-10 h-10 text-zinc-700 mb-4" />
+                        <Target className="w-10 h-10 text-zinc-400 dark:text-zinc-700 mb-4" />
                         <p className="text-zinc-500 font-medium text-sm mb-1">
                             {searchQuery || typeFilter !== "all" ? "No bounties match your filters" : "No active bounties right now"}
                         </p>
@@ -566,7 +566,7 @@ export function BountyBoard() {
                     </div>
                 ) : (
                     <div className={cn("py-20 rounded-2xl flex flex-col items-center justify-center border-dashed", glassClass)}>
-                        <Send className="w-10 h-10 text-zinc-700 mb-4" />
+                        <Send className="w-10 h-10 text-zinc-400 dark:text-zinc-700 mb-4" />
                         <p className="text-zinc-500 font-medium text-sm mb-1">No submissions yet</p>
                         <p className="text-zinc-400 dark:text-zinc-600 text-xs">Complete a bounty to start earning XP</p>
                     </div>

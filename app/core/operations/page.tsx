@@ -73,7 +73,7 @@ export default function OperationsPage() {
             </CorePageHeader>
 
             {/* Navigation Tabs */}
-            <div className="flex items-center gap-1 bg-zinc-100/50 dark:bg-zinc-900/50 p-1 rounded-xl w-fit mb-8 border border-black/5 dark:border-white/5 backdrop-blur-sm">
+            <div className="flex flex-wrap items-center gap-1 bg-zinc-100/50 dark:bg-zinc-900/50 p-1 rounded-xl w-fit max-w-full mb-8 border border-black/5 dark:border-white/5 backdrop-blur-sm overflow-x-auto">
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
@@ -98,14 +98,14 @@ export default function OperationsPage() {
                     <div className="grid grid-cols-1 gap-6">
                         {/* Render View Specific Content */}
                         {view === 'board' && (
-                            <div className="p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
+                            <div className="p-8 sm:p-12 md:p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
                                 <LayoutDashboard className="w-12 h-12 mb-4 opacity-50"/>
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-600 dark:text-zinc-300">Kanban Board</h3>
                                 <p className="text-sm">Task cards and drag-and-drop workflow will be here.</p>
                             </div>
                         )}
                         {view === 'calendar' && (
-                             <div className="p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
+                             <div className="p-8 sm:p-12 md:p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20 text-center">
                                 <Calendar className="w-12 h-12 mb-4 opacity-50"/>
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-600 dark:text-zinc-300">Calendar View</h3>
                                 <p className="text-sm mb-6">Monthly schedule and deadlines.</p>
@@ -120,14 +120,14 @@ export default function OperationsPage() {
                             </div>
                         )}
                         {view === 'list' && (
-                             <div className="p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
+                             <div className="p-8 sm:p-12 md:p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
                                 <ListTodo className="w-12 h-12 mb-4 opacity-50"/>
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-600 dark:text-zinc-300">List View</h3>
                                 <p className="text-sm">Detailed list of tasks and assignments.</p>
                             </div>
                         )}
                         {view === 'time' && (
-                             <div className="p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
+                             <div className="p-8 sm:p-12 md:p-16 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-500 bg-zinc-100/20 dark:bg-zinc-900/20">
                                 <Clock className="w-12 h-12 mb-4 opacity-50"/>
                                 <h3 className="text-lg font-semibold mb-1 text-zinc-600 dark:text-zinc-300">Time Logs</h3>
                                 <p className="text-sm">Tracked time and performance metrics.</p>

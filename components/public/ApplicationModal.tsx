@@ -181,7 +181,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                     <p className="text-zinc-500 dark:text-zinc-400">
                         Thank you for volunteering. The Core team will review your application and reach out via Telegram or Email.
                     </p>
-                    <button onClick={reset} className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors mt-4">
+                    <button onClick={reset} className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold rounded-lg hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors mt-4">
                         Close
                     </button>
                 </div>
@@ -196,7 +196,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                         <button onClick={reset} className="px-6 py-2 bg-zinc-200 dark:bg-zinc-800 text-black dark:text-white font-medium rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-colors">
                             Cancel
                         </button>
-                        <button onClick={() => setStep('form')} className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors">
+                        <button onClick={() => setStep('form')} className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold rounded-lg hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors">
                             Try Again
                         </button>
                     </div>
@@ -206,7 +206,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                     {/* Personals */}
                     <div className="space-y-4">
                         <h4 className="text-sm font-bold text-zinc-500 uppercase tracking-widest border-b border-black/5 dark:border-white/5 pb-2">Personal Details</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">Full Name *</label>
                                 <div className="relative">
@@ -251,7 +251,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                                         name="telegram" 
                                         value={formData.telegram} 
                                         onChange={handleChange} 
-                                        className={`w-full bg-white/5 border ${fieldErrors.telegram ? 'border-red-500' : 'border-black/10 dark:border-white/10'} rounded-lg pl-7 pr-3 py-3 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 transition-colors focus:bg-zinc-100 dark:focus:bg-zinc-900`} 
+                                        className={`w-full bg-black/5 dark:bg-white/5 border ${fieldErrors.telegram ? 'border-red-500' : 'border-black/10 dark:border-white/10'} rounded-lg pl-7 pr-3 py-3 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 transition-colors focus:bg-zinc-100 dark:focus:bg-zinc-900`}
                                         placeholder="username" 
                                     />
                                     {fieldErrors.telegram && <p className="text-red-400 text-[10px] mt-1">{fieldErrors.telegram}</p>}
@@ -266,7 +266,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                                         name="xHandle" 
                                         value={formData.xHandle} 
                                         onChange={handleChange} 
-                                        className={`w-full bg-white/5 border ${fieldErrors.xHandle ? 'border-red-500' : 'border-black/10 dark:border-white/10'} rounded-lg pl-7 pr-3 py-3 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 transition-colors focus:bg-zinc-100 dark:focus:bg-zinc-900`} 
+                                        className={`w-full bg-black/5 dark:bg-white/5 border ${fieldErrors.xHandle ? 'border-red-500' : 'border-black/10 dark:border-white/10'} rounded-lg pl-7 pr-3 py-3 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 transition-colors focus:bg-zinc-100 dark:focus:bg-zinc-900`}
                                         placeholder="username" 
                                     />
                                     {fieldErrors.xHandle && <p className="text-red-400 text-[10px] mt-1">{fieldErrors.xHandle}</p>}
@@ -310,7 +310,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                             <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">Short Bio / About You *</label>
                             <textarea required name="about" value={formData.about} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-3 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 transition-colors focus:bg-zinc-100 dark:focus:bg-zinc-900 h-24" placeholder="Tell us a bit about yourself..." />
                         </div>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">Resume / Portfolio Link *</label>
                                 <input required type="url" name="resumeLink" value={formData.resumeLink} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-3 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 transition-colors focus:bg-zinc-100 dark:focus:bg-zinc-900" placeholder="https://" />
@@ -371,7 +371,7 @@ export default function ApplicationModal({ isOpen, onClose }: ApplicationModalPr
                     {/* Optional / Meta */}
                     <div className="space-y-4">
                          <h4 className="text-sm font-bold text-zinc-500 uppercase tracking-widest border-b border-black/5 dark:border-white/5 pb-2">Additional Info</h4>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">GitHub (Optional)</label>
                                 <input name="github" value={formData.github} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-3 text-black dark:text-white focus:outline-none focus:border-black/50 dark:focus:border-white/50 transition-colors focus:bg-zinc-100 dark:focus:bg-zinc-900" placeholder="github.com/username" />

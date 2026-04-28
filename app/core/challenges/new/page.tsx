@@ -25,7 +25,7 @@ export default function NewChallengePage() {
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-5">
         <div><label className="block text-sm font-medium mb-2">Title *</label><input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" /></div>
         <div><label className="block text-sm font-medium mb-2">Description</label><textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent resize-none focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white" /></div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label className="block text-sm font-medium mb-2">Prize Pool</label><input value={form.prizePool} onChange={(e) => setForm({ ...form, prizePool: e.target.value })} placeholder="e.g. ₹50,000" className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:outline-none" /></div>
           <div><label className="block text-sm font-medium mb-2">Max Team Size</label><input type="number" value={form.maxTeamSize} onChange={(e) => setForm({ ...form, maxTeamSize: parseInt(e.target.value) || 4 })} className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:outline-none" /></div>
         </div>

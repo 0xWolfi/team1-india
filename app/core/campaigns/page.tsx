@@ -87,7 +87,7 @@ export default function CampaignsPage() {
                         const city = (c.body as any)?.city || '';
                         return (
                             <div key={c.id} className={cn("rounded-xl p-4", glassClass)}>
-                                <div className="flex items-center gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                                     <Link href={`/core/campaigns/${c.id}`} className={cn("p-2.5 rounded-lg border shrink-0 hover:opacity-80 transition-opacity", cfg.bg, cfg.border)}>
                                         <DynamicIcon name={cfg.icon} className={cn("w-5 h-5", cfg.color)} />
                                     </Link>
@@ -104,7 +104,7 @@ export default function CampaignsPage() {
                                             </p>
                                         )}
                                     </Link>
-                                    <div className="flex items-center gap-2 shrink-0">
+                                    <div className="flex flex-wrap items-center gap-2 shrink-0">
                                         <button
                                             onClick={() => copyLink(c)}
                                             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-zinc-600 dark:text-zinc-300"

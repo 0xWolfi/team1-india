@@ -24,7 +24,7 @@ export default async function AccessCheckPage() {
 
   // Fallback UI (rarely seen)
   return (
-    <div className="flex h-screen items-center justify-center text-white">
+    <div className="flex h-screen items-center justify-center bg-white dark:bg-black text-black dark:text-white px-4 sm:px-6 md:px-8">
       <div className="animate-pulse">Checking access rights...</div>
     </div>
   );

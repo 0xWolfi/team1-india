@@ -172,7 +172,7 @@ export default function PlaybooksPage() {
              </CorePageHeader>
 
             {/* Toolbar */}
-             <div className="flex flex-col md:flex-row gap-4 mb-10">
+             <div className="flex flex-col md:flex-row gap-3 sm:gap-4 mb-6 sm:mb-10 flex-wrap">
                  <div className="relative flex-1 group">
                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <Search className="w-4 h-4 text-zinc-500 group-focus-within:text-black dark:group-focus-within:text-white transition-colors"/>
@@ -254,7 +254,7 @@ export default function PlaybooksPage() {
              {/* Content */}
              <div>
                  {isLoading && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                         {[1,2,3].map(i => (
                             <div key={i} className="h-48 rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse border border-black/5 dark:border-white/5" />
                         ))}
@@ -274,7 +274,7 @@ export default function PlaybooksPage() {
                  )}
 
                  <div className={`
-                    ${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8' : 'flex flex-col gap-4 max-w-4xl'}
+                    ${viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8' : 'flex flex-col gap-4 max-w-4xl'}
                  `}>
                      {filtered.map(doc => (
                          <div key={doc.id} className="relative group/card perspective-1000">

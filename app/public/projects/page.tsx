@@ -38,7 +38,7 @@ export default async function PublicProjectsPage() {
 
   return (
     <main className="min-h-screen text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800">
-      <div className="pt-24 px-6 max-w-7xl mx-auto pb-20">
+      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-7xl mx-auto pb-20">
         <Link href="/public" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </Link>
@@ -48,7 +48,7 @@ export default async function PublicProjectsPage() {
             <div className="w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 flex items-center justify-center">
               <Layers className="w-4 h-4 text-zinc-500" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold">Discover Projects</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">Discover Projects</h1>
           </div>
           <p className="text-zinc-500 text-sm md:text-base max-w-2xl leading-relaxed">
             Explore projects built by the Team1 India community. From hackathon winners to side projects.
@@ -56,7 +56,7 @@ export default async function PublicProjectsPage() {
         </div>
 
         {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {projects.map((project) => (
             <Link
               key={project.id}

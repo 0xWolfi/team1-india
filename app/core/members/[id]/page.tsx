@@ -195,13 +195,13 @@ export default function MemberDetailPage() {
             </CorePageHeader>
 
             {/* Member Profile Section */}
-            <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl p-6 mb-6">
-                <div className="flex items-start gap-6">
-                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-zinc-200 dark:from-zinc-800 to-white dark:to-black border border-black/10 dark:border-white/10 flex items-center justify-center text-3xl font-bold text-zinc-500 dark:text-zinc-400 flex-shrink-0">
+            <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl p-4 sm:p-6 mb-6">
+                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-zinc-200 dark:from-zinc-800 to-white dark:to-black border border-black/10 dark:border-white/10 flex items-center justify-center text-2xl sm:text-3xl font-bold text-zinc-500 dark:text-zinc-400 flex-shrink-0">
                         {getInitials(member?.name, member?.email || '')}
                     </div>
                     <div className="flex-1">
-                        <h2 className="text-2xl font-bold text-black dark:text-white mb-2">
+                        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white mb-2">
                             {member?.name || "Unknown"}
                         </h2>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">{member?.email}</p>
@@ -286,21 +286,21 @@ export default function MemberDetailPage() {
 
             {/* Activity Stats */}
             {activity && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                     <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl p-4">
-                        <div className="text-2xl font-bold text-black dark:text-white mb-1">{activity.stats.totalApplications}</div>
+                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white mb-1">{activity.stats.totalApplications}</div>
                         <div className="text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Total Applications</div>
                     </div>
                     <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl p-4">
-                        <div className="text-2xl font-bold text-emerald-400 mb-1">{activity.stats.approvedApplications}</div>
+                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-emerald-400 mb-1">{activity.stats.approvedApplications}</div>
                         <div className="text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved</div>
                     </div>
                     <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl p-4">
-                        <div className="text-2xl font-bold text-amber-400 mb-1">{activity.stats.pendingApplications}</div>
+                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400 mb-1">{activity.stats.pendingApplications}</div>
                         <div className="text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Pending</div>
                     </div>
                     <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl p-4">
-                        <div className="text-2xl font-bold text-black dark:text-white mb-1">{activity.stats.totalExperiments}</div>
+                        <div className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white mb-1">{activity.stats.totalExperiments}</div>
                         <div className="text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Proposals</div>
                     </div>
                 </div>
@@ -308,10 +308,10 @@ export default function MemberDetailPage() {
 
             {/* Applications Section */}
             {activity && activity.applications.length > 0 && (
-                <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl p-6 mb-6">
+                <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl p-4 sm:p-6 mb-6">
                     <div className="flex items-center gap-3 mb-6">
                         <Calendar className="w-5 h-5 text-indigo-400"/>
-                        <h3 className="text-xl font-bold text-black dark:text-white">Applications</h3>
+                        <h3 className="text-lg sm:text-xl font-bold text-black dark:text-white">Applications</h3>
                         <span className="px-2 py-0.5 rounded text-xs font-medium bg-zinc-100/50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border border-black/5 dark:border-white/5">
                             {activity.applications.length}
                         </span>
@@ -347,7 +347,7 @@ export default function MemberDetailPage() {
                 <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl p-6 mb-6">
                     <div className="flex items-center gap-3 mb-6">
                         <Beaker className="w-5 h-5 text-purple-400"/>
-                        <h3 className="text-xl font-bold text-black dark:text-white">Proposals</h3>
+                        <h3 className="text-lg sm:text-xl font-bold text-black dark:text-white">Proposals</h3>
                         <span className="px-2 py-0.5 rounded text-xs font-medium bg-zinc-100/50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border border-black/5 dark:border-white/5">
                             {activity.experiments.length}
                         </span>
@@ -386,7 +386,7 @@ export default function MemberDetailPage() {
                 <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl p-6 mb-6">
                     <div className="flex items-center gap-3 mb-6">
                         <MessageSquare className="w-5 h-5 text-blue-400"/>
-                        <h3 className="text-xl font-bold text-black dark:text-white">Comments</h3>
+                        <h3 className="text-lg sm:text-xl font-bold text-black dark:text-white">Comments</h3>
                         <span className="px-2 py-0.5 rounded text-xs font-medium bg-zinc-100/50 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 border border-black/5 dark:border-white/5">
                             {activity.experimentComments.length}
                         </span>

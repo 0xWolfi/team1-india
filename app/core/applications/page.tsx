@@ -167,7 +167,7 @@ export default function ApplicationsPage() {
                     })}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-start">
                     {/* List */}
                     <div className="lg:col-span-1 space-y-3 max-h-[calc(100vh-300px)] overflow-y-auto custom-scrollbar pr-2">
                         {activeTab === 'CONTRIBUTIONS' ? (
@@ -260,11 +260,11 @@ export default function ApplicationsPage() {
                     {/* Detail View */}
                     <div className="lg:col-span-2">
                         {activeTab === 'CONTRIBUTIONS' && selectedContribution ? (
-                            <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-2xl p-8 space-y-8 sticky top-24 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-2xl">
-                                <div className="flex justify-between items-start border-b border-black/5 dark:border-white/5 pb-8">
+                            <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8 sticky top-24 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-2xl">
+                                <div className="flex flex-col sm:flex-row gap-4 justify-between items-start border-b border-black/5 dark:border-white/5 pb-6 md:pb-8">
                                     <div className="space-y-4">
                                         <div>
-                                            <h2 className="text-3xl font-bold text-black dark:text-white mb-1">{selectedContribution.name}</h2>
+                                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-black dark:text-white mb-1">{selectedContribution.name}</h2>
                                             <div className="text-base text-zinc-500 dark:text-zinc-400 capitalize">{selectedContribution.type.replace('-', ' ')}</div>
                                         </div>
                                         
@@ -305,7 +305,7 @@ export default function ApplicationsPage() {
                                             <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                                                 <Calendar className="w-4 h-4 text-emerald-400" /> Event Details
                                             </h4>
-                                            <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="p-4 bg-white/20 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5">
                                                     <div className="text-xs text-zinc-500 mb-1">Date</div>
                                                     <div className="text-black dark:text-white">{selectedContribution.eventDate || 'N/A'}</div>
@@ -333,12 +333,12 @@ export default function ApplicationsPage() {
                                 </div>
                             </div>
                         ) : selectedApp ? (
-                            <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-2xl p-8 space-y-8 sticky top-24 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-2xl">
+                            <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 space-y-6 md:space-y-8 sticky top-24 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300 shadow-2xl">
                                 {/* Header */}
-                                <div className="flex justify-between items-start border-b border-black/5 dark:border-white/5 pb-8">
+                                <div className="flex flex-col sm:flex-row gap-4 justify-between items-start border-b border-black/5 dark:border-white/5 pb-6 md:pb-8">
                                     <div className="space-y-4">
                                         <div>
-                                            <h2 className="text-3xl font-bold text-black dark:text-white mb-1">{selectedApp.data?.name}</h2>
+                                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-black dark:text-white mb-1">{selectedApp.data?.name}</h2>
                                             <div className="text-base text-zinc-500 dark:text-zinc-400">{selectedApp.data?.about ? selectedApp.data.about.slice(0, 100) + '...' : 'No bio available'}</div>
                                         </div>
                                         
@@ -371,7 +371,7 @@ export default function ApplicationsPage() {
                                 </div>
 
                                 {/* Content */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                                     <div className="space-y-8">
                                         {selectedApp.data?.about && (
                                             <div className="space-y-3">

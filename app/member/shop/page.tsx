@@ -35,7 +35,7 @@ export default async function MemberShopPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {items.map((item) => (
           <div key={item.id} className="rounded-xl border border-black/5 dark:border-white/5 overflow-hidden hover:border-black/10 dark:hover:border-white/10 transition-colors">
             {item.image && <div className="h-48 bg-zinc-100 dark:bg-zinc-800"><img src={item.image} alt={item.name} className="w-full h-full object-cover" /></div>}

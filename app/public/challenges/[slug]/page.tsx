@@ -25,7 +25,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
 
   return (
     <main className="min-h-screen text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800">
-      <div className="pt-24 px-6 max-w-4xl mx-auto pb-20">
+      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-4xl mx-auto pb-20">
         <Link href="/public/challenges" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Challenges
         </Link>
@@ -41,11 +41,11 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-blue-500/10 text-blue-500">{challenge.status.replace(/_/g, " ")}</span>
             {challenge.prizePool && <span className="text-sm font-medium text-yellow-500">{challenge.prizePool}</span>}
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">{challenge.title}</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">{challenge.title}</h1>
           {challenge.description && <p className="text-zinc-500 text-base leading-relaxed max-w-2xl">{challenge.description}</p>}
         </div>
 
-        <div className="flex items-center gap-6 mb-8 text-sm text-zinc-500">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 mb-8 text-sm text-zinc-500">
           <span className="flex items-center gap-1.5"><Users className="w-4 h-4" />{challenge._count.registrations} teams</span>
           <span className="flex items-center gap-1.5"><FileText className="w-4 h-4" />{challenge._count.submissions} submissions</span>
           {challenge.startDate && <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />{new Date(challenge.startDate).toLocaleDateString()}</span>}
@@ -54,7 +54,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
         {challenge.tracks.length > 0 && (
           <div className="mb-8">
             <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-3">Tracks</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {challenge.tracks.map((t) => (
                 <div key={t.id} className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-zinc-50 dark:bg-zinc-900">
                   <h3 className="font-bold text-sm">{t.name}</h3>

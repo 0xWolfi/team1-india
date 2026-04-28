@@ -21,21 +21,21 @@ function SignInContent() {
     };
 
     return (
-        <div className="relative min-h-[100svh] w-full flex items-center justify-center overflow-hidden">
+        <div className="relative min-h-[100svh] w-full flex items-center justify-center overflow-hidden px-4 sm:px-6">
              {/* Default background from layout.tsx will show through */}
 
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.8, type: "spring", bounce: 0.2 }}
-                className="relative z-10 w-full max-w-sm"
+                className="relative z-10 w-full max-w-sm mx-4 sm:mx-auto"
             >
                 {/* Glass Card */}
                 <div className="relative group">
                     {/* Glowing Border Effect - Monochrome */}
                     <div className="absolute -inset-0.5 bg-gradient-to-br from-zinc-500 via-zinc-800 to-zinc-500 rounded-2xl opacity-20 blur-sm group-hover:opacity-40 transition-opacity duration-500"></div>
-                    
-                    <div className="relative px-8 py-10 bg-black/80 backdrop-blur-2xl rounded-2xl border border-white/[0.08] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.9)]">
+
+                    <div className="relative px-6 sm:px-8 py-8 sm:py-10 bg-white/90 dark:bg-black/80 backdrop-blur-2xl rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.9)]">
                         
                         {/* Header */}
                         <div className="flex flex-col items-center mb-10 text-center">
@@ -43,25 +43,25 @@ function SignInContent() {
                                 initial={{ scale: 0, rotate: -180 }}
                                 animate={{ scale: 1, rotate: 0 }}
                                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                                className="w-16 h-16 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-6 shadow-xl relative overflow-hidden group/icon"
+                                className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 flex items-center justify-center mb-6 shadow-xl relative overflow-hidden group/icon"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500"/>
-                                <Terminal className="w-7 h-7 text-white relative z-10"/>
+                                <div className="absolute inset-0 bg-gradient-to-tr from-black/10 dark:from-white/10 to-transparent opacity-0 group-hover/icon:opacity-100 transition-opacity duration-500"/>
+                                <Terminal className="w-6 h-6 sm:w-7 sm:h-7 text-black dark:text-white relative z-10"/>
                             </motion.div>
                             
                             <motion.h1 
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
-                                className="text-3xl font-bold text-white tracking-tight mb-2"
+                                className="text-xl sm:text-2xl md:text-3xl font-bold text-black dark:text-white tracking-tight mb-2"
                             >
                                 Core Access
                             </motion.h1>
-                            <motion.p 
+                            <motion.p
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.5 }}
-                                className="text-zinc-500 text-sm font-medium tracking-wide uppercase"
+                                className="text-zinc-600 dark:text-zinc-500 text-xs sm:text-sm font-medium tracking-wide uppercase"
                             >
                                 Authorized Personnel Only
                             </motion.p>
@@ -72,9 +72,9 @@ function SignInContent() {
                             <motion.div 
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
-                                className="mb-6 p-3 rounded-lg bg-zinc-800/50 border border-white/10 flex items-center gap-3 overflow-hidden text-zinc-300"
+                                className="mb-6 p-3 rounded-lg bg-zinc-200/50 dark:bg-zinc-800/50 border border-black/10 dark:border-white/10 flex items-center gap-3 overflow-hidden text-zinc-700 dark:text-zinc-300"
                             >
-                                <AlertTriangle className="w-4 h-4 text-zinc-400 shrink-0"/>
+                                <AlertTriangle className="w-4 h-4 text-zinc-600 dark:text-zinc-400 shrink-0"/>
                                 <span className="text-xs font-medium">Authentication Failed. Access Denied.</span>
                             </motion.div>
                         )}
@@ -115,24 +115,24 @@ function SignInContent() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.8 }}
-                            className="mt-8 pt-6 border-t border-white/5 grid grid-cols-2 gap-4"
+                            className="mt-8 pt-6 border-t border-black/5 dark:border-white/5 grid grid-cols-2 gap-4"
                         >
                             <div className="flex items-center gap-2 group/status cursor-default">
-                                <div className="p-1.5 rounded-md bg-white/5 border border-white/10 group-hover/status:bg-white/10 transition-colors">
-                                    <Globe className="w-3 h-3 text-zinc-400 group-hover/status:text-white transition-colors"/>
+                                <div className="p-1.5 rounded-md bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 group-hover/status:bg-black/10 dark:group-hover/status:bg-white/10 transition-colors">
+                                    <Globe className="w-3 h-3 text-zinc-600 dark:text-zinc-400 group-hover/status:text-black dark:group-hover/status:text-white transition-colors"/>
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-wider">System</span>
-                                    <span className="text-[10px] text-zinc-300 font-mono">Online</span>
+                                    <span className="text-[9px] text-zinc-600 dark:text-zinc-500 uppercase font-bold tracking-wider">System</span>
+                                    <span className="text-[10px] text-zinc-700 dark:text-zinc-300 font-mono">Online</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 group/status cursor-default justify-end">
                                 <div className="flex flex-col items-end">
-                                    <span className="text-[9px] text-zinc-500 uppercase font-bold tracking-wider">Connection</span>
-                                    <span className="text-[10px] text-zinc-300 font-mono">Secure</span>
+                                    <span className="text-[9px] text-zinc-600 dark:text-zinc-500 uppercase font-bold tracking-wider">Connection</span>
+                                    <span className="text-[10px] text-zinc-700 dark:text-zinc-300 font-mono">Secure</span>
                                 </div>
-                                <div className="p-1.5 rounded-md bg-white/5 border border-white/10 group-hover/status:bg-white/10 transition-colors">
-                                    <ShieldCheck className="w-3 h-3 text-zinc-400 group-hover/status:text-white transition-colors"/>
+                                <div className="p-1.5 rounded-md bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 group-hover/status:bg-black/10 dark:group-hover/status:bg-white/10 transition-colors">
+                                    <ShieldCheck className="w-3 h-3 text-zinc-600 dark:text-zinc-400 group-hover/status:text-black dark:group-hover/status:text-white transition-colors"/>
                                 </div>
                             </div>
                         </motion.div>
@@ -145,7 +145,7 @@ function SignInContent() {
                     transition={{ delay: 1 }}
                     className="mt-6 text-center"
                 >
-                    <p className="text-[10px] text-zinc-600 font-mono">
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-600 font-mono">
                         Team1 India Internal Network • v2.0.4
                     </p>
                 </motion.div>
@@ -156,7 +156,7 @@ function SignInContent() {
 
 export default function SignInPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-zinc-600 text-sm font-mono animate-pulse">Initializing Core...</div>}>
+        <Suspense fallback={<div className="min-h-screen bg-white dark:bg-black flex items-center justify-center text-zinc-600 dark:text-zinc-600 text-sm font-mono animate-pulse">Initializing Core...</div>}>
             <SignInContent />
         </Suspense>
     );

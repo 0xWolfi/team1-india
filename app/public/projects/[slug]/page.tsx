@@ -27,7 +27,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <main className="min-h-screen text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800">
-      <div className="pt-24 px-6 max-w-4xl mx-auto pb-20">
+      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-4xl mx-auto pb-20">
         <Link href="/public/projects" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Projects
         </Link>
@@ -42,7 +42,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         {/* Title + Badges */}
         <div className="mb-6">
           <div className="flex items-start gap-3 mb-3">
-            <h1 className="text-3xl md:text-4xl font-bold flex-1">{project.title}</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold flex-1">{project.title}</h1>
             {project.isWinner && (
               <span className="shrink-0 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-sm font-bold text-yellow-600 dark:text-yellow-400 flex items-center gap-1.5">
                 <Trophy className="w-4 h-4" />{project.winnerBadge} Place
@@ -62,7 +62,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-6 mb-8 text-sm text-zinc-500">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 mb-8 text-sm text-zinc-500">
           <span className="flex items-center gap-1.5"><Heart className="w-4 h-4" />{project.likeCount} likes</span>
           <span className="flex items-center gap-1.5"><Eye className="w-4 h-4" />{project.viewCount} views</span>
           <span className="flex items-center gap-1.5"><MessageCircle className="w-4 h-4" />{project._count.comments} comments</span>

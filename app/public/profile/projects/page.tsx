@@ -16,7 +16,7 @@ export default function ProfileProjectsPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <FloatingNav />
-      <div className="pt-24 px-6 max-w-4xl mx-auto pb-20">
+      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-4xl mx-auto pb-20">
         <Link href="/public/profile" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Profile
         </Link>
@@ -25,10 +25,10 @@ export default function ProfileProjectsPage() {
           <div className="w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 flex items-center justify-center">
             <Layers className="w-4 h-4 text-zinc-500" />
           </div>
-          <h1 className="text-3xl font-bold">My Projects</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">My Projects</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {projects.map((p: any) => (
             <Link key={p.id} href={`/public/projects/${p.slug}`} className="p-5 rounded-xl border border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 transition-colors">
               <h3 className="font-bold mb-1">{p.title}</h3>

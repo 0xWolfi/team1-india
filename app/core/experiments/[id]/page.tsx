@@ -132,13 +132,13 @@ export default function ExperimentDetailPage() {
                 Back to Lab
             </Link>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Experiment Card */}
                     <div className="bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border border-black/[0.08] dark:border-white/[0.08] rounded-2xl overflow-hidden relative group shadow-2xl">
                          {/* Removed gradient top line */}
-                        <div className="p-8">
+                        <div className="p-4 sm:p-6 md:p-8">
                             <div className="flex flex-wrap items-center gap-4 mb-6">
                                 <span className={`px-4 py-1.5 rounded-full text-xs font-bold border uppercase tracking-wider shadow-lg shadow-black/20 dark:shadow-black/50 ${stageColors[experiment.stage]}`}>
                                     {experiment.stage}
@@ -149,7 +149,7 @@ export default function ExperimentDetailPage() {
                                 </div>
                             </div>
                             
-                            <h1 className="text-3xl md:text-4xl font-bold mb-8 leading-tight text-black dark:text-white">{experiment.title}</h1>
+                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 leading-tight text-black dark:text-white">{experiment.title}</h1>
                             
                             <div className="flex items-center gap-4 mb-8 pb-8 border-b border-black/5 dark:border-white/5">
                                 {experiment.createdBy?.image ? (
@@ -172,7 +172,7 @@ export default function ExperimentDetailPage() {
                     </div>
 
                     {/* Discussion */}
-                    <div className="bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-8 relative shadow-2xl">
+                    <div className="bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-6 md:p-8 relative shadow-2xl">
                          {/* Connection Line */}
                          <div className="absolute -top-6 left-12 w-0.5 h-6 bg-gradient-to-b from-black/10 dark:from-white/10 to-black/[0.08] dark:to-white/[0.08]" />
 

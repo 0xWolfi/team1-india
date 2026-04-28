@@ -38,22 +38,22 @@ export default function Verify2FAPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black p-4">
-      <div className="w-full max-w-sm space-y-6">
+      <div className="w-full max-w-sm mx-4 sm:mx-auto space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-black dark:text-white">Two-Factor Verification</h1>
-          <p className="text-zinc-500 text-sm mt-2">Enter your authentication code to continue</p>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">Two-Factor Verification</h1>
+          <p className="text-zinc-600 dark:text-zinc-500 text-sm mt-2">Enter your authentication code to continue</p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={() => setMethod("totp")}
-            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${method === "totp" ? "bg-black text-white dark:bg-white dark:text-black" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"}`}
+            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${method === "totp" ? "bg-black text-white dark:bg-white dark:text-black" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-500"}`}
           >
             Authenticator
           </button>
           <button
             onClick={() => setMethod("recovery")}
-            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${method === "recovery" ? "bg-black text-white dark:bg-white dark:text-black" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"}`}
+            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${method === "recovery" ? "bg-black text-white dark:bg-white dark:text-black" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-500"}`}
           >
             Recovery Code
           </button>
@@ -64,7 +64,7 @@ export default function Verify2FAPage() {
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder={method === "totp" ? "Enter 6-digit code" : "Enter recovery code (XXXX-XXXX)"}
-          className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent text-black dark:text-white text-center text-lg tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
+          className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-transparent text-black dark:text-white text-center text-base sm:text-lg tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
           maxLength={method === "totp" ? 6 : 9}
           autoFocus
         />

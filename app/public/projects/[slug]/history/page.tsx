@@ -20,13 +20,13 @@ export default async function ProjectHistoryPage({ params }: { params: Promise<{
 
   return (
     <main className="min-h-screen text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800">
-      <div className="pt-24 px-6 max-w-4xl mx-auto pb-20">
+      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-4xl mx-auto pb-20">
         <Link href={`/public/projects/${slug}`} className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to {project.title}
         </Link>
 
         <div className="mb-12">
-          <h1 className="text-3xl font-bold mb-2">Version History</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Version History</h1>
           <p className="text-zinc-500 text-sm">Current version: v{project.version}</p>
         </div>
 

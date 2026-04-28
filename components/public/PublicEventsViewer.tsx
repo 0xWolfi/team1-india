@@ -75,7 +75,7 @@ export default function PublicEventsViewer() {
 
     return (
         <section className="space-y-8">
-             <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-white/10 pb-4">
+             <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-black/10 dark:border-white/10 pb-4">
                 <h2 className="text-2xl font-bold flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-zinc-400"/> Upcoming Events
                 </h2>
@@ -85,7 +85,7 @@ export default function PublicEventsViewer() {
                     <select 
                         value={selectedMonth}
                         onChange={(e) => setSelectedMonth(e.target.value)}
-                        className="bg-zinc-900 border border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-300 focus:outline-none focus:border-white/30"
+                        className="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-black/30 dark:focus:border-white/30"
                     >
                         {MONTHS.map(month => (
                             <option key={month} value={month}>{month}</option>
@@ -95,7 +95,7 @@ export default function PublicEventsViewer() {
                     <select 
                         value={selectedCity}
                         onChange={(e) => setSelectedCity(e.target.value)}
-                        className="bg-zinc-900 border border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-300 focus:outline-none focus:border-white/30"
+                        className="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-black/30 dark:focus:border-white/30"
                     >
                         {CITIES.map(city => (
                             <option key={city} value={city}>{city}</option>
@@ -105,7 +105,7 @@ export default function PublicEventsViewer() {
                     <select 
                         value={selectedType}
                         onChange={(e) => setSelectedType(e.target.value)}
-                        className="bg-zinc-900 border border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-300 focus:outline-none focus:border-white/30"
+                        className="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-black/30 dark:focus:border-white/30"
                     >
                         {EVENT_TYPES.map(type => (
                             <option key={type} value={type}>{type}</option>
@@ -116,9 +116,9 @@ export default function PublicEventsViewer() {
 
             {/* Events Grid */}
             {filteredEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     {filteredEvents.map(event => (
-                        <Link href={event.url} key={event.id} className="group block h-full bg-zinc-900 border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex flex-col">
+                        <Link href={event.url} key={event.id} className="group block h-full bg-white dark:bg-zinc-900 border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden hover:border-black/20 dark:hover:border-white/20 transition-all flex flex-col">
                             {/* Image */}
                             <div className="h-40 w-full relative">
                                 <Image src={event.coverImage} alt={event.title} fill className="object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -131,7 +131,7 @@ export default function PublicEventsViewer() {
 
                             {/* Info */}
                             <div className="p-5 flex-1 flex flex-col gap-2">
-                                <h3 className="font-bold text-lg text-white leading-tight group-hover:text-zinc-200 transition-colors">
+                                <h3 className="font-bold text-lg text-black dark:text-white leading-tight group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors">
                                     {event.title}
                                 </h3>
                                 
@@ -141,7 +141,7 @@ export default function PublicEventsViewer() {
                                 </div>
 
                                 <div className="mt-auto pt-4">
-                                    <span className="flex items-center gap-1 text-xs font-bold text-white group-hover:underline">
+                                    <span className="flex items-center gap-1 text-xs font-bold text-black dark:text-white group-hover:underline">
                                         Register via Luma <ExternalLink className="w-3 h-3"/>
                                     </span>
                                 </div>
@@ -150,7 +150,7 @@ export default function PublicEventsViewer() {
                     ))}
                 </div>
             ) : (
-                <div className="py-12 text-center border border-dashed border-white/10 rounded-2xl">
+                <div className="py-12 text-center border border-dashed border-black/10 dark:border-white/10 rounded-2xl">
                     <p className="text-zinc-500">No events found matching your filters.</p>
                 </div>
             )}

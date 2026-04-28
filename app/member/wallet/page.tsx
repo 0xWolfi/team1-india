@@ -32,7 +32,7 @@ export default async function MemberWalletPage() {
       <CorePageHeader title="My Wallet" description="Your XP, points, and transaction history." icon={<Wallet />} backLink="/member" backText="Back to Dashboard" />
 
       {wallet && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
           {[
             { label: "Total XP", value: wallet.totalXp.toLocaleString(), icon: TrendingUp, color: "text-purple-500" },
             { label: "Points", value: wallet.pointsBalance.toLocaleString(), icon: Coins, color: "text-yellow-500" },
@@ -41,7 +41,7 @@ export default async function MemberWalletPage() {
           ].map((s) => (
             <div key={s.label} className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-zinc-50 dark:bg-zinc-900">
               <s.icon className={`w-5 h-5 ${s.color} mb-2`} />
-              <div className="text-2xl font-bold">{s.value}</div>
+              <div className="text-lg sm:text-xl md:text-2xl font-bold">{s.value}</div>
               <div className="text-xs text-zinc-500">{s.label}</div>
             </div>
           ))}

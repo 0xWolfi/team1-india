@@ -20,7 +20,7 @@ export default async function MemberProfilePage() {
         <MemberWrapper>
             <div className="max-w-4xl mx-auto">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold tracking-tight text-black dark:text-white">My Profile</h1>
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-black dark:text-white">My Profile</h1>
                     <p className="text-sm text-zinc-500 mt-1">Manage your profile information and preferences</p>
                 </div>
                 <MemberProfileClient role="MEMBER" />

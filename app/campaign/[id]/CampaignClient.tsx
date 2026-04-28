@@ -29,10 +29,10 @@ function CampaignContent({ campaign }: { campaign: CampaignData }) {
     const badge = badgeConfig[campaign.type] || badgeConfig.WORKSHOP;
 
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
             {/* Top bar */}
-            <div className="border-b border-white/5 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
-                <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
+            <div className="border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 backdrop-blur-xl sticky top-0 z-50">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between gap-3">
                     <Link href="/">
                         <Team1Logo className="h-3.5 w-auto" />
                     </Link>
@@ -44,7 +44,7 @@ function CampaignContent({ campaign }: { campaign: CampaignData }) {
 
             {/* Cover Image */}
             {campaign.coverImage && (
-                <div className="relative w-full h-48 sm:h-64 md:h-80">
+                <div className="relative w-full h-40 sm:h-64 md:h-80">
                     <Image
                         src={campaign.coverImage}
                         alt={campaign.title}
@@ -52,29 +52,29 @@ function CampaignContent({ campaign }: { campaign: CampaignData }) {
                         className="object-cover"
                         priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent dark:from-black dark:via-black/40 dark:to-transparent" />
                 </div>
             )}
 
-            <div className="max-w-5xl mx-auto px-6 py-10">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10">
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10">
                     {/* Left: Info */}
                     <div className="lg:col-span-3 space-y-6">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{campaign.title}</h1>
+                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-2 break-words">{campaign.title}</h1>
                             {campaign.city && (
-                                <p className="text-sm text-zinc-400 flex items-center gap-1.5">
+                                <p className="text-sm text-zinc-600 dark:text-zinc-400 flex items-center gap-1.5">
                                     <MapPin className="w-4 h-4" /> {campaign.city}
                                 </p>
                             )}
                         </div>
 
                         {campaign.description && (
-                            <p className="text-zinc-400 leading-relaxed">{campaign.description}</p>
+                            <p className="text-zinc-700 dark:text-zinc-400 leading-relaxed">{campaign.description}</p>
                         )}
 
                         {campaign.markdown && (
-                            <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-p:text-zinc-300 prose-a:text-red-400 prose-strong:text-white prose-code:text-red-300 prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl prose-ul:text-zinc-300 prose-ol:text-zinc-300 prose-li:text-zinc-300">
+                            <div className="prose prose-base sm:prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-black dark:prose-headings:text-white prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-a:text-red-600 dark:prose-a:text-red-400 prose-strong:text-black dark:prose-strong:text-white prose-code:text-red-600 dark:prose-code:text-red-300 prose-pre:bg-zinc-100 dark:prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-black/10 dark:prose-pre:border-white/10 prose-pre:rounded-xl prose-pre:overflow-x-auto prose-ul:text-zinc-700 dark:prose-ul:text-zinc-300 prose-ol:text-zinc-700 dark:prose-ol:text-zinc-300 prose-li:text-zinc-700 dark:prose-li:text-zinc-300 prose-img:rounded-xl">
                                 <ReactMarkdown>{campaign.markdown}</ReactMarkdown>
                             </div>
                         )}
@@ -82,7 +82,7 @@ function CampaignContent({ campaign }: { campaign: CampaignData }) {
 
                     {/* Right: Application Form */}
                     <div className="lg:col-span-2">
-                        <div className="sticky top-20">
+                        <div className="lg:sticky lg:top-20">
                             <ApplicationForm programId={campaign.id} formSchema={campaign.formSchema} />
                         </div>
                     </div>
@@ -90,8 +90,8 @@ function CampaignContent({ campaign }: { campaign: CampaignData }) {
             </div>
 
             {/* Footer */}
-            <div className="border-t border-white/5 py-6 text-center">
-                <p className="text-xs text-zinc-600">Powered by <Link href="/" className="text-zinc-400 hover:text-white transition-colors">Team1 India</Link></p>
+            <div className="border-t border-black/5 dark:border-white/5 py-6 text-center px-4">
+                <p className="text-xs text-zinc-600 dark:text-zinc-600">Powered by <Link href="/" className="text-zinc-700 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors">Team1 India</Link></p>
             </div>
         </div>
     );

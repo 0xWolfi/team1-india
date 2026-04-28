@@ -257,7 +257,7 @@ Thank you!`
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2 shrink-0">
+                                    <div className="flex flex-wrap items-center gap-2 shrink-0">
                                         {body?.hostEmail && (
                                             <button
                                                 onClick={() => openEmailModal(guide)}

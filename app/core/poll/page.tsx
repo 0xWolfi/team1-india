@@ -176,7 +176,7 @@ export default function PollsPage() {
                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-[2px] p-4 animate-in fade-in duration-200">
                     <div className="bg-white/20 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 border border-black/10 dark:border-white/10 rounded-3xl w-full max-w-xl p-8 shadow-2xl animate-in zoom-in-95 duration-200 ring-1 ring-black/5 dark:ring-white/5">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold text-black dark:text-white">Create New Poll</h2>
+                            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">Create New Poll</h2>
                             <button onClick={() => setIsCreating(false)} className="p-2 bg-black/5 dark:bg-white/5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><X className="w-5 h-5 text-zinc-500 dark:text-zinc-400"/></button>
                         </div>
 
@@ -246,7 +246,7 @@ export default function PollsPage() {
             )}
 
             {/* Polls Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {polls.length === 0 && !loading && (
                     <div className="col-span-full py-20 text-center text-zinc-500 border border-dashed border-black/10 dark:border-white/10 rounded-3xl">
                         No polls found.

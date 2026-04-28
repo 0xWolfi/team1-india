@@ -47,7 +47,7 @@ export default function NewExperimentPage() {
         />
 
         <div className="max-w-3xl mx-auto">
-            <div className="bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-8 shadow-2xl">
+            <div className="bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border border-black/[0.08] dark:border-white/[0.08] rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <label className="block text-sm font-bold text-zinc-400 mb-2 uppercase tracking-wider">Proposal Title</label>

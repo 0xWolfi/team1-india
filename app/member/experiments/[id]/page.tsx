@@ -107,7 +107,7 @@ export default function MemberExperimentDetailPage() {
 
   return (
     <MemberWrapper>
-        <div className="max-w-6xl mx-auto pb-20">
+        <div className="max-w-6xl mx-auto pb-20 px-1 sm:px-0">
             <Link href="/member/experiments" className="inline-flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4"/>
                 Back to Proposals
@@ -116,10 +116,10 @@ export default function MemberExperimentDetailPage() {
             <div className="max-w-4xl mx-auto space-y-6">
                 {/* Experiment Card */}
                 <div className="bg-zinc-100/60 dark:bg-zinc-900/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-2xl overflow-hidden relative group shadow-2xl">
-                    <div className="p-8">
-                        <h1 className="text-3xl md:text-4xl font-bold mb-8 leading-tight text-black dark:text-white">{experiment.title}</h1>
+                    <div className="p-4 sm:p-6 md:p-8">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 leading-tight text-black dark:text-white">{experiment.title}</h1>
 
-                        <div className="flex items-start justify-between gap-4 mb-8 pb-8 border-b border-black/10 dark:border-white/10">
+                        <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-4 mb-8 pb-8 border-b border-black/10 dark:border-white/10">
                             <div className="flex items-center gap-4">
                                 {experiment.createdBy?.image ? (
                                     <Image src={experiment.createdBy.image} alt={experiment.createdBy.name} width={48} height={48} className="w-12 h-12 rounded-full ring-2 ring-black/10 dark:ring-white/10" />
@@ -134,14 +134,14 @@ export default function MemberExperimentDetailPage() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-end gap-0.5 opacity-90">
+                            <div className="flex flex-col items-start sm:items-end gap-0.5 opacity-90">
                                 <div className="flex items-center gap-2 mb-1.5">
                                     <div className={`w-1.5 h-1.5 rounded-full ${stageColors[experiment.stage].split(' ')[1].replace('text-', 'bg-')}`} />
                                     <span className={`text-[10px] font-bold uppercase tracking-widest ${stageColors[experiment.stage]}`}>
                                         {experiment.stage}
                                     </span>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-left sm:text-right">
                                     <div className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
                                         {new Date(experiment.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                     </div>
@@ -247,7 +247,7 @@ export default function MemberExperimentDetailPage() {
                 )}
 
                 {/* Discussion */}
-                <div className="bg-zinc-100/60 dark:bg-zinc-900/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-2xl p-8 relative shadow-2xl">
+                <div className="bg-zinc-100/60 dark:bg-zinc-900/60 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 relative shadow-2xl">
                      {/* Connection Line */}
                      <div className="absolute -top-6 left-12 w-0.5 h-6 bg-gradient-to-b from-black/10 dark:from-white/10 to-black/5 dark:to-white/5" />
 
@@ -302,7 +302,7 @@ export default function MemberExperimentDetailPage() {
                             <div className="relative group">
                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl opacity-0 group-focus-within:opacity-30 transition-opacity blur" />
                                 <textarea
-                                    className="relative block w-full bg-white/40 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl p-4 pr-14 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 transition-all placeholder:text-zinc-500 min-h-[120px] resize-none"
+                                    className="relative block w-full bg-white/40 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-xl p-4 pr-14 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-500 min-h-[120px] resize-none"
                                     placeholder="Share your thoughts..."
                                     value={commentBody}
                                     onChange={(e) => setCommentBody(e.target.value)}
@@ -310,7 +310,7 @@ export default function MemberExperimentDetailPage() {
                                 <button
                                     type="submit"
                                     disabled={submittingComment || !commentBody.trim()}
-                                    className="absolute bottom-3 right-3 p-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-white/5 disabled:text-zinc-600 text-white rounded-lg transition-all shadow-lg shadow-indigo-500/20"
+                                    className="absolute bottom-3 right-3 p-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-black/5 dark:disabled:bg-white/5 disabled:text-zinc-500 dark:disabled:text-zinc-600 text-white rounded-lg transition-all shadow-lg shadow-indigo-500/20"
                                 >
                                     {submittingComment ? <Loader2 className="w-4 h-4 animate-spin"/> : <Send className="w-4 h-4"/>}
                                 </button>

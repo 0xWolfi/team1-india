@@ -30,8 +30,8 @@ export const AdminTable: React.FC<AdminTableProps> = ({
     onApprove
 }) => {
     return (
-        <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl relative z-30 overflow-visible">
-            <table className="w-full text-left text-sm">
+        <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl relative z-30 overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left text-sm">
                 <thead className="bg-black/[0.02] dark:bg-white/[0.02] text-zinc-500 font-medium uppercase text-[10px] tracking-wider border-b border-black/5 dark:border-white/5 rounded-t-xl">
                     <tr>
                         <th className="p-4 pl-6 font-semibold rounded-tl-xl w-[35%]">Identity</th>

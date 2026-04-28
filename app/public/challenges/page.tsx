@@ -33,7 +33,7 @@ export default async function PublicChallengesPage() {
 
   return (
     <main className="min-h-screen text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800">
-      <div className="pt-24 px-6 max-w-7xl mx-auto pb-20">
+      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-7xl mx-auto pb-20">
         <Link href="/public" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </Link>
@@ -43,7 +43,7 @@ export default async function PublicChallengesPage() {
             <div className="w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 flex items-center justify-center">
               <Trophy className="w-4 h-4 text-zinc-500" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold">Challenges</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">Challenges</h1>
           </div>
           <p className="text-zinc-500 text-sm md:text-base max-w-2xl leading-relaxed">
             Compete in hackathons, build projects, and win prizes with the Team1 India community.
@@ -54,7 +54,7 @@ export default async function PublicChallengesPage() {
           {challenges.map((c) => {
             const status = STATUS_COLORS[c.status] || STATUS_COLORS.draft;
             return (
-              <Link key={c.id} href={`/public/challenges/${c.slug}`} className="block p-6 rounded-2xl border border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 transition-all bg-white/50 dark:bg-zinc-900/50">
+              <Link key={c.id} href={`/public/challenges/${c.slug}`} className="block p-4 sm:p-6 rounded-2xl border border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/10 transition-all bg-white/50 dark:bg-zinc-900/50">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">

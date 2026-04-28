@@ -50,7 +50,7 @@ export default function MemberContentGuidesPage() {
                         <Newspaper className="w-5 h-5 text-zinc-700 dark:text-zinc-200"/>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-black dark:text-white">Content Guidelines</h1>
+                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">Content Guidelines</h1>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400">Access member-only and public content guides and best practices.</p>
                     </div>
                 </div>

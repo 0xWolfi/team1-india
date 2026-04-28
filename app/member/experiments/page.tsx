@@ -52,10 +52,10 @@ export default function MemberExperimentsPage() {
     };
 
     const columns = [
-        { id: "PROPOSED", label: "Proposed", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
-        { id: "DISCUSSION", label: "Discussion", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
-        { id: "APPROVED", label: "Approved", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
-        { id: "REJECTED", label: "Rejected", color: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20" },
+        { id: "PROPOSED", label: "Proposed", color: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20" },
+        { id: "DISCUSSION", label: "Discussion", color: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20" },
+        { id: "APPROVED", label: "Approved", color: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20" },
+        { id: "REJECTED", label: "Rejected", color: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20" },
     ];
 
     const filteredList = filterStage === "ALL"
@@ -88,7 +88,7 @@ export default function MemberExperimentsPage() {
                     </div>
 
                     <Link href="/member/experiments/new">
-                        <button className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-800 dark:hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors">
+                        <button className="flex items-center gap-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors">
                             <Plus className="w-4 h-4"/> New Proposal
                         </button>
                     </Link>
@@ -100,7 +100,7 @@ export default function MemberExperimentsPage() {
                     <Loader2 className="w-8 h-8 text-zinc-500 animate-spin"/>
                 </div>
             ) : viewMode === "BOARD" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 overflow-x-auto pb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 overflow-x-auto pb-4">
                     {columns.map((col) => (
                         <div key={col.id} className="min-w-[300px]">
                             <div className={`flex items-center justify-between mb-4 px-1 pb-2 border-b border-black/5 dark:border-white/5`}>
