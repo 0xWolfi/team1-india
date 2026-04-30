@@ -33,8 +33,6 @@ export async function GET(request: NextRequest) {
       techStack: true,
       tags: true,
       likeCount: true,
-      isWinner: true,
-      winnerBadge: true,
     },
   });
 

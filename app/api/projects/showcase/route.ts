@@ -18,7 +18,7 @@ export async function GET() {
             where: { id: { in: section.projectIds }, status: "published", deletedAt: null },
             select: {
               id: true, title: true, slug: true, description: true, coverImage: true,
-              techStack: true, likeCount: true, isWinner: true, winnerBadge: true, ownerEmail: true,
+              techStack: true, likeCount: true, ownerEmail: true,
             },
           })
         : [];

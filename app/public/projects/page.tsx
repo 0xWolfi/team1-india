@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Layers, Heart, Eye, Trophy } from "lucide-react";
+import { ArrowLeft, Layers, Heart, Eye } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Footer } from "@/components/website/Footer";
 
@@ -14,7 +14,7 @@ async function getProjects() {
       select: {
         id: true, title: true, slug: true, description: true, coverImage: true,
         techStack: true, tags: true, likeCount: true, viewCount: true,
-        isWinner: true, winnerBadge: true, ownerEmail: true, createdAt: true,
+        ownerEmail: true, createdAt: true,
       },
     });
   } catch {
@@ -71,11 +71,6 @@ export default async function PublicProjectsPage() {
               <div className="p-5">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <h3 className="font-bold text-lg group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors line-clamp-1">{project.title}</h3>
-                  {project.isWinner && (
-                    <span className="shrink-0 px-2 py-0.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-[10px] font-bold text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
-                      <Trophy className="w-3 h-3" />{project.winnerBadge}
-                    </span>
-                  )}
                 </div>
                 {project.description && (
                   <p className="text-zinc-500 text-sm line-clamp-2 mb-3">{project.description}</p>

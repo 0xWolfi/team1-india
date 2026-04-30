@@ -16,7 +16,6 @@ export async function GET(
     where: { OR: [{ id }, { slug: id }], deletedAt: null },
     include: {
       _count: { select: { comments: true, likes: true } },
-      challenge: { select: { id: true, title: true, slug: true } },
     },
   });
 

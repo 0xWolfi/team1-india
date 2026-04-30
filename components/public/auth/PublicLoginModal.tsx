@@ -18,8 +18,8 @@ export function PublicLoginModal({ isOpen, onClose }: PublicLoginModalProps) {
   const handleLogin = async () => {
     setIsLoading(true);
     try {
-      await signIn("google", { 
-        callbackUrl: "/public" 
+      await signIn("google", {
+        callbackUrl: "/public",
       });
     } catch (error) {
       console.error("Login failed", error);

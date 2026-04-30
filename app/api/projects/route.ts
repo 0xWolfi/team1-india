@@ -39,9 +39,6 @@ export async function GET(request: NextRequest) {
       viewCount: true,
       likeCount: true,
       commentCount: true,
-      isWinner: true,
-      winnerBadge: true,
-      challengeId: true,
       createdAt: true,
     },
   });
@@ -63,7 +60,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { title, description, coverImage, images, demoUrl, repoUrl, techStack, tags, teamEmails, status, challengeId } = body;
+  const { title, description, coverImage, images, demoUrl, repoUrl, techStack, tags, teamEmails, status } = body;
 
   if (!title) {
     return NextResponse.json({ error: "title is required" }, { status: 400 });
@@ -92,7 +89,6 @@ export async function POST(request: NextRequest) {
       teamEmails: allTeamEmails,
       ownerEmail: session.user.email,
       status: status ?? "published",
-      challengeId,
     },
   });
 
