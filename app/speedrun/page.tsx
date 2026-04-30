@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import SpeedrunClient from "./SpeedrunClient";
 
 export const metadata: Metadata = {
@@ -13,6 +14,13 @@ export const metadata: Metadata = {
   },
 };
 
+// SpeedrunClient uses useSearchParams() to read ?ref= and ?login=. Next.js
+// requires that hook to be wrapped in a Suspense boundary so prerender can
+// bail to client rendering for the search-params-dependent subtree.
 export default function SpeedrunPage() {
-  return <SpeedrunClient />;
+  return (
+    <Suspense fallback={null}>
+      <SpeedrunClient />
+    </Suspense>
+  );
 }
