@@ -217,7 +217,7 @@ export default function SpeedrunClient() {
       />
 
       {/* ── HERO ── */}
-      <section className="relative pt-28 sm:pt-32 md:pt-40 pb-16 md:pb-24 overflow-hidden">
+      <section className="relative pt-28 sm:pt-32 md:pt-40 pb-20 md:pb-28 overflow-hidden">
         {/* Grid backdrop */}
         <div
           className="absolute inset-0 opacity-[0.06] dark:opacity-[0.08] pointer-events-none"
@@ -232,7 +232,7 @@ export default function SpeedrunClient() {
           <div className="absolute inset-0 bg-gradient-to-l from-red-500/20 via-red-500/5 to-transparent blur-3xl" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-8 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-8 items-center">
           {/* Left: copy */}
           <div className="relative z-20">
             <motion.div
@@ -304,14 +304,14 @@ export default function SpeedrunClient() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.9, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full aspect-square max-w-[520px] sm:max-w-[600px] mx-auto lg:max-w-none lg:aspect-auto lg:h-[640px] xl:h-[720px] lg:scale-110 lg:translate-x-6 xl:translate-x-10 z-0"
+            className="relative w-full aspect-square max-h-[55svh] max-w-[440px] sm:max-h-none sm:max-w-[560px] mx-auto lg:max-h-none lg:max-w-none lg:aspect-auto lg:h-[560px] xl:h-[640px] lg:scale-105 lg:translate-x-4 lg:-translate-y-6 xl:-translate-y-8 xl:translate-x-8 z-0"
           >
-            {/* Red glow behind statue */}
+            {/* Red glow behind statue (vertically centered with statue body, not the box) */}
             <div
-              className="absolute inset-0 blur-3xl scale-75"
+              className="absolute inset-0 blur-3xl scale-[0.7] dark:scale-75"
               style={{
                 background:
-                  "radial-gradient(circle at center, rgba(239,68,68,0.4), rgba(239,68,68,0.1) 45%, transparent 75%)",
+                  "radial-gradient(circle at 55% 50%, rgba(239,68,68,0.4), rgba(239,68,68,0.08) 45%, transparent 70%)",
               }}
             />
             <Image
@@ -355,11 +355,11 @@ export default function SpeedrunClient() {
             {whatCards.map((card) => (
               <div
                 key={card.title}
-                className="relative rounded-2xl border border-red-500/15 bg-white/40 dark:bg-zinc-950/40 hover:border-red-500/40 transition-all p-5 sm:p-6 group overflow-hidden"
+                className="relative flex flex-col rounded-2xl border border-red-500/15 bg-white/40 dark:bg-zinc-950/40 hover:border-red-500/40 transition-all p-5 sm:p-6 group overflow-hidden"
               >
                 {/* Card glow */}
                 <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-red-500/10 blur-2xl group-hover:bg-red-500/25 transition-colors" />
-                <div className="relative">
+                <div className="relative flex flex-col h-full">
                   <div
                     className="inline-flex w-12 h-12 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/5 text-red-500 mb-4"
                     style={{ filter: "drop-shadow(0 0 12px rgba(239,68,68,0.4))" }}
@@ -399,26 +399,42 @@ export default function SpeedrunClient() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 relative">
+          {/* Mobile: outline numbers render INLINE above each step. Desktop: outline
+              numbers float in the empty space above each column. Either way, they never
+              overlap the previous step's body or the connector line. */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-4 relative sm:pt-32">
             {howSteps.map((step, i) => (
               <div key={step.n} className="relative text-center">
-                {/* Outline number */}
+                {/* MOBILE outline number — inline, sits as part of normal flow */}
                 <p
-                  className="font-black italic tracking-tighter leading-none text-transparent absolute -top-4 left-1/2 -translate-x-1/2 select-none whitespace-nowrap z-0"
+                  className="sm:hidden font-black italic tracking-tighter leading-none text-transparent select-none whitespace-nowrap mb-3"
                   style={{
-                    WebkitTextStroke: "1.5px rgba(239,68,68,0.3)",
-                    fontSize: "clamp(3rem, 7vw, 6rem)",
+                    WebkitTextStroke: "1.5px rgba(239,68,68,0.35)",
+                    fontSize: "3.5rem",
                   }}
                 >
                   {step.n}
                 </p>
 
-                {/* Connector line (desktop) */}
+                {/* DESKTOP outline number — absolute, floats above the step in empty space */}
+                <p
+                  className="hidden sm:block font-black italic tracking-tighter leading-none text-transparent absolute left-1/2 -translate-x-1/2 select-none whitespace-nowrap z-20"
+                  style={{
+                    WebkitTextStroke: "1.5px rgba(239,68,68,0.35)",
+                    fontSize: "clamp(3rem, 6vw, 5rem)",
+                    bottom: "calc(100% + 1.25rem)",
+                  }}
+                >
+                  {step.n}
+                </p>
+
+                {/* Connector line (desktop only) — at icon vertical center.
+                    Icon is w-14 h-14 (56px) at top of column → center = 1.75rem. */}
                 {i < howSteps.length - 1 && (
-                  <div className="hidden sm:block absolute top-[5.25rem] left-[calc(50%+2rem)] right-[-50%] h-px bg-gradient-to-r from-red-500/60 to-red-500/10" />
+                  <div className="hidden sm:block absolute top-[1.75rem] left-[calc(50%+2rem)] right-[-50%] h-px bg-gradient-to-r from-red-500/60 to-red-500/10 z-0" />
                 )}
 
-                <div className="relative pt-12">
+                <div className="relative">
                   <div
                     className="relative z-10 mx-auto inline-flex w-14 h-14 items-center justify-center rounded-full bg-red-500 text-white shadow-[0_0_30px_rgba(239,68,68,0.4)] mb-4"
                   >
@@ -459,10 +475,10 @@ export default function SpeedrunClient() {
             {weeklyCadence.map((wk) => (
               <div
                 key={wk.week}
-                className="relative rounded-2xl border border-red-500/15 bg-white/40 dark:bg-zinc-950/40 hover:border-red-500/40 transition-all p-5 group overflow-hidden"
+                className="relative flex flex-col rounded-2xl border border-red-500/15 bg-white/40 dark:bg-zinc-950/40 hover:border-red-500/40 transition-all p-5 sm:p-6 group overflow-hidden"
               >
                 <div className="absolute -top-12 -right-12 w-28 h-28 rounded-full bg-red-500/10 blur-2xl group-hover:bg-red-500/25 transition-colors" />
-                <div className="relative">
+                <div className="relative flex flex-col h-full">
                   <div className="flex items-center gap-3 mb-4">
                     <div
                       className="inline-flex w-10 h-10 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/5 text-red-500"
@@ -523,12 +539,12 @@ export default function SpeedrunClient() {
 
           </div>
 
-          <div className="relative w-full aspect-square max-w-[520px] sm:max-w-[600px] mx-auto lg:max-w-none lg:aspect-auto lg:h-[600px] xl:h-[680px]">
+          <div className="relative w-full aspect-square max-h-[50svh] max-w-[440px] sm:max-h-none sm:max-w-[560px] mx-auto lg:max-h-none lg:max-w-none lg:aspect-auto lg:h-[600px] xl:h-[680px]">
             <div
-              className="absolute inset-0 blur-3xl scale-75"
+              className="absolute inset-0 blur-3xl scale-[0.7] dark:scale-75"
               style={{
                 background:
-                  "radial-gradient(circle at center, rgba(239,68,68,0.35), rgba(239,68,68,0.08) 50%, transparent 75%)",
+                  "radial-gradient(circle at center, rgba(239,68,68,0.3), rgba(239,68,68,0.06) 50%, transparent 75%)",
               }}
             />
             <Image
@@ -594,11 +610,11 @@ export default function SpeedrunClient() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 md:px-8 text-center">
           <h2
             className="font-black italic tracking-tighter leading-[0.85] text-white mb-6"
-            style={{ fontSize: "clamp(3rem, 12vw, 10rem)" }}
+            style={{ fontSize: "clamp(3rem, 11vw, 8rem)" }}
           >
             SPEEDRUN
           </h2>
-          <p className="text-base sm:text-xl md:text-2xl font-bold uppercase tracking-wider mb-8">
+          <p className="text-base sm:text-xl md:text-2xl font-bold uppercase tracking-wider mb-8 text-white/95">
             Are you ready to build at speed?
           </p>
           <JoinButton phase={regState.phase} onClick={handleJoinClick} variant="inverse" />
@@ -749,23 +765,26 @@ function ReferSection({
         </div>
 
         {!isAuthenticated ? (
-          <div className="relative max-w-xl mx-auto rounded-2xl border border-red-500/15 bg-white/40 dark:bg-zinc-950/40 p-6 sm:p-8 text-center">
-            <div className="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-red-500/10 text-red-500 mb-4">
-              <Lock className="w-5 h-5" />
+          <div className="relative max-w-2xl mx-auto rounded-2xl border border-red-500/15 bg-white/40 dark:bg-zinc-950/40 p-5 sm:p-6 md:p-8 text-center overflow-hidden">
+            <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-red-500/10 blur-3xl pointer-events-none" />
+            <div className="relative">
+              <div className="inline-flex w-12 h-12 items-center justify-center rounded-xl bg-red-500/10 text-red-500 mb-4">
+                <Lock className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-black uppercase tracking-wider text-black dark:text-white mb-2">
+                Sign in to get your link
+              </h3>
+              <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-5 max-w-md mx-auto">
+                Each builder gets a unique referral link with click + conversion tracking.
+              </p>
+              <button
+                onClick={onSignInClick}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm uppercase tracking-wider hover:bg-red-600 transition-all"
+              >
+                Sign In
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
-            <h3 className="text-lg font-black uppercase tracking-wider text-black dark:text-white mb-2">
-              Sign in to get your link
-            </h3>
-            <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-5">
-              Each builder gets a unique referral link with click + conversion tracking.
-            </p>
-            <button
-              onClick={onSignInClick}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500 text-white font-bold text-sm uppercase tracking-wider hover:bg-red-600 transition-all"
-            >
-              Sign In
-              <ArrowRight className="w-4 h-4" />
-            </button>
           </div>
         ) : (
           <div className="relative max-w-2xl mx-auto rounded-2xl border border-red-500/15 bg-white/40 dark:bg-zinc-950/40 p-5 sm:p-6 md:p-8 overflow-hidden">
@@ -833,12 +852,12 @@ function ReferStat({
   value: number;
 }) {
   return (
-    <div className="rounded-xl border border-red-500/15 bg-white dark:bg-zinc-950 p-4">
+    <div className="rounded-xl border border-red-500/15 bg-white dark:bg-zinc-950 p-4 sm:p-5">
       <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-red-500 mb-2">
         {icon}
         {label}
       </div>
-      <div className="font-black italic tracking-tighter text-3xl sm:text-4xl text-black dark:text-white leading-none">
+      <div className="font-black italic tracking-tighter text-3xl sm:text-4xl text-black dark:text-white leading-none tabular-nums">
         {value}
       </div>
     </div>

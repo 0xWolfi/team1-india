@@ -157,7 +157,7 @@ export default function RegistrationStatusClient() {
         </div>
       </section>
 
-      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 md:px-8 pb-24 space-y-6">
+      <div className="relative max-w-3xl mx-auto px-4 sm:px-6 md:px-8 pb-24 space-y-5 sm:space-y-6">
         {/* Team Card */}
         {data.team ? (
           <Card>
@@ -189,8 +189,8 @@ export default function RegistrationStatusClient() {
               </button>
             </div>
 
-            <div className="flex items-center gap-3 mb-6 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/5">
-              <Hash className="w-5 h-5 text-red-500" />
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-6 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/5">
+              <Hash className="w-5 h-5 text-red-500 shrink-0" />
               <span className="font-black italic tracking-tighter text-2xl sm:text-3xl text-black dark:text-white">
                 {data.team.code}
               </span>

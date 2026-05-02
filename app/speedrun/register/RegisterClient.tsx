@@ -354,24 +354,24 @@ export default function RegisterClient() {
             </p>
 
             {success.teamCode && (
-              <div className="relative max-w-md mx-auto rounded-2xl border border-red-500/30 bg-red-500/5 p-6 mb-8">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-red-500 mb-2">
+              <div className="relative max-w-md mx-auto rounded-2xl border border-red-500/30 bg-red-500/5 p-5 sm:p-6 mb-8">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-red-500 mb-3">
                   Your Team Code{success.teamName ? ` · ${success.teamName}` : ""}
                 </p>
-                <div className="flex items-center justify-center gap-3 mb-3">
+                <div className="flex items-center justify-center gap-3 mb-4">
                   <span className="font-black italic tracking-tighter text-black dark:text-white text-3xl sm:text-4xl">
                     {success.teamCode}
                   </span>
                   <button
                     onClick={copyTeamCode}
-                    className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors"
+                    className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors"
                     title="Copy code"
                     type="button"
                   >
                     {copied ? <CheckCircle2 className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                   </button>
                 </div>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Share this code with your teammates — they enter it on the registration form to join your team.
                 </p>
               </div>
@@ -443,7 +443,7 @@ export default function RegisterClient() {
         </div>
       </section>
 
-      <form onSubmit={onSubmit} className="relative max-w-3xl mx-auto px-4 sm:px-6 md:px-8 pb-24 space-y-8">
+      <form onSubmit={onSubmit} className="relative max-w-3xl mx-auto px-4 sm:px-6 md:px-8 pb-24 space-y-6 sm:space-y-8">
         {/* ── Personal ── */}
         <FormCard title="About You" subtitle="The basics — who you are and where to reach you.">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -767,7 +767,7 @@ function PillButton({
     <button
       type="button"
       onClick={onClick}
-      className={`${small ? "px-3 py-1.5 text-xs" : "px-4 py-2.5 text-sm"} rounded-lg border font-semibold transition-all ${
+      className={`${small ? "px-3 py-2 text-xs" : "px-4 py-2.5 text-sm"} rounded-lg border font-semibold transition-all ${
         active
           ? "border-red-500 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.35)]"
           : "border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 hover:border-red-500/40 hover:text-black dark:hover:text-white"
