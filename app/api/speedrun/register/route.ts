@@ -3,6 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { getCurrentRun, generateUniqueTeamCode, MAX_TEAM_SIZE } from "@/lib/speedrun";
+import {
+  sendEmail,
+  getSpeedrunRegistrationEmail,
+  getSpeedrunTeammateJoinedEmail,
+} from "@/lib/email";
 
 // POST /api/speedrun/register — create a registration (auth-required)
 export async function POST(request: NextRequest) {
@@ -68,6 +73,9 @@ export async function POST(request: NextRequest) {
   // Team handling
   let teamId: string | null = null;
   let createdTeamCode: string | null = null;
+  // Captured when the user JOINS an existing team — used for the captain-notification email
+  let joinedTeamCaptainEmail: string | null = null;
+  let joinedTeamName: string | null = null;
 
   if (teamMode === "create") {
     if (!teamName || typeof teamName !== "string" || teamName.trim().length < 2) {
@@ -121,6 +129,8 @@ export async function POST(request: NextRequest) {
       update: {},
     });
     teamId = team.id;
+    joinedTeamCaptainEmail = team.captainEmail;
+    joinedTeamName = team.name;
   }
 
   // Resolve referral code (validate exists and isn't self-referral)
@@ -177,10 +187,61 @@ export async function POST(request: NextRequest) {
     }).catch(() => {});
   }
 
+  // Fire-and-forget confirmation email — don't block the API response on SMTP.
+  const finalTeamCode = createdTeamCode || registration.team?.code || null;
+  const finalTeamName = registration.team?.name || null;
+  const mode = registration.teamMode as "solo" | "create" | "join";
+  const emailContent = getSpeedrunRegistrationEmail({
+    fullName: registration.fullName,
+    runLabel: registration.run.monthLabel,
+    teamMode: mode === "create" || mode === "join" ? mode : "solo",
+    teamName: finalTeamName,
+    teamCode: finalTeamCode,
+  });
+  sendEmail({
+    to: registration.userEmail,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  }).catch((err) => {
+    console.error("[speedrun] failed to send registration email:", err);
+  });
+
+  // Fire-and-forget captain notification — only when someone JOINED an existing team
+  // (not when they created one), and the captain is a different person.
+  if (
+    mode === "join" &&
+    joinedTeamCaptainEmail &&
+    joinedTeamName &&
+    joinedTeamCaptainEmail !== userEmail
+  ) {
+    // Best-effort: pull the captain's full name from their own registration so the
+    // greeting reads naturally. Falls back to the email handle if no record exists.
+    prisma.speedrunRegistration.findUnique({
+      where: { runId_userEmail: { runId: run.id, userEmail: joinedTeamCaptainEmail } },
+      select: { fullName: true },
+    }).then((captainReg) => {
+      const captainName = captainReg?.fullName || joinedTeamCaptainEmail!.split("@")[0];
+      const captainEmailContent = getSpeedrunTeammateJoinedEmail({
+        captainName,
+        teamName: joinedTeamName!,
+        runLabel: registration.run.monthLabel,
+        newMemberName: registration.fullName,
+        newMemberEmail: registration.userEmail,
+      });
+      return sendEmail({
+        to: joinedTeamCaptainEmail!,
+        subject: captainEmailContent.subject,
+        html: captainEmailContent.html,
+      });
+    }).catch((err) => {
+      console.error("[speedrun] failed to send captain notification email:", err);
+    });
+  }
+
   return NextResponse.json(
     {
       registration,
-      teamCode: createdTeamCode || registration.team?.code || null,
+      teamCode: finalTeamCode,
     },
     { status: 201 }
   );

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { getCurrentRun } from "@/lib/speedrun";
+import { sendEmail, getSpeedrunLeaveTeamEmail } from "@/lib/email";
 
 /**
  * POST /api/speedrun/teams/leave
@@ -48,6 +49,13 @@ export async function POST() {
   const wasCaptain = team.captainEmail === userEmail;
   const remainingMembers = team.members.filter((m) => m.email !== userEmail);
 
+  // Capture context needed for the confirmation email before we delete the team
+  const emailContext = {
+    fullName: registration.fullName,
+    runLabel: run.monthLabel,
+    teamName: team.name,
+  };
+
   // 1) Drop the user's team-member row
   await prisma.speedrunTeamMember.deleteMany({
     where: { teamId, email: userEmail },
@@ -63,13 +71,13 @@ export async function POST() {
   });
 
   // 3) If team is now empty, delete it
+  let teamDisbanded = false;
+  let newCaptainEmail: string | null = null;
   if (remainingMembers.length === 0) {
     await prisma.speedrunTeam.delete({ where: { id: teamId } });
-    return NextResponse.json({ ok: true, teamDisbanded: true });
-  }
-
-  // 4) If the leaver was captain, promote the earliest-joined remaining member
-  if (wasCaptain) {
+    teamDisbanded = true;
+  } else if (wasCaptain) {
+    // 4) If the leaver was captain, promote the earliest-joined remaining member
     const newCaptain = remainingMembers[0];
     await prisma.$transaction([
       prisma.speedrunTeam.update({
@@ -81,11 +89,22 @@ export async function POST() {
         data: { role: "captain" },
       }),
     ]);
-    return NextResponse.json({
-      ok: true,
-      newCaptainEmail: newCaptain.email,
-    });
+    newCaptainEmail = newCaptain.email;
   }
 
-  return NextResponse.json({ ok: true });
+  // Fire-and-forget confirmation email — don't block on SMTP
+  const emailContent = getSpeedrunLeaveTeamEmail(emailContext);
+  sendEmail({
+    to: userEmail,
+    subject: emailContent.subject,
+    html: emailContent.html,
+  }).catch((err) => {
+    console.error("[speedrun] failed to send leave-team email:", err);
+  });
+
+  return NextResponse.json({
+    ok: true,
+    ...(teamDisbanded && { teamDisbanded: true }),
+    ...(newCaptainEmail && { newCaptainEmail }),
+  });
 }

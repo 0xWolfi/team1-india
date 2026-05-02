@@ -603,11 +603,11 @@ export function getMemberRemovalEmailTemplate(memberName: string) {
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
             If you would like to rejoin or have any questions about this decision, please reply to this email.
         </p>
-        
+
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
             Thank you for your understanding.
         </p>
-        
+
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
             Sarnavo<br>
             Team1 India Team
@@ -616,4 +616,238 @@ export function getMemberRemovalEmailTemplate(memberName: string) {
 </body>
 </html>
     `;
+}
+
+// ═══════════════════════════════════════════
+// SPEEDRUN EMAILS
+// ═══════════════════════════════════════════
+
+interface SpeedrunRegistrationEmailParams {
+  fullName: string;
+  runLabel: string; // "MAY 2026"
+  teamMode: "solo" | "create" | "join";
+  teamName?: string | null;
+  teamCode?: string | null;
+  appUrl?: string;
+}
+
+/**
+ * Email shown to a user after they complete /api/speedrun/register.
+ * One template, three teamMode flavors:
+ *  - solo:   "You're in. We'll email when the theme drops."
+ *  - create: "You're in. Here's your team code — share it."
+ *  - join:   "You're in. You joined Team X."
+ */
+export function getSpeedrunRegistrationEmail(p: SpeedrunRegistrationEmailParams) {
+  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
+  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/registration`;
+
+  const teamBlock = (() => {
+    if (p.teamMode === "create" && p.teamCode) {
+      return `
+        <div style="margin:24px 0; padding:20px; background:#fff5f6; border:1px solid #ff394a; border-radius:12px;">
+          <p style="margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#ff394a;">
+            Your Team Code${p.teamName ? " · " + escapeHtml(p.teamName) : ""}
+          </p>
+          <p style="margin:0 0 12px; font-family:Menlo,Consolas,monospace; font-size:28px; font-weight:900; color:#000;">
+            ${escapeHtml(p.teamCode)}
+          </p>
+          <p style="margin:0; font-size:14px; line-height:1.5; color:#444;">
+            Share this code with your teammate. They enter it on the registration form to join your team. (Max 2 builders per team.)
+          </p>
+        </div>`;
+    }
+    if (p.teamMode === "join" && p.teamName) {
+      return `
+        <div style="margin:24px 0; padding:20px; background:#fff5f6; border:1px solid #ff394a; border-radius:12px;">
+          <p style="margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#ff394a;">
+            You're on a team
+          </p>
+          <p style="margin:0; font-size:18px; font-weight:700; color:#000;">${escapeHtml(p.teamName)}</p>
+        </div>`;
+    }
+    return `
+      <div style="margin:24px 0; padding:20px; background:#f6f6f7; border:1px solid #e0e0e2; border-radius:12px;">
+        <p style="margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#666;">
+          Solo Builder
+        </p>
+        <p style="margin:0; font-size:14px; line-height:1.5; color:#444;">
+          You registered as a solo builder. You can find a team in the community channel before submissions open.
+        </p>
+      </div>`;
+  })();
+
+  const subject =
+    p.teamMode === "create"
+      ? `You're in for ${p.runLabel} — here's your team code`
+      : p.teamMode === "join"
+      ? `You're in for ${p.runLabel} — welcome to ${p.teamName || "your team"}`
+      : `You're in for ${p.runLabel}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; background:#fafafa; color:#000;">
+  <div style="max-width:600px; margin:0 auto; padding:40px 20px;">
+    <div style="background:#000; padding:32px 28px; border-radius:16px 16px 0 0; text-align:center;">
+      <p style="margin:0 0 6px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#ff394a;">Team1 Presents</p>
+      <h1 style="margin:0; font-size:48px; font-weight:900; font-style:italic; letter-spacing:-2px; color:#ff394a;">SPEEDRUN</h1>
+    </div>
+    <div style="background:#fff; padding:32px 28px; border:1px solid #e0e0e2; border-top:none; border-radius:0 0 16px 16px;">
+      <p style="margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#ff394a;">You're In · ${escapeHtml(p.runLabel)}</p>
+      <h2 style="margin:0 0 20px; font-size:28px; font-weight:900; font-style:italic; letter-spacing:-1px; color:#000;">Welcome to Speedrun.</h2>
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">Hi ${escapeHtml(p.fullName)},</p>
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">
+        You're registered for the ${escapeHtml(p.runLabel)} run of Speedrun — the monthly themed build sprint. The theme drops on Day 1 of the run and you'll have 2 weeks to ship.
+      </p>
+      ${teamBlock}
+      <p style="margin:0 0 24px; font-size:16px; line-height:1.6; color:#222;">
+        We'll email you when the theme drops. Until then, build something. Sharpen your stack. Find a teammate if you went solo.
+      </p>
+      <p style="margin:0 0 32px;">
+        <a href="${statusUrl}" style="display:inline-block; padding:12px 24px; background:#ff394a; color:#fff; font-size:14px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; border-radius:10px;">
+          View My Registration
+        </a>
+      </p>
+      <p style="margin:0; font-size:13px; line-height:1.6; color:#666;">— Team1 India</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return { subject, html };
+}
+
+interface SpeedrunLeaveTeamEmailParams {
+  fullName: string;
+  runLabel: string;
+  teamName: string;
+  appUrl?: string;
+}
+
+/**
+ * Email shown to a user after they POST /api/speedrun/teams/leave.
+ * Confirms they left and are now a solo builder.
+ */
+export function getSpeedrunLeaveTeamEmail(p: SpeedrunLeaveTeamEmailParams) {
+  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
+  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/registration`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; background:#fafafa; color:#000;">
+  <div style="max-width:600px; margin:0 auto; padding:40px 20px;">
+    <div style="background:#000; padding:32px 28px; border-radius:16px 16px 0 0; text-align:center;">
+      <p style="margin:0 0 6px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#ff394a;">Speedrun</p>
+      <h1 style="margin:0; font-size:32px; font-weight:900; font-style:italic; letter-spacing:-1px; color:#fff;">Going It Alone.</h1>
+    </div>
+    <div style="background:#fff; padding:32px 28px; border:1px solid #e0e0e2; border-top:none; border-radius:0 0 16px 16px;">
+      <p style="margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#ff394a;">Solo Builder · ${escapeHtml(p.runLabel)}</p>
+      <h2 style="margin:0 0 20px; font-size:24px; font-weight:900; font-style:italic; letter-spacing:-0.5px; color:#000;">You left ${escapeHtml(p.teamName)}.</h2>
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">Hi ${escapeHtml(p.fullName)},</p>
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">
+        Just confirming — you've left <strong>${escapeHtml(p.teamName)}</strong> and you're now registered as a solo builder for ${escapeHtml(p.runLabel)}.
+      </p>
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">
+        You can still find a team later in the community channel before submissions open. Or just keep building solo — that works too.
+      </p>
+      <p style="margin:0 0 32px;">
+        <a href="${statusUrl}" style="display:inline-block; padding:12px 24px; background:#ff394a; color:#fff; font-size:14px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; border-radius:10px;">
+          View My Registration
+        </a>
+      </p>
+      <p style="margin:0; font-size:13px; line-height:1.6; color:#666;">— Team1 India</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return { subject: `You left ${p.teamName} — solo for ${p.runLabel}`, html };
+}
+
+interface SpeedrunTeammateJoinedEmailParams {
+  captainName: string; // captain's full name (best effort — falls back to email)
+  teamName: string;
+  runLabel: string;
+  newMemberName: string;
+  newMemberEmail: string;
+  appUrl?: string;
+}
+
+/**
+ * Email to the team captain when a new member joins their team via the team code.
+ */
+export function getSpeedrunTeammateJoinedEmail(p: SpeedrunTeammateJoinedEmailParams) {
+  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
+  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/registration`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; background:#fafafa; color:#000;">
+  <div style="max-width:600px; margin:0 auto; padding:40px 20px;">
+    <div style="background:#000; padding:32px 28px; border-radius:16px 16px 0 0; text-align:center;">
+      <p style="margin:0 0 6px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#ff394a;">Speedrun</p>
+      <h1 style="margin:0; font-size:32px; font-weight:900; font-style:italic; letter-spacing:-1px; color:#fff;">Squad Loaded.</h1>
+    </div>
+    <div style="background:#fff; padding:32px 28px; border:1px solid #e0e0e2; border-top:none; border-radius:0 0 16px 16px;">
+      <p style="margin:0 0 8px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#ff394a;">New Teammate · ${escapeHtml(p.runLabel)}</p>
+      <h2 style="margin:0 0 20px; font-size:24px; font-weight:900; font-style:italic; letter-spacing:-0.5px; color:#000;">Someone joined ${escapeHtml(p.teamName)}.</h2>
+
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">Hi ${escapeHtml(p.captainName)},</p>
+
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">
+        Heads up — <strong>${escapeHtml(p.newMemberName)}</strong> just used your team code and joined <strong>${escapeHtml(p.teamName)}</strong> for ${escapeHtml(p.runLabel)}.
+      </p>
+
+      <div style="margin:24px 0; padding:16px 20px; background:#fff5f6; border:1px solid #ff394a; border-radius:12px;">
+        <p style="margin:0 0 4px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#ff394a;">
+          New Member
+        </p>
+        <p style="margin:0 0 2px; font-size:16px; font-weight:700; color:#000;">${escapeHtml(p.newMemberName)}</p>
+        <p style="margin:0; font-size:13px; color:#666;">${escapeHtml(p.newMemberEmail)}</p>
+      </div>
+
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">
+        Your team is now full (max 2 builders). Sync up, line up your stack, and get ready to ship when the theme drops on Day 1.
+      </p>
+
+      <p style="margin:0 0 32px;">
+        <a href="${statusUrl}" style="display:inline-block; padding:12px 24px; background:#ff394a; color:#fff; font-size:14px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; border-radius:10px;">
+          View My Team
+        </a>
+      </p>
+
+      <p style="margin:0; font-size:13px; line-height:1.6; color:#666;">— Team1 India</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return {
+    subject: `${p.newMemberName} joined ${p.teamName} — Speedrun ${p.runLabel}`,
+    html,
+  };
+}
+
+function escapeHtml(s: string): string {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
