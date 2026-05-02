@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
-import { getCurrentRun, generateUniqueTeamCode } from "@/lib/speedrun";
+import { getCurrentRun, generateUniqueTeamCode, MAX_TEAM_SIZE } from "@/lib/speedrun";
 
 // POST /api/speedrun/register — create a registration (auth-required)
 export async function POST(request: NextRequest) {
@@ -108,9 +108,9 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       );
     }
-    if (team._count.members >= 5) {
+    if (team._count.members >= MAX_TEAM_SIZE) {
       return NextResponse.json(
-        { error: "This team is full (max 5 members)" },
+        { error: `This team is full (max ${MAX_TEAM_SIZE} members)` },
         { status: 409 }
       );
     }

@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/prisma";
 
 /**
+ * Maximum members allowed in a Speedrun team (including the captain).
+ */
+export const MAX_TEAM_SIZE = 2;
+
+/**
  * Returns the current Speedrun run (the one accepting registrations).
  * Throws if no current run exists — we expect exactly one row with isCurrent=true.
  */

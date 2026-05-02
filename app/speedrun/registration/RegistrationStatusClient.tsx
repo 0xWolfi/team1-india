@@ -17,6 +17,8 @@ import {
   MapPin,
   Twitter,
   Github,
+  LogOut,
+  AlertTriangle,
 } from "lucide-react";
 import { HomeNavbar } from "@/components/website/HomeNavbar";
 import { Footer } from "@/components/website/Footer";
@@ -56,6 +58,9 @@ export default function RegistrationStatusClient() {
   const [data, setData] = useState<RegistrationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [leaveConfirm, setLeaveConfirm] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const [leaveError, setLeaveError] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -81,6 +86,29 @@ export default function RegistrationStatusClient() {
     navigator.clipboard.writeText(data.team.code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function leaveTeam() {
+    if (leaving) return;
+    setLeaving(true);
+    setLeaveError(null);
+    try {
+      const res = await fetch("/api/speedrun/teams/leave", { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setLeaveError(body.error || "Failed to leave team");
+        return;
+      }
+      // Refetch fresh registration state — user is now solo
+      const r2 = await fetch("/api/speedrun/registrations/my");
+      const d2 = await r2.json();
+      if (d2.registered) setData(d2.registration);
+      setLeaveConfirm(false);
+    } catch {
+      setLeaveError("Network error — try again");
+    } finally {
+      setLeaving(false);
+    }
   }
 
   if (status === "loading" || loading) {
@@ -222,6 +250,63 @@ export default function RegistrationStatusClient() {
                 </li>
               ))}
             </ul>
+
+            {/* Leave Team — switches the user to solo builder */}
+            <div className="mt-6 pt-5 border-t border-black/5 dark:border-white/5">
+              {!leaveConfirm ? (
+                <button
+                  type="button"
+                  onClick={() => setLeaveConfirm(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/30 text-red-500 text-xs font-bold uppercase tracking-wider hover:bg-red-500/10 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Leave Team
+                </button>
+              ) : (
+                <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4">
+                  <div className="flex items-start gap-3 mb-3">
+                    <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                    <div className="text-sm">
+                      <p className="font-bold text-black dark:text-white mb-1">
+                        Leave this team?
+                      </p>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                        You'll be marked as a solo builder for this Speedrun. If you're the captain, the next-joined member will become captain. If you're the last member, the team will be deleted.
+                      </p>
+                    </div>
+                  </div>
+                  {leaveError && (
+                    <p className="text-xs text-red-500 mb-3">{leaveError}</p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={leaveTeam}
+                      disabled={leaving}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 text-white text-xs font-bold uppercase tracking-wider hover:bg-red-600 transition-colors disabled:opacity-60"
+                    >
+                      {leaving ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <LogOut className="w-3.5 h-3.5" />
+                      )}
+                      {leaving ? "Leaving..." : "Yes, leave team"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLeaveConfirm(false);
+                        setLeaveError(null);
+                      }}
+                      disabled={leaving}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 text-xs font-bold uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/5 transition-colors disabled:opacity-60"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </Card>
         ) : (
           <Card>

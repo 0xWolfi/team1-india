@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
-import { getCurrentRun } from "@/lib/speedrun";
+import { getCurrentRun, MAX_TEAM_SIZE } from "@/lib/speedrun";
 
 // GET /api/speedrun/teams/lookup?code=XXXXXX — preview a team before joining (auth-required)
 export async function GET(request: NextRequest) {
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       code: team.code,
       captainEmail: team.captainEmail,
       memberCount: team._count.members,
-      isFull: team._count.members >= 5,
+      isFull: team._count.members >= MAX_TEAM_SIZE,
     },
   });
 }
