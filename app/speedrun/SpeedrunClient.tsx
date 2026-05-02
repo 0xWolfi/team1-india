@@ -26,6 +26,10 @@ import {
   Eye,
   Users,
   Lock,
+  Coins,
+  Bot,
+  Smartphone,
+  Layers,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { FloatingNav } from "@/components/public/FloatingNav";
@@ -80,6 +84,29 @@ const benefits = [
   "Learn from top builders",
   "Build your network",
   "Win prizes & recognition",
+];
+
+const tracks = [
+  {
+    icon: Coins,
+    name: "DeFi",
+    tagline: "Build the next financial primitive — lending, perps, RWAs, novel mechanisms.",
+  },
+  {
+    icon: Bot,
+    name: "AI / Agents",
+    tagline: "Autonomous on-chain intelligence. Agents that actually do things.",
+  },
+  {
+    icon: Smartphone,
+    name: "Consumer",
+    tagline: "Apps people actually open. Social, gaming, creator tools, mobile-first.",
+  },
+  {
+    icon: Layers,
+    name: "Infra",
+    tagline: "Picks and shovels. Tooling, SDKs, dev experience, scaling primitives.",
+  },
 ];
 
 const weeklyCadence = [
@@ -285,6 +312,14 @@ export default function SpeedrunClient() {
             >
               <JoinButton phase={regState.phase} onClick={handleJoinClick} variant="primary" />
 
+              <a
+                href="#tracks"
+                className="group inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-500 font-bold text-sm uppercase tracking-wider hover:bg-red-500/10 hover:border-red-500/50 transition-all"
+              >
+                View Tracks
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </a>
+
               <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-red-500/30 bg-red-500/5">
                 <Calendar className="w-5 h-5 text-red-500" />
                 <div className="leading-tight">
@@ -379,8 +414,59 @@ export default function SpeedrunClient() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
+      {/* ── TRACKS ── */}
       <section id="tracks" className="relative py-16 md:py-24 scroll-mt-24 border-t border-black/5 dark:border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <div className="max-w-2xl mb-10 sm:mb-14">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-red-500 mb-4">
+              Tracks
+            </p>
+            <h2
+              className="font-black italic tracking-tighter leading-[0.95] text-black dark:text-white mb-4"
+              style={{ fontSize: "clamp(2.25rem, 5.5vw, 4.5rem)" }}
+            >
+              PICK YOUR<br />LANE.
+            </h2>
+            <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              Each Speedrun ships with focused tracks. Pick one, build deep, win the prize for that lane plus a shot at the overall Top 5. Sponsors and themes drop on Day 1 of each run.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {tracks.map((t) => (
+              <div
+                key={t.name}
+                className="relative rounded-2xl border border-red-500/15 bg-white/40 dark:bg-zinc-950/40 hover:border-red-500/40 transition-all p-5 sm:p-6 group overflow-hidden flex flex-col"
+              >
+                <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-red-500/10 blur-2xl group-hover:bg-red-500/25 transition-colors" />
+                <div className="relative flex flex-col h-full">
+                  <div
+                    className="inline-flex w-12 h-12 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/5 text-red-500 mb-4"
+                    style={{ filter: "drop-shadow(0 0 12px rgba(239,68,68,0.4))" }}
+                  >
+                    <t.icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-black italic tracking-tight text-black dark:text-white mb-2">
+                    {t.name}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    {t.tagline}
+                  </p>
+                  <div className="mt-auto pt-4">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-red-500/70">
+                      <span className="w-1 h-1 rounded-full bg-red-500" />
+                      Theme TBA
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
+      <section id="how" className="relative py-16 md:py-24 scroll-mt-24 border-t border-black/5 dark:border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-12 lg:gap-16">
           <div className="lg:max-w-xs">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-red-500 mb-4">
