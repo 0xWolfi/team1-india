@@ -28,7 +28,7 @@ import {
   Lock,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { HomeNavbar } from "@/components/website/HomeNavbar";
+import { FloatingNav } from "@/components/public/FloatingNav";
 import { Footer } from "@/components/website/Footer";
 import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 
@@ -210,7 +210,7 @@ export default function SpeedrunClient() {
 
   return (
     <main className="relative min-h-[100svh] bg-[var(--background)] text-black dark:text-white overflow-x-hidden">
-      <HomeNavbar />
+      <FloatingNav />
       <PublicLoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}

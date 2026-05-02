@@ -18,7 +18,7 @@ import {
   Loader2,
   AlertCircle,
 } from "lucide-react";
-import { HomeNavbar } from "@/components/website/HomeNavbar";
+import { FloatingNav } from "@/components/public/FloatingNav";
 import { Footer } from "@/components/website/Footer";
 import { PublicLoginModal } from "@/components/public/auth/PublicLoginModal";
 
@@ -263,7 +263,7 @@ export default function RegisterClient() {
   if (status === "loading") {
     return (
       <main className="relative min-h-[100svh] bg-[var(--background)] text-black dark:text-white">
-        <HomeNavbar />
+        <FloatingNav />
         <div className="pt-32 px-6 text-center text-sm text-zinc-500">
           <Loader2 className="w-5 h-5 animate-spin mx-auto mb-3" />
           Loading...
@@ -279,7 +279,7 @@ export default function RegisterClient() {
   if (status === "unauthenticated") {
     return (
       <main className="relative min-h-[100svh] bg-[var(--background)] text-black dark:text-white">
-        <HomeNavbar />
+        <FloatingNav />
         <PublicLoginModal
           isOpen={loginModalOpen}
           onClose={() => {
@@ -317,7 +317,7 @@ export default function RegisterClient() {
   if (success) {
     return (
       <main className="relative min-h-[100svh] bg-[var(--background)] text-black dark:text-white overflow-x-hidden">
-        <HomeNavbar />
+        <FloatingNav />
 
         <section className="relative pt-28 sm:pt-36 pb-24">
           <div
@@ -403,7 +403,7 @@ export default function RegisterClient() {
   // ===== Form =====
   return (
     <main className="relative min-h-[100svh] bg-[var(--background)] text-black dark:text-white overflow-x-hidden">
-      <HomeNavbar />
+      <FloatingNav />
 
       {/* Header */}
       <section className="relative pt-28 sm:pt-36 pb-8 sm:pb-12 overflow-hidden">

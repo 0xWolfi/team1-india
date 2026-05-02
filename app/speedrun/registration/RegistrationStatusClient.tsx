@@ -20,7 +20,7 @@ import {
   LogOut,
   AlertTriangle,
 } from "lucide-react";
-import { HomeNavbar } from "@/components/website/HomeNavbar";
+import { FloatingNav } from "@/components/public/FloatingNav";
 import { Footer } from "@/components/website/Footer";
 
 interface RegistrationData {
@@ -114,7 +114,7 @@ export default function RegistrationStatusClient() {
   if (status === "loading" || loading) {
     return (
       <main className="relative min-h-[100svh] bg-[var(--background)] text-black dark:text-white">
-        <HomeNavbar />
+        <FloatingNav />
         <div className="pt-32 px-6 text-center text-sm text-zinc-500">
           <Loader2 className="w-5 h-5 animate-spin mx-auto mb-3" />
           Loading...
@@ -134,7 +134,7 @@ export default function RegistrationStatusClient() {
 
   return (
     <main className="relative min-h-[100svh] bg-[var(--background)] text-black dark:text-white overflow-x-hidden">
-      <HomeNavbar />
+      <FloatingNav />
 
       <section className="relative pt-28 sm:pt-36 pb-12 overflow-hidden">
         <div
