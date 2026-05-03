@@ -823,36 +823,53 @@ model SwagOrder {
 // ===== USER PROJECTS =====
 
 model UserProject {
-  id           String    @id @default(uuid())
-  title        String
-  slug         String    @unique
-  description  String?
-  coverImage   String?
-  images       Json? // array of image URLs
-  demoUrl      String?
-  repoUrl      String?
-  techStack    String[]  @default([])
-  tags         String[]  @default([])
-  teamEmails   String[]  @default([]) // all team member emails
-  ownerEmail   String // creator
-  viewCount    Int       @default(0)
-  likeCount    Int       @default(0)
-  commentCount Int       @default(0)
-  status       String    @default("published") // "draft", "published", "hidden", "reported"
-  version      Int       @default(1) // optimistic locking
-  privacy      Json? // { showTeam: true, showRepo: true }
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @default(now()) @updatedAt
-  deletedAt    DateTime?
+  id            String    @id @default(uuid())
+  title         String
+  slug          String    @unique
+  description   String?
+  coverImage    String?
+  images        Json? // array of image URLs (screenshots)
+  demoUrl       String?
+  repoUrl       String?
+  videoUrl      String? // YouTube / demo video
+  socialPostUrl String? // X (Twitter) post URL highlighting the project
+  techStack     String[]  @default([])
+  tags          String[]  @default([])
+  teamEmails    String[]  @default([]) // all team member emails
+  ownerEmail    String // creator
+  viewCount     Int       @default(0)
+  likeCount     Int       @default(0)
+  commentCount  Int       @default(0)
+  status        String    @default("published") // "draft", "published", "hidden", "reported"
+  version       Int       @default(1) // optimistic locking
+  privacy       Json? // { showTeam: true, showRepo: true }
+  // Optional Speedrun mapping — set when a project is submitted from a Speedrun
+  // run. Lets the run page list its submissions and the projects index filter
+  // by run/track. Both null for non-Speedrun projects.
+  speedrunRunId   String?
+  speedrunTrackId String?
+  // Direct link to the submitting team — populated when a registered team
+  // member submits via /speedrun/[month]/submit. Used to resolve project →
+  // Team1 ID badges and to filter the per-team page without exposing emails.
+  speedrunTeamId  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  deletedAt       DateTime?
 
-  versions ProjectVersion[]
-  comments ProjectComment[]
-  likes    ProjectLike[]
+  versions       ProjectVersion[]
+  comments       ProjectComment[]
+  likes          ProjectLike[]
+  speedrunRun    SpeedrunRun?     @relation(fields: [speedrunRunId], references: [id])
+  speedrunTrack  SpeedrunTrack?   @relation(fields: [speedrunTrackId], references: [id])
+  speedrunTeam   SpeedrunTeam?    @relation(fields: [speedrunTeamId], references: [id])
 
   @@index([ownerEmail])
   @@index([slug])
   @@index([status])
   @@index([deletedAt])
+  @@index([speedrunRunId])
+  @@index([speedrunTrackId])
+  @@index([speedrunTeamId])
 }
 
 model ProjectVersion {
@@ -916,38 +933,83 @@ model ShowcaseSection {
 // ===== SPEEDRUN =====
 
 model SpeedrunRun {
-  id                   String    @id @default(uuid())
-  slug                 String    @unique // e.g. "may-2026"
-  monthLabel           String // e.g. "MAY 2026"
-  theme                String? // null until announced
-  status               String    @default("upcoming") // upcoming, registration_open, in_progress, completed, cancelled
+  id         String  @id @default(uuid())
+  slug       String  @unique // e.g. "may-26"
+  monthLabel String // e.g. "MAY 2026"
+  theme      String? // short theme name; null until announced
+  // Status state machine:
+  // upcoming → registration_open → submissions_open → submissions_closed →
+  // irl_event → judging → completed (cancelled is terminal from any state)
+  status     String  @default("upcoming")
+
+  // High-level run window
   startDate            DateTime?
   endDate              DateTime?
-  registrationDeadline DateTime?
-  isCurrent            Boolean   @default(false) // exactly one row should be true
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @default(now()) @updatedAt
-  deletedAt            DateTime?
+  registrationDeadline DateTime? // == submission close (they close together, by product rule)
+
+  // Concrete dates surfaced on the public details page
+  submissionOpenDate DateTime?
+  irlEventDate       DateTime?
+  winnersDate        DateTime?
+
+  // Long-form / structured run content (all optional, surfaced on /speedrun/[month])
+  themeDescription String? // markdown
+  sponsors         Json? // [{ name, logoUrl?, url? }]
+  prizePool        String? // free text e.g. "$1500 across all tracks"
+  hostCities       String[] @default([]) // empty until announced
+  faq              Json? // [{ q, a }] — per-run optional FAQ override
+
+  isCurrent Boolean   @default(false) // exactly one row should be true
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
 
   registrations SpeedrunRegistration[]
   teams         SpeedrunTeam[]
+  tracks        SpeedrunTrack[]
+  projects      UserProject[]
 
   @@index([status])
   @@index([isCurrent])
   @@index([deletedAt])
 }
 
+// Per-run track (DeFi, AI/Agents, Consumer, etc.). Each Speedrun publishes
+// its own track lineup so themes can vary month-to-month.
+model SpeedrunTrack {
+  id          String   @id @default(uuid())
+  runId       String
+  name        String // "DeFi"
+  iconKey     String? // matches a lucide-react icon name e.g. "Coins"
+  tagline     String // one-line pitch shown on cards
+  description String? // longer markdown description for details page
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  run      SpeedrunRun   @relation(fields: [runId], references: [id], onDelete: Cascade)
+  projects UserProject[]
+
+  @@unique([runId, name])
+  @@index([runId])
+}
+
 model SpeedrunTeam {
   id           String   @id @default(uuid())
   runId        String
-  name         String
-  code         String   @unique // e.g. "TM-7XK2QP" — invite code for teammates
+  // Team1 ID — system-generated, doubles as both display label and invite code.
+  // Format: "T1-XXXXXX" (older teams may still carry the legacy "TM-XXXXXX" prefix).
+  // We do NOT collect a user-supplied team name — every team is identified by this ID.
+  code         String   @unique
+  // Optional nickname kept for backwards compatibility with older teams that were
+  // created with a user-typed name. New teams set this to null and rely on `code`.
+  name         String?
   captainEmail String
   createdAt    DateTime @default(now())
 
   run           SpeedrunRun            @relation(fields: [runId], references: [id], onDelete: Cascade)
   members       SpeedrunTeamMember[]
   registrations SpeedrunRegistration[]
+  projects      UserProject[]
 
   @@index([runId])
   @@index([code])
@@ -986,6 +1048,9 @@ model SpeedrunRegistration {
   projectIdea     String?
   whyJoin         String?
   consent         Boolean  @default(false)
+  // Public visibility of the registrant's social handles (X/GitHub) on the
+  // public team page. Defaults to true (opt-out). Email is always private.
+  showSocials     Boolean  @default(true)
   status          String   @default("registered") // registered, confirmed, withdrawn, rejected
   adminNotes      String?
   // Referral attribution

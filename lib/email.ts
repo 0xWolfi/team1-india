@@ -624,6 +624,7 @@ export function getMemberRemovalEmailTemplate(memberName: string) {
 
 interface SpeedrunRegistrationEmailParams {
   fullName: string;
+  runSlug: string; // "may-26" — used to build slug-scoped URLs
   runLabel: string; // "MAY 2026"
   teamMode: "solo" | "create" | "join";
   teamName?: string | null;
@@ -632,7 +633,7 @@ interface SpeedrunRegistrationEmailParams {
 }
 
 /**
- * Email shown to a user after they complete /api/speedrun/register.
+ * Email shown to a user after they register via the slug-scoped run endpoint.
  * One template, three teamMode flavors:
  *  - solo:   "You're in. We'll email when the theme drops."
  *  - create: "You're in. Here's your team code — share it."
@@ -640,7 +641,7 @@ interface SpeedrunRegistrationEmailParams {
  */
 export function getSpeedrunRegistrationEmail(p: SpeedrunRegistrationEmailParams) {
   const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
-  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/registration`;
+  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/${encodeURIComponent(p.runSlug)}/registration`;
 
   const teamBlock = (() => {
     if (p.teamMode === "create" && p.teamCode) {
@@ -724,18 +725,19 @@ export function getSpeedrunRegistrationEmail(p: SpeedrunRegistrationEmailParams)
 
 interface SpeedrunLeaveTeamEmailParams {
   fullName: string;
+  runSlug: string;
   runLabel: string;
   teamName: string;
   appUrl?: string;
 }
 
 /**
- * Email shown to a user after they POST /api/speedrun/teams/leave.
- * Confirms they left and are now a solo builder.
+ * Email shown to a user after they leave their team via the slug-scoped
+ * leave-team endpoint. Confirms they left and are now a solo builder.
  */
 export function getSpeedrunLeaveTeamEmail(p: SpeedrunLeaveTeamEmailParams) {
   const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
-  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/registration`;
+  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/${encodeURIComponent(p.runSlug)}/registration`;
 
   const html = `
 <!DOCTYPE html>
@@ -777,6 +779,7 @@ export function getSpeedrunLeaveTeamEmail(p: SpeedrunLeaveTeamEmailParams) {
 interface SpeedrunTeammateJoinedEmailParams {
   captainName: string; // captain's full name (best effort — falls back to email)
   teamName: string;
+  runSlug: string;
   runLabel: string;
   newMemberName: string;
   newMemberEmail: string;
@@ -788,7 +791,7 @@ interface SpeedrunTeammateJoinedEmailParams {
  */
 export function getSpeedrunTeammateJoinedEmail(p: SpeedrunTeammateJoinedEmailParams) {
   const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
-  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/registration`;
+  const statusUrl = `${base.replace(/\/$/, "")}/speedrun/${encodeURIComponent(p.runSlug)}/registration`;
 
   const html = `
 <!DOCTYPE html>
@@ -841,6 +844,60 @@ export function getSpeedrunTeammateJoinedEmail(p: SpeedrunTeammateJoinedEmailPar
     subject: `${p.newMemberName} joined ${p.teamName} — Speedrun ${p.runLabel}`,
     html,
   };
+}
+
+interface SpeedrunBroadcastEmailParams {
+  runSlug: string;
+  runLabel: string;
+  /** Big bold line at the top of the email card (e.g. "Theme drops."). */
+  headline: string;
+  /** One-paragraph body explaining the news. */
+  body: string;
+  /** Optional CTA label — defaults to "View Run". */
+  ctaLabel?: string;
+  appUrl?: string;
+}
+
+/**
+ * Generic Speedrun broadcast email — used for theme reveals, status
+ * transitions, and any other event where we email all registrants.
+ *
+ * Visual style mirrors the registration confirmation so they read as a series.
+ */
+export function getSpeedrunBroadcastEmail(p: SpeedrunBroadcastEmailParams) {
+  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
+  const runUrl = `${base.replace(/\/$/, "")}/speedrun/${encodeURIComponent(p.runSlug)}`;
+  const ctaLabel = p.ctaLabel || "View Run";
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; background:#fafafa; color:#000;">
+  <div style="max-width:600px; margin:0 auto; padding:40px 20px;">
+    <div style="background:#000; padding:32px 28px; border-radius:16px 16px 0 0; text-align:center;">
+      <p style="margin:0 0 6px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#ff394a;">Speedrun ${escapeHtml(p.runLabel)}</p>
+      <h1 style="margin:0; font-size:32px; font-weight:900; font-style:italic; letter-spacing:-1px; color:#ff394a;">${escapeHtml(p.headline)}</h1>
+    </div>
+    <div style="background:#fff; padding:32px 28px; border:1px solid #e0e0e2; border-top:none; border-radius:0 0 16px 16px;">
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">
+        ${escapeHtml(p.body)}
+      </p>
+      <p style="margin:0 0 32px;">
+        <a href="${runUrl}" style="display:inline-block; padding:12px 24px; background:#ff394a; color:#fff; font-size:14px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; border-radius:10px;">
+          ${escapeHtml(ctaLabel)}
+        </a>
+      </p>
+      <p style="margin:0; font-size:13px; line-height:1.6; color:#666;">— Team1 India</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return { subject: `${p.headline} — Speedrun ${p.runLabel}`, html };
 }
 
 function escapeHtml(s: string): string {

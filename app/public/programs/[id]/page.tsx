@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Calendar, Globe, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { safeBuildFetch } from "@/lib/safeStaticParams";
+import { DataLoadError } from "@/components/public/DataLoadError";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/website/Footer";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
@@ -12,45 +14,65 @@ import { Program, GuideBody } from "@/types/public";
 export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 export async function generateStaticParams() {
-  const items = await prisma.guide.findMany({
-    where: { visibility: "PUBLIC", type: "PROGRAM", deletedAt: null },
-    select: { id: true },
-  });
+  const items = await safeBuildFetch(
+    () =>
+      prisma.guide.findMany({
+        where: { visibility: "PUBLIC", type: "PROGRAM", deletedAt: null },
+        select: { id: true },
+      }),
+    "programs generateStaticParams"
+  );
   return items.map((item) => ({ id: item.id }));
 }
 
-async function getProgram(id: string): Promise<Program | null> {
-  const guide = await prisma.guide.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      title: true,
-      body: true,
-      coverImage: true,
-      createdAt: true,
-      updatedAt: true,
-      type: true,
-      visibility: true,
-      formSchema: true
-    }
-  });
+type ProgramLoadResult =
+  | { kind: "ok"; program: Program }
+  | { kind: "missing" }
+  | { kind: "error"; message: string };
 
-  if (!guide || guide.type !== 'PROGRAM') return null;
+async function getProgram(id: string): Promise<ProgramLoadResult> {
+  let guide;
+  try {
+    guide = await prisma.guide.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        coverImage: true,
+        createdAt: true,
+        updatedAt: true,
+        type: true,
+        visibility: true,
+        formSchema: true
+      }
+    });
+  } catch (err) {
+    return {
+      kind: "error",
+      message: err instanceof Error ? err.message : String(err),
+    };
+  }
+
+  if (!guide || guide.type !== 'PROGRAM') return { kind: "missing" };
 
   const body = guide.body as unknown as GuideBody;
 
   return {
-      id: guide.id,
-      title: guide.title || "Untitled Program",
-      type: "PROGRAM",
-      description: body.description || "",
-      coverImage: guide.coverImage,
-      createdAt: guide.createdAt,
-      updatedAt: guide.updatedAt,
-      visibility: guide.visibility as "PUBLIC" | "MEMBER" | "CORE",
-      status: "active",
-      formSchema: guide.formSchema,
-      body: body
+    kind: "ok",
+    program: {
+        id: guide.id,
+        title: guide.title || "Untitled Program",
+        type: "PROGRAM",
+        description: body.description || "",
+        coverImage: guide.coverImage,
+        createdAt: guide.createdAt,
+        updatedAt: guide.updatedAt,
+        visibility: guide.visibility as "PUBLIC" | "MEMBER" | "CORE",
+        status: "active",
+        formSchema: guide.formSchema,
+        body: body
+    },
   };
 }
 
@@ -60,11 +82,21 @@ type Props = {
 
 export default async function ProgramDetailPage({ params }: Props) {
   const { id } = await params;
-  const program = await getProgram(id);
+  const result = await getProgram(id);
 
-  if (!program) {
-    notFound();
+  if (result.kind === "error") {
+    return (
+      <DataLoadError
+        title="Couldn't load this program"
+        description="We hit a snag fetching this program. Please try again in a moment."
+        detail={result.message}
+        backHref="/public/programs"
+        backLabel="All programs"
+      />
+    );
   }
+  if (result.kind === "missing") notFound();
+  const program = result.program;
 
   // extract image safely
   const coverImage = program.coverImage;

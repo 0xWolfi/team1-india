@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
+import { safeBuildFetch } from '@/lib/safeStaticParams';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://team1india.com';
@@ -12,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/public/playbooks',
     '/public/programs',
     '/public/content',
+    '/speedrun',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -20,10 +22,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Dynamic Routes: Public Playbooks
-  const playbooks = await prisma.playbook.findMany({
-    where: { visibility: 'PUBLIC', deletedAt: null },
-    select: { id: true, updatedAt: true },
-  });
+  const playbooks = await safeBuildFetch(
+    () =>
+      prisma.playbook.findMany({
+        where: { visibility: 'PUBLIC', deletedAt: null },
+        select: { id: true, updatedAt: true },
+      }),
+    'sitemap playbooks'
+  );
 
   const playbookRoutes = playbooks.map((item) => ({
     url: `${baseUrl}/public/playbooks/${item.id}`,
@@ -33,10 +39,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Dynamic Routes: Public Events (Guides of type EVENT)
-  const events = await prisma.guide.findMany({
-    where: { visibility: 'PUBLIC', type: 'event', deletedAt: null },
-    select: { id: true, updatedAt: true },
-  });
+  const events = await safeBuildFetch(
+    () =>
+      prisma.guide.findMany({
+        where: { visibility: 'PUBLIC', type: 'event', deletedAt: null },
+        select: { id: true, updatedAt: true },
+      }),
+    'sitemap events'
+  );
 
   const eventRoutes = events.map((item) => ({
     url: `${baseUrl}/public/events/${item.id}`,
@@ -45,5 +55,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...routes, ...playbookRoutes, ...eventRoutes];
+  // Dynamic Routes: Speedrun runs (live + past, hide drafts)
+  const speedrunRuns = await safeBuildFetch(
+    () =>
+      prisma.speedrunRun.findMany({
+        where: {
+          deletedAt: null,
+          status: {
+            in: [
+              'registration_open',
+              'submissions_open',
+              'submissions_closed',
+              'irl_event',
+              'judging',
+              'completed',
+            ],
+          },
+        },
+        select: { slug: true, updatedAt: true, isCurrent: true },
+      }),
+    'sitemap speedrun runs'
+  );
+  const speedrunRoutes = speedrunRuns.map((r) => ({
+    url: `${baseUrl}/speedrun/${r.slug}`,
+    lastModified: r.updatedAt,
+    changeFrequency: 'weekly' as const,
+    priority: r.isCurrent ? 0.9 : 0.6,
+  }));
+
+  return [...routes, ...playbookRoutes, ...eventRoutes, ...speedrunRoutes];
 }

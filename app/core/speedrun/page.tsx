@@ -16,6 +16,10 @@ import {
   Share2,
   Eye,
   TrendingUp,
+  Plus,
+  Star,
+  Settings,
+  Download,
 } from "lucide-react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
@@ -58,6 +62,19 @@ interface ReferralRow {
   }[];
 }
 
+interface RunRow {
+  id: string;
+  slug: string;
+  monthLabel: string;
+  theme: string | null;
+  status: string;
+  isCurrent: boolean;
+  startDate: string | null;
+  registrationDeadline: string | null;
+  irlEventDate: string | null;
+  _count?: { registrations: number; teams: number; projects: number };
+}
+
 const STATUS_FILTERS = [
   { value: "", label: "All" },
   { value: "registered", label: "Registered" },
@@ -67,7 +84,7 @@ const STATUS_FILTERS = [
 ];
 
 export default function CoreSpeedrunPage() {
-  const [tab, setTab] = useState<"registrations" | "referrals">("registrations");
+  const [tab, setTab] = useState<"registrations" | "referrals" | "runs">("registrations");
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [runs, setRuns] = useState<RunOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,6 +97,27 @@ export default function CoreSpeedrunPage() {
   const [referrals, setReferrals] = useState<ReferralRow[]>([]);
   const [referralsLoading, setReferralsLoading] = useState(false);
   const [referralsError, setReferralsError] = useState<string | null>(null);
+
+  // Runs tab state
+  const [runRows, setRunRows] = useState<RunRow[]>([]);
+  const [runsLoading, setRunsLoading] = useState(false);
+  const [runsError, setRunsError] = useState<string | null>(null);
+
+  function loadRuns() {
+    setRunsLoading(true);
+    setRunsError(null);
+    fetch("/api/speedrun/runs", { cache: "no-store" })
+      .then(async (r) => {
+        if (!r.ok) {
+          const body = await r.json().catch(() => ({}));
+          throw new Error(body.error || `HTTP ${r.status}`);
+        }
+        return r.json();
+      })
+      .then((data) => setRunRows(data.runs || []))
+      .catch((e: Error) => setRunsError(e.message || "Failed to load runs"))
+      .finally(() => setRunsLoading(false));
+  }
 
   useEffect(() => {
     if (tab !== "registrations") return;
@@ -122,6 +160,19 @@ export default function CoreSpeedrunPage() {
       .finally(() => setReferralsLoading(false));
   }, [tab]);
 
+  useEffect(() => {
+    if (tab !== "runs") return;
+    loadRuns();
+  }, [tab]);
+
+  async function setRunCurrent(slug: string) {
+    if (!confirm(`Promote "${slug}" as the current run? This unflags any other run.`)) return;
+    const res = await fetch(`/api/speedrun/runs/${encodeURIComponent(slug)}/set-current`, {
+      method: "POST",
+    });
+    if (res.ok) loadRuns();
+  }
+
   const stats = useMemo(() => {
     const total = registrations.length;
     const teams = new Set(
@@ -152,6 +203,17 @@ export default function CoreSpeedrunPage() {
         >
           <Users className="w-3.5 h-3.5 inline -mt-0.5 mr-1.5" />
           Registrations
+        </button>
+        <button
+          onClick={() => setTab("runs")}
+          className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
+            tab === "runs"
+              ? "bg-red-500 text-white"
+              : "text-zinc-500 hover:text-black dark:hover:text-white"
+          }`}
+        >
+          <Settings className="w-3.5 h-3.5 inline -mt-0.5 mr-1.5" />
+          Runs
         </button>
         <button
           onClick={() => setTab("referrals")}
@@ -222,6 +284,18 @@ export default function CoreSpeedrunPage() {
             </button>
           ))}
         </div>
+
+        <a
+          href={`/api/speedrun/registrations/export?${new URLSearchParams({
+            ...(runFilter && { runId: runFilter }),
+            ...(statusFilter && { status: statusFilter }),
+          }).toString()}`}
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-900 hover:border-red-500/40 hover:text-red-500 text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 transition-colors"
+          title="Download filtered registrations as CSV"
+        >
+          <Download className="w-3.5 h-3.5" />
+          CSV
+        </a>
       </div>
 
       {/* Table */}
@@ -323,7 +397,157 @@ export default function CoreSpeedrunPage() {
           error={referralsError}
         />
       )}
+
+      {tab === "runs" && (
+        <RunsTab
+          runs={runRows}
+          loading={runsLoading}
+          error={runsError}
+          onSetCurrent={setRunCurrent}
+        />
+      )}
     </CoreWrapper>
+  );
+}
+
+function RunsTab({
+  runs,
+  loading,
+  error,
+  onSetCurrent,
+}: {
+  runs: RunRow[];
+  loading: boolean;
+  error: string | null;
+  onSetCurrent: (slug: string) => void;
+}) {
+  return (
+    <>
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <p className="text-sm text-zinc-500">
+          Each month is a separate run. Promote one as Current to feature it on{" "}
+          <code className="text-xs">/speedrun</code>.
+        </p>
+        <Link
+          href="/core/speedrun/runs/new"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500 text-white text-xs font-bold uppercase tracking-wider hover:bg-red-600 transition-colors"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          New Run
+        </Link>
+      </div>
+
+      <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-950 overflow-hidden">
+        {loading ? (
+          <div className="p-12 text-center text-sm text-zinc-500">
+            <Loader2 className="w-5 h-5 animate-spin mx-auto mb-3" />
+            Loading runs...
+          </div>
+        ) : error ? (
+          <div className="p-12 text-center text-sm">
+            <p className="text-red-500 font-semibold mb-1">Failed to load runs</p>
+            <p className="text-zinc-500 text-xs">{error}</p>
+          </div>
+        ) : runs.length === 0 ? (
+          <div className="p-12 text-center text-sm text-zinc-500">
+            No runs yet. Create the first one.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-black/5 dark:border-white/5 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                  <th className="text-left px-4 py-3">Month</th>
+                  <th className="text-left px-4 py-3">Slug</th>
+                  <th className="text-left px-4 py-3">Status</th>
+                  <th className="text-left px-4 py-3 hidden md:table-cell">Theme</th>
+                  <th className="text-right px-4 py-3 hidden lg:table-cell">Reg</th>
+                  <th className="text-right px-4 py-3 hidden lg:table-cell">Teams</th>
+                  <th className="text-right px-4 py-3 hidden lg:table-cell">Projects</th>
+                  <th className="text-right px-4 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {runs.map((r) => (
+                  <tr
+                    key={r.id}
+                    className="border-b border-black/5 dark:border-white/5 last:border-b-0 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
+                  >
+                    <td className="px-4 py-3 font-semibold text-black dark:text-white">
+                      <div className="flex items-center gap-2">
+                        {r.monthLabel}
+                        {r.isCurrent && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-red-500/10 border border-red-500/30 text-red-500 text-[9px] font-bold uppercase tracking-widest">
+                            <Star className="w-2.5 h-2.5" />
+                            Current
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-zinc-500">{r.slug}</td>
+                    <td className="px-4 py-3">
+                      <RunStatusPill status={r.status} />
+                    </td>
+                    <td className="px-4 py-3 text-zinc-500 hidden md:table-cell">
+                      {r.theme || "—"}
+                    </td>
+                    <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 hidden lg:table-cell tabular-nums">
+                      {r._count?.registrations ?? 0}
+                    </td>
+                    <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 hidden lg:table-cell tabular-nums">
+                      {r._count?.teams ?? 0}
+                    </td>
+                    <td className="px-4 py-3 text-right text-zinc-600 dark:text-zinc-400 hidden lg:table-cell tabular-nums">
+                      {r._count?.projects ?? 0}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="inline-flex items-center gap-2">
+                        {!r.isCurrent && (
+                          <button
+                            onClick={() => onSetCurrent(r.slug)}
+                            className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-red-500 hover:text-red-600"
+                          >
+                            <Star className="w-3 h-3" />
+                            Set Current
+                          </button>
+                        )}
+                        <Link
+                          href={`/core/speedrun/runs/${encodeURIComponent(r.slug)}`}
+                          className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-black dark:hover:text-white"
+                        >
+                          Edit
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function RunStatusPill({ status }: { status: string }) {
+  const tone =
+    status === "registration_open" || status === "submissions_open"
+      ? "bg-green-500/10 text-green-500 border-green-500/30"
+      : status === "completed"
+      ? "bg-zinc-500/10 text-zinc-500 border-zinc-500/30"
+      : status === "cancelled"
+      ? "bg-zinc-500/10 text-zinc-500 border-zinc-500/30 line-through"
+      : status === "submissions_closed" || status === "irl_event" || status === "judging"
+      ? "bg-amber-500/10 text-amber-500 border-amber-500/30"
+      : "bg-red-500/10 text-red-500 border-red-500/30";
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase tracking-widest ${tone}`}
+    >
+      {status.replace(/_/g, " ")}
+    </span>
   );
 }
 

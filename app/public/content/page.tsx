@@ -1,29 +1,34 @@
 import Link from "next/link";
 import { ArrowLeft, Trophy } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { safeBuildFetch } from "@/lib/safeStaticParams";
 import { Footer } from "@/components/website/Footer";
 import ContentClient from "@/components/public/ContentClient";
 
 async function getGuides() {
-  // @ts-ignore
-  return prisma.guide.findMany({
-    where: { visibility: "PUBLIC", type: "CONTENT", deletedAt: null },
-    orderBy: { createdAt: "desc" },
-    select: { 
-      id: true, 
-      title: true, 
-      type: true,
-      body: true,
+  return safeBuildFetch(
+    () =>
       // @ts-ignore
-      coverImage: true,
-      createdAt: true,
-      createdBy: {
+      prisma.guide.findMany({
+        where: { visibility: "PUBLIC", type: "CONTENT", deletedAt: null },
+        orderBy: { createdAt: "desc" },
         select: {
-          name: true
-        }
-      }
-    },
-  });
+          id: true,
+          title: true,
+          type: true,
+          body: true,
+          // @ts-ignore
+          coverImage: true,
+          createdAt: true,
+          createdBy: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+    "public/content listing"
+  );
 }
 
 export default async function PublicContentPage() {

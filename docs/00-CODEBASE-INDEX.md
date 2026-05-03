@@ -14,6 +14,7 @@
 | RBAC & Access Control | `docs/02-RBAC-ACCESS-CONTROL.md` | Roles, permissions, enforcement patterns, access matrix |
 | Routes & Flows | `docs/03-ROUTES-AND-FLOWS.md` | Route tree, user flows, layout hierarchy, diagrams |
 | Features | `docs/04-FEATURES.md` | All 22 feature areas, integrations, tech stack |
+| Speedrun | `docs/05-SPEEDRUN.md` | Routes, APIs, flows, privacy rules, permissions, code map for the per-month build sprint |
 
 ---
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
+import { logAudit } from "@/lib/audit";
 
 // GET /api/speedrun/registrations/[id] — admin detail (CORE-only)
 export async function GET(
@@ -74,6 +75,20 @@ export async function PATCH(
     include: {
       team: { select: { id: true, name: true, code: true } },
       run: { select: { id: true, slug: true, monthLabel: true } },
+    },
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const actorId = (session?.user as any)?.id ?? session?.user?.email ?? "unknown";
+  await logAudit({
+    action: "UPDATE",
+    resource: "SPEEDRUN_REGISTRATION",
+    resourceId: updated.id,
+    actorId,
+    metadata: {
+      runSlug: updated.run.slug,
+      registrantEmail: updated.userEmail,
+      changedKeys: Object.keys(data),
     },
   });
 

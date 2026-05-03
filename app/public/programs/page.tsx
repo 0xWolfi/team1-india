@@ -2,32 +2,37 @@
 import Link from "next/link";
 import { ArrowLeft, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { safeBuildFetch } from "@/lib/safeStaticParams";
 import { Footer } from "@/components/website/Footer";
 import ProgramsClient from "@/components/public/ProgramsClient";
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 async function getPrograms() {
-  const guides = await prisma.guide.findMany({
-    where: { 
-        visibility: "PUBLIC",
-        type: "PROGRAM",
-        deletedAt: null
-    },
-    orderBy: { createdAt: "desc" },
-    select: { 
-      id: true, 
-      title: true, 
-      body: true,
-      coverImage: true,
-      createdAt: true,
-      createdBy: {
+  const guides = await safeBuildFetch(
+    () =>
+      prisma.guide.findMany({
+        where: {
+          visibility: "PUBLIC",
+          type: "PROGRAM",
+          deletedAt: null,
+        },
+        orderBy: { createdAt: "desc" },
         select: {
-          name: true
-        }
-      }
-    },
-  });
+          id: true,
+          title: true,
+          body: true,
+          coverImage: true,
+          createdAt: true,
+          createdBy: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+    "public/programs listing"
+  );
 
   return guides.map((g: any) => ({
       id: g.id,

@@ -9,8 +9,22 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Team1 Speedrun — Build Fast. Ship Faster.",
     description:
-      "A high-energy sprint for builders, thinkers and doers. Build. Ship. Win.",
+      "A high-energy sprint for builders, thinkers and doers. Solo or duo. Build. Ship. Win.",
     type: "website",
+    images: [
+      {
+        url: "/speedrun/hero-statue.png",
+        width: 1200,
+        height: 630,
+        alt: "Team1 Speedrun",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Team1 Speedrun — Build Fast. Ship Faster.",
+    description: "Monthly themed build sprint. Solo or duo. Ship products. Win prizes.",
+    images: ["/speedrun/hero-statue.png"],
   },
 };
 

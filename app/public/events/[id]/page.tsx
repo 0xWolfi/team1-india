@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { safeBuildFetch } from "@/lib/safeStaticParams";
+import { DataLoadError } from "@/components/public/DataLoadError";
 import { ApplicationForm } from "@/components/public/ApplicationForm";
 import { Footer } from "@/components/website/Footer";
 import ReactMarkdown from 'react-markdown';
@@ -13,46 +15,68 @@ import { Event, GuideBody } from "@/types/public";
 export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 export async function generateStaticParams() {
-  const items = await prisma.guide.findMany({
-    where: { visibility: "PUBLIC", type: "EVENT", deletedAt: null },
-    select: { id: true },
-  });
+  const items = await safeBuildFetch(
+    () =>
+      prisma.guide.findMany({
+        where: { visibility: "PUBLIC", type: "EVENT", deletedAt: null },
+        select: { id: true },
+      }),
+    "events generateStaticParams"
+  );
   return items.map((item) => ({ id: item.id }));
 }
 
-async function getEvent(id: string): Promise<Event | null> {
-  const guide = await prisma.guide.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      title: true,
-      body: true,
-      coverImage: true,
-      createdAt: true,
-      updatedAt: true,
-      type: true,
-      visibility: true,
-      createdBy: { select: { name: true, email: true } },
-      formSchema: true
-    }
-  });
+// Result discriminator: either we have an event, it's missing, or the DB
+// itself is unreachable. The page renders a different UI for each.
+type EventLoadResult =
+  | { kind: "ok"; event: Event }
+  | { kind: "missing" }
+  | { kind: "error"; message: string };
 
-  if (!guide || guide.type !== 'EVENT') return null;
+async function getEvent(id: string): Promise<EventLoadResult> {
+  let guide;
+  try {
+    guide = await prisma.guide.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        coverImage: true,
+        createdAt: true,
+        updatedAt: true,
+        type: true,
+        visibility: true,
+        createdBy: { select: { name: true, email: true } },
+        formSchema: true
+      }
+    });
+  } catch (err) {
+    return {
+      kind: "error",
+      message: err instanceof Error ? err.message : String(err),
+    };
+  }
+
+  if (!guide || guide.type !== 'EVENT') return { kind: "missing" };
   
   const body = guide.body as unknown as GuideBody;
 
   return {
-    ...guide,
-    title: guide.title || "Untitled Event",
-    type: "EVENT", // override string | null from prisma
-    visibility: guide.visibility as "PUBLIC" | "MEMBER" | "CORE",
-    description: body.description || "",
-    date: body.date || guide.createdAt,
-    location: body.location || "",
-    status: 'planned', // Default for event
-    formSchema: guide.formSchema,
-    body: body
-    // coverImage is already at top level
+    kind: "ok",
+    event: {
+      ...guide,
+      title: guide.title || "Untitled Event",
+      type: "EVENT", // override string | null from prisma
+      visibility: guide.visibility as "PUBLIC" | "MEMBER" | "CORE",
+      description: body.description || "",
+      date: body.date || guide.createdAt,
+      location: body.location || "",
+      status: 'planned', // Default for event
+      formSchema: guide.formSchema,
+      body: body
+      // coverImage is already at top level
+    },
   };
 }
 
@@ -62,11 +86,22 @@ type Props = {
 
 export default async function PublicEventDetailPage({ params }: Props) {
   const { id } = await params;
-  const event = await getEvent(id);
+  const result = await getEvent(id);
 
-  if (!event || (event.visibility !== 'PUBLIC')) {
-      return notFound();
+  if (result.kind === "error") {
+    return (
+      <DataLoadError
+        title="Couldn't load this event"
+        description="We hit a snag fetching this event. Please try again in a moment."
+        detail={result.message}
+        backHref="/public/events"
+        backLabel="All events"
+      />
+    );
   }
+  if (result.kind === "missing") return notFound();
+  const event = result.event;
+  if (event.visibility !== 'PUBLIC') return notFound();
 
   const coverImage = event.coverImage;
 
