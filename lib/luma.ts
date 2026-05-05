@@ -50,27 +50,41 @@ function dbToLumaEvent(row: {
 }
 
 // ── READ: Get all events from DB (instant, no API call) ──
+// Returns [] when the DB is unreachable so static prerender at build time
+// doesn't fail the whole build if Neon is paused/cold. Public events
+// surface fills in on the first runtime request once the DB is awake.
 export async function getAllEvents(): Promise<LumaEventData[]> {
   if (!process.env.DATABASE_URL) return [];
-  const rows = await prisma.lumaEvent.findMany({
-    where: { visibility: "public" },
-    orderBy: { startAt: "desc" },
-  });
-  return rows.map(dbToLumaEvent);
+  try {
+    const rows = await prisma.lumaEvent.findMany({
+      where: { visibility: "public" },
+      orderBy: { startAt: "desc" },
+    });
+    return rows.map(dbToLumaEvent);
+  } catch (err) {
+    console.warn("[luma] getAllEvents failed, returning empty list:", err);
+    return [];
+  }
 }
 
 // ── READ: Get upcoming events from DB (instant) ──
+// Same fail-soft semantics as getAllEvents — see comment above.
 export async function getUpcomingEvents(): Promise<LumaEventData[]> {
   if (!process.env.DATABASE_URL) return [];
-  const now = new Date();
-  const rows = await prisma.lumaEvent.findMany({
-    where: {
-      visibility: "public",
-      startAt: { gte: now },
-    },
-    orderBy: { startAt: "asc" },
-  });
-  return rows.map(dbToLumaEvent);
+  try {
+    const now = new Date();
+    const rows = await prisma.lumaEvent.findMany({
+      where: {
+        visibility: "public",
+        startAt: { gte: now },
+      },
+      orderBy: { startAt: "asc" },
+    });
+    return rows.map(dbToLumaEvent);
+  } catch (err) {
+    console.warn("[luma] getUpcomingEvents failed, returning empty list:", err);
+    return [];
+  }
 }
 
 // ── SYNC: Fetch from Luma API and upsert into DB ──
