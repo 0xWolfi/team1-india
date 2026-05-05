@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { expirePoints } from "@/lib/wallet";
+import { verifyCronAuth } from "@/lib/cronAuth";
 
 // POST /api/cron/expire-points — daily cron to expire old points
 // Protect with CRON_SECRET env var (Vercel Cron or external scheduler)
 export async function POST(request: NextRequest) {
-  const authHeader = request.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authError = verifyCronAuth(request);
+  if (authError) {
+    return NextResponse.json({ error: authError }, { status: 401 });
   }
 
   try {

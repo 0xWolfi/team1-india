@@ -1,15 +1,24 @@
 import { PrismaClient } from '@prisma/client';
 
-// Models that don't have deletedAt (skip soft-delete filter)
+// Models that don't have a `deletedAt` column — the soft-delete filter below
+// must skip them or every findMany/findFirst on these models crashes with
+// "Unknown argument `deletedAt`". Keep this list in sync with the schema.
 const noSoftDelete = [
-  'LumaEvent', 'Setting', 'AuditLog', 'PushSubscription', 'NotificationPreference',
-  // New models without deletedAt:
-  'PersonalVault', 'Notification', 'UserWallet', 'PointsBatch', 'WalletTransaction',
-  'QuestCompletion', 'ProjectVersion', 'ProjectLike', 'ShowcaseSection',
+  // Legacy entries — kept defensively in case future schema additions reuse the names.
+  'Setting', 'AuditLog', 'PushSubscription', 'NotificationPreference',
   'ChallengeTrack', 'ChallengeRegistration', 'ChallengeTeamMember',
   'ChallengeSubmission', 'ChallengeWinner', 'ReferralCode', 'PartnerReviewLink',
-  'ScheduledEmail', 'AnalyticsEvent', 'AnalyticsDailyStat', 'ApiHealthLog',
+  'ScheduledEmail',
+  // Models in the current schema without `deletedAt`:
+  'LumaEvent',
+  'PersonalVault', 'Notification',
+  'UserWallet', 'PointsBatch', 'WalletTransaction', 'QuestCompletion',
   'SwagVariant', 'SwagOrder',
+  'ProjectVersion', 'ProjectLike', 'ProjectReport', 'ShowcaseSection',
+  'SpeedrunTrack', 'SpeedrunTeam', 'SpeedrunTeamMember',
+  'SpeedrunRegistration', 'SpeedrunReferralCode',
+  'AnalyticsEvent', 'AnalyticsDailyStat', 'ApiHealthLog',
+  'TwoFactorAuth', 'Passkey',
 ];
 
 const SLOW_QUERY_THRESHOLD_MS = 200;

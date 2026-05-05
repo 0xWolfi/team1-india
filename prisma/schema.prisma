@@ -859,6 +859,7 @@ model UserProject {
   versions       ProjectVersion[]
   comments       ProjectComment[]
   likes          ProjectLike[]
+  reports        ProjectReport[]
   speedrunRun    SpeedrunRun?     @relation(fields: [speedrunRunId], references: [id])
   speedrunTrack  SpeedrunTrack?   @relation(fields: [speedrunTrackId], references: [id])
   speedrunTeam   SpeedrunTeam?    @relation(fields: [speedrunTeamId], references: [id])
@@ -915,6 +916,27 @@ model ProjectLike {
   @@unique([projectId, userEmail])
   @@index([projectId])
   @@index([userEmail])
+}
+
+// Audit-trail for moderation reports. Decoupled from UserProject.status so a
+// single bad-faith report cannot de-list a project from the public feed —
+// CORE admins triage via this table instead. Unique constraint prevents one
+// reporter from spamming the same project.
+model ProjectReport {
+  id            String   @id @default(uuid())
+  projectId     String
+  reporterEmail String
+  reason        String?
+  reviewedAt    DateTime?
+  reviewedBy    String? // CORE admin email who triaged
+  createdAt     DateTime @default(now())
+
+  project UserProject @relation(fields: [projectId], references: [id])
+
+  @@unique([projectId, reporterEmail])
+  @@index([projectId])
+  @@index([reporterEmail])
+  @@index([reviewedAt])
 }
 
 model ShowcaseSection {

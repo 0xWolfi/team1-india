@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { MarkdownEditor } from "@/components/core/MarkdownEditor";
-import { ALLOWED_TRACK_ICONS } from "@/lib/speedrun";
+import { ALLOWED_TRACK_ICONS } from "@/lib/speedrunConstants";
 
 const STATUS_OPTIONS = [
   "upcoming",

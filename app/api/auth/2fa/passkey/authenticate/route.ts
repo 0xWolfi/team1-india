@@ -63,9 +63,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Server-issued verification marker. The JWT callback re-reads this on
+    // session update — the client cannot fake it.
     await prisma.twoFactorAuth.update({
       where: { userEmail: session.user.email },
-      data: { backupEmail: null },
+      data: { backupEmail: null, totpVerifiedAt: new Date() },
     });
 
     return NextResponse.json({ success: true, verified: true });

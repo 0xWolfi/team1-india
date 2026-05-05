@@ -38,7 +38,7 @@ export async function generateMetadata({
       type: "website",
       images: [
         {
-          url: "/speedrun/hero-statue.png",
+          url: "/speedrun/hero-statue.svg",
           width: 1200,
           height: 630,
           alt: `Speedrun ${run.monthLabel}`,
@@ -49,7 +49,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: `Speedrun ${run.monthLabel}`,
       description,
-      images: ["/speedrun/hero-statue.png"],
+      images: ["/speedrun/hero-statue.svg"],
     },
   };
 }

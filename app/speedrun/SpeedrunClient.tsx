@@ -558,7 +558,7 @@ function Hero({
             }}
           />
           <Image
-            src="/speedrun/hero-statue.png"
+            src="/speedrun/hero-statue.svg"
             alt="Speedrun"
             fill
             priority

@@ -9,27 +9,97 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
 
-  // Try by ID first, then by slug
-  const project = await prisma.userProject.findFirst({
-    where: { OR: [{ id }, { slug: id }], deletedAt: null },
-    include: {
-      _count: { select: { comments: true, likes: true } },
-    },
-  });
+    // Resolve the project minimally first so we know its owner/team/status.
+    const owner = await prisma.userProject.findFirst({
+      where: { OR: [{ id }, { slug: id }], deletedAt: null },
+      select: {
+        id: true,
+        ownerEmail: true,
+        teamEmails: true,
+        status: true,
+      },
+    });
 
-  if (!project) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    if (!owner) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    const session = await getServerSession(authOptions);
+    const callerEmail = session?.user?.email ?? null;
+    const callerRole = (session?.user as any)?.role;
+    const isCore = callerRole === "CORE";
+    const isTeam =
+      !!callerEmail &&
+      (owner.ownerEmail === callerEmail || owner.teamEmails.includes(callerEmail));
+    const isAuthorized = isTeam || isCore;
+
+    // Non-authorized callers may only see published projects.
+    if (!isAuthorized && owner.status !== "published") {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    // Public-safe field set. PII (ownerEmail, teamEmails) and the privacy
+    // JSON are intentionally excluded for non-authorized callers.
+    const publicProject = await prisma.userProject.findUnique({
+      where: { id: owner.id },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        coverImage: true,
+        images: true,
+        demoUrl: true,
+        repoUrl: true,
+        videoUrl: true,
+        socialPostUrl: true,
+        techStack: true,
+        tags: true,
+        status: true,
+        version: true,
+        viewCount: true,
+        likeCount: true,
+        commentCount: true,
+        createdAt: true,
+        updatedAt: true,
+        speedrunRunId: true,
+        speedrunTrackId: true,
+        speedrunTeamId: true,
+        _count: { select: { comments: true, likes: true } },
+      },
+    });
+
+    if (!publicProject) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    // Authorized callers (owner, teammate, CORE) get the sensitive fields too.
+    let project: any = publicProject;
+    if (isAuthorized) {
+      const sensitive = await prisma.userProject.findUnique({
+        where: { id: owner.id },
+        select: { ownerEmail: true, teamEmails: true, privacy: true },
+      });
+      project = { ...publicProject, ...sensitive };
+    }
+
+    // Increment view count (non-blocking) only after we've confirmed the
+    // caller can actually see the project.
+    prisma.userProject
+      .update({
+        where: { id: owner.id },
+        data: { viewCount: { increment: 1 } },
+      })
+      .catch(() => {});
+
+    return NextResponse.json({ project });
+  } catch (err) {
+    console.error("GET /api/projects/[id] failed", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
-
-  // Increment view count (non-blocking)
-  prisma.userProject.update({
-    where: { id: project.id },
-    data: { viewCount: { increment: 1 } },
-  }).catch(() => {});
-
-  return NextResponse.json({ project });
 }
 
 // PATCH /api/projects/[id] — update with optimistic locking

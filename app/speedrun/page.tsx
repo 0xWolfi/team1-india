@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/speedrun/hero-statue.png",
+        url: "/speedrun/hero-statue.svg",
         width: 1200,
         height: 630,
         alt: "Team1 Speedrun",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Team1 Speedrun — Build Fast. Ship Faster.",
     description: "Monthly themed build sprint. Solo or duo. Ship products. Win prizes.",
-    images: ["/speedrun/hero-statue.png"],
+    images: ["/speedrun/hero-statue.svg"],
   },
 };
 
