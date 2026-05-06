@@ -20,6 +20,7 @@ import {
   Star,
   Settings,
   Download,
+  Trash2,
 } from "lucide-react";
 import { CoreWrapper } from "@/components/core/CoreWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
@@ -171,6 +172,25 @@ export default function CoreSpeedrunPage() {
       method: "POST",
     });
     if (res.ok) loadRuns();
+  }
+
+  async function deleteRun(slug: string, monthLabel: string) {
+    if (
+      !confirm(
+        `Delete "${monthLabel}" (${slug})?\n\nThis is a soft delete — registrations and team data are preserved and the run can be restored from the database. The public Speedrun page will fall back to "Coming Soon" if no other run is live.`
+      )
+    ) {
+      return;
+    }
+    const res = await fetch(`/api/speedrun/runs/${encodeURIComponent(slug)}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      loadRuns();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      alert(data?.error || "Failed to delete run");
+    }
   }
 
   const stats = useMemo(() => {
@@ -404,6 +424,7 @@ export default function CoreSpeedrunPage() {
           loading={runsLoading}
           error={runsError}
           onSetCurrent={setRunCurrent}
+          onDelete={deleteRun}
         />
       )}
     </CoreWrapper>
@@ -415,11 +436,13 @@ function RunsTab({
   loading,
   error,
   onSetCurrent,
+  onDelete,
 }: {
   runs: RunRow[];
   loading: boolean;
   error: string | null;
   onSetCurrent: (slug: string) => void;
+  onDelete: (slug: string, monthLabel: string) => void;
 }) {
   return (
     <>
@@ -518,6 +541,14 @@ function RunsTab({
                           Edit
                           <ChevronRight className="w-3.5 h-3.5" />
                         </Link>
+                        <button
+                          onClick={() => onDelete(r.slug, r.monthLabel)}
+                          className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-red-500 transition-colors"
+                          title="Soft-delete this run"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>

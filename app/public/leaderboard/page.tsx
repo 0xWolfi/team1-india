@@ -8,9 +8,9 @@ import { Footer } from "@/components/website/Footer";
 
 export default function PublicLeaderboardPage() {
     return (
-        <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
+        <div className="min-h-screen flex flex-col bg-white dark:bg-black text-black dark:text-white">
             <FloatingNav />
-            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 sm:px-6">
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 py-12">
                 <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 mb-6">
                     <Trophy className="w-10 h-10 text-red-400" />
                 </div>

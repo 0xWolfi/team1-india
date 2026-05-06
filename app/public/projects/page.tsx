@@ -63,8 +63,8 @@ export default async function PublicProjectsPage({
   ]);
 
   return (
-    <main className="min-h-screen text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800">
-      <div className="pt-20 sm:pt-24 px-4 sm:px-6 max-w-7xl mx-auto pb-20">
+    <main className="min-h-screen flex flex-col text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800">
+      <div className="flex-1 pt-20 sm:pt-24 px-4 sm:px-6 max-w-7xl w-full mx-auto pb-20">
         <Link href="/public" className="flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white mb-8 transition-colors w-fit text-sm font-medium">
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </Link>

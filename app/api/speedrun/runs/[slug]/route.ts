@@ -216,12 +216,19 @@ export async function DELETE(
   });
   if (!target) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Refuse to delete the current run — operator must promote another first.
+  // Refuse to delete the current run only when there's another non-deleted
+  // run available to promote. If this is the only run, allow deletion — the
+  // public page will fall back to the "Coming Soon" placeholder.
   if (target.isCurrent) {
-    return NextResponse.json(
-      { error: "Cannot delete the current run — promote another run first" },
-      { status: 409 }
-    );
+    const otherRunCount = await prisma.speedrunRun.count({
+      where: { id: { not: target.id }, deletedAt: null },
+    });
+    if (otherRunCount > 0) {
+      return NextResponse.json(
+        { error: "Cannot delete the current run — promote another run first" },
+        { status: 409 }
+      );
+    }
   }
 
   await prisma.speedrunRun.update({
