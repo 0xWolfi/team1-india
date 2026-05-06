@@ -8,19 +8,28 @@ interface MemberDisplay {
 }
 
 async function getMembers(): Promise<MemberDisplay[]> {
-  const communityMembers = await prisma.communityMember.findMany({
-    where: {
-      deletedAt: null,
-      status: "active",
-      name: { not: null },
-    },
-    select: {
-      id: true,
-      name: true,
-      customFields: true,
-    },
-    orderBy: { createdAt: "asc" },
-  });
+  // Fail-soft: when the DB is unreachable (e.g. Neon paused during build-time
+  // prerender), return [] so the home page builds successfully and the
+  // section just hides itself via `members.length === 0` below.
+  let communityMembers: Array<{ id: string; name: string | null; customFields: unknown }> = [];
+  try {
+    communityMembers = await prisma.communityMember.findMany({
+      where: {
+        deletedAt: null,
+        status: "active",
+        name: { not: null },
+      },
+      select: {
+        id: true,
+        name: true,
+        customFields: true,
+      },
+      orderBy: { createdAt: "asc" },
+    });
+  } catch (err) {
+    console.warn("[MembersShowcase] DB unreachable, hiding section:", err);
+    return [];
+  }
 
   const members: MemberDisplay[] = [];
   const seen = new Set<string>();

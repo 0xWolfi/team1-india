@@ -20,7 +20,6 @@ interface PublicHeroProps {
         totalPlaybooks: number;
         activeQuests: number;
         totalProjects: number;
-        activeChallenges: number;
     };
 }
 
@@ -33,7 +32,6 @@ export default function PublicHero({ onLoginClick, userRole, isAuthenticated, st
         { label: "Bounties", value: stats?.activeBounties || 0, icon: "Zap", href: "/public/bounty" },
         { label: "Quests", value: stats?.activeQuests || 0, icon: "Target", href: "#quests" },
         { label: "Projects", value: stats?.totalProjects || 0, icon: "Layers", href: "/public/projects" },
-        { label: "Challenges", value: stats?.activeChallenges || 0, icon: "Trophy", href: "#challenges" },
         { label: "Playbooks", value: stats?.totalPlaybooks || 0, icon: "BookOpen", href: "#playbooks" },
     ];
 

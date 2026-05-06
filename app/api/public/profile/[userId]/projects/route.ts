@@ -23,8 +23,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ use
       tags: true,
       likeCount: true,
       viewCount: true,
-      isWinner: true,
-      winnerBadge: true,
       createdAt: true,
     },
   });

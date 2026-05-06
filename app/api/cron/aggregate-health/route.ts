@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyCronAuth } from "@/lib/cronAuth";
 
 // GET/POST /api/cron/aggregate-health — hourly health check
 export async function GET(request: NextRequest) { return POST(request); }
 
 export async function POST(request: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET;
-  const authHeader = request.headers.get("authorization");
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authError = verifyCronAuth(request);
+  if (authError) {
+    return NextResponse.json({ error: authError }, { status: 401 });
   }
 
   const oneHourAgo = new Date();

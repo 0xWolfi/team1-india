@@ -140,6 +140,13 @@ export function FloatingNav() {
                                 </Link>
                             );
                         })}
+                        <Link
+                            href="/speedrun"
+                            className="ml-1 px-3 py-2 rounded-lg text-[11px] font-black uppercase tracking-wider italic transition-all duration-300 text-red-500 hover:text-red-600"
+                            style={{ textShadow: "0 0 12px rgba(239,68,68,0.5)" }}
+                        >
+                            Speedrun
+                        </Link>
                     </nav>
 
                     {/* Divider */}

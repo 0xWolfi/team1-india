@@ -28,6 +28,8 @@ const NAV_ITEMS = [
     { label: "Announcements", href: "/member/announcements", icon: "Bell" },
 ];
 
+const SPEEDRUN_ITEM = { label: "Speedrun", href: "/speedrun", icon: "Flame" };
+
 export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireAuth = true }) => {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -198,6 +200,16 @@ export const MemberWrapper: React.FC<MemberWrapperProps> = ({ children, requireA
                         </Link>
                     );
                 })}
+
+                {/* Speedrun — featured external link */}
+                <Link
+                    href={SPEEDRUN_ITEM.href}
+                    className="flex items-center gap-3 px-3 py-2.5 mt-2 rounded-xl text-[13px] font-black uppercase tracking-wider italic transition-all duration-200 group text-red-500 hover:text-red-600 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20"
+                    style={{ textShadow: "0 0 10px rgba(239,68,68,0.4)" }}
+                >
+                    <DynamicIcon name={SPEEDRUN_ITEM.icon} className="w-[18px] h-[18px] text-red-500" />
+                    <span>{SPEEDRUN_ITEM.label}</span>
+                </Link>
             </nav>
 
             {/* Profile & Logout */}

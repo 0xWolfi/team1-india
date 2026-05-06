@@ -26,8 +26,6 @@ export async function GET() {
       likeCount: true,
       viewCount: true,
       commentCount: true,
-      isWinner: true,
-      winnerBadge: true,
       ownerEmail: true,
       teamEmails: true,
       createdAt: true,

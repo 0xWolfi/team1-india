@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Heart, Eye, MessageCircle, ExternalLink, Github, Trophy, Clock } from "lucide-react";
+import { ArrowLeft, Heart, Eye, MessageCircle, ExternalLink, Github, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/website/Footer";
@@ -14,7 +14,6 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     project = await prisma.userProject.findFirst({
       where: { slug, deletedAt: null, status: "published" },
       include: {
-        challenge: { select: { id: true, title: true, slug: true } },
         comments: { where: { deletedAt: null, isHidden: false }, orderBy: { createdAt: "desc" }, take: 20 },
         _count: { select: { likes: true, comments: true } },
       },
@@ -43,18 +42,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         <div className="mb-6">
           <div className="flex items-start gap-3 mb-3">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold flex-1">{project.title}</h1>
-            {project.isWinner && (
-              <span className="shrink-0 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-sm font-bold text-yellow-600 dark:text-yellow-400 flex items-center gap-1.5">
-                <Trophy className="w-4 h-4" />{project.winnerBadge} Place
-              </span>
-            )}
           </div>
-
-          {project.challenge && (
-            <Link href={`/public/challenges/${project.challenge.slug}`} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 transition-colors mb-4">
-              Built for: {project.challenge.title}
-            </Link>
-          )}
 
           {project.description && (
             <p className="text-zinc-500 text-base leading-relaxed max-w-2xl">{project.description}</p>

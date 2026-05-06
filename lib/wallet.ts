@@ -34,6 +34,13 @@ export async function earnReward(
   description?: string,
   ttlDays = DEFAULT_POINTS_TTL_DAYS
 ): Promise<void> {
+  // SECURITY: Reject negative or non-integer amounts. Without this, a caller
+  // passing a negative value would invert decrement/increment semantics and
+  // mint points or XP out of thin air (see swag-redeem class of bug).
+  if (!Number.isInteger(xp) || xp < 0 || !Number.isInteger(points) || points < 0) {
+    throw new Error("INVALID_AMOUNT");
+  }
+
   const wallet = await getOrCreateWallet(userEmail);
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + ttlDays);
@@ -90,6 +97,14 @@ export async function spendPoints(
   sourceId?: string,
   description?: string
 ): Promise<void> {
+  // SECURITY: Reject non-positive or non-integer amounts. A negative `amount`
+  // would otherwise bypass the balance check (any non-negative balance >=
+  // negative number), short-circuit the FIFO loop, and turn the final
+  // `decrement: amount` into an increment — minting points instead of spending.
+  if (!Number.isInteger(amount) || amount <= 0) {
+    throw new Error("INVALID_AMOUNT");
+  }
+
   await prisma.$transaction(
     async (tx) => {
       const wallet = await tx.userWallet.findUnique({

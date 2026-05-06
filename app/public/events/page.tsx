@@ -1,32 +1,37 @@
 import Link from "next/link";
 import { ArrowLeft, Calendar } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { safeBuildFetch } from "@/lib/safeStaticParams";
 import { Footer } from "@/components/website/Footer";
 import EventsClient from "@/components/public/EventsClient";
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 async function getEvents() {
-  const guides = await prisma.guide.findMany({
-    where: { 
-        visibility: "PUBLIC",
-        type: "EVENT",
-        deletedAt: null
-    },
-    orderBy: { createdAt: "asc" },
-    select: { 
-      id: true, 
-      title: true, 
-      body: true,
-      coverImage: true,
-      createdAt: true,
-      createdBy: {
+  const guides = await safeBuildFetch(
+    () =>
+      prisma.guide.findMany({
+        where: {
+          visibility: "PUBLIC",
+          type: "EVENT",
+          deletedAt: null,
+        },
+        orderBy: { createdAt: "asc" },
         select: {
-          name: true
-        }
-      }
-    },
-  });
+          id: true,
+          title: true,
+          body: true,
+          coverImage: true,
+          createdAt: true,
+          createdBy: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+    "public/events listing"
+  );
 
   return guides.map((g: any) => ({
       id: g.id,

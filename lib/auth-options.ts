@@ -89,15 +89,51 @@ export const authOptions: NextAuthOptions = {
       if (trigger === "update" && session?.consent) {
           token.consent = session.consent;
       }
-      // Handle 2FA verification update
-      if (trigger === "update" && session?.twoFactorVerified) {
-          token.twoFactorVerified = true;
+      // Handle 2FA verification update.
+      // SECURITY: Do NOT trust the client's claim. Re-verify against the
+      // server-side `totpVerifiedAt` marker that the challenge route writes
+      // only after a successful TOTP/recovery code check. The client's
+      // `update({ twoFactorVerified: true })` call merely triggers this
+      // re-read; the evidence of verification lives in the database.
+      if (trigger === "update" && session?.twoFactorVerified && token.email) {
+          try {
+              const tf = await prisma.twoFactorAuth.findUnique({
+                  where: { userEmail: token.email as string },
+                  select: { totpVerifiedAt: true },
+              });
+              const verifiedAt = tf?.totpVerifiedAt?.getTime() ?? 0;
+              // Accept the client's request only if the server marked the user
+              // as freshly verified within the last 60 seconds.
+              if (verifiedAt > 0 && Date.now() - verifiedAt < 60_000) {
+                  token.twoFactorVerified = true;
+              }
+          } catch {
+              // Fail closed — leave token.twoFactorVerified unchanged.
+          }
       }
 
       if (user) {
         try {
             const emailToFind = user.email ? user.email.trim() : "";
-            
+
+            // 2FA status hydration runs on every fresh sign-in BEFORE the
+            // role-specific returns below. Resets `twoFactorVerified` to false
+            // on every new login so a stolen-or-stale "verified" claim cannot
+            // persist across re-authentications.
+            if (process.env.ENABLE_2FA === "true" && emailToFind) {
+                try {
+                    const twoFactor = await prisma.twoFactorAuth.findUnique({
+                        where: { userEmail: emailToFind },
+                        select: { totpEnabled: true, passkeyEnabled: true },
+                    });
+                    token.twoFactorEnabled = !!(twoFactor?.totpEnabled || twoFactor?.passkeyEnabled);
+                    token.twoFactorVerified = false;
+                } catch {
+                    token.twoFactorEnabled = false;
+                    token.twoFactorVerified = false;
+                }
+            }
+
             // 1. Check Core DB
             const member = await prisma.member.findFirst({
                 where: { email: { equals: emailToFind, mode: 'insensitive' } },
@@ -144,29 +180,13 @@ export const authOptions: NextAuthOptions = {
                 token.consent = publicUser.consentLegal;
                 return token;
             }
-            
+
             // Should not happen if signIn creates the user, but fallback:
             token.role = 'PUBLIC';
             token.permissions = {};
             token.tags = [];
             token.consent = false;
             return token;
-
-            // Check 2FA status (feature-flagged)
-            if (process.env.ENABLE_2FA === "true" && token.email) {
-                try {
-                    const twoFactor = await prisma.twoFactorAuth.findUnique({
-                        where: { userEmail: token.email as string },
-                        select: { totpEnabled: true, passkeyEnabled: true },
-                    });
-                    token.twoFactorEnabled = !!(twoFactor?.totpEnabled || twoFactor?.passkeyEnabled);
-                    token.twoFactorVerified = false;
-                } catch {
-                    token.twoFactorEnabled = false;
-                    token.twoFactorVerified = false;
-                }
-            }
-
         } catch (e) {
             // eslint-disable-next-line no-console
             console.error(e);

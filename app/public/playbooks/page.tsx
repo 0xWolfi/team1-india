@@ -1,33 +1,38 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { safeBuildFetch } from "@/lib/safeStaticParams";
 import { Footer } from "@/components/website/Footer";
 import PlaybooksClient from "@/components/public/PlaybooksClient";
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 async function getPlaybooks() {
-  const playbooks = await prisma.playbook.findMany({
-    where: {
-      visibility: "PUBLIC",
-      deletedAt: null,
-    },
-    orderBy: { updatedAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      coverImage: true,
-      createdAt: true,
-      updatedAt: true,
-      visibility: true,
-      createdBy: {
-        select: {
-          name: true,
+  const playbooks = await safeBuildFetch(
+    () =>
+      prisma.playbook.findMany({
+        where: {
+          visibility: "PUBLIC",
+          deletedAt: null,
         },
-      },
-    },
-  });
+        orderBy: { updatedAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          coverImage: true,
+          createdAt: true,
+          updatedAt: true,
+          visibility: true,
+          createdBy: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+    "public/playbooks listing"
+  );
 
   return playbooks.map((p) => ({
     id: p.id,

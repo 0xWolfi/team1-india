@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NextImage from "next/image";
 import { ArrowRight, ArrowUpRight, BookOpen, Calendar, MapPin, Users } from "lucide-react";
@@ -131,10 +132,8 @@ export interface PublicPageData {
     bountyCount: number;
     questCount: number;
     projectCount: number;
-    challengeCount: number;
     activeQuests: any[];
     featuredProjects: any[];
-    activeChallenges: any[];
     categorizedEvents: {
         live: LumaEventData[];
         upcoming: LumaEventData[];
@@ -144,6 +143,7 @@ export interface PublicPageData {
 
 export default function PublicPageClient({ data }: { data: PublicPageData }) {
     const { data: session, status } = useSession();
+    const router = useRouter();
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
@@ -153,7 +153,24 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
         }
     }, [status]);
 
-    const { playbooks, programs, upcomingEvents, mediaItems, bountyCount, questCount, projectCount, challengeCount, activeQuests, featuredProjects, activeChallenges, categorizedEvents } = data;
+    // After successful sign-in (NextAuth lands users on /public), check if there's
+    // a stashed post-login destination (e.g. set by /speedrun before opening the modal)
+    // and forward the user there. This mirrors the proven /public sign-in flow without
+    // touching NextAuth's redirect callback.
+    useEffect(() => {
+        if (status !== "authenticated") return;
+        try {
+            const next = sessionStorage.getItem("postLoginRedirect");
+            if (next && next.startsWith("/")) {
+                sessionStorage.removeItem("postLoginRedirect");
+                router.replace(next);
+            }
+        } catch {
+            // sessionStorage unavailable — silently skip
+        }
+    }, [status, router]);
+
+    const { playbooks, programs, upcomingEvents, mediaItems, bountyCount, questCount, projectCount, activeQuests, featuredProjects, categorizedEvents } = data;
 
     return (
         <main className="w-full overflow-x-hidden text-black dark:text-white selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-800 dark:selection:text-zinc-200">
@@ -176,7 +193,6 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         totalPlaybooks: playbooks.length,
                         activeQuests: questCount,
                         totalProjects: projectCount,
-                        activeChallenges: challengeCount,
                     }}
                 />
 
@@ -231,30 +247,6 @@ export default function PublicPageClient({ data }: { data: PublicPageData }) {
                         </div>
                     )}
                 </section>
-
-                {/* ── Challenges ── */}
-                {activeChallenges.length > 0 && (
-                    <section id="challenges" className="py-8 scroll-mt-24 md:py-10">
-                        <SectionHeader icon="Trophy" title="Challenges" subtitle="Compete, build, and win prizes" action={
-                            <Link href="/public/challenges" className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all">
-                                View All <ArrowRight className="w-3.5 h-3.5"/>
-                            </Link>
-                        } />
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {activeChallenges.map((c: any) => (
-                                <div key={c.id} className={cn("rounded-2xl p-5 transition-all duration-300 hover:border-black/[0.12] dark:hover:border-white/[0.12]", glassClass)}>
-                                    {c.coverImage && <div className="h-32 rounded-xl overflow-hidden mb-3 bg-zinc-200/50 dark:bg-zinc-800/50"><img src={c.coverImage} alt="" className="w-full h-full object-cover" /></div>}
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold ${c.status === "registration_open" ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-blue-500/10 text-blue-500 border border-blue-500/20"}`}>{c.status === "registration_open" ? "Open" : "In Progress"}</span>
-                                        {c.prizePool && <span className="text-[10px] font-medium text-yellow-500">{c.prizePool}</span>}
-                                    </div>
-                                    <h3 className="font-semibold text-black dark:text-white text-sm mb-1">{c.title}</h3>
-                                    {c.description && <p className="text-xs text-zinc-500 line-clamp-2">{c.description}</p>}
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                )}
 
                 {/* ── Quests ── */}
                 {activeQuests.length > 0 && (

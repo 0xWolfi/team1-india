@@ -23,9 +23,11 @@ export async function POST(request: NextRequest) {
     if (!codes.includes(upperCode) || twoFactor.recoveryUsed.includes(upperCode)) {
       return NextResponse.json({ error: "Invalid recovery code" }, { status: 400 });
     }
+    // Server-issued verification marker. The JWT callback re-reads this on
+    // session update — the client cannot fake it.
     await prisma.twoFactorAuth.update({
       where: { userEmail: session.user.email },
-      data: { recoveryUsed: { push: upperCode } },
+      data: { recoveryUsed: { push: upperCode }, totpVerifiedAt: new Date() },
     });
     return NextResponse.json({ success: true, verified: true });
   }
@@ -39,6 +41,13 @@ export async function POST(request: NextRequest) {
   if (!verifyTotp(secret, code)) {
     return NextResponse.json({ error: "Invalid code" }, { status: 400 });
   }
+
+  // Server-issued verification marker. The JWT callback re-reads this on
+  // session update — the client cannot fake it.
+  await prisma.twoFactorAuth.update({
+    where: { userEmail: session.user.email },
+    data: { totpVerifiedAt: new Date() },
+  });
 
   return NextResponse.json({ success: true, verified: true });
 }

@@ -235,16 +235,18 @@ export default function CorePage() {
             items: []
         },
 
-        // ── New: Economy & Challenges ──
+        // ── Programs ──
         {
-            title: "Challenges",
-            key: "challenges",
-            link: "/core/challenges",
-            iconName: "Trophy",
-            description: "Create and manage hackathons, track registrations and submissions.",
+            title: "Speedrun",
+            key: "speedrun",
+            link: "/core/speedrun",
+            iconName: "Flame",
+            description: "Monthly themed build sprint — manage registrations, teams, and runs.",
             image: "/images/dashboard/planning.png",
             items: []
         },
+
+        // ── Economy ──
         {
             title: "Quests",
             key: "quests",
