@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { log } from "@/lib/logger";
+import { broadcastBountyAnnouncement } from "@/lib/bountyNotify";
 
 const BountyCreateSchema = z.object({
     title: z.string().min(1).max(200),
@@ -102,6 +103,18 @@ export async function POST(request: NextRequest) {
         });
 
         log("INFO", "Bounty created", "BOUNTY", { bountyId: bounty.id, type: data.type });
+
+        // Fire-and-forget: if the new bounty is already "active", send the
+        // announcement email to active CommunityMembers. broadcastBountyAnnouncement
+        // is idempotent (Bounty.announcedAt guard), so a follow-up PATCH that
+        // toggles status won't double-send.
+        if (bounty.status === "active") {
+            void broadcastBountyAnnouncement(bounty.id).catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error("[bounty POST] broadcast failed:", err);
+            });
+        }
+
         return NextResponse.json(bounty, { status: 201 });
     } catch (error) {
         log("ERROR", "Failed to create bounty", "BOUNTY", {}, error instanceof Error ? error : new Error(String(error)));

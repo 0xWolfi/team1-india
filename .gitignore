@@ -52,3 +52,16 @@ ANALYSIS_RESULTS.md
 __tests__
 
 /docs
+
+# throwaway debug/inspection scripts (operational scripts like migrate-pii.ts,
+# reset-db.ts, remove-bg.js, upload-hero-video.ts stay tracked)
+scripts/inspect-*.ts
+scripts/inspect-*.js
+scripts/clear-*.ts
+scripts/clear-*.js
+scripts/wipe-*.ts
+scripts/wipe-*.js
+scripts/delete-*.ts
+scripts/delete-*.js
+scripts/debug-*.ts
+scripts/debug-*.js
