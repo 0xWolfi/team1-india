@@ -114,16 +114,16 @@ export const GuideList: React.FC<GuideListProps> = ({
                 {[1, 2, 3].map((i) => (
                     <div
                         key={i}
-                        className="rounded-2xl bg-zinc-900/40 backdrop-blur-xl border border-white/6 overflow-hidden"
+                        className="rounded-2xl bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/10 dark:border-white/6 overflow-hidden"
                     >
-                        <div className="h-44 bg-zinc-800/50 animate-pulse" />
+                        <div className="h-44 bg-zinc-200 dark:bg-zinc-800/50 animate-pulse" />
                         <div className="p-5 space-y-3">
-                            <div className="h-5 w-3/4 bg-zinc-800/60 rounded-lg animate-pulse" />
-                            <div className="h-4 w-full bg-zinc-800/40 rounded-lg animate-pulse" />
-                            <div className="h-4 w-2/3 bg-zinc-800/30 rounded-lg animate-pulse" />
-                            <div className="pt-3 border-t border-white/4 flex items-center justify-between">
-                                <div className="h-3 w-24 bg-zinc-800/40 rounded animate-pulse" />
-                                <div className="h-3 w-16 bg-zinc-800/40 rounded animate-pulse" />
+                            <div className="h-5 w-3/4 bg-zinc-200 dark:bg-zinc-800/60 rounded-lg animate-pulse" />
+                            <div className="h-4 w-full bg-zinc-200 dark:bg-zinc-800/40 rounded-lg animate-pulse" />
+                            <div className="h-4 w-2/3 bg-zinc-200 dark:bg-zinc-800/30 rounded-lg animate-pulse" />
+                            <div className="pt-3 border-t border-black/5 dark:border-white/4 flex items-center justify-between">
+                                <div className="h-3 w-24 bg-zinc-200 dark:bg-zinc-800/40 rounded animate-pulse" />
+                                <div className="h-3 w-16 bg-zinc-200 dark:bg-zinc-800/40 rounded animate-pulse" />
                             </div>
                         </div>
                     </div>
@@ -142,7 +142,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                         <Search className="w-4 h-4 text-zinc-600 group-focus-within:text-zinc-300 transition-colors duration-200" />
                     </div>
                     <input
-                        className="w-full bg-zinc-900/40 backdrop-blur-xl border border-white/6 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/10 focus:border-white/10 hover:border-white/10 transition-all duration-200"
+                        className="w-full bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/10 dark:border-white/6 rounded-xl pl-11 pr-4 py-2.5 text-sm text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-black/10 dark:focus:ring-white/10 focus:border-black/20 dark:focus:border-white/10 hover:border-black/20 dark:hover:border-white/10 transition-all duration-200"
                         placeholder="Search guides..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -150,7 +150,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                 </div>
 
                 {/* Visibility Filter Pills */}
-                <div className="flex gap-1 bg-zinc-900/40 backdrop-blur-xl border border-white/6 p-1 rounded-xl">
+                <div className="flex gap-1 bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/10 dark:border-white/6 p-1 rounded-xl">
                     {VISIBILITY_FILTERS.map((filter) => (
                         <button
                             key={filter.id}
@@ -158,8 +158,8 @@ export const GuideList: React.FC<GuideListProps> = ({
                             className={cn(
                                 "px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide uppercase transition-all duration-200 flex items-center gap-1.5",
                                 visibilityFilter === filter.id
-                                    ? "bg-white/10 text-white shadow-sm"
-                                    : "text-zinc-500 hover:text-zinc-300 hover:bg-white/4"
+                                    ? "bg-black/10 dark:bg-white/10 text-black dark:text-white shadow-sm"
+                                    : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/4"
                             )}
                         >
                             <filter.icon className="w-3 h-3" />
@@ -169,14 +169,14 @@ export const GuideList: React.FC<GuideListProps> = ({
                 </div>
 
                 {/* Grid / List Toggle */}
-                <div className="flex gap-1 bg-zinc-900/40 backdrop-blur-xl border border-white/6 p-1 rounded-xl self-start md:self-auto">
+                <div className="flex gap-1 bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/10 dark:border-white/6 p-1 rounded-xl self-start md:self-auto">
                     <button
                         onClick={() => setViewMode("grid")}
                         className={cn(
                             "p-2 rounded-lg transition-all duration-200",
                             viewMode === "grid"
-                                ? "bg-white/10 text-white shadow-sm"
-                                : "text-zinc-500 hover:text-zinc-300"
+                                ? "bg-black/10 dark:bg-white/10 text-black dark:text-white shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                         )}
                         title="Grid View"
                     >
@@ -187,8 +187,8 @@ export const GuideList: React.FC<GuideListProps> = ({
                         className={cn(
                             "p-2 rounded-lg transition-all duration-200",
                             viewMode === "list"
-                                ? "bg-white/10 text-white shadow-sm"
-                                : "text-zinc-500 hover:text-zinc-300"
+                                ? "bg-black/10 dark:bg-white/10 text-black dark:text-white shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
                         )}
                         title="List View"
                     >
@@ -199,8 +199,8 @@ export const GuideList: React.FC<GuideListProps> = ({
 
             {/* ---- Empty State ---- */}
             {filtered.length === 0 && (
-                <div className="py-28 text-center border border-white/6 border-dashed rounded-2xl bg-zinc-900/20 backdrop-blur-xl flex flex-col items-center max-w-xl mx-auto">
-                    <div className="w-16 h-16 rounded-2xl bg-zinc-900/60 border border-white/6 flex items-center justify-center mb-5">
+                <div className="py-28 text-center border border-black/10 dark:border-white/6 border-dashed rounded-2xl bg-white/60 dark:bg-zinc-900/20 backdrop-blur-xl flex flex-col items-center max-w-xl mx-auto">
+                    <div className="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-900/60 border border-black/10 dark:border-white/6 flex items-center justify-center mb-5">
                         <FileText className="w-7 h-7 text-zinc-600" />
                     </div>
                     <h3 className="text-zinc-300 text-lg font-bold mb-1.5">No guides found</h3>
@@ -217,12 +217,12 @@ export const GuideList: React.FC<GuideListProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     {filtered.map((doc) => (
                         <div key={doc.id} className="relative group/card" ref={activeMenuId === doc.id ? menuRef : undefined}>
-                            <div className="relative overflow-hidden rounded-2xl bg-zinc-900/40 backdrop-blur-xl border border-white/6 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/30 h-full flex flex-col">
+                            <div className="relative overflow-hidden rounded-2xl bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/10 dark:border-white/6 hover:border-black/20 dark:hover:border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/30 h-full flex flex-col">
                                 {/* Link overlay */}
                                 <Link href={`${basePath}/${doc.id}`} className="absolute inset-0 z-10" />
 
                                 {/* Cover Image */}
-                                <div className="relative h-44 w-full bg-zinc-900 overflow-hidden">
+                                <div className="relative h-44 w-full bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
                                     {doc.coverImage ? (
                                         <>
                                             <Image
@@ -235,7 +235,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                                             <div className="absolute inset-0 bg-linear-to-t from-zinc-950/80 via-transparent to-transparent" />
                                         </>
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-zinc-900/80">
+                                        <div className="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-900/80">
                                             <FileText className="w-10 h-10 text-zinc-700" />
                                         </div>
                                     )}
@@ -243,12 +243,12 @@ export const GuideList: React.FC<GuideListProps> = ({
                                     {/* Visibility Badge - top right */}
                                     <div className="absolute top-3 right-3 flex gap-2 z-20">
                                         {doc.lockedBy && (
-                                            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/8 text-[10px] uppercase tracking-wider font-bold text-zinc-400">
+                                            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-md border border-black/10 dark:border-white/8 text-[10px] uppercase tracking-wider font-bold text-zinc-400">
                                                 <Lock className="w-2.5 h-2.5" />
                                                 Locked
                                             </div>
                                         )}
-                                        <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/8 text-[10px] uppercase tracking-wider font-bold text-zinc-300">
+                                        <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-md border border-black/10 dark:border-white/8 text-[10px] uppercase tracking-wider font-bold text-zinc-300">
                                             {doc.visibility === "PUBLIC" && <Globe className="w-2.5 h-2.5" />}
                                             {doc.visibility === "MEMBER" && <Users className="w-2.5 h-2.5" />}
                                             {doc.visibility === "CORE" && <Cpu className="w-2.5 h-2.5" />}
@@ -260,7 +260,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                                 {/* Body */}
                                 <div className="flex flex-col flex-1 p-4">
                                     <div className="flex items-start justify-between gap-3 mb-2">
-                                        <h3 className="text-[15px] font-bold text-white line-clamp-2 leading-snug">
+                                        <h3 className="text-[15px] font-bold text-black dark:text-white line-clamp-2 leading-snug">
                                             {doc.title}
                                         </h3>
                                     </div>
@@ -273,7 +273,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                                     <div className="relative z-20 mb-3">
                                         <Link
                                             href={`${basePath}/${doc.id}`}
-                                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/5 border border-white/6 text-[11px] font-bold uppercase tracking-wider text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/10 transition-all duration-200"
+                                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/6 text-[11px] font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10 hover:border-black/20 dark:hover:border-white/10 transition-all duration-200"
                                         >
                                             Open
                                             <ArrowRight className="w-3 h-3" />
@@ -281,7 +281,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                                     </div>
 
                                     {/* Footer */}
-                                    <div className="pt-3 border-t border-white/4 flex items-center justify-between text-[11px] text-zinc-600 font-medium">
+                                    <div className="pt-3 border-t border-black/5 dark:border-white/4 flex items-center justify-between text-[11px] text-zinc-600 font-medium">
                                         <span className="truncate max-w-35 flex items-center gap-1.5">
                                             <Users className="w-3 h-3" />
                                             <span className="text-zinc-500 capitalize">
@@ -306,20 +306,20 @@ export const GuideList: React.FC<GuideListProps> = ({
                                                 e.preventDefault();
                                                 setActiveMenuId(activeMenuId === doc.id ? null : doc.id);
                                             }}
-                                            className="p-1.5 rounded-lg bg-black/50 backdrop-blur-md border border-white/8 text-zinc-400 hover:text-white hover:bg-black/70 transition-all duration-200"
+                                            className="p-1.5 rounded-lg bg-white/80 dark:bg-black/50 backdrop-blur-md border border-black/10 dark:border-white/8 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-black/70 transition-all duration-200"
                                         >
                                             <MoreHorizontal className="w-4 h-4" />
                                         </button>
 
                                         {activeMenuId === doc.id && (
                                             <div
-                                                className="absolute left-0 top-full mt-1.5 w-44 bg-zinc-900/95 backdrop-blur-xl border border-white/8 rounded-xl shadow-2xl shadow-black/40 z-50 p-1 animate-in fade-in zoom-in-95 duration-150 origin-top-left"
+                                                className="absolute left-0 top-full mt-1.5 w-44 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-black/10 dark:border-white/8 rounded-xl shadow-2xl shadow-black/40 z-50 p-1 animate-in fade-in zoom-in-95 duration-150 origin-top-left"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 {effectiveCanWrite && (
                                                     <Link
                                                         href={`${basePath}/${doc.id}`}
-                                                        className="px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/6 rounded-lg flex items-center gap-2.5 transition-colors duration-150"
+                                                        className="px-3 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/6 rounded-lg flex items-center gap-2.5 transition-colors duration-150"
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
                                                         <Edit className="w-3.5 h-3.5" />
@@ -327,7 +327,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                                                     </Link>
                                                 )}
                                                 {effectiveCanWrite && effectiveCanDelete && (
-                                                    <div className="h-px bg-white/4 my-1" />
+                                                    <div className="h-px bg-black/5 dark:bg-white/4 my-1" />
                                                 )}
                                                 {effectiveCanDelete && (
                                                     <button
@@ -353,14 +353,14 @@ export const GuideList: React.FC<GuideListProps> = ({
                 <div className="flex flex-col gap-3 max-w-4xl">
                     {filtered.map((doc) => (
                         <div key={doc.id} className="relative group/card" ref={activeMenuId === doc.id ? menuRef : undefined}>
-                            <div className="relative overflow-hidden rounded-2xl bg-zinc-900/40 backdrop-blur-xl border border-white/6 hover:border-white/10 transition-all duration-300 hover:bg-zinc-900/60">
+                            <div className="relative overflow-hidden rounded-2xl bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl border border-black/10 dark:border-white/6 hover:border-black/20 dark:hover:border-white/10 transition-all duration-300 hover:bg-zinc-900/60">
                                 {/* Link overlay */}
                                 <Link href={`${basePath}/${doc.id}`} className="absolute inset-0 z-10" />
 
                                 <div className="flex items-center gap-5 p-4">
                                     {/* Thumbnail */}
                                     {doc.coverImage ? (
-                                        <div className="relative w-28 h-20 rounded-xl overflow-hidden border border-white/6 shrink-0">
+                                        <div className="relative w-28 h-20 rounded-xl overflow-hidden border border-black/10 dark:border-white/6 shrink-0">
                                             <Image
                                                 src={doc.coverImage}
                                                 alt={doc.title}
@@ -370,7 +370,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                                             />
                                         </div>
                                     ) : (
-                                        <div className="w-28 h-20 rounded-xl bg-zinc-900/80 border border-white/6 flex items-center justify-center shrink-0">
+                                        <div className="w-28 h-20 rounded-xl bg-zinc-100 dark:bg-zinc-900/80 border border-black/10 dark:border-white/6 flex items-center justify-center shrink-0">
                                             <FileText className="w-6 h-6 text-zinc-700" />
                                         </div>
                                     )}
@@ -378,15 +378,15 @@ export const GuideList: React.FC<GuideListProps> = ({
                                     {/* Content */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2.5 mb-1">
-                                            <h3 className="text-[15px] font-bold text-white truncate">
+                                            <h3 className="text-[15px] font-bold text-black dark:text-white truncate">
                                                 {doc.title}
                                             </h3>
                                             {doc.lockedBy && (
-                                                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-zinc-800/80 border border-white/6 text-[9px] uppercase tracking-wider font-bold text-zinc-500 shrink-0">
+                                                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/80 border border-black/10 dark:border-white/6 text-[9px] uppercase tracking-wider font-bold text-zinc-500 shrink-0">
                                                     <Lock className="w-2.5 h-2.5" />
                                                 </div>
                                             )}
-                                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-800/80 border border-white/6 text-[9px] uppercase tracking-wider font-bold text-zinc-500 shrink-0">
+                                            <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/80 border border-black/10 dark:border-white/6 text-[9px] uppercase tracking-wider font-bold text-zinc-500 shrink-0">
                                                 {doc.visibility === "PUBLIC" && <Globe className="w-2.5 h-2.5" />}
                                                 {doc.visibility === "MEMBER" && <Users className="w-2.5 h-2.5" />}
                                                 {doc.visibility === "CORE" && <Cpu className="w-2.5 h-2.5" />}
@@ -428,20 +428,20 @@ export const GuideList: React.FC<GuideListProps> = ({
                                                 e.preventDefault();
                                                 setActiveMenuId(activeMenuId === doc.id ? null : doc.id);
                                             }}
-                                            className="p-1.5 rounded-lg bg-zinc-900/80 backdrop-blur-md border border-white/8 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all duration-200"
+                                            className="p-1.5 rounded-lg bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-black/10 dark:border-white/8 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-all duration-200"
                                         >
                                             <MoreHorizontal className="w-4 h-4" />
                                         </button>
 
                                         {activeMenuId === doc.id && (
                                             <div
-                                                className="absolute right-0 top-full mt-1.5 w-44 bg-zinc-900/95 backdrop-blur-xl border border-white/8 rounded-xl shadow-2xl shadow-black/40 z-50 p-1 animate-in fade-in zoom-in-95 duration-150 origin-top-right"
+                                                className="absolute right-0 top-full mt-1.5 w-44 bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-black/10 dark:border-white/8 rounded-xl shadow-2xl shadow-black/40 z-50 p-1 animate-in fade-in zoom-in-95 duration-150 origin-top-right"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
                                                 {effectiveCanWrite && (
                                                     <Link
                                                         href={`${basePath}/${doc.id}`}
-                                                        className="px-3 py-2 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/6 rounded-lg flex items-center gap-2.5 transition-colors duration-150"
+                                                        className="px-3 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/6 rounded-lg flex items-center gap-2.5 transition-colors duration-150"
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
                                                         <Edit className="w-3.5 h-3.5" />
@@ -449,7 +449,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                                                     </Link>
                                                 )}
                                                 {effectiveCanWrite && effectiveCanDelete && (
-                                                    <div className="h-px bg-white/4 my-1" />
+                                                    <div className="h-px bg-black/5 dark:bg-white/4 my-1" />
                                                 )}
                                                 {effectiveCanDelete && (
                                                     <button
@@ -472,9 +472,9 @@ export const GuideList: React.FC<GuideListProps> = ({
 
             {/* ---- Delete Confirmation Modal ---- */}
             {showDeleteConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 dark:bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
                     <div
-                        className="bg-zinc-900/90 backdrop-blur-xl border border-white/8 rounded-2xl p-7 max-w-sm w-full shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-200"
+                        className="bg-white dark:bg-zinc-900/90 backdrop-blur-xl border border-black/10 dark:border-white/8 rounded-2xl p-7 max-w-sm w-full shadow-2xl shadow-black/20 dark:shadow-black/50 animate-in zoom-in-95 duration-200"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex flex-col items-center text-center gap-5">
@@ -485,7 +485,7 @@ export const GuideList: React.FC<GuideListProps> = ({
 
                             {/* Text */}
                             <div>
-                                <h3 className="text-lg font-bold text-white mb-2">Delete Guide?</h3>
+                                <h3 className="text-lg font-bold text-black dark:text-white mb-2">Delete Guide?</h3>
                                 <p className="text-sm text-zinc-500 leading-relaxed">
                                     This will permanently remove this guide.
                                     <br />
@@ -497,7 +497,7 @@ export const GuideList: React.FC<GuideListProps> = ({
                             <div className="flex gap-3 w-full mt-1">
                                 <button
                                     onClick={() => setShowDeleteConfirm(false)}
-                                    className="flex-1 px-4 py-2.5 rounded-xl bg-zinc-800/80 border border-white/6 text-sm font-semibold text-zinc-300 hover:text-white hover:bg-zinc-700/80 transition-all duration-200"
+                                    className="flex-1 px-4 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-black/10 dark:border-white/6 text-sm font-semibold text-zinc-300 hover:text-white hover:bg-zinc-700/80 transition-all duration-200"
                                 >
                                     Cancel
                                 </button>

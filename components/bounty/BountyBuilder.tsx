@@ -40,15 +40,18 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
     const [audience, setAudience] = useState(initialData?.audience || 'member');
     const [deadline, setDeadline] = useState(initialData?.deadline || '');
 
-    // Markdown instructions
-    const [markdownContent, setMarkdownContent] = useState<string>(initialData?.body?.markdown || '');
+    // Markdown instructions. Persisted to the `brief` column on Bounty —
+    // legacy bounties had this in `body.markdown` (which was never actually
+    // saved server-side), so we still hydrate from there as a fallback.
+    const [markdownContent, setMarkdownContent] = useState<string>(
+        initialData?.brief || initialData?.body?.markdown || ''
+    );
     const [markdownViewMode, setMarkdownViewMode] = useState<'edit' | 'preview'>('edit');
 
-    // Form Builder for custom submission fields
-    const defaultFields = [
-        { id: 'proofUrl', key: 'proofUrl', label: 'Proof URL', type: 'url', required: true, isDefault: true, editable: false },
-    ];
-
+    // Form Builder for custom submission fields. Note: `proofUrl` is always
+    // collected by the public submit form regardless of what's configured here
+    // (it's a fixed field on the BountySubmission model + a hardcoded input on
+    // /public/bounty), so it doesn't need to live in the builder's field list.
     const [formFields, setFormFields] = useState<any[]>(() => {
         const initialFields = Array.isArray(initialData?.formSchema) ? initialData.formSchema : [];
         return initialFields.filter((f: any) => f.key !== 'proofUrl');
@@ -63,18 +66,19 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
             frequency,
             audience,
             deadline: deadline || undefined,
-            body: { markdown: markdownContent },
+            // Long-form markdown instructions are stored in the `brief` column.
+            brief: markdownContent || undefined,
             formSchema: formFields,
         });
     };
 
-    const inputClass = "w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all text-sm";
+    const inputClass = "w-full bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black/20 dark:focus:border-white/20 transition-all text-sm";
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 pb-20">
             {/* Basic Info */}
             <section className="space-y-6">
-                <h3 className="text-xl font-bold text-white">Bounty Details</h3>
+                <h3 className="text-xl font-bold text-black dark:text-white">Bounty Details</h3>
 
                 <div>
                     <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Title *</label>
@@ -108,8 +112,8 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                                     onClick={() => setType(opt.value)}
                                     className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors ${
                                         type === opt.value
-                                            ? 'bg-white text-black border-white'
-                                            : 'bg-zinc-900 text-zinc-400 border-white/10 hover:bg-zinc-800'
+                                            ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white'
+                                            : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-black/10 dark:border-white/10 hover:bg-zinc-200 dark:hover:bg-zinc-800'
                                     }`}
                                 >
                                     {opt.label}
@@ -127,8 +131,8 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                                     onClick={() => setFrequency(opt.value)}
                                     className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors ${
                                         frequency === opt.value
-                                            ? 'bg-white text-black border-white'
-                                            : 'bg-zinc-900 text-zinc-400 border-white/10 hover:bg-zinc-800'
+                                            ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white'
+                                            : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-black/10 dark:border-white/10 hover:bg-zinc-200 dark:hover:bg-zinc-800'
                                     }`}
                                 >
                                     {opt.label}
@@ -148,15 +152,15 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                                 onClick={() => setAudience(opt.value)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold border transition-colors ${
                                     audience === opt.value
-                                        ? 'bg-white text-black border-white'
-                                        : 'bg-zinc-900 text-zinc-400 border-white/10 hover:bg-zinc-800'
+                                        ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white'
+                                        : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-black/10 dark:border-white/10 hover:bg-zinc-200 dark:hover:bg-zinc-800'
                                 }`}
                             >
                                 {opt.label}
                             </button>
                         ))}
                     </div>
-                    <p className="text-[11px] text-zinc-600 mt-1.5">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-600 mt-1.5">
                         {audience === 'member' ? 'Only platform members can participate' : 'Only public users can participate'}
                     </p>
                 </div>
@@ -185,23 +189,23 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                 </div>
             </section>
 
-            <div className="h-px bg-white/5 my-8" />
+            <div className="h-px bg-black/5 dark:bg-white/5 my-8" />
 
             {/* Markdown Instructions */}
-            <section className="bg-zinc-900/30 border border-white/5 rounded-2xl p-6">
+            <section className="bg-white dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-lg font-bold text-white">Instructions</h3>
+                        <h3 className="text-lg font-bold text-black dark:text-white">Instructions</h3>
                         <p className="text-xs text-zinc-500 mt-1">Write detailed instructions for this bounty in Markdown.</p>
                     </div>
-                    <div className="flex gap-2 bg-zinc-800/50 border border-white/10 rounded-lg p-1">
+                    <div className="flex gap-2 bg-zinc-100 dark:bg-zinc-800/50 border border-black/10 dark:border-white/10 rounded-lg p-1">
                         <button
                             type="button"
                             onClick={() => setMarkdownViewMode('edit')}
                             className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-2 ${
                                 markdownViewMode === 'edit'
-                                    ? 'bg-white/10 text-white'
-                                    : 'text-zinc-400 hover:text-white'
+                                    ? 'bg-black/10 dark:bg-white/10 text-black dark:text-white'
+                                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
                             }`}
                         >
                             <Code className="w-3 h-3"/> Edit
@@ -211,8 +215,8 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                             onClick={() => setMarkdownViewMode('preview')}
                             className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors flex items-center gap-2 ${
                                 markdownViewMode === 'preview'
-                                    ? 'bg-white/10 text-white'
-                                    : 'text-zinc-400 hover:text-white'
+                                    ? 'bg-black/10 dark:bg-white/10 text-black dark:text-white'
+                                    : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
                             }`}
                         >
                             <Eye className="w-3 h-3"/> Preview
@@ -229,17 +233,17 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                             e.target.style.height = e.target.scrollHeight + 'px';
                         }}
                         placeholder={"# Bounty Instructions\n\n## Requirements\n- Step 1\n- Step 2\n\n## Submission Guidelines\nDescribe what proof is needed..."}
-                        className="w-full min-h-[300px] bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all font-mono text-sm leading-relaxed resize-none"
+                        className="w-full min-h-[300px] bg-zinc-50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-xl px-4 py-4 text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black/20 dark:focus:border-white/20 transition-all font-mono text-sm leading-relaxed resize-none"
                         style={{ minHeight: '300px' }}
                     />
                 ) : (
-                    <div className="min-h-[300px] bg-zinc-900/50 border border-white/10 rounded-xl px-6 py-4 overflow-y-auto">
+                    <div className="min-h-[300px] bg-zinc-50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-xl px-6 py-4 overflow-y-auto">
                         {markdownContent ? (
-                            <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-p:text-zinc-300 prose-a:text-blue-400 prose-strong:text-white prose-code:text-red-300 prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl prose-ul:text-zinc-300 prose-ol:text-zinc-300 prose-li:text-zinc-300">
+                            <div className="prose dark:prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-black dark:prose-headings:text-white prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-black dark:prose-strong:text-white prose-code:text-red-600 dark:prose-code:text-red-300 prose-pre:bg-zinc-100 dark:prose-pre:bg-black/50 prose-pre:border prose-pre:border-black/10 dark:prose-pre:border-white/10 prose-pre:rounded-xl prose-ul:text-zinc-700 dark:prose-ul:text-zinc-300 prose-ol:text-zinc-700 dark:prose-ol:text-zinc-300 prose-li:text-zinc-700 dark:prose-li:text-zinc-300">
                                 <ReactMarkdown>{markdownContent}</ReactMarkdown>
                             </div>
                         ) : (
-                            <div className="flex items-center justify-center h-full text-zinc-600 text-sm">
+                            <div className="flex items-center justify-center h-full text-zinc-500 dark:text-zinc-600 text-sm">
                                 No instructions yet. Switch to Edit mode to write markdown.
                             </div>
                         )}
@@ -247,21 +251,21 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                 )}
             </section>
 
-            <div className="h-px bg-white/5" />
+            <div className="h-px bg-black/5 dark:bg-white/5" />
 
             {/* Form Builder for custom submission fields */}
-            <section className="bg-zinc-900/30 border border-white/10 rounded-2xl p-6">
-                <div className="mb-6 p-4 bg-zinc-800/30 border border-white/10 rounded-xl flex items-start gap-3">
-                    <Check className="w-5 h-5 text-zinc-400 shrink-0 mt-0.5"/>
+            <section className="bg-white dark:bg-zinc-900/30 border border-black/10 dark:border-white/10 rounded-2xl p-6">
+                <div className="mb-6 p-4 bg-zinc-100 dark:bg-zinc-800/30 border border-black/10 dark:border-white/10 rounded-xl flex items-start gap-3">
+                    <Check className="w-5 h-5 text-zinc-600 dark:text-zinc-400 shrink-0 mt-0.5"/>
                     <div>
-                        <h4 className="text-sm font-bold text-white">Submission Fields</h4>
-                        <p className="text-xs text-zinc-400 mt-1">
-                            <strong>Proof URL</strong> is collected by default. Add any extra fields members should fill when submitting.
+                        <h4 className="text-sm font-bold text-black dark:text-white">Submission Fields</h4>
+                        <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+                            <strong>Proof URL</strong> is always collected automatically. Add any extra fields members should fill when submitting.
                         </p>
                     </div>
                 </div>
-                <FormBuilder fields={[...defaultFields, ...formFields]} onChange={(newFields) => {
-                    const customFields = newFields.filter((f: any) => !f.isDefault && f.key !== 'proofUrl');
+                <FormBuilder fields={formFields} onChange={(newFields) => {
+                    const customFields = newFields.filter((f: any) => f.key !== 'proofUrl');
                     setFormFields(customFields);
                 }} />
             </section>
@@ -272,7 +276,7 @@ export const BountyBuilder: React.FC<BountyBuilderProps> = ({ initialData, onSav
                     type="button"
                     onClick={handleSave}
                     disabled={isSaving || !title}
-                    className="bg-white text-black font-bold text-sm px-8 py-3 rounded-xl shadow-xl shadow-black/50 hover:bg-zinc-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    className="bg-black text-white dark:bg-white dark:text-black font-bold text-sm px-8 py-3 rounded-xl shadow-xl shadow-black/30 dark:shadow-black/50 hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
                 >
                     {isSaving ? 'Creating...' : <><Save className="w-4 h-4" /> Create Bounty</>}
                 </button>

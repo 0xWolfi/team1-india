@@ -5,6 +5,7 @@ import { Send, Zap, ExternalLink, Clock, CheckCircle, XCircle, ChevronDown, Sear
 import { DynamicIcon } from "@/components/ui/DynamicIcon";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
+import ReactMarkdown from "react-markdown";
 
 interface Bounty {
     id: string;
@@ -16,6 +17,9 @@ interface Bounty {
     status: string;
     deadline: string | null;
     maxPerCycle: number | null;
+    brief: string | null;
+    rules: string | null;
+    resources: { label: string; url: string }[] | null;
     _count?: { submissions: number };
 }
 
@@ -387,6 +391,49 @@ export function BountyBoard() {
                                                         </div>
                                                     )}
                                                 </div>
+
+                                                {/* Instructions — long-form markdown written in the bounty builder.
+                                                    Stored in the `brief` column. */}
+                                                {bounty.brief && (
+                                                    <div className="bg-zinc-100/60 dark:bg-zinc-800/40 border border-black/5 dark:border-white/5 rounded-xl p-4">
+                                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-3">Instructions</p>
+                                                        <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-headings:text-black dark:prose-headings:text-white prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-black dark:prose-strong:text-white prose-code:text-red-600 dark:prose-code:text-red-300 prose-pre:bg-zinc-200 dark:prose-pre:bg-black/40 prose-pre:border prose-pre:border-black/10 dark:prose-pre:border-white/10 prose-pre:rounded-lg prose-ul:text-zinc-700 dark:prose-ul:text-zinc-300 prose-ol:text-zinc-700 dark:prose-ol:text-zinc-300 prose-li:text-zinc-700 dark:prose-li:text-zinc-300">
+                                                            <ReactMarkdown>{bounty.brief}</ReactMarkdown>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Resources — list of label + url links */}
+                                                {Array.isArray(bounty.resources) && bounty.resources.length > 0 && (
+                                                    <div className="bg-zinc-100/60 dark:bg-zinc-800/40 border border-black/5 dark:border-white/5 rounded-xl p-4">
+                                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Resources</p>
+                                                        <ul className="space-y-1.5">
+                                                            {bounty.resources.map((r, i) => (
+                                                                <li key={`${r.url}-${i}`}>
+                                                                    <a
+                                                                        href={r.url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="inline-flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline break-all"
+                                                                    >
+                                                                        <ExternalLink className="w-3 h-3 shrink-0" />
+                                                                        {r.label || r.url}
+                                                                    </a>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+
+                                                {/* Rules — submission requirements */}
+                                                {bounty.rules && (
+                                                    <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4">
+                                                        <p className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-2">Rules</p>
+                                                        <p className="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed">
+                                                            {bounty.rules}
+                                                        </p>
+                                                    </div>
+                                                )}
 
                                                 {/* Submission status */}
                                                 {hasSubmission && mySubmission && (
