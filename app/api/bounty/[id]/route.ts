@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { prisma } from "@/lib/prisma";
 import { log } from "@/lib/logger";
+import { broadcastBountyAnnouncement } from "@/lib/bountyNotify";
 
 // GET — single bounty with submissions
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -51,6 +52,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     try {
         const body = await request.json();
+
+        // Read the previous status so we can detect a transition to "active"
+        // and fire the announcement broadcast. (broadcastBountyAnnouncement is
+        // also idempotent via Bounty.announcedAt, so even if the transition
+        // detection misfires the email is sent at most once.)
+        const prev = await prisma.bounty.findUnique({
+            where: { id },
+            select: { status: true },
+        });
+
         const bounty = await prisma.bounty.update({
             where: { id },
             data: {
@@ -62,6 +73,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
                 ...(body.maxPerCycle !== undefined && { maxPerCycle: body.maxPerCycle }),
             }
         });
+
+        // Fire-and-forget: only when the status transitioned from non-active
+        // to "active" do we attempt the broadcast. The notify helper
+        // double-checks announcedAt internally to prevent duplicates.
+        if (prev?.status !== "active" && bounty.status === "active") {
+            void broadcastBountyAnnouncement(bounty.id).catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error("[bounty PATCH] broadcast failed:", err);
+            });
+        }
 
         log("INFO", "Bounty updated", "BOUNTY", { bountyId: id });
         return NextResponse.json(bounty);

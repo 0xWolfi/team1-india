@@ -900,6 +900,128 @@ export function getSpeedrunBroadcastEmail(p: SpeedrunBroadcastEmailParams) {
   return { subject: `${p.headline} — Speedrun ${p.runLabel}`, html };
 }
 
+/* ────────────────────────────────────────────────────────────────────────
+   Bounty announcement — fires once when a Bounty first becomes "active".
+   Recipients: every active CommunityMember (role = MEMBER). The audience
+   field on the bounty is NOT used for filtering recipients — by design,
+   member-portal users see all bounty announcements.
+   ────────────────────────────────────────────────────────────────────── */
+
+interface BountyAnnouncementEmailParams {
+  recipientName: string;       // first name pulled from member.name
+  bountyTitle: string;
+  bountyType: string;          // "tweet" | "thread" | "blog" | "video" | "developer"
+  frequency: string;           // "daily" | "twice-weekly" | "weekly" | "biweekly"
+  xpReward: number;
+  pointsReward: number;
+  description: string | null;  // short one-paragraph description (NOT the long brief)
+  deadline: Date | null;
+  appUrl?: string;             // override NEXTAUTH_URL for dev/testing
+}
+
+const BOUNTY_TYPE_LABELS: Record<string, string> = {
+  tweet: "Tweet",
+  thread: "Thread",
+  blog: "Blog",
+  video: "Video",
+  developer: "Developer",
+};
+
+const BOUNTY_FREQUENCY_LABELS: Record<string, string> = {
+  daily: "Daily",
+  "twice-weekly": "Twice a week",
+  weekly: "Weekly",
+  biweekly: "Biweekly",
+};
+
+export function getBountyAnnouncementEmail(p: BountyAnnouncementEmailParams) {
+  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://india.team1.network";
+  const bountyUrl = `${base.replace(/\/$/, "")}/member/bounty`;
+  const typeLabel = BOUNTY_TYPE_LABELS[p.bountyType] || p.bountyType;
+  const freqLabel = BOUNTY_FREQUENCY_LABELS[p.frequency] || p.frequency;
+  const deadlineLine = p.deadline
+    ? new Date(p.deadline).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : null;
+
+  const subject = `New Bounty: ${p.bountyTitle} · +${p.xpReward} XP`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; background:#fafafa; color:#000;">
+  <div style="max-width:600px; margin:0 auto; padding:40px 20px;">
+
+    <div style="background:#000; padding:32px 28px; border-radius:16px 16px 0 0; text-align:center;">
+      <p style="margin:0 0 6px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#ff394a;">Bounty Board · Team1 India</p>
+      <h1 style="margin:0; font-size:30px; font-weight:900; font-style:italic; letter-spacing:-1px; color:#fff;">New Bounty Dropped.</h1>
+    </div>
+
+    <div style="background:#fff; padding:32px 28px; border:1px solid #e0e0e2; border-top:none; border-radius:0 0 16px 16px;">
+
+      <p style="margin:0 0 16px; font-size:16px; line-height:1.6; color:#222;">
+        Hi ${escapeHtml(p.recipientName || "there")},
+      </p>
+
+      <p style="margin:0 0 20px; font-size:16px; line-height:1.6; color:#222;">
+        A new bounty just went live. Ship the work, submit a proof link, earn XP.
+      </p>
+
+      <div style="margin:24px 0; padding:20px; border:1px solid #ff394a; background:#fff5f6; border-radius:12px;">
+        <p style="margin:0 0 6px; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#ff394a;">
+          ${escapeHtml(typeLabel)} · ${escapeHtml(freqLabel)}
+        </p>
+        <h2 style="margin:0 0 12px; font-size:20px; font-weight:800; color:#000; line-height:1.3;">
+          ${escapeHtml(p.bountyTitle)}
+        </h2>
+        ${p.description
+          ? `<p style="margin:0 0 16px; font-size:14px; line-height:1.6; color:#555;">${escapeHtml(p.description)}</p>`
+          : ""}
+
+        <table cellpadding="0" cellspacing="0" border="0" style="width:100%; margin-top:12px; border-top:1px solid #fbbfc5; padding-top:12px;">
+          <tr>
+            <td style="font-size:13px; color:#555;">Reward</td>
+            <td style="font-size:14px; font-weight:700; color:#000; text-align:right;">
+              +${p.xpReward} XP${p.pointsReward > 0 ? ` · +${p.pointsReward} pts` : ""}
+            </td>
+          </tr>
+          ${deadlineLine
+            ? `<tr>
+                <td style="font-size:13px; color:#555; padding-top:6px;">Deadline</td>
+                <td style="font-size:14px; font-weight:700; color:#000; text-align:right; padding-top:6px;">${escapeHtml(deadlineLine)}</td>
+              </tr>`
+            : ""}
+        </table>
+      </div>
+
+      <div style="text-align:center; margin:28px 0 8px;">
+        <a href="${bountyUrl}" style="display:inline-block; padding:14px 32px; background:#000; color:#fff; text-decoration:none; font-weight:700; font-size:14px; letter-spacing:0.5px; border-radius:10px;">
+          View Bounty →
+        </a>
+      </div>
+
+      <p style="margin:24px 0 0; font-size:12px; line-height:1.5; color:#888; text-align:center;">
+        You're getting this because you're an active member of Team1 India.
+      </p>
+    </div>
+
+    <p style="margin:16px 0 0; font-size:11px; color:#999; text-align:center;">
+      Team1 India · <a href="${base}" style="color:#999;">india.team1.network</a>
+    </p>
+  </div>
+</body>
+</html>`;
+
+  return { subject, html };
+}
+
 function escapeHtml(s: string): string {
   return String(s)
     .replace(/&/g, "&amp;")

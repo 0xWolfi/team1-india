@@ -555,6 +555,10 @@ model Bounty {
   resources      Json? // NEW: array of { label, url } resource links
   rules          String? // NEW: submission rules / requirements
   cash           Int? // NEW: optional cash reward (in INR)
+  // Idempotency marker for the "new bounty" announcement email. Set once the
+  // bounty first transitions to `status: "active"` and broadcasts to active
+  // CommunityMembers. Prevents duplicate blasts on subsequent edits.
+  announcedAt    DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @default(now()) @updatedAt
   deletedAt      DateTime?
