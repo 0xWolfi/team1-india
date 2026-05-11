@@ -66,13 +66,13 @@ export function UnifiedDashboardHeader({
     const displayImage = profileImage || user?.image;
 
     return (
-        <header className="mb-8 border-b border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <header className="mb-8 border-b border-black/5 dark:border-white/5 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="flex-1">
                  {/* Desktop Back Button */}
                  <div className="hidden md:block mb-4">
-                    <Link 
-                        href={backLink} 
-                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-white transition-colors group"
+                    <Link
+                        href={backLink}
+                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-black dark:hover:text-white transition-colors group"
                     >
                         <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform"/>
                         {backLabel}
@@ -85,14 +85,14 @@ export function UnifiedDashboardHeader({
                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                          <span className="text-[10px] font-mono text-zinc-500 tracking-widest uppercase">System Online</span>
                     </div>
-                    <Link href={backLink} className="p-2 bg-white/5 rounded-lg text-zinc-400">
+                    <Link href={backLink} className="p-2 bg-black/5 dark:bg-white/5 rounded-lg text-zinc-600 dark:text-zinc-400">
                         <ArrowLeft className="w-4 h-4"/>
                     </Link>
                  </div>
 
                 {/* Title Section */}
                 <div>
-                    <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-500">
+                    <h1 className="text-3xl md:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-black via-zinc-800 to-zinc-500 dark:from-white dark:via-zinc-200 dark:to-zinc-500">
                         {title}
                     </h1>
                     {subtitle && (
@@ -102,39 +102,39 @@ export function UnifiedDashboardHeader({
                     )}
                 </div>
             </div>
-            
+
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-6">
-                
+
                 {children}
 
-                <div className="flex items-center gap-3 pl-6 border-l border-white/5">
+                <div className="flex items-center gap-3 pl-6 border-l border-black/5 dark:border-white/5">
                     <NotificationBell />
                     {/* Profile Image (Static Display) */}
-                    <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/10 bg-zinc-800 flex items-center justify-center relative">
+                    <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-black/10 dark:ring-white/10 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center relative">
                         {displayImage && !profileImageError ? (
-                            <Image 
-                                src={buildImageSrc(displayImage) || displayImage} 
-                                alt="Profile" 
+                            <Image
+                                src={buildImageSrc(displayImage) || displayImage}
+                                alt="Profile"
                                 fill
                                 className="object-cover"
                                 onError={() => setProfileImageError(true)}
                                 unoptimized={displayImage.startsWith('data:') || displayImage.startsWith('blob:')}
                             />
                         ) : (
-                            <User className="w-5 h-5 text-zinc-400"/>
+                            <User className="w-5 h-5 text-zinc-500 dark:text-zinc-400"/>
                         )}
                     </div>
 
                     {/* Settings Button - use link so profile always opens */}
                     <Link
                         href={user?.role === 'CORE' ? "/core/profile" : "/member/profile"}
-                        className="w-10 h-10 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-white/5 hover:border-white/20 transition-all flex items-center justify-center text-zinc-400 hover:text-white"
+                        className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 border border-black/5 dark:border-white/5 hover:border-black/20 dark:hover:border-white/20 transition-all flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
                         title="My Profile"
                     >
                         <Settings className="w-4 h-4"/>
                     </Link>
-                    <button 
+                    <button
                         onClick={() => signOut({ callbackUrl: '/public' })}
                         className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center text-red-500 hover:text-red-400"
                         title="Logout"

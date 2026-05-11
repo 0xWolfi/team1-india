@@ -73,7 +73,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
             {/* Field Palette (Tile Input) */}
             <div>
                  <div className="mb-4">
-                    <h3 className="text-lg font-bold text-white">Application Form Builder</h3>
+                    <h3 className="text-lg font-bold text-black dark:text-white">Application Form Builder</h3>
                     <p className="text-xs text-zinc-500 mt-1">Click a tile below to add a field to your form.</p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -81,34 +81,34 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                         <button
                             key={ft.type}
                             onClick={() => addField(ft.type)}
-                            className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-900/50 border border-white/5 rounded-xl hover:bg-zinc-800 hover:border-white/20 transition-all group"
+                            className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-100 dark:bg-zinc-900/50 border border-black/5 dark:border-white/5 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:border-black/20 dark:hover:border-white/20 transition-all group"
                         >
-                            <div className="p-2 rounded-full bg-white/5 group-hover:bg-zinc-800 group-hover:text-white transition-colors text-zinc-400">
+                            <div className="p-2 rounded-full bg-black/5 dark:bg-white/5 group-hover:bg-zinc-300 dark:group-hover:bg-zinc-800 group-hover:text-black dark:group-hover:text-white transition-colors text-zinc-600 dark:text-zinc-400">
                                 {ft.icon}
                             </div>
-                            <span className="text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">{ft.label}</span>
+                            <span className="text-xs font-bold text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">{ft.label}</span>
                         </button>
                     ))}
                 </div>
             </div>
 
-            <div className="h-px bg-white/5" />
+            <div className="h-px bg-black/5 dark:bg-white/5" />
 
             {/* Field List */}
             <div className="space-y-4">
                 {fields.map((field, index) => {
                     const isDefault = (field as any).isDefault || field.key === 'name' || field.key === 'email';
                     return (
-                    <div key={field.id} className={`group relative bg-zinc-900/60 border ${isDefault ? 'border-white/10' : 'border-white/5'} rounded-xl p-4 transition-all hover:bg-zinc-900 hover:border-white/10`}>
+                    <div key={field.id} className={`group relative bg-zinc-50 dark:bg-zinc-900/60 border ${isDefault ? 'border-black/10 dark:border-white/10' : 'border-black/5 dark:border-white/5'} rounded-xl p-4 transition-all hover:bg-white dark:hover:bg-zinc-900 hover:border-black/10 dark:hover:border-white/10`}>
                         {isDefault && (
-                            <div className="absolute top-2 right-2 px-2 py-1 bg-zinc-800 border border-white/10 rounded text-[10px] font-bold text-zinc-500 uppercase">
+                            <div className="absolute top-2 right-2 px-2 py-1 bg-zinc-200 dark:bg-zinc-800 border border-black/10 dark:border-white/10 rounded text-[10px] font-bold text-zinc-500 uppercase">
                                 Default
                             </div>
                         )}
                         <div className="flex gap-4 items-start">
                             {/* Drag Handle - hidden for default fields */}
                             {!isDefault && (
-                                <div className="mt-3 text-zinc-700 cursor-grab active:cursor-grabbing">
+                                <div className="mt-3 text-zinc-400 dark:text-zinc-700 cursor-grab active:cursor-grabbing">
                                     <GripVertical className="w-4 h-4" />
                                 </div>
                             )}
@@ -123,22 +123,22 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                         <label className="text-[10px] uppercase font-bold text-zinc-500 mb-1 flex items-center gap-2">
                                             Question Label
                                         </label>
-                                        <input 
+                                        <input
                                             value={field.label}
                                             onChange={(e) => {
                                                 if (isDefault) return; // Cannot edit default fields
                                                 const newLabel = e.target.value;
                                                 const slug = newLabel.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-                                                updateField(index, { 
+                                                updateField(index, {
                                                     label: newLabel,
                                                     key: slug || field.id // Fallback to ID if slug is empty to ensure uniqueness
                                                 });
                                             }}
                                             placeholder="e.g. What is your experience?"
                                             readOnly={isDefault}
-                                            className={`w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-white/20 transition-colors ${isDefault ? 'cursor-not-allowed opacity-70' : ''}`}
+                                            className={`w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-black dark:text-white focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20 transition-colors ${isDefault ? 'cursor-not-allowed opacity-70' : ''}`}
                                         />
-                                        <p className="text-[9px] text-zinc-600 mt-1">The actual question the applicant will see.</p>
+                                        <p className="text-[9px] text-zinc-500 dark:text-zinc-600 mt-1">The actual question the applicant will see.</p>
                                     </div>
                                     {/* Data Key is now auto-generated and hidden from the user */}
                                 </div>
@@ -147,7 +147,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                 <div className="md:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="md:col-span-2">
                                         <label className="text-[10px] uppercase font-bold text-zinc-500 mb-1 block">Input Type</label>
-                                        <div className="flex items-center gap-2 px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm text-zinc-400 cursor-not-allowed">
+                                        <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-lg text-sm text-zinc-600 dark:text-zinc-400 cursor-not-allowed">
                                             {FIELD_TYPES.find(f => f.type === field.type)?.icon}
                                             <span>{FIELD_TYPES.find(f => f.type === field.type)?.label}</span>
                                         </div>
@@ -157,36 +157,36 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                                     {field.type === 'select' && (
                                         <div className="col-span-2">
                                              <label className="text-[10px] uppercase font-bold text-zinc-500 mb-1 block">Options (comma separated)</label>
-                                             <input 
+                                             <input
                                                 value={field.options?.join(', ') || ''}
                                                 onChange={(e) => updateField(index, { options: e.target.value.split(',').map(s => s.trim()) })}
                                                 placeholder="Option 1, Option 2, Option 3"
-                                                className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:ring-1 focus:ring-white/20 transition-colors"
+                                                className="w-full bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-black dark:text-white focus:ring-1 focus:ring-black/20 dark:focus:ring-white/20 transition-colors"
                                             />
                                         </div>
                                     )}
 
                                     <div className="col-span-2 flex items-center gap-4 pt-2">
                                         <label className={`flex items-center gap-2 ${isDefault ? 'cursor-not-allowed' : 'cursor-pointer'} group/check`}>
-                                            <input 
+                                            <input
                                                 type="checkbox"
                                                 checked={field.required}
                                                 onChange={(e) => !isDefault && updateField(index, { required: e.target.checked })}
                                                 disabled={isDefault}
-                                                className="w-4 h-4 rounded bg-black/40 border-white/10 text-white focus:ring-white/20"
+                                                className="w-4 h-4 rounded bg-white dark:bg-black/40 border-black/10 dark:border-white/10 text-black dark:text-white focus:ring-black/20 dark:focus:ring-white/20"
                                             />
-                                            <span className={`text-xs ${isDefault ? 'text-zinc-600' : 'text-zinc-400'} group-hover/check:text-white transition-colors`}>
+                                            <span className={`text-xs ${isDefault ? 'text-zinc-500 dark:text-zinc-600' : 'text-zinc-600 dark:text-zinc-400'} group-hover/check:text-black dark:group-hover/check:text-white transition-colors`}>
                                                 Required Field {isDefault && '(Always Required)'}
                                             </span>
                                         </label>
                                     </div>
                                 </div>
-                                
+
                                 <div className="md:col-span-1 flex justify-end">
                                     {!isDefault && (
-                                        <button 
+                                        <button
                                             onClick={() => removeField(index)}
-                                            className="p-2 text-zinc-600 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors h-fit"
+                                            className="p-2 text-zinc-500 dark:text-zinc-600 hover:text-black dark:hover:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg transition-colors h-fit"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
@@ -202,12 +202,12 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ fields, onChange }) =>
                 })}
 
                 {fields.length === 0 && (
-                     <div className="flex flex-col items-center justify-center py-12 border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
-                        <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
+                     <div className="flex flex-col items-center justify-center py-12 border border-dashed border-black/10 dark:border-white/10 rounded-xl bg-black/[0.02] dark:bg-white/[0.02]">
+                        <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center mb-3">
                             <Settings className="w-5 h-5 text-zinc-500" />
                         </div>
                         <p className="text-zinc-500 text-sm font-medium">No fields added yet</p>
-                        <p className="text-zinc-600 text-xs mt-1">Select a field type from above to start building.</p>
+                        <p className="text-zinc-500 dark:text-zinc-600 text-xs mt-1">Select a field type from above to start building.</p>
                      </div>
                 )}
             </div>

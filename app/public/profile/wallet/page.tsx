@@ -25,7 +25,7 @@ export default function ProfileWalletPage() {
           <ArrowLeft className="w-4 h-4" /> Back to Profile
         </Link>
 
-        <h1 className="text-2xl sm:text-3xl font-bold mb-8">My Wallet</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-8">My Points</h1>
 
         {wallet && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">

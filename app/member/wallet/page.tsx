@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { MemberWrapper } from "@/components/member/MemberWrapper";
 import { CorePageHeader } from "@/components/core/CorePageHeader";
-import { Wallet, TrendingUp, Coins, Clock } from "lucide-react";
+import { TrendingUp, Coins, Clock } from "lucide-react";
 
 export default async function MemberWalletPage() {
   const session = await getServerSession(authOptions);
@@ -29,7 +29,7 @@ export default async function MemberWalletPage() {
 
   return (
     <MemberWrapper>
-      <CorePageHeader title="My Wallet" description="Your XP, points, and transaction history." icon={<Wallet />} backLink="/member" backText="Back to Dashboard" />
+      <CorePageHeader title="My Points" description="Your XP, points, and transaction history." icon={<Coins />} backLink="/member" backText="Back to Dashboard" />
 
       {wallet && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">

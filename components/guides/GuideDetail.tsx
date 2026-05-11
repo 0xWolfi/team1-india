@@ -270,7 +270,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
 
     return (
         <div className="max-w-6xl mx-auto">
-            <Link href={dashboardPath} className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
+            <Link href={dashboardPath} className="inline-flex items-center gap-2 text-zinc-500 hover:text-black dark:hover:text-white transition-colors mb-8 text-sm font-medium hover:-translate-x-1 duration-200">
                 <ArrowLeft className="w-4 h-4" /> Back to Dashboard
             </Link>
             
@@ -297,11 +297,11 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                 title="Approve & Send Custom Email"
             >
                 <div className="space-y-5">
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4">
                         <div className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
                             Recipient
                         </div>
-                        <div className="text-sm text-white font-mono">
+                        <div className="text-sm text-black dark:text-white font-mono">
                             {pendingApproveApp?.applicantEmail || pendingApproveApp?.data?.email || '—'}
                         </div>
                         <div className="text-[11px] text-zinc-500 mt-2">
@@ -324,7 +324,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                             onChange={(e) => setApproveEmailBody(e.target.value)}
                             rows={8}
                             placeholder="Write the message you want the applicant to receive..."
-                            className="w-full bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all placeholder:text-zinc-600 resize-none"
+                            className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-white dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-600 resize-none"
                         />
                         <p className="text-[11px] text-zinc-500">
                             Keep it clear and actionable (next steps, timings, contact, etc.).
@@ -340,7 +340,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                 setApproveEmailError('');
                                 setPendingApproveApp(null);
                             }}
-                            className="px-4 py-2 text-sm font-semibold text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            className="px-4 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
                             disabled={approveEmailLoading}
                         >
                             Cancel
@@ -391,11 +391,11 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                 title="Reject & Send Custom Email"
             >
                 <div className="space-y-5">
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4">
                         <div className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
                             Recipient
                         </div>
-                        <div className="text-sm text-white font-mono">
+                        <div className="text-sm text-black dark:text-white font-mono">
                             {pendingRejectApp?.applicantEmail || pendingRejectApp?.data?.email || '—'}
                         </div>
                         <div className="text-[11px] text-zinc-500 mt-2">
@@ -418,7 +418,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                             onChange={(e) => setRejectEmailBody(e.target.value)}
                             rows={8}
                             placeholder="Write the rejection message you want the applicant to receive..."
-                            className="w-full bg-zinc-900/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 focus:bg-zinc-900 transition-all placeholder:text-zinc-600 resize-none"
+                            className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-black dark:text-white focus:outline-none focus:border-black/20 dark:focus:border-white/20 focus:bg-white dark:focus:bg-zinc-900 transition-all placeholder:text-zinc-600 resize-none"
                         />
                         <p className="text-[11px] text-zinc-500">
                             Be respectful and clear. You can explain reasons, provide feedback, or encourage future applications.
@@ -434,7 +434,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                 setRejectEmailError('');
                                 setPendingRejectApp(null);
                             }}
-                            className="px-4 py-2 text-sm font-semibold text-zinc-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                            className="px-4 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
                             disabled={rejectEmailLoading}
                         >
                             Cancel
@@ -474,12 +474,12 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
 
             {/* Application Detail Modal */}
             {showDetailModal && selectedApplication && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="relative w-full max-w-3xl bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="relative w-full max-w-3xl bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
                         {/* Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-white/10 flex-shrink-0">
+                        <div className="flex items-center justify-between p-6 border-b border-black/10 dark:border-white/10 flex-shrink-0">
                             <div>
-                                <h3 className="text-xl font-bold text-white">Application Details</h3>
+                                <h3 className="text-xl font-bold text-black dark:text-white">Application Details</h3>
                                 <p className="text-xs text-zinc-500 mt-1">
                                     Submitted on {new Date(selectedApplication.submittedAt).toLocaleDateString('en-US', { 
                                         year: 'numeric', 
@@ -495,7 +495,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                     setShowDetailModal(false);
                                     setSelectedApplication(null);
                                 }}
-                                className="text-zinc-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg"
+                                className="text-zinc-500 hover:text-black dark:hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -517,18 +517,18 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
 
                             {/* Form Data */}
                             <div className="space-y-4">
-                                <h4 className="text-sm font-bold uppercase tracking-wider text-zinc-400 border-b border-white/5 pb-2">
+                                <h4 className="text-sm font-bold uppercase tracking-wider text-zinc-400 border-b border-black/10 dark:border-white/5 pb-2">
                                     Form Responses
                                 </h4>
                                 <div className="grid grid-cols-1 gap-4">
                                     {visibleFormFields.map((field) => {
                                         const value = selectedApplication.data?.[field.key] || selectedApplication.data?.[field.label] || '-';
                                         return (
-                                            <div key={field.key || field.id} className="bg-zinc-900/50 border border-white/5 rounded-xl p-4">
+                                            <div key={field.key || field.id} className="bg-zinc-50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/5 rounded-xl p-4">
                                                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">
                                                     {field.label}
                                                 </label>
-                                                <div className="text-sm text-white whitespace-pre-wrap break-words">
+                                                <div className="text-sm text-black dark:text-white whitespace-pre-wrap break-words">
                                                     {value.toString()}
                                                 </div>
                                             </div>
@@ -539,18 +539,18 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
 
                             {/* Additional Application Info */}
                             {selectedApplication.authorEmail && (
-                                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-4">
                                     <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
                                         Submission Information
                                     </h4>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
                                             <span className="text-zinc-400">Submitted by:</span>
-                                            <span className="text-white font-mono">{selectedApplication.authorEmail}</span>
+                                            <span className="text-black dark:text-white font-mono">{selectedApplication.authorEmail}</span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-zinc-400">Application ID:</span>
-                                            <span className="text-white font-mono text-xs">{selectedApplication.id}</span>
+                                            <span className="text-black dark:text-white font-mono text-xs">{selectedApplication.id}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -558,13 +558,13 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                         </div>
 
                         {/* Footer with Close Button */}
-                        <div className="flex justify-end gap-3 p-6 border-t border-white/10 flex-shrink-0">
+                        <div className="flex justify-end gap-3 p-6 border-t border-black/10 dark:border-white/10 flex-shrink-0">
                             <button
                                 onClick={() => {
                                     setShowDetailModal(false);
                                     setSelectedApplication(null);
                                 }}
-                                className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm font-bold text-zinc-400 hover:text-white hover:bg-white/10 transition-all"
+                                className="px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-sm font-bold text-zinc-400 hover:text-black dark:hover:text-white hover:bg-white/10 transition-all"
                             >
                                 Close
                             </button>
@@ -576,7 +576,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
             {/* Header with Cover Image */}
             <div className="mb-8">
                 {guide.coverImage && !coverImageError ? (
-                    <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-white/10 bg-zinc-900/50">
+                    <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-black/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-900/50">
                         <img
                             src={getImageUrl(guide.coverImage) || guide.coverImage}
                             alt={guide.title}
@@ -585,13 +585,13 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                         />
                     </div>
                 ) : guide.coverImage && coverImageError ? (
-                    <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-white/10 bg-zinc-900/50 flex items-center justify-center">
+                    <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden mb-6 border border-black/10 dark:border-white/10 bg-zinc-100 dark:bg-zinc-900/50 flex items-center justify-center">
                         <FileText className="w-16 h-16 text-zinc-700" />
                     </div>
                 ) : null}
-                <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">{guide.title}</h1>
+                <h1 className="text-4xl md:text-5xl font-bold text-black dark:text-white mb-3">{guide.title}</h1>
                 <div className="flex items-center gap-3">
-                    <span className="px-3 py-1.5 bg-zinc-800 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider text-zinc-400">
+                    <span className="px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 border border-black/10 dark:border-white/10 rounded-lg text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                         {guide.type}
                     </span>
                 </div>
@@ -602,13 +602,13 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                         <div className="flex gap-2">
                              <button
                                 onClick={() => router.push(`${window.location.pathname}/edit`)} 
-                                className="px-4 py-2 bg-zinc-900 border border-white/10 rounded-lg text-sm font-bold text-zinc-300 hover:text-white transition-colors"
+                                className="px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:text-black dark:hover:text-white transition-colors"
                              >
                                 Edit Guide
                              </button>
                              <button 
                                 onClick={() => setShowDeleteModal(true)}
-                                className="px-4 py-2 bg-zinc-900 border border-white/10 rounded-lg text-sm font-bold text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300 transition-colors"
+                                className="px-4 py-2 bg-zinc-100 dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-lg text-sm font-bold text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
                              >
                                 Delete
                              </button>
@@ -619,16 +619,16 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
 
             {/* Admin Tabs - Visible only in Core Dashboard */}
             {canEdit && dashboardPath.startsWith('/core') && (
-                <div className="flex gap-6 border-b border-white/5 mb-8">
+                <div className="flex gap-6 border-b border-black/10 dark:border-white/5 mb-8">
                     <button 
                         onClick={() => setView('DETAILS')}
-                        className={`pb-4 text-sm font-bold uppercase tracking-wider transition-colors ${view === 'DETAILS' ? 'text-white border-b-2 border-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+                        className={`pb-4 text-sm font-bold uppercase tracking-wider transition-colors ${view === 'DETAILS' ? 'text-black dark:text-white border-b-2 border-black dark:border-white' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
                     >
                         Guide Details
                     </button>
                     <button 
                         onClick={() => setView('APPLICATIONS')}
-                        className={`pb-4 text-sm font-bold uppercase tracking-wider transition-colors ${view === 'APPLICATIONS' ? 'text-white border-b-2 border-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+                        className={`pb-4 text-sm font-bold uppercase tracking-wider transition-colors ${view === 'APPLICATIONS' ? 'text-black dark:text-white border-b-2 border-black dark:border-white' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
                     >
                         Applications ({applications.length})
                     </button>
@@ -636,10 +636,10 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
             )}
 
             {view === 'APPLICATIONS' ? (
-                <div className="bg-zinc-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                <div className="bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm text-zinc-400">
-                            <thead className="bg-white/5 font-bold text-white uppercase text-[10px] tracking-wider border-b border-white/5">
+                            <thead className="bg-white/5 font-bold text-black dark:text-white uppercase text-[10px] tracking-wider border-b border-black/10 dark:border-white/5">
                                 <tr>
                                     {/* Dynamic Columns from Form Schema */}
                                     {visibleFormFields.map(field => (
@@ -657,7 +657,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                     <tr key={app.id} className="group hover:bg-white/[0.02] transition-colors">
                                         {/* Dynamic Data Cells */}
                                         {visibleFormFields.map(field => (
-                                            <td key={field.key || field.id} className="px-6 py-4 text-white">
+                                            <td key={field.key || field.id} className="px-6 py-4 text-black dark:text-white">
                                                 <span className="line-clamp-2" title={(app.data?.[field.key] || app.data?.[field.label] || '').toString()}>
                                                     {(app.data?.[field.key] || app.data?.[field.label] || '-').toString()}
                                                 </span>
@@ -702,9 +702,9 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                                     'text-amber-400 border-amber-500/30 bg-amber-500/10'
                                                 }`}
                                             >
-                                                <option value="PENDING" className="bg-zinc-900 text-amber-400">Pending</option>
-                                                <option value="APPROVED" className="bg-zinc-900 text-emerald-400">Approved</option>
-                                                <option value="REJECTED" className="bg-zinc-900 text-red-400">Rejected</option>
+                                                <option value="PENDING" className="bg-white dark:bg-zinc-900 text-amber-600 dark:text-amber-400">Pending</option>
+                                                <option value="APPROVED" className="bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400">Approved</option>
+                                                <option value="REJECTED" className="bg-white dark:bg-zinc-900 text-red-600 dark:text-red-400">Rejected</option>
                                             </select>
                                         </td>
                                         
@@ -714,7 +714,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                                     setSelectedApplication(app);
                                                     setShowDetailModal(true);
                                                 }}
-                                                className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs font-bold text-zinc-400 hover:text-white hover:bg-white/10 transition-all group"
+                                                className="flex items-center gap-2 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg text-xs font-bold text-zinc-400 hover:text-black dark:hover:text-white hover:bg-white/10 transition-all group"
                                             >
                                                 <Eye className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
                                                 View Detail
@@ -726,7 +726,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                     <tr>
                                         <td colSpan={visibleFormFields.length + 3} className="px-6 py-20 text-center">
                                             <div className="flex flex-col items-center justify-center">
-                                                 <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
+                                                 <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center mb-3">
                                                     <FileText className="w-5 h-5 text-zinc-600" />
                                                  </div>
                                                  <p className="text-zinc-500 text-sm font-medium">No applications received yet.</p>
@@ -746,7 +746,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                         {/* Description */}
                         {guide.body.description && (
                             <section>
-                                <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <h2 className="text-lg font-bold text-black dark:text-white mb-4 flex items-center gap-2">
                                      Overview
                                 </h2>
                                 <p className="text-zinc-400 leading-relaxed text-base whitespace-pre-wrap">
@@ -758,7 +758,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                         {/* Markdown Content */}
                         {guide.body.markdown && (
                             <section>
-                                <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-white prose-p:text-zinc-300 prose-a:text-blue-400 prose-strong:text-white prose-code:text-red-300 prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl prose-ul:text-zinc-300 prose-ol:text-zinc-300 prose-li:text-zinc-300 prose-blockquote:border-l-blue-500 prose-blockquote:text-zinc-400">
+                                <div className="prose dark:prose-invert prose-lg max-w-none prose-headings:font-bold prose-headings:text-black dark:prose-headings:text-white prose-p:text-zinc-700 dark:prose-p:text-zinc-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-black dark:prose-strong:text-white prose-code:text-red-600 dark:prose-code:text-red-300 prose-pre:bg-zinc-100 dark:prose-pre:bg-black/50 prose-pre:border prose-pre:border-black/10 dark:prose-pre:border-white/10 prose-pre:rounded-xl prose-ul:text-zinc-700 dark:prose-ul:text-zinc-300 prose-ol:text-zinc-700 dark:prose-ol:text-zinc-300 prose-li:text-zinc-700 dark:prose-li:text-zinc-300 prose-blockquote:border-l-blue-500 prose-blockquote:text-zinc-600 dark:prose-blockquote:text-zinc-400">
                                     <ReactMarkdown>{guide.body.markdown}</ReactMarkdown>
                                 </div>
                             </section>
@@ -767,14 +767,14 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                         {/* Legacy KPIs - kept for backward compatibility */}
                         {!guide.body.markdown && guide.body.kpis && guide.body.kpis.length > 0 && (
                             <section>
-                                <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                                <h2 className="text-lg font-bold text-black dark:text-white mb-6 flex items-center gap-2">
                                     Success Metrics
                                 </h2>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                     {guide.body.kpis.map((kpi, idx) => (
-                                        <div key={idx} className="bg-zinc-900/50 border border-white/5 p-4 rounded-xl text-center backdrop-blur-sm">
+                                        <div key={idx} className="bg-zinc-50 dark:bg-zinc-900/50 border border-black/10 dark:border-white/5 p-4 rounded-xl text-center backdrop-blur-sm">
                                             <div className="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">{kpi.label}</div>
-                                            <div className="text-2xl font-bold text-white">{kpi.value}</div>
+                                            <div className="text-2xl font-bold text-black dark:text-white">{kpi.value}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -784,16 +784,16 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                         {/* Legacy Timeline - kept for backward compatibility */}
                         {!guide.body.markdown && guide.body.timeline && guide.body.timeline.length > 0 && (
                             <section>
-                                <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                                <h2 className="text-lg font-bold text-black dark:text-white mb-6 flex items-center gap-2">
                                     Approval Timeline
                                 </h2>
                                 <div className="space-y-4 relative before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-px before:bg-white/10">
                                     {guide.body.timeline.map((item, idx) => (
                                         <div key={idx} className="relative pl-10">
-                                            <div className="absolute left-0 top-1.5 w-[30px] h-[30px] bg-zinc-900 border border-white/10 rounded-full flex items-center justify-center z-10">
+                                            <div className="absolute left-0 top-1.5 w-[30px] h-[30px] bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-full flex items-center justify-center z-10">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-white" />
                                             </div>
-                                            <h3 className="text-white font-medium text-sm">{item.step}</h3>
+                                            <h3 className="text-black dark:text-white font-medium text-sm">{item.step}</h3>
                                             <p className="text-zinc-500 text-xs mt-0.5 flex items-center gap-1.5">
                                                 <Clock className="w-3 h-3" /> {item.duration}
                                             </p>
@@ -806,12 +806,12 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                         {/* Legacy Rules - kept for backward compatibility */}
                          {!guide.body.markdown && guide.body.rules && guide.body.rules.length > 0 && (
                             <section>
-                                <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <h2 className="text-lg font-bold text-black dark:text-white mb-4 flex items-center gap-2">
                                     Guidelines & Usage
                                 </h2>
                                 <ul className="space-y-3">
                                     {guide.body.rules.map((rule, idx) => (
-                                        <li key={idx} className="flex gap-3 text-sm text-zinc-400 bg-white/[0.02] p-3 rounded-lg border border-white/5">
+                                        <li key={idx} className="flex gap-3 text-sm text-zinc-600 dark:text-zinc-400 bg-black/[0.02] dark:bg-white/[0.02] p-3 rounded-lg border border-black/5 dark:border-white/5">
                                             <ShieldAlert className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
                                             {rule}
                                         </li>
@@ -823,8 +823,8 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
 
                     {/* Sidebar Application Form */}
                     <div className="lg:col-span-1">
-                        <div className="sticky top-32 bg-zinc-900 border border-white/10 rounded-2xl p-6 shadow-2xl shadow-black/50">
-                            <h3 className="text-lg font-bold text-white mb-2">Apply Now</h3>
+                        <div className="sticky top-32 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 rounded-2xl p-6 shadow-2xl shadow-black/50">
+                            <h3 className="text-lg font-bold text-black dark:text-white mb-2">Apply Now</h3>
                             <p className="text-xs text-zinc-500 mb-6">Start this initiative by submitting the required details below.</p>
                             
                             {submissionMessage && !submitted && (
@@ -837,7 +837,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                     <div className="w-12 h-12 rounded-full bg-emerald-500/20 mx-auto mb-3 flex items-center justify-center">
                                         <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                                     </div>
-                                    <h4 className="text-white font-bold mb-1">Application Submitted!</h4>
+                                    <h4 className="text-black dark:text-white font-bold mb-1">Application Submitted!</h4>
                                     <p className="text-emerald-400 text-xs">
                                         {submissionMessage || (guide.type === 'EVENT' 
                                             ? 'Your application has been received successfully.' 
@@ -859,7 +859,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                             return (
                                                 <div key={field.key || field.id || idx}>
                                                     <label className="block text-xs font-bold text-zinc-400 mb-1.5 uppercase tracking-wider">
-                                                        {field.label} {field.required && <span className="text-white">*</span>}
+                                                        {field.label} {field.required && <span className="text-black dark:text-white">*</span>}
                                                         {isEmailField && (
                                                             <span className="ml-2 text-[10px] text-emerald-400 font-normal">(Verified - Read Only)</span>
                                                         )}
@@ -871,7 +871,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                                     {/* Render input based on type */}
                                                     {field.type === 'textarea' ? (
                                                         <textarea
-                                                            className={`w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700 min-h-[100px] resize-none ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
+                                                            className={`w-full bg-zinc-50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700 min-h-[100px] resize-none ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
                                                             placeholder={field.placeholder || `Enter ${field.label}...`}
                                                             required={field.required}
                                                             readOnly={isReadOnly}
@@ -880,7 +880,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                                         />
                                                     ) : field.type === 'select' ? (
                                                         <select
-                                                            className={`w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
+                                                            className={`w-full bg-zinc-50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
                                                             required={field.required}
                                                             disabled={isReadOnly}
                                                             value={formData[field.key] || ''}
@@ -892,21 +892,21 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                                             ))}
                                                         </select>
                                                     ) : field.type === 'checkbox' ? (
-                                                        <label className="flex items-center gap-3 p-3 bg-black/20 rounded-lg border border-white/5 cursor-pointer hover:bg-black/30 transition-colors">
+                                                        <label className="flex items-center gap-3 p-3 bg-zinc-100 dark:bg-black/20 rounded-lg border border-black/10 dark:border-white/5 cursor-pointer hover:bg-zinc-200 dark:hover:bg-black/30 transition-colors">
                                                             <input
                                                                 type="checkbox"
-                                                                className="w-4 h-4 rounded bg-black border-white/20 text-white focus:ring-white"
+                                                                className="w-4 h-4 rounded bg-white dark:bg-black border-black/20 dark:border-white/20 text-black dark:text-white focus:ring-black dark:focus:ring-white"
                                                                 required={field.required}
                                                                 disabled={isReadOnly}
                                                                 checked={formData[field.key] || false}
                                                                 onChange={(e) => !isReadOnly && setFormData(p => ({ ...p, [field.key]: e.target.checked }))}
                                                             />
-                                                            <span className="text-sm text-zinc-300">{field.placeholder || "Yes, I agree"}</span>
+                                                            <span className="text-sm text-zinc-700 dark:text-zinc-300">{field.placeholder || "Yes, I agree"}</span>
                                                         </label>
                                                     ) : (
                                                         <input
                                                             type={field.type}
-                                                            className={`w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/30 transition-all placeholder:text-zinc-700 ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
+                                                            className={`w-full bg-zinc-50 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-lg px-3 py-2.5 text-sm text-black dark:text-white focus:outline-none focus:border-black/30 dark:focus:border-white/30 transition-all placeholder:text-zinc-400 dark:placeholder:text-zinc-700 ${isReadOnly ? 'cursor-not-allowed opacity-70' : ''}`}
                                                             placeholder={field.placeholder || `Enter ${field.label}...`}
                                                             required={field.required}
                                                             readOnly={isReadOnly}
@@ -918,7 +918,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                             );
                                         })
                                     ) : (
-                                        <div className="text-center py-4 bg-white/5 rounded-lg border border-dashed border-white/10 text-xs text-zinc-500">
+                                        <div className="text-center py-4 bg-black/5 dark:bg-white/5 rounded-lg border border-dashed border-black/10 dark:border-white/10 text-xs text-zinc-500">
                                             No application form required.
                                         </div>
                                     )}
@@ -926,7 +926,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                                     <button
                                         type="submit"
                                         disabled={isSubmitting || formFields.length === 0}
-                                        className="w-full bg-white text-black font-bold py-3 rounded-lg mt-4 hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full bg-black text-white dark:bg-white dark:text-black font-bold py-3 rounded-lg mt-4 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isSubmitting ? 'Submitting...' : 'Submit Application'}
                                     </button>

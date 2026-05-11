@@ -427,7 +427,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
 
               {/* Tabs Navigation */}
               <div className="flex border-b border-zinc-800 mb-8 overflow-x-auto">
-                  {["OVERVIEW", "WALLET", "PROJECTS", "EVENTS", "CONTENT", "ACHIEVEMENTS"].map((tab) => (
+                  {["OVERVIEW", "POINTS", "PROJECTS", "EVENTS", "CONTENT", "ACHIEVEMENTS"].map((tab) => (
                       <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
@@ -532,7 +532,7 @@ export function ProfileDashboard({ initialData, role = 'PUBLIC' }: ProfileDashbo
                     </div>
                   )}
 
-                  {activeTab === "WALLET" && (
+                  {activeTab === "POINTS" && (
                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                       <WalletTab />
                     </div>

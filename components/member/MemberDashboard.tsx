@@ -141,7 +141,7 @@ export function MemberDashboard({
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mb-6">
                 {[
                     { label: "Quests", href: "/member/quests", icon: "Target", color: "text-purple-500" },
-                    { label: "Wallet", href: "/member/wallet", icon: "Wallet", color: "text-yellow-500" },
+                    { label: "Points", href: "/member/wallet", icon: "Coins", color: "text-yellow-500" },
                     { label: "Projects", href: "/member/projects", icon: "Layers", color: "text-blue-500" },
                     { label: "Shop", href: "/member/shop", icon: "ShoppingBag", color: "text-green-500" },
                     { label: "Bounties", href: "/member/bounty", icon: "Zap", color: "text-red-500" },
