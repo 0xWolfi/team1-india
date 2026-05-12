@@ -65,7 +65,7 @@ export const viewport: Viewport = {
 
 import { ThemeProvider } from "./providers";
 
-import { Analytics } from "@vercel/analytics/react";
+import Script from "next/script";
 import dynamic from "next/dynamic";
 import { AnalyticsProvider } from "@/components/providers/AnalyticsProvider";
 
@@ -82,6 +82,24 @@ export default function RootLayout({
       <body
         className={`${kanit.variable} antialiased`}
       >
+        {/* Plausible Analytics (self-hosted Team1 instance — wal.team1.network) */}
+        <Script
+          defer
+          strategy="afterInteractive"
+          src="https://wal.team1.network/js/pa-WksBxxbOFCsnJL_tWVQVk.js"
+        />
+        <Script id="plausible-init" strategy="afterInteractive">
+          {`
+            window.plausible = window.plausible || function () {
+              (window.plausible.q = window.plausible.q || []).push(arguments);
+            };
+            window.plausible.init = window.plausible.init || function (i) {
+              window.plausible.o = i || {};
+            };
+            window.plausible.init();
+          `}
+        </Script>
+
         <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -172,7 +190,6 @@ export default function RootLayout({
                     </AnalyticsProvider>
                 </div>
             </div>
-            <Analytics />
             <PWAUpdatePrompt />
             <PWAInstallPrompt />
         </ThemeProvider>
