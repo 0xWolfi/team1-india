@@ -146,8 +146,6 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
     };
 
 
-    if (!editor) return <div>Loading Editor...</div>;
-
     const customDarkTheme = useMemo(() => ({
         colors: {
             editor: { text: "#ffffff", background: "transparent" },
@@ -174,6 +172,8 @@ export default function Editor({ initialContent, editable, onChange }: EditorPro
         borderRadius: 8,
         fontFamily: "var(--font-kanit), sans-serif",
     } as const), []);
+
+    if (!editor) return <div>Loading Editor...</div>;
 
     return (
         <div className="editor-wrapper flex flex-col gap-4">

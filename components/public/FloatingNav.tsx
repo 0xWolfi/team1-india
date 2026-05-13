@@ -107,12 +107,12 @@ export function FloatingNav() {
                 <div className="flex items-center justify-between md:justify-start w-full gap-1 px-6 py-3 md:p-1.5 md:rounded-2xl md:bg-white/60 dark:md:bg-black/40 md:backdrop-blur-md md:border md:border-black/10 dark:md:border-white/10 md:shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:md:shadow-[0_8px_32px_rgba(0,0,0,0.5)] md:supports-[backdrop-filter]:bg-white/40 dark:md:supports-[backdrop-filter]:bg-black/20">
                     
                     {/* Logo / Home — full page nav to reset scroll for HeroScroll animations */}
-                    <a
+                    <Link
                         href="/"
                         className="flex items-center gap-2 md:px-3 md:py-2 rounded-lg transition-all group"
                     >
                         <Team1Logo className="h-3.5 w-auto relative z-10" />
-                    </a>
+                    </Link>
 
                     {/* Divider */}
                     <div className="w-px h-6 bg-black/10 dark:bg-white/10 mx-1 hidden md:block" />

@@ -115,7 +115,7 @@ export default function MediaModal({ isOpen, onClose, onSave, initialData }: Med
 
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let body: any = { status: newStatus };
+            const body: any = { status: newStatus };
             if (newStatus === 'posted') {
                 const url = prompt("Enter the live post URL:");
                 if (!url) {

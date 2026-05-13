@@ -79,7 +79,7 @@ export function ApplicationForm({ programId, formSchema = [] }: { programId: str
           <CheckCircle className="w-6 h-6 text-emerald-400"/>
         </div>
         <h3 className="text-lg font-bold text-black dark:text-white mb-2">Application Received</h3>
-        <p className="text-zinc-600 dark:text-zinc-400">We'll be in touch with you shortly.</p>
+        <p className="text-zinc-600 dark:text-zinc-400">We&apos;ll be in touch with you shortly.</p>
         <button onClick={() => setStatus("idle")} className="mt-4 text-emerald-400 hover:text-emerald-300 text-sm font-medium">
           Apply again
         </button>

@@ -180,8 +180,8 @@ export async function POST(req: NextRequest) {
                  const programTitle = body.guideId ? 'a program' : 'membership'; // Fetch real title if needed but keep it simple for now or use the one fetched above if guideId exists
                  
                  // Reuse title if available from email block
-                 let displayTitle = 'New Application Received 📝';
-                 let displayBody = `New application for ${programTitle} from ${userName || applicantEmail}`;
+                 const displayTitle = 'New Application Received 📝';
+                 const displayBody = `New application for ${programTitle} from ${userName || applicantEmail}`;
                  
                  if (guideId) {
                       // We fetched guide above in email block, but variable scope is limited. 

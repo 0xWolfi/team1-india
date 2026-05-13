@@ -23,12 +23,12 @@ export default function OfflinePage() {
 
         {/* Title */}
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 tracking-tighter">
-          You're Offline
+          You&apos;re Offline
         </h1>
 
         {/* Description */}
         <p className="text-zinc-600 dark:text-zinc-400 text-base sm:text-lg mb-8 leading-relaxed">
-          It looks like you've lost your internet connection. Don't worry—reconnect and we'll get you back in.
+          It looks like you&apos;ve lost your internet connection. Don&apos;t worry—reconnect and we&apos;ll get you back in.
         </p>
 
         {/* Retry Button */}
