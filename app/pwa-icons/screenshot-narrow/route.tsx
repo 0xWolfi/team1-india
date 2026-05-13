@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // Mobile screenshot (narrow form factor) - 1080x1920 (9:16 aspect ratio)
 export async function GET() {
