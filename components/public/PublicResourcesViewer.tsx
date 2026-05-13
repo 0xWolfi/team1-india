@@ -112,8 +112,8 @@ export default function PublicResourcesViewer({ playbooks, guides }: PublicResou
                         <Search className="w-6 h-6 text-zinc-400 dark:text-zinc-600"/>
                     </div>
                     <div>
-                        <p>No resources found for "{activeTab}"</p>
-                        {searchTerm && <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">matching "{searchTerm}"</p>}
+                        <p>No resources found for &quot;{activeTab}&quot;</p>
+                        {searchTerm && <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">matching &quot;{searchTerm}&quot;</p>}
                     </div>
                 </div>
             )}

@@ -418,7 +418,7 @@ export default function MemberDetailPage() {
             {activity && activity.applications.length === 0 && activity.experiments.length === 0 && activity.experimentComments.length === 0 && (
                 <div className="bg-white/40 dark:bg-black/40 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-xl shadow-2xl p-12 text-center">
                     <div className="text-zinc-500 mb-2">No activity recorded yet</div>
-                    <div className="text-sm text-zinc-500 dark:text-zinc-400">This member hasn't submitted any applications or proposals.</div>
+                    <div className="text-sm text-zinc-500 dark:text-zinc-400">This member hasn&apos;t submitted any applications or proposals.</div>
                 </div>
             )}
         </div>

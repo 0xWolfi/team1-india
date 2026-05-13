@@ -197,7 +197,7 @@ export function OfflineApplicationForm() {
         {/* Offline mode notice */}
         {!isOnline && (
           <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/20 rounded text-sm text-orange-400">
-            📴 You're offline. Your submission will be queued and sent when you're back online.
+            📴 You&apos;re offline. Your submission will be queued and sent when you&apos;re back online.
           </div>
         )}
 

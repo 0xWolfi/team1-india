@@ -245,7 +245,7 @@ export default function CoreSpeedrunDetailPage() {
                 {teammates.length > 0 && (
                   <>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">
-                      Other team members' registrations
+                      Other team members&apos; registrations
                     </p>
                     <ul className="space-y-1.5">
                       {teammates.map((t) => (

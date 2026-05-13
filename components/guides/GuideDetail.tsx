@@ -399,7 +399,7 @@ export const GuideDetail: React.FC<GuideDetailProps> = ({ guide, basePath }) => 
                             {pendingRejectApp?.applicantEmail || pendingRejectApp?.data?.email || '—'}
                         </div>
                         <div className="text-[11px] text-zinc-500 mt-2">
-                            Subject and heading will remain the standard "Update on Your Application" template.
+                            Subject and heading will remain the standard &quot;Update on Your Application&quot; template.
                         </div>
                     </div>
 

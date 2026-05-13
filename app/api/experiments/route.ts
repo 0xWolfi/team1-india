@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     // First check Member table (CORE users)
     const coreMember = await prisma.member.findUnique({
-        where: { email: session.user?.email! }
+        where: { email: session.user?.email ?? "" }
     });
 
     if (coreMember) {
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
         // Check CommunityMember table (regular members)
         // @ts-ignore
         const communityMember = await prisma.communityMember.findUnique({
-            where: { email: session.user?.email! }
+            where: { email: session.user?.email ?? "" }
         });
 
         if (communityMember) {

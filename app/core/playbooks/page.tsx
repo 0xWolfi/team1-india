@@ -268,7 +268,7 @@ export default function PlaybooksPage() {
                          </div>
                          <h3 className="text-zinc-700 dark:text-zinc-200 text-xl font-bold mb-2">No playbooks found</h3>
                          <p className="text-zinc-500 max-w-xs mx-auto">
-                            We couldn't find anything matching "{searchTerm}". Try a different term or create a new playbook.
+                            We couldn&apos;t find anything matching &quot;{searchTerm}&quot;. Try a different term or create a new playbook.
                          </p>
                      </div>
                  )}

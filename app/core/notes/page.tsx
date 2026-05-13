@@ -375,7 +375,7 @@ export default function NotesPage() {
                             <div>
                                 <h3 className="text-xl font-bold text-black dark:text-white">Delete Note?</h3>
                                 <p className="text-sm text-zinc-600 dark:text-zinc-300 mt-2 leading-relaxed">
-                                    Are you sure you want to permanently delete <br/><span className="text-black dark:text-white font-bold">"{selectedNote?.title}"</span>?
+                                    Are you sure you want to permanently delete <br/><span className="text-black dark:text-white font-bold">&quot;{selectedNote?.title}&quot;</span>?
                                 </p>
                             </div>
                             <div className="flex items-center gap-3 w-full mt-2">

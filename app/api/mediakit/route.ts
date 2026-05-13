@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     // Get user
     const user = await prisma.member.findUnique({
-        where: { email: session.user?.email! }
+        where: { email: session.user?.email ?? "" }
     });
     
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });

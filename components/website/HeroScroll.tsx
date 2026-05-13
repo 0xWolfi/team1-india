@@ -415,7 +415,7 @@ export const HeroScroll = () => {
           <div className="relative w-full max-w-7xl mx-auto">
             <motion.div style={{ opacity: headingOpacity, scale: headingScale, y: headingY }} className="mb-6 lg:mb-8 text-center">
               <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold text-black dark:text-white tracking-tight">
-                What We've Achieved
+                What We&apos;ve Achieved
               </h2>
             </motion.div>
             <motion.div

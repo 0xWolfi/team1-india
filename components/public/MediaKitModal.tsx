@@ -68,7 +68,7 @@ export function MediaKitModal({ isOpen, onClose, mediaItems }: MediaKitModalProp
                         <FileText className="w-3 h-3"/> Press One-Liner
                     </div>
                     <p className="text-sm text-zinc-600 dark:text-zinc-300 italic leading-relaxed font-serif group-hover:text-black dark:group-hover:text-white transition-colors">
-                        "Team1 India is the largest decentralized community of builders, founders, and students driving the web3 ecosystem forward."
+                        &quot;Team1 India is the largest decentralized community of builders, founders, and students driving the web3 ecosystem forward.&quot;
                     </p>
                 </div>
             </div>

@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
         // @ts-ignore
         const role = session.user.role;
 
-        let whereClause: any = {};
+        const whereClause: any = {};
 
         // 1. Filter by Audience (if provided) & Expiration
         if (audience) {

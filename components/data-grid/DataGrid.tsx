@@ -306,7 +306,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
         const parsedData = rows.map(row => {
             const cells = row.split('\t');
             const dataObj: any = {};
-            let customFields: any = {};
+            const customFields: any = {};
             
             // Map cells to visible columns
             const visibleCols = columns.filter(c => c.visible);
@@ -493,7 +493,7 @@ export function DataGrid({ tableName, title, description, icon }: DataGridProps)
                                 <tr key={row.id} className="group hover:bg-white/[0.02]">
                                     {columns.filter(c => c.visible).map(col => {
                                         const isCustom = col.id.startsWith('custom_');
-                                        let val = isCustom ? row.customFields?.[col.id] : row[col.id];
+                                        const val = isCustom ? row.customFields?.[col.id] : row[col.id];
                                         
 
                                         
