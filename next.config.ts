@@ -112,7 +112,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   runtimeCaching: [
     // Public API - NetworkFirst with 1hr TTL
     {
-      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/api\/public\/.*/i,
+      urlPattern: /^https?:\/\/[^/]+\/api\/public\/.*/i,
       handler: 'NetworkFirst',
       options: {
         cacheName: 'public-api-cache',
@@ -157,7 +157,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     },
     // Core/Member API - NetworkOnly (never cache authenticated data)
     {
-      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/api\/(core|member|auth)\/.*/i,
+      urlPattern: /^https?:\/\/[^/]+\/api\/(core|member|auth)\/.*/i,
       handler: 'NetworkOnly',
     },
     // Vercel Blob images - always fetch fresh (avoid opaque cached responses)
@@ -191,7 +191,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     },
     // Route-Based Caching: Core Dashboard (Fresh data required)
     {
-      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/core.*/i,
+      urlPattern: /^https?:\/\/[^/]+\/core.*/i,
       handler: 'NetworkFirst',
       options: {
         cacheName: 'core-pages',
@@ -204,7 +204,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     },
     // Route-Based Caching: Public Pages (Stale acceptable)
     {
-      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/public.*/i,
+      urlPattern: /^https?:\/\/[^/]+\/public.*/i,
       handler: 'StaleWhileRevalidate',
       options: {
         cacheName: 'public-pages',
@@ -216,7 +216,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     },
     // Route-Based Caching: Playbooks (Longer cache for static content)
     {
-      urlPattern: /^https:\/\/(team1india\.com|team1india\.vercel\.app)\/(public\/playbooks|playbooks).*/i,
+      urlPattern: /^https?:\/\/[^/]+\/(public\/playbooks|playbooks).*/i,
       handler: 'CacheFirst',
       options: {
         cacheName: 'playbooks-cache',

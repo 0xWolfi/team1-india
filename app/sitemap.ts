@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { safeBuildFetch } from '@/lib/safeStaticParams';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://team1india.com';
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://india.team1.network';
 
   // Static Routes
   const routes = [

@@ -12,7 +12,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Contact Us">
             <div className="grid gap-4">
-                <Link href="mailto:partners@team1india.com" className="flex items-center gap-4 p-4 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors group border border-black/5 dark:border-white/5">
+                <Link href="mailto:partners@india.team1.network" className="flex items-center gap-4 p-4 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors group border border-black/5 dark:border-white/5">
                     <div className="p-3 bg-black/5 dark:bg-white/5 rounded-lg text-zinc-500 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
                         <Mail className="w-5 h-5"/>
                     </div>

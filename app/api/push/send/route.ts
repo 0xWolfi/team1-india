@@ -18,7 +18,7 @@ function ensureVapidConfigured() {
   }
 
   webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || 'mailto:admin@team1india.com',
+    process.env.VAPID_SUBJECT || 'mailto:hello@india.team1.network',
     publicKey,
     privateKey
   );

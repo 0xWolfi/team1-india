@@ -7,7 +7,7 @@ import {
 } from "@simplewebauthn/server";
 
 const rpName = "Team1 India";
-const rpID = process.env.WEBAUTHN_RP_ID || "team1india.vercel.app";
+const rpID = process.env.WEBAUTHN_RP_ID || "india.team1.network";
 const origin = process.env.WEBAUTHN_ORIGIN || `https://${rpID}`;
 
 export async function getRegistrationOptions(

@@ -9,7 +9,7 @@ function ensureVapid(): boolean {
   const priv = process.env.VAPID_PRIVATE_KEY;
   if (!pub || !priv) return false;
   webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || "mailto:admin@team1india.com",
+    process.env.VAPID_SUBJECT || "mailto:hello@india.team1.network",
     pub,
     priv
   );

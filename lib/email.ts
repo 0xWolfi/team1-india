@@ -1,5 +1,8 @@
 import nodemailer from 'nodemailer';
 
+// Base URL for all email links — driven by environment
+const APP_URL = (process.env.NEXTAUTH_URL || "https://india.team1.network").replace(/\/$/, "");
+
 // Email configuration
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -100,7 +103,7 @@ export function getWelcomeEmailTemplate(name: string) {
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            Visit: <a href="https://team1india.vercel.app" style="color: #0066cc;">https://team1india.vercel.app</a>
+            Visit: <a href="${APP_URL}" style="color: #0066cc;">${APP_URL}</a>
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
@@ -131,7 +134,7 @@ export function getWelcomeEmailTemplate(name: string) {
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
@@ -178,7 +181,7 @@ export function getApprovalEmailTemplate(applicantName: string, programTitle: st
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
@@ -231,7 +234,7 @@ export function getCustomApprovalEmailTemplate(
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
@@ -288,7 +291,7 @@ export function getCustomRejectionEmailTemplate(
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
@@ -343,7 +346,7 @@ export function getRejectionEmailTemplate(applicantName: string, programTitle: s
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
@@ -399,7 +402,7 @@ export function getApplicationSubmittedEmailTemplate(applicantName: string, prog
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
@@ -454,7 +457,7 @@ export function getDiscussionEmailTemplate(applicantName: string, programTitle: 
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6;">
@@ -506,7 +509,7 @@ export function getContributionApprovalEmailTemplate(contributorName: string, co
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
@@ -562,7 +565,7 @@ export function getContributionRejectionEmailTemplate(contributorName: string, c
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
-            <a href="https://team1india.vercel.app/public#contact" style="color: #0066cc;">https://team1india.vercel.app/public#contact</a>
+            <a href="${APP_URL}/public#contact" style="color: #0066cc;">${APP_URL}/public#contact</a>
         </p>
         
         <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6;">
@@ -640,7 +643,7 @@ interface SpeedrunRegistrationEmailParams {
  *  - join:   "You're in. You joined Team X."
  */
 export function getSpeedrunRegistrationEmail(p: SpeedrunRegistrationEmailParams) {
-  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
+  const base = p.appUrl || APP_URL;
   const statusUrl = `${base.replace(/\/$/, "")}/speedrun/${encodeURIComponent(p.runSlug)}/registration`;
 
   const teamBlock = (() => {
@@ -736,7 +739,7 @@ interface SpeedrunLeaveTeamEmailParams {
  * leave-team endpoint. Confirms they left and are now a solo builder.
  */
 export function getSpeedrunLeaveTeamEmail(p: SpeedrunLeaveTeamEmailParams) {
-  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
+  const base = p.appUrl || APP_URL;
   const statusUrl = `${base.replace(/\/$/, "")}/speedrun/${encodeURIComponent(p.runSlug)}/registration`;
 
   const html = `
@@ -790,7 +793,7 @@ interface SpeedrunTeammateJoinedEmailParams {
  * Email to the team captain when a new member joins their team via the team code.
  */
 export function getSpeedrunTeammateJoinedEmail(p: SpeedrunTeammateJoinedEmailParams) {
-  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
+  const base = p.appUrl || APP_URL;
   const statusUrl = `${base.replace(/\/$/, "")}/speedrun/${encodeURIComponent(p.runSlug)}/registration`;
 
   const html = `
@@ -865,7 +868,7 @@ interface SpeedrunBroadcastEmailParams {
  * Visual style mirrors the registration confirmation so they read as a series.
  */
 export function getSpeedrunBroadcastEmail(p: SpeedrunBroadcastEmailParams) {
-  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://team1india.com";
+  const base = p.appUrl || APP_URL;
   const runUrl = `${base.replace(/\/$/, "")}/speedrun/${encodeURIComponent(p.runSlug)}`;
   const ctaLabel = p.ctaLabel || "View Run";
 
@@ -935,7 +938,7 @@ const BOUNTY_FREQUENCY_LABELS: Record<string, string> = {
 };
 
 export function getBountyAnnouncementEmail(p: BountyAnnouncementEmailParams) {
-  const base = p.appUrl || process.env.NEXTAUTH_URL || "https://india.team1.network";
+  const base = p.appUrl || APP_URL;
   const bountyUrl = `${base.replace(/\/$/, "")}/member/bounty`;
   const typeLabel = BOUNTY_TYPE_LABELS[p.bountyType] || p.bountyType;
   const freqLabel = BOUNTY_FREQUENCY_LABELS[p.frequency] || p.frequency;
@@ -1013,7 +1016,7 @@ export function getBountyAnnouncementEmail(p: BountyAnnouncementEmailParams) {
     </div>
 
     <p style="margin:16px 0 0; font-size:11px; color:#999; text-align:center;">
-      Team1 India · <a href="${base}" style="color:#999;">india.team1.network</a>
+      Team1 India · <a href="${base}" style="color:#999;">${APP_URL.replace(/^https?:\/\//, "")}</a>
     </p>
   </div>
 </body>

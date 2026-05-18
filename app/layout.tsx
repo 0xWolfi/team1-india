@@ -10,8 +10,11 @@ const kanit = Kanit({
   display: 'swap',
 });
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://india.team1.network";
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "hello@india.team1.network";
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://team1india.com'),
+  metadataBase: new URL(APP_URL),
   title: {
     default: "Team1 India: Built for impact. Designed for builders.",
     template: "%s | Team1 India"
@@ -30,7 +33,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Team1 India | Built for impact. Designed for builders.",
     description: "From idea to scale, Team1India provides the infrastructure, network, and resources you need to build the future.",
-    url: "https://team1india.com",
+    url: APP_URL,
     siteName: "Team1 India",
     images: [
       {
@@ -116,12 +119,12 @@ export default function RootLayout({
                             "@graph": [
                                 {
                                     "@type": "Organization",
-                                    "@id": "https://team1india.com/#organization",
+                                    "@id": APP_URL + "/#organization",
                                     "name": "Team1 India",
-                                    "url": "https://team1india.com",
+                                    "url": APP_URL,
                                     "logo": {
                                         "@type": "ImageObject",
-                                        "url": "https://team1india.com/logo.png",
+                                        "url": APP_URL + "/logo.png",
                                         "width": 512,
                                         "height": 512
                                     },
@@ -151,17 +154,17 @@ export default function RootLayout({
                                     "contactPoint": {
                                         "@type": "ContactPoint",
                                         "contactType": "partnerships",
-                                        "email": "hello@team1india.com"
+                                        "email": CONTACT_EMAIL
                                     }
                                 },
                                 {
                                     "@type": "WebSite",
-                                    "@id": "https://team1india.com/#website",
-                                    "url": "https://team1india.com",
+                                    "@id": APP_URL + "/#website",
+                                    "url": APP_URL,
                                     "name": "Team1 India Platform",
                                     "description": "Built for impact. Designed for builders.",
                                     "publisher": {
-                                        "@id": "https://team1india.com/#organization"
+                                        "@id": APP_URL + "/#organization"
                                     },
                                     "inLanguage": "en-US"
                                 },
@@ -177,7 +180,7 @@ export default function RootLayout({
                                     },
                                     "description": "Platform for developers to find teammates, grants, and mentorship.",
                                     "author": {
-                                        "@id": "https://team1india.com/#organization"
+                                        "@id": APP_URL + "/#organization"
                                     }
                                 }
                             ]

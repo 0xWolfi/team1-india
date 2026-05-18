@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
   try {
     await sendEmail({
-      to: process.env.CONTACT_EMAIL || "hello@team1india.com",
+      to: process.env.CONTACT_EMAIL || "hello@india.team1.network",
       subject: `Contact Form: ${safeName}`,
       html: `
         <h3>New Contact Form Submission</h3>

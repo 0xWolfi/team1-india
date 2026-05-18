@@ -137,7 +137,7 @@ class AlertNotifier {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        to: process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@team1india.com',
+        to: process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'hello@india.team1.network',
         subject: `🚨 Critical PWA Alert: ${alert.type}`,
         body: `
           <h2>PWA Critical Alert</h2>
